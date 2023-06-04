@@ -1,7 +1,11 @@
-bootstrap:
+.env:
+	powershell -Command "cp .env.dist .env"
+
+bootstrap: .env
 	@pyenv local 3.11.3
 	@poetry install
-	echo "project bootstrapped"
+	@echo project bootstrapped
+
 .PHONY: boostrap
 
 http_server:
@@ -22,13 +26,6 @@ logs:
 
 kill:
 	poetry run python .\p0_backend\scripts\kill_old_processes.py
-
-sdk:
-	@poetry run python p0_backend/sdk/generate_openapi_specs.py
-
-	@cd p0_backend/sdk && java -jar openapi-generator-cli.jar generate -i openapi.yaml -g python-legacy -c openapi_config.json -o p0_sdk -t openapi_templates
-	@cd C:\Users\thiba\dev\code\projects\p0_script && poetry install
-.PHONY: sdk
 
 test:
 	cls

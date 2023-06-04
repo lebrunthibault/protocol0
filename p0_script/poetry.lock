@@ -104,7 +104,7 @@ files = [
 [[package]]
 name = "p0-backend-client"
 version = "1.0.0"
-description = "P0 backend Client"
+description = "p0_backend"
 optional = false
 python-versions = "*"
 files = []
@@ -117,7 +117,7 @@ urllib3 = ">=1.25.3"
 
 [package.source]
 type = "directory"
-url = "../p0_backend/p0_backend/sdk/p0_sdk"
+url = "../p0_sdk/p0_sdk"
 
 [[package]]
 name = "packaging"
@@ -323,5 +323,5 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 
 [metadata]
 lock-version = "2.0"
-python-versions = "3.7.3"
-content-hash = "8bc35278dc6694b929f78269e4d09714d2ca28244e2d4d12c84e2c5f199d5aa7"
+python-versions = ">=3.7.3"
+content-hash = "b230b05dc67ddc8fe819cccd67a2b01b83f1df0e2b0ca478f8df5c27306487b1"

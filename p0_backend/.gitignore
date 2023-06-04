@@ -140,11 +140,3 @@ debug*
 
 *.wav
 *.flac
-
-openapi.json
-openapi.yaml
-openapi_config.json
-
-.idea/
-
-desktop.ini
