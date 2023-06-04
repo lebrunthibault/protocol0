@@ -90,4 +90,4 @@ for route in app.routes:
         route.operation_id = route.name  # in this case, 'read_items'
 
 def start():
-    uvicorn.run("p0_backend.api.http_server.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("p0_backend.api.http_server.main:app", host="0.0.0.0", port=8000, reload=True, workers=2)

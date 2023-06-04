@@ -9,7 +9,7 @@ bootstrap: .env
 .PHONY: boostrap
 
 http_server:
-	@poetry run uvicorn p0_backend.api.http_server.main:app --port 8000 --workers 2 --reload
+	@poetry run http-server
 .PHONY: http_server
 
 midi_server:

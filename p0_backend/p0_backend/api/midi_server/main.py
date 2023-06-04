@@ -117,10 +117,6 @@ def _execute_midi_message(message: Message):
     method_name = payload["method"]
     args = list(payload["args"].values())
 
-    from loguru import logger
-    logger.success(method_name)
-    logger.success(args)
-
     if method_name == "post_set":
         requests.post(f"{settings.http_api_url}/set", data=AbletonSet(**args[0]).json())
         return
