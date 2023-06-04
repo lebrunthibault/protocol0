@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "protocol0"
-version = "1.0.9"
+version = "1.0.10"
 description = "Protocol0 ableton remote script"
 readme = "README.md"
 authors = ["Thibault Lebrun <thibaultlebrun@live.fr>"]
@@ -21,11 +21,11 @@ keywords = ["remote script", "ableton"]
 
 
 [tool.poetry.dependencies]
-python = "3.7.3"
+python = ">=3.7.3"
 qualname = "^0.1.0"
 loguru = "^0.7.0"
-p0-backend-client = {path = "../p0_backend/p0_backend/sdk/p0_sdk"}
 typing-extensions = "^4.6.3"
+p0-backend-client = {path = "../p0_sdk/p0_sdk"}
 
 [tool.poetry.dev-dependencies]
 flake8 = "*"

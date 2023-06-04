@@ -21,7 +21,6 @@ keywords = ["remote script", "ableton"]
 
 [tool.poetry.dependencies]
 python = "3.11.3"
-apispec=" ^5.2.2"
 asyncclick=" ^8.1.3.2"
 click=" ^8.1.3"
 keyboard=" ^0.13.5"
@@ -33,7 +32,7 @@ PySimpleGUI=" ^4.60.5"
 pywin32=" ^304"
 six=" ^1.16.0"
 uvicorn = {extras = ["standard"], version = "^0.22.0"}
-p0-script = {path = "C:/Users/thiba/dev/code/projects/p0_script", develop = true}
+protocol0 = {path = "../p0_script", develop = true}
 loguru = "^0.7.0"
 celery = "^5.2.7"
 redis = "^4.5.5"
@@ -44,7 +43,6 @@ python-dotenv = "^1.0.0"
 rx = "^3.2.0"
 requests = "^2.31.0"
 tzdata = "^2023.3"
-openapi-spec-validator = "^0.5.6"
 
 [tool.poetry.dev-dependencies]
 flake8 = "*"

@@ -24,7 +24,7 @@ from protocol0.application.command.EmitBackendEventCommand import (
     EmitBackendEventCommand,
 )
 
-app = FastAPI(debug=True)
+app = FastAPI(debug=True, title="p0_backend")
 
 origins = [
     "http://localhost",

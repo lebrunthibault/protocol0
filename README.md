@@ -13,12 +13,12 @@ It has a focus on :
 ## Organisation
 
 I've split the project into different modules :
-- [The control surface remote script](https://github.com/lebrunthibault/protocol0/tree/main/p0_script) 
+- [A control surface remote script](https://github.com/lebrunthibault/protocol0/tree/main/p0_script) 
    that is going to be installed in the ableton remote scripts folder and do most of the job
-- [The midi and http backend](https://github.com/lebrunthibault/protocol0/tree/main/p0_backend) that makes it possible
+- [A midi and http backend](https://github.com/lebrunthibault/protocol0/tree/main/p0_backend) that makes it possible
   to do things not available in the ableton live python environment and as well exposes a http api
   that can be triggered by e.g. ahk keyboard shortcuts or other controllers (like a streamdeck)
-- [The web frontend](https://github.com/lebrunthibault/protocol0/tree/main/p0_web) : a simple web app
-  where the control surface script actions can be triggered from a web browser. In case you don't have a midi controller at hand.
-- [A stream deck plugin](https://github.com/lebrunthibault/protocol0/tree/main/p0_stream_deck) to control
-  part of the script using a stream deck.
+- [A sdk generator](https://github.com/lebrunthibault/protocol0/tree/main/p0_sdk) : generates a python sdk for consuming the api
+- [A web frontend](https://github.com/lebrunthibault/protocol0/tree/main/p0_web) : a simple web app
+  where the control surface script actions can be triggered from the browser. In case you don't have a midi controller at hand.
+- [A stream deck plugin](https://github.com/lebrunthibault/protocol0/tree/main/p0_stream_deck): an integration with elgato stream deck

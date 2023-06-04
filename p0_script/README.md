@@ -81,11 +81,7 @@ The backend is exposing its api over midi, and I'm using loopMidi virtual ports 
 
 ## Installation
 
-### Install the backend
-
-- clone and follow the README install section of the [backend](https://github.com/lebrunthibault/Protocol0-Backend).
-- You should also clone the [companion midi script](https://github.com/lebrunthibault/Protocol0-Midi-Surface-Script) to
-  receive data back from the backend
+`make bootstrap`
 
 ### Install the script
 
@@ -93,6 +89,11 @@ The backend is exposing its api over midi, and I'm using loopMidi virtual ports 
 - create a python virtual env, activate it and `pip install -r .\requirements.txt`
 - Try using a configurable midi controller to match the mappings in ./application/control_surface/group. The main
   commands are defined in ActionGroupMain
+
+### Install the backend
+
+- clone and follow the README install section of the [backend](https://github.com/lebrunthibault/protocol0/tree/main/p0_backend).
+- You should also 
 
 
 ## Development
