@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    /* Visit https://aka.ms/tsconfig.json to read more about this file */
+    /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
+    "target": "ES2020",
+    /* Ensure that casing is correct in imports. */
+    "forceConsistentCasingInFileNames": true,
+    /* Ensure all files are modules */
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    /* Type Checking */
+    "strict": true,
+    /* For TSyringe */
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+  }
+}

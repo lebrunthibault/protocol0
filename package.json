@@ -1,0 +1,21 @@
+{
+  "name": "code",
+  "private": true,
+  "workspaces": [
+    "libs/*",
+    "projects/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "",
+    "format": ""
+  },
+  "devDependencies": {
+    "@turbo/gen": "^1.9.7",
+    "eslint": "^7.32.0",
+    "prettier": "^2.5.1",
+    "turbo": "^1.9.7"
+  },
+  "packageManager": "npm@8.11.0"
+}

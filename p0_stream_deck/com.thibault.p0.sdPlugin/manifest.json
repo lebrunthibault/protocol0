@@ -1,0 +1,148 @@
+{
+  "Actions": [
+    {
+      "Icon": "icon/p0_action/action",
+      "Name": "Back to previous profile",
+      "States": [
+        {
+          "Title": "",
+          "Image": "icon/p0_action/state"
+        }
+      ],
+      "Tooltip": "A dynamic back button",
+      "UUID": "com.thibault.p0.back-to-previous-profile"
+    },
+    {
+      "Icon": "icon/p0_action/action",
+      "Name": "Drum Rack to Simpler",
+      "States": [
+        {
+          "Title": "To\nSimpler",
+          "Image": "icon/to_simpler/state"
+        }
+      ],
+      "Tooltip": "Bounce Drum Rack to Simpler",
+      "UUID": "com.thibault.p0.drum-rack-to-simpler"
+    },
+    {
+      "Icon": "icon/p0_action/action",
+      "Name": "Select or add device",
+      "States": [
+        {
+          "Title": "",
+          "Image": "icon/p0_action/state"
+        }
+      ],
+      "Tooltip": "Select or add a chosen device on the selected track",
+      "UUID": "com.thibault.p0.load-device"
+    },
+    {
+      "Icon": "icon/p0_action/action",
+      "Name": "Load grouped device",
+      "States": [
+        {
+          "Title": "",
+          "Image": "icon/p0_action/state"
+        }
+      ],
+      "Tooltip": "Load a grouped device",
+      "UUID": "com.thibault.p0.load-grouped-device"
+    },
+    {
+      "Icon": "icon/p0_action/action",
+      "Name": "Load drum track",
+      "States": [
+        {
+          "Title": "",
+          "Image": "icon/p0_action/state"
+        }
+      ],
+      "Tooltip": "Load drum track",
+      "UUID": "com.thibault.p0.load-drum-track"
+    },
+    {
+      "Icon": "icon/p0_action/action",
+      "Name": "Load vocal track",
+      "States": [
+        {
+          "Title": "",
+          "Image": "icon/p0_action/state"
+        }
+      ],
+      "Tooltip": "Load vocal track",
+      "UUID": "com.thibault.p0.load-vocal-track"
+    },
+    {
+      "Icon": "icon/p0_action/action",
+      "Name": "Open set",
+      "States": [
+        {
+          "Title": "",
+          "Image": "icon/p0_action/state"
+        }
+      ],
+      "Tooltip": "Open set",
+      "UUID": "com.thibault.p0.open-set"
+    }
+  ],
+  "Profiles": [
+    {
+      "Name": "profiles/Devices",
+      "ReadOnly": false,
+      "DeviceType": 2,
+      "DontAutoSwitchWhenInstalled": true
+    },
+    {
+      "Name": "profiles/DeviceGroup",
+      "ReadOnly": false,
+      "DeviceType": 2,
+      "DontAutoSwitchWhenInstalled": true
+    },
+    {
+      "Name": "profiles/Drums",
+      "ReadOnly": false,
+      "DeviceType": 2,
+      "DontAutoSwitchWhenInstalled": true
+    },
+    {
+      "Name": "profiles/Home",
+      "ReadOnly": false,
+      "DeviceType": 2,
+      "DontAutoSwitchWhenInstalled": true
+    },
+    {
+      "Name": "profiles/Insert Devices",
+      "ReadOnly": false,
+      "DeviceType": 2,
+      "DontAutoSwitchWhenInstalled": true
+    },
+    {
+      "Name": "profiles/Vocals",
+      "ReadOnly": false,
+      "DeviceType": 2,
+      "DontAutoSwitchWhenInstalled": true
+    }
+  ],
+  "SDKVersion": 2,
+  "Author": "Thibault Lebrun",
+  "CodePath": "index.html",
+  "PropertyInspectorPath": "propertyinspector/index.html",
+  "Description": "Protocol0 Stream Deck Plugin",
+  "Name": "P0",
+  "Icon": "icon/p0_action/action",
+  "URL": "https://github.com/lebrunthibault/Protocol-0-Surface-Script",
+  "Version": "0.1",
+  "OS": [
+    {
+      "Platform": "mac",
+      "MinimumVersion": "10.11"
+    },
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "Software": {
+    "MinimumVersion": "4.1"
+  }
+}
