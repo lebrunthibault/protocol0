@@ -1,5 +1,5 @@
 {
-  "name": "@code/p0_backend",
+  "name": "@p0/p0_backend",
   "private": true,
   "scripts": {
     "lint": "flake8 . && mypy . && vulture .",
