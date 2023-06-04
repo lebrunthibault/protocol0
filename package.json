@@ -17,5 +17,8 @@
     "prettier": "^2.5.1",
     "turbo": "^1.9.7"
   },
-  "packageManager": "npm@8.11.0"
+  "packageManager": "npm@8.11.0",
+  "dependencies": {
+    "@openapitools/openapi-generator-cli": "^2.6.0"
+  }
 }

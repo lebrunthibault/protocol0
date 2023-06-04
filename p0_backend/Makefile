@@ -9,23 +9,24 @@ bootstrap: .env
 .PHONY: boostrap
 
 http_server:
-	@poetry run uvicorn p0_backend.api.http_server.main:app --port 8000 --reload --workers 4
+	@poetry run uvicorn p0_backend.api.http_server.main:app --port 8000 --workers 2 --reload
 .PHONY: http_server
 
 midi_server:
-	@poetry run watchmedo auto-restart --directory=. --pattern="p0_backend/api/midi_server/*.py;p0_backend/api/midi_server/**/*.py;p0_backend/api/client/*.py;p0_backend/lib/*.py;p0_backend/lib/**/*.py;p0_backend/lib/**/**/*.py" --recursive --ignore-directories -- poetry run python .\p0_backend\scripts\start_midi_server.py
+	@poetry run watchmedo auto-restart --directory=. --pattern="p0_backend/api/midi_server/*.py;p0_backend/api/midi_server/**/*.py;p0_backend/api/client/*.py;p0_backend/lib/*.py;p0_backend/lib/**/*.py;p0_backend/lib/**/**/*.py" --recursive --ignore-directories -- poetry run midi-server
 .PHONY: midi_server
 
+midi_server_api:
+	@poetry run uvicorn p0_backend.api.midi_server.http_api:app --port 8001 --reload --workers 4
+.PHONY: midi_server_api
+
 celery:
-	@poetry run celery -A p0_backend.gui.celery.celery_app worker --events --concurrency=10 --without-heartbeat --without-gossip --without-mingle --loglevel=INFO
+	@poetry run celery -A p0_backend.celery.celery.celery_app worker --events --concurrency=10 --without-heartbeat --without-gossip --without-mingle --loglevel=INFO
 .PHONY: celery
 
 logs:
-	@poetry run python p0_backend/scripts/tail_protocol0_logs.py
+	@poetry run logs
 .PHONY: logs
-
-kill:
-	poetry run python .\p0_backend\scripts\kill_old_processes.py
 
 test:
 	cls

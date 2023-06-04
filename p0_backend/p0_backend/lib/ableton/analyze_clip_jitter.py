@@ -3,7 +3,7 @@ from typing import List
 
 from loguru import logger
 
-from p0_backend.gui.celery import notification_window
+from p0_backend.celery.celery import notification_window
 from p0_backend.lib.ableton.clip_parsing import Clip
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error

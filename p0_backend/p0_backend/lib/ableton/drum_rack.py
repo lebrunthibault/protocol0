@@ -1,6 +1,6 @@
 from time import sleep
 
-from p0_backend.gui.celery import notification_window
+from p0_backend.celery.celery import notification_window
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.keys import send_keys
 from p0_backend.lib.mouse.mouse import click

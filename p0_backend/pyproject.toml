@@ -9,7 +9,7 @@ description = "Protocol0 ableton remote script backend"
 readme = "README.md"
 authors = ["Thibault Lebrun <thibaultlebrun@live.fr>"]
 license = "MIT"
-repository = "https://github.com/lebrunthibault/code"
+repository = "https://github.com/lebrunthibault/protocol0"
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
@@ -50,9 +50,15 @@ vulture = "*"
 pytest = "*"
 watchdog = {extras = ["watchmedo"], version = "^3.0.0"}
 
+[tool.poetry.scripts]
+http-server = "p0_backend.api.http_server.main:start"
+midi-server = "p0_backend.api.midi_server.main:start"
+kill = "p0_backend.scripts.kill_old_processes:kill_old_processes"
+logs = "p0_backend.scripts.tail_protocol0_logs:tail_ableton_log_file"
+
 [tool.mypy]
 python_version = 3.10
-exclude = ['venv', 'tests', 'vulture_whitelist.py']
+exclude = ['vulture_whitelist.py']
 pretty = false
 ignore_missing_imports = true
 follow_imports = 'skip'
@@ -76,9 +82,4 @@ min_confidence = 60
 make_whitelist = true
 sort_by_size = true
 verbose = false
-exclude = [
-    "venv/",
-    "protocol0_stub",
-    "sdk_generation/",
-    "routes.py"
-]
+exclude = []

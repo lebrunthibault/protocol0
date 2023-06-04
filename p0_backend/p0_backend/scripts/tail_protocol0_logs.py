@@ -215,7 +215,3 @@ def tail_ableton_log_file(raw: bool):
         log_obs = get_line_observable_from_file(file)
         log_obs.pipe(*pipes).subscribe(logger.info, rx_error)
         log_obs.pipe(*pipes).subscribe(rx_nop, logger.error)
-
-
-if __name__ == "__main__":
-    tail_ableton_log_file()

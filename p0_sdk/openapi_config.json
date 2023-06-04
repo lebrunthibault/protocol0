@@ -1,1 +1,5 @@
-{"packageName": "p0_backend_client"}
+{
+    "packageName": "p0_backend_client",
+    "custom_classname": "P0BackendClient",
+    "generateSourceCodeOnly": true
+}

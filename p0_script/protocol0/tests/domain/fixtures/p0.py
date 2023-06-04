@@ -1,6 +1,10 @@
+import sys
+from os.path import dirname
 from typing import Optional
+from unittest.mock import Mock
 
-from protocol0 import EmptyModule
+sys.path.insert(0, f"{dirname(__file__)}/protocol0_stub")
+
 from protocol0.application.Protocol0 import Protocol0
 from protocol0.application.control_surface.ActionGroupFactory import ActionGroupFactory
 from protocol0.domain.lom.set.AbletonSet import AbletonSet
@@ -27,7 +31,7 @@ def make_protocol0():
     wait = Scheduler.wait
     Scheduler.wait = classmethod(nop)
     monkey_patch_static()
-    p0 = Protocol0(EmptyModule(name="c_instance", is_false=False))
+    p0 = Protocol0(Mock())
     monkey_patch_p0(live_song)
     Scheduler.wait = wait
     return p0

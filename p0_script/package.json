@@ -3,8 +3,8 @@
   "private": true,
   "scripts": {
     "format": "black .",
-    "lint": "flake8 . && mypy . && vulture .",
-    "test": "pytest -s ."
+    "lint": "poetry run flake8 . && poetry run mypy . && poetry run vulture .",
+    "test": "poetry run pytest -s ."
   },
   "dependencies": {},
   "packageManager": "npm@8.11.0"
