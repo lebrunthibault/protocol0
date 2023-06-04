@@ -1,4 +1,4 @@
-# Protocol0 script backend and audio libraries
+# Protocol0 control surface script backend
 
 This repo is the backend of ([Ableton control surface script](https://github.com/lebrunthibault/Protocol0-Ableton-Surface-Script))
 
