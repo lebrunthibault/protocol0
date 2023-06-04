@@ -1,0 +1,12 @@
+{
+  "name": "@code/p0_backend",
+  "private": true,
+  "scripts": {
+    "lint": "flake8 . && mypy . && vulture .",
+    "format": "black ."
+  },
+  "dependencies": {
+
+  },
+  "packageManager": "npm@8.11.0"
+}
