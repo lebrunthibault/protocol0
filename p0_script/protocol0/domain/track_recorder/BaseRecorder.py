@@ -36,10 +36,7 @@ class BaseRecorder(object):
     def _arm_track(self):
         # type: () -> Sequence
         seq = Sequence()
-        if (
-            not Song.current_track().arm_state.is_armed
-            and len(list(Song.armed_tracks())) != 0
-        ):
+        if not Song.current_track().arm_state.is_armed and len(list(Song.armed_tracks())) != 0:
             options = ["Arm current track", "Record on armed track"]
             seq.select("The current track is not armed", options=options)
             seq.add(
@@ -55,11 +52,13 @@ class BaseRecorder(object):
     def record(self):
         # type: () -> Sequence
         # launch the record
-        DomainEventBus.emit(RecordStartedEvent(
-            self.config.scene_index,
-            full_record=self.config.bar_length == 0,
-            has_count_in=self.config.records_midi
-        ))
+        DomainEventBus.emit(
+            RecordStartedEvent(
+                self.config.scene_index,
+                full_record=self.config.bar_length == 0,
+                has_count_in=self.config.records_midi,
+            )
+        )
         seq = Sequence()
         bar_length = cast(float, self.config.bar_length)
         if bar_length != 0:

@@ -11,8 +11,9 @@ from protocol0.domain.track_recorder.RecordProcessorInterface import RecordProce
 from protocol0.domain.track_recorder.external_synth.ExtAudioRecordingStartedEvent import (
     ExtAudioRecordingStartedEvent,
 )
-from protocol0.domain.track_recorder.external_synth.record_audio.PreRecordAudio import \
-    PreRecordAudio
+from protocol0.domain.track_recorder.external_synth.record_audio.PreRecordAudio import (
+    PreRecordAudio,
+)
 
 
 class PreRecordAudioMulti(RecordProcessorInterface):

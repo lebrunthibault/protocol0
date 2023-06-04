@@ -16,8 +16,8 @@ class BeatSchedulerEvent(object):
         # type: () -> bool
         if Song.is_playing():
             return (
-                    BeatTime.from_song_beat_time(Song.current_beats_song_time())
-                    >= self._beats_song_execution_time
+                BeatTime.from_song_beat_time(Song.current_beats_song_time())
+                >= self._beats_song_execution_time
             )
         else:
             return self._execute_on_song_stop

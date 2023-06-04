@@ -9,7 +9,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
 from loguru import logger
 
-from p0_backend.api.settings import Settings
+from p0_backend.settings import Settings
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from starlette.middleware.cors import CORSMiddleware
@@ -48,7 +48,7 @@ app.include_router(ws_router)
 
 
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request, exc: Exception):
+async def validation_exception_handler(_, exc: Exception):
     """Have verbose errors"""
     logger.info(str(exc))
     return PlainTextResponse(str(exc), status_code=400)
@@ -93,5 +93,12 @@ for route in app.routes:
     if isinstance(route, APIRoute):
         route.operation_id = route.name
 
+
 def start():
-    uvicorn.run("p0_backend.api.http_server.main:app", host="0.0.0.0", port=8000, reload=True, reload_dirs=settings.project_directory)
+    uvicorn.run(
+        "p0_backend.api.http_server.main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True,
+        reload_dirs=settings.project_directory,
+    )

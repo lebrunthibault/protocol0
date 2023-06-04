@@ -111,9 +111,7 @@ class BrowserLoaderService(object):
     def get_sample(self, sample_name):
         # type: (str) -> Live.Browser.BrowserItem
         self._cache_category("samples")
-        return self._cached_browser_items["samples"].get(
-            str(sample_name.decode("utf-8")), None
-        )
+        return self._cached_browser_items["samples"].get(sample_name, None)
 
     def _do_load_item(self, item, header="Device"):
         # type: (Live.Browser.BrowserItem, str) -> None

@@ -11,15 +11,11 @@ class MixerDevice(SlotManager):
         super(MixerDevice, self).__init__()
 
         parameters = live_mixer_device.sends + [live_mixer_device.volume, live_mixer_device.panning]
-        self._parameters = [
-            DeviceParameter(parameter) for parameter in parameters
-        ]
+        self._parameters = [DeviceParameter(parameter) for parameter in parameters]
 
     def to_dict(self):
         # type: () -> Dict
-        return {
-            "params": [p.value for p in self.parameters]
-        }
+        return {"params": [p.value for p in self.parameters]}
 
     def update_from_dict(self, mixer_data):
         # type: (Dict) -> None

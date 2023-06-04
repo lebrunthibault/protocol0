@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from p0_backend.api.settings import Settings
+from p0_backend.settings import Settings
 from p0_backend.lib.enum.abstract_enum import AbstractEnum
 
 RGBColor = Tuple[int, int, int]

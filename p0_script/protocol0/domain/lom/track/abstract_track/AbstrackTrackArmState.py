@@ -50,7 +50,6 @@ class AbstractTrackArmState(Observable):
 
         return None
 
-
     def unarm(self):
         # type: () -> None
         self.is_armed = False

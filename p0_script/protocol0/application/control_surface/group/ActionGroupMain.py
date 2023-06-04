@@ -7,8 +7,9 @@ from protocol0.domain.lom.clip.MidiClip import MidiClip
 from protocol0.domain.lom.set.MixingService import MixingService
 from protocol0.domain.lom.song.components.TempoComponent import TempoComponent
 from protocol0.domain.lom.track.TrackAutomationService import TrackAutomationService
-from protocol0.domain.lom.track.group_track.matching_track.MatchingTrackService import \
-    MatchingTrackService
+from protocol0.domain.lom.track.group_track.matching_track.MatchingTrackService import (
+    MatchingTrackService,
+)
 from protocol0.domain.track_recorder.RecordService import RecordService
 from protocol0.domain.track_recorder.RecordTypeEnum import RecordTypeEnum
 from protocol0.shared.Song import Song
@@ -51,7 +52,9 @@ class ActionGroupMain(ActionGroupInterface):
             identifier=3,
             name="automation",
             on_press=self._container.get(TrackAutomationService).color_clip_with_automation,
-            on_long_press=lambda: self._container.get(TrackAutomationService).select_or_sync_automation,
+            on_long_press=lambda: self._container.get(
+                TrackAutomationService
+            ).select_or_sync_automation,
         )
 
         # VOLume encoder

@@ -1,5 +1,5 @@
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.api.settings import LEFT_BBOX
+from p0_backend.settings import LEFT_BBOX
 from p0_backend.lib.ableton.interface.pixel import get_coords_for_color
 from p0_backend.lib.ableton.interface.pixel_color_enum import PixelColorEnum
 from p0_backend.lib.ableton.interface.track import click_context_menu

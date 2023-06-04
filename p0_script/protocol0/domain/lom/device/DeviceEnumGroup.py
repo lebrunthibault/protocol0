@@ -16,7 +16,4 @@ class DeviceEnumGroup(object):
 
     def to_dict(self):
         # type: () -> Dict
-        return {
-            "name": self.name,
-            "devices": [d.name for d in self.enums]
-        }
+        return {"name": self.name, "devices": [d.name for d in self.enums]}

@@ -7,8 +7,6 @@ if TYPE_CHECKING:
     from protocol0.domain.lom.track.simple_track.SimpleTrackClips import SimpleTrackClips
 
 
-
-
 class SimpleTrackClipColorManager(object):
     def __init__(self, clips, track_devices, track_color):
         # type: (SimpleTrackClips, SimpleTrackDevices, int) -> None
@@ -34,9 +32,7 @@ class SimpleTrackClipColorManager(object):
         # type: () -> None
         color_index = 0
 
-        clip_infos = ClipInfo.create_from_clips(
-            list(self._clips), self._track_devices.parameters
-        )
+        clip_infos = ClipInfo.create_from_clips(list(self._clips), self._track_devices.parameters)
 
         for clip_info in clip_infos:
             clips = clip_info.get_clips(list(self._clips))

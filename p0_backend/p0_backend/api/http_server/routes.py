@@ -2,12 +2,10 @@ from time import sleep
 from typing import List
 from typing import Optional
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.api.http_server.ws import ws_manager
-from p0_backend.api.midi_server.main import stop
-from p0_backend.api.settings import Settings
 from p0_backend.celery.celery import select_window, notification_window
 from p0_backend.lib.ableton.ableton import (
     reload_ableton,
@@ -44,10 +42,11 @@ from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.explorer import close_samples_windows, close_explorer_window
 from p0_backend.lib.keys import send_keys
 from p0_backend.lib.mouse.mouse import click, click_vertical_zone, move_to
-from p0_backend.lib.process import execute_python_script_in_new_window
+from p0_backend.lib.process import execute_powershell_command
 from p0_backend.lib.server_state import ServerState
 from p0_backend.lib.window.find_window import find_window_handle_by_enum
 from p0_backend.lib.window.window import focus_window
+from p0_backend.settings import Settings
 from protocol0.application.command.BounceTrackToAudioCommand import BounceTrackToAudioCommand
 from protocol0.application.command.CheckAudioExportValidCommand import CheckAudioExportValidCommand
 from protocol0.application.command.DrumRackToSimplerCommand import DrumRackToSimplerCommand
@@ -59,7 +58,6 @@ from protocol0.application.command.LoadDrumRackCommand import LoadDrumRackComman
 from protocol0.application.command.LoadMatchingTrackCommand import LoadMatchingTrackCommand
 from protocol0.application.command.LoadMinitaurCommand import LoadMinitaurCommand
 from protocol0.application.command.LoadRev2Command import LoadRev2Command
-from protocol0.application.command.MidiNoteCommand import MidiNoteCommand
 from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongCommand
 from protocol0.application.command.RecordUnlimitedCommand import RecordUnlimitedCommand
 from protocol0.application.command.ReloadScriptCommand import ReloadScriptCommand
@@ -89,10 +87,10 @@ def ping():
 
 
 @router.get("/search")
-def search(search: str):
+def search(text: str):
     send_keys("^f")
     sleep(0.1)
-    send_keys(search)
+    send_keys(text)
 
 
 @router.get("/show_sample_category")
@@ -217,11 +215,6 @@ def start_profiling_single_measurement():
     AbletonSetProfiler.start_profiling_single_measurement()
 
 
-@router.get("/stop_midi_server")
-def stop_midi_server():
-    stop()
-
-
 @router.get("/close_samples_windows")
 def _close_samples_windows():
     close_samples_windows()
@@ -301,16 +294,12 @@ async def tail_logs():
         focus_window(settings.log_window_title)
         return
 
-    execute_python_script_in_new_window(
-        f"{settings.project_directory}/scripts/tail_protocol0_logs.py", min=False
-    )
+    execute_powershell_command("poetry run logs")
 
 
 @router.get("/tail_logs_raw")
 async def tail_logs_raw():
-    execute_python_script_in_new_window(
-        f"{settings.project_directory}/scripts/tail_protocol0_logs.py", "--raw"
-    )
+    execute_powershell_command("poetry run logs-raw")
 
 
 @router.get("/set/open")

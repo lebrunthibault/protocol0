@@ -14,10 +14,11 @@ from protocol0.shared.Song import Song
 
 class SampleCategory(object):
     """
-        Represents a sample folder that can be loaded in one click in a drum rack
+    Represents a sample folder that can be loaded in one click in a drum rack
 
-        Used to access my library easily
+    Used to access my library easily
     """
+
     def __init__(self, category, name):
         # type: (SampleCategoryEnum, str) -> None
         self._category = category
@@ -55,9 +56,7 @@ class SampleCategory(object):
     @property
     def live_presets(self):
         # type: () -> List[InstrumentPreset]
-        return DirectoryPresetImporter(self._sample_directory).import_presets(
-            use_cache=False
-        )
+        return DirectoryPresetImporter(self._sample_directory).import_presets(use_cache=False)
 
     @property
     def create_track_index(self):
@@ -91,6 +90,6 @@ class SampleCategory(object):
             return Song.drums_track()
 
         return {
-                SampleCategoryEnum.DRUMS: Song.drums_track(),
-                SampleCategoryEnum.VOCALS: Song.vocals_track(),
-            }[self._category]
+            SampleCategoryEnum.DRUMS: Song.drums_track(),
+            SampleCategoryEnum.VOCALS: Song.vocals_track(),
+        }[self._category]

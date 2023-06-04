@@ -38,8 +38,7 @@ class ClipTail(object):
         # activate tail only if the next clip slot is empty
         try:
             has_empty_next_cs = (
-                clip_slots[scene_index + 1].clip is None
-                or clip_slots[scene_index + 1].clip.muted
+                clip_slots[scene_index + 1].clip is None or clip_slots[scene_index + 1].clip.muted
             )
         except IndexError:
             return

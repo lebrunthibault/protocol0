@@ -2,8 +2,10 @@ from loguru import logger
 from typing import Optional
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.api.settings import Settings
-from p0_backend.lib.ableton.set_profiling.ableton_set_profiling_session import AbletonSetProfilingSession
+from p0_backend.settings import Settings
+from p0_backend.lib.ableton.set_profiling.ableton_set_profiling_session import (
+    AbletonSetProfilingSession,
+)
 from p0_backend.lib.window.find_window import find_window_handle_by_enum, SearchTypeEnum
 from protocol0.application.command.ShowMessageCommand import ShowMessageCommand
 

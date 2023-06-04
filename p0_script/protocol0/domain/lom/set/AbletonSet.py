@@ -87,9 +87,7 @@ class AbletonSet(object):
             "current_track": Song.current_track().to_dict(),
             "selected_track": Song.selected_track().to_dict(),
             "track_count": len(list(Song.simple_tracks())),
-            "drum_rack_visible": isinstance(
-                Song.selected_track().instrument, InstrumentDrumRack
-            ),
+            "drum_rack_visible": isinstance(Song.selected_track().instrument, InstrumentDrumRack),
         }
 
     def notify(self, force=False):
@@ -121,7 +119,9 @@ class AbletonSet(object):
             orphan_tracks = [t for t in self._saved_tracks if t not in abstract_track_names]
 
             if len(orphan_tracks):
-                Backend.client().show_warning("Found orphan saved tracks: \n\n%s" % "\n".join(orphan_tracks))
+                Backend.client().show_warning(
+                    "Found orphan saved tracks: \n\n%s" % "\n".join(orphan_tracks)
+                )
                 Backend.client().show_saved_tracks()
 
     def _disconnect(self):

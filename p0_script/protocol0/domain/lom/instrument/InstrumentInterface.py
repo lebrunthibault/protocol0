@@ -35,7 +35,6 @@ def load_instrument_track(instrument_cls):
     insert_track = Song.current_track().base_track
     track_color = insert_track.color
 
-
     seq = Sequence()
     seq.add(insert_track.focus)
     seq.add(partial(Backend.client().load_instrument_track, instrument_cls.INSTRUMENT_TRACK_NAME))

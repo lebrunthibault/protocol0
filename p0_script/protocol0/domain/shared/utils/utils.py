@@ -140,4 +140,4 @@ def float_seq(start, end, step):
     assert step != 0
     sample_count = int(abs(end - start) / step)
 
-    return itertools.islice(itertools.count(start, step), sample_count)  # type: ignore
+    return itertools.islice(itertools.count(start, step), sample_count)

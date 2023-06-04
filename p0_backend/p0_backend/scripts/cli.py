@@ -1,6 +1,6 @@
 import requests
 
-from p0_backend.api.settings import Settings
+from p0_backend.settings import Settings
 from p0_backend.lib.abstract_cli import cli
 
 

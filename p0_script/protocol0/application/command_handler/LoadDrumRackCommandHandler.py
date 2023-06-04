@@ -9,5 +9,6 @@ class LoadDrumRackCommandHandler(CommandHandlerInterface):
     def handle(self, command):
         # type: (LoadDrumRackCommand) -> Sequence
         return self._container.get(TrackFactory).add_sample_track(
-            SampleCategoryEnum.from_value(command.sample_category.upper()), command.sample_subcategory
+            SampleCategoryEnum.from_value(command.sample_category.upper()),
+            command.sample_subcategory,
         )

@@ -17,6 +17,5 @@ class SimpleMidiExtTrack(SimpleMidiTrack):
     def external_device(self):
         # type: () -> Optional[Device]
         return find_if(
-            lambda d: d.enum is not None and d.enum.is_external_device,
-            list(self.devices)
+            lambda d: d.enum is not None and d.enum.is_external_device, list(self.devices)
         )

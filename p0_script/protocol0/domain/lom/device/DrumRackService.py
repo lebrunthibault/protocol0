@@ -1,6 +1,4 @@
-import itertools
 from functools import partial
-
 from typing import cast, Optional
 
 from protocol0.domain.lom.clip.MidiClip import MidiClip
@@ -78,7 +76,7 @@ class DrumRackService(object):
         seq = Sequence()
         seq.add(DrumPad.select_first_pad)
 
-        for drum_pad, preset in itertools.izip(drum_pads, presets):
+        for drum_pad, preset in zip(drum_pads, presets):
             seq.add(partial(setattr, device, "selected_drum_pad", drum_pad))
             seq.add(partial(self._browser_service.load_drum_pad_sample, preset.original_name))
             seq.wait(3)

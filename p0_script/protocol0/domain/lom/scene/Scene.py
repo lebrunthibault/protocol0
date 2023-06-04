@@ -91,9 +91,9 @@ class Scene(SlotManager):
     def should_loop(self):
         # type: () -> bool
         return (
-                self == Song.looping_scene()
-                or self == Song.scenes()[-1]
-                or Song.scenes()[self.index + 1].bar_length == 0
+            self == Song.looping_scene()
+            or self == Song.scenes()[-1]
+            or Song.scenes()[self.index + 1].bar_length == 0
         )
 
     @property

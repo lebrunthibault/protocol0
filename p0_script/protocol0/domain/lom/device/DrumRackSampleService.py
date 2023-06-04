@@ -7,6 +7,7 @@ from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.shared.Song import Song
 
+
 def _get_drum_rack(track):
     # type: (SimpleTrack) -> DrumRackDevice
     if not isinstance(track.instrument, InstrumentDrumRack):
@@ -14,11 +15,13 @@ def _get_drum_rack(track):
 
     return cast(DrumRackDevice, track.instrument.device)
 
+
 def _get_selected_sample(track):
     # type: (SimpleTrack) -> Sample
     drum_rack = _get_drum_rack(track)
 
     return drum_rack.selected_drum_pad.sample
+
 
 class DrumRackSampleService(object):
     def warp_selected_sample(self):

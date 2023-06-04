@@ -8,7 +8,6 @@ from protocol0.tests.domain.fixtures.p0 import make_protocol0
 
 def test_scene_clips():
     make_protocol0()
-    return
     clips = SceneClips(0)
     assert len(list(clips)) == 0
     clip_slot = Song.selected_track().clip_slots[0]

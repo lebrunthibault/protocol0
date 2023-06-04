@@ -33,7 +33,9 @@ class Scheduler(object):
     @classmethod
     def wait_bars(cls, bars, callback, execute_on_song_stop=False):
         # type: (float, Callable, bool) -> None
-        cls._INSTANCE._beat_scheduler.wait_beats(bars * Song.signature_numerator(), callback, execute_on_song_stop)
+        cls._INSTANCE._beat_scheduler.wait_beats(
+            bars * Song.signature_numerator(), callback, execute_on_song_stop
+        )
 
     @classmethod
     def wait(cls, tick_count, callback, unique=False):
@@ -63,6 +65,5 @@ class Scheduler(object):
     @classmethod
     def reset(cls):
         # type: () -> None
-        return
         cls._INSTANCE._tick_scheduler.stop()
         cls._INSTANCE._beat_scheduler.reset()

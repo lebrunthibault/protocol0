@@ -3,8 +3,7 @@ from functools import partial
 from typing import Optional
 
 from protocol0.domain.lom.track.abstract_track.AbstrackTrackArmState import AbstractTrackArmState
-from protocol0.domain.lom.track.group_track.ext_track.ExtArmedEvent import \
-    ExtArmedEvent
+from protocol0.domain.lom.track.group_track.ext_track.ExtArmedEvent import ExtArmedEvent
 from protocol0.domain.lom.track.routing.InputRoutingTypeEnum import InputRoutingTypeEnum
 from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
@@ -23,10 +22,7 @@ class ExtArmState(AbstractTrackArmState):
     @property
     def is_armed(self):
         # type: () -> bool
-        return all(
-            sub_track.arm_state.is_armed
-            for sub_track in self._sub_tracks
-        )
+        return all(sub_track.arm_state.is_armed for sub_track in self._sub_tracks)
 
     @is_armed.setter
     def is_armed(self, is_armed):
@@ -45,12 +41,7 @@ class ExtArmState(AbstractTrackArmState):
             self._midi_track.input_routing.type = InputRoutingTypeEnum.ALL_INS
 
         seq = Sequence()
-        seq.add(
-            [
-                sub_track.arm_state.arm_track
-                for sub_track in self._sub_tracks
-            ]
-        )
+        seq.add([sub_track.arm_state.arm_track for sub_track in self._sub_tracks])
         seq.add(self.notify_observers)
         seq.add(partial(DomainEventBus.emit, ExtArmedEvent(self._base_track)))
         return seq.done()

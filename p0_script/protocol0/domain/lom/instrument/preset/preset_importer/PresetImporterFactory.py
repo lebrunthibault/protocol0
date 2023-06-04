@@ -11,8 +11,9 @@ from protocol0.domain.lom.instrument.preset.preset_importer.DirectoryPresetImpor
 from protocol0.domain.lom.instrument.preset.preset_importer.FilePresetImporter import (
     FilePresetImporter,
 )
-from protocol0.domain.lom.instrument.preset.preset_importer.NullPresetImporter import \
-    NullPresetImporter
+from protocol0.domain.lom.instrument.preset.preset_importer.NullPresetImporter import (
+    NullPresetImporter,
+)
 from protocol0.domain.lom.instrument.preset.preset_importer.PluginDevicePresetImporter import (
     PluginDevicePresetImporter,
 )

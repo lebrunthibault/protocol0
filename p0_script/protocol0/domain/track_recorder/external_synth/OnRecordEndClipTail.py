@@ -2,8 +2,7 @@ from functools import partial
 
 from typing import Optional
 
-from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import \
-    ExternalSynthTrack
+from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import ExternalSynthTrack
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Last32thPassedEvent import Last32thPassedEvent
 from protocol0.domain.track_recorder.config.RecordConfig import RecordConfig
@@ -53,7 +52,6 @@ class OnRecordEndClipTail(RecordProcessorInterface):
 
         audio_clip.loop.looping = False
         track.midi_track.stop()
-
 
         def on_last_32th_passed_event(_):
             # type: (Last32thPassedEvent) -> None

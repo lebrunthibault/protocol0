@@ -126,7 +126,7 @@ class DeviceParameter(object):
         # type: (bool, int) -> None
         # using factor acceleration
         value_range = self.max - self.min
-        step = (value_range / 1000)
+        step = value_range / 1000
         step *= factor
         value = self.value + step if go_next else self.value - step
         self.value = clamp(value, self.min, self.max)
@@ -138,7 +138,6 @@ class DeviceParameter(object):
             # not the opposite
             self.value = 0
         else:
-
             try:
                 self.value = self.default_value
             except RuntimeError as e:

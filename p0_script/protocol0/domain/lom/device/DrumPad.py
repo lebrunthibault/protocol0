@@ -33,7 +33,9 @@ class DrumPad(SlotManager):
     @subject_slot("chains")
     def _chains_listener(self):
         # type: () -> None
-        self.chains = [DeviceChain(chain, index) for index, chain in enumerate(self._drum_pad.chains)]
+        self.chains = [
+            DeviceChain(chain, index) for index, chain in enumerate(self._drum_pad.chains)
+        ]
 
     @property
     def name(self):

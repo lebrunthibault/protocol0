@@ -4,7 +4,7 @@ from typing import List, Union, Optional
 import pyautogui
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.api.settings import Settings, DOWN_BBOX
+from p0_backend.settings import Settings, DOWN_BBOX
 from p0_backend.celery.celery import notification_window
 from p0_backend.lib.ableton.get_set import get_ableton_windows
 from p0_backend.lib.ableton.interface.coords import Coords

@@ -81,7 +81,9 @@ class TrackFactory(object):
             raise Protocol0Warning("Sample group track doesn't exist")
 
         if sample_sub_category.lower() not in category.subcategories:
-            raise Protocol0Warning("Cannot find %s sample category for '%s'" % (category, sample_sub_category))
+            raise Protocol0Warning(
+                "Cannot find %s sample category for '%s'" % (category, sample_sub_category)
+            )
 
         sample_category = SampleCategory(category, sample_sub_category)
 
@@ -89,7 +91,9 @@ class TrackFactory(object):
 
         seq = Sequence()
         seq.add(
-            partial(self._track_crud_component.create_midi_track, sample_category.create_track_index)
+            partial(
+                self._track_crud_component.create_midi_track, sample_category.create_track_index
+            )
         )
         seq.add(lambda: setattr(Song.selected_track(), "volume", -15))
         seq.add(lambda: setattr(Song.selected_track(), "color", sample_category.color))

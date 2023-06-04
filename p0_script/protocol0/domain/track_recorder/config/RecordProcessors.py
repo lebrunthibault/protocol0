@@ -18,11 +18,9 @@ class RecordProcessors(object):
     def __repr__(self):
         # type: () -> str
         # noinspection SpellCheckingInspection
-        return "RecordProcessors(\npre_record=%s,\nrecord=%s,\non_record_end=%s,\npost_record=%s" % (
-            self.pre_record,
-            self.record,
-            self.on_record_end,
-            self.post_record
+        return (
+            "RecordProcessors(\npre_record=%s,\nrecord=%s,\non_record_end=%s,\npost_record=%s"
+            % (self.pre_record, self.record, self.on_record_end, self.post_record)
         )
 
     def copy(self):

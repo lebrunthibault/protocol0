@@ -19,12 +19,8 @@ class ExtMatchingTrack(MatchingTrackInterface):
         self._midi_sub_track = cast(SimpleAudioTrack, base_track.sub_tracks[0])
         self._audio_sub_track = cast(SimpleAudioTrack, base_track.sub_tracks[1])
         # in this setup the mapping is shared between 3 audio tracks
-        self._audio_track.clip_mapping.update(
-            self._audio_sub_track.clip_mapping
-        )
-        self._audio_sub_track.clip_mapping = (
-            self._audio_track.clip_mapping
-        )
+        self._audio_track.clip_mapping.update(self._audio_sub_track.clip_mapping)
+        self._audio_sub_track.clip_mapping = self._audio_track.clip_mapping
 
     @property
     def clip_color_manager(self):
@@ -47,7 +43,7 @@ class ExtMatchingTrack(MatchingTrackInterface):
         for clip in bounced_clips_flat:
             assert ClipInfo(clip, self._base_track.devices.parameters).already_bounced_to(
                 self._audio_track
-            ), "clip disabled but not bounced: %s" % clip
+            ), ("clip disabled but not bounced: %s" % clip)
 
         seq = Sequence()
 

@@ -6,19 +6,18 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Optional, List, TextIO
 
-import click
 import win32con
 import win32gui
 from loguru import logger
 from rx import operators as op, create
 
-from p0_backend.api.settings import Settings
 from p0_backend.lib.console import clear_console
 from p0_backend.lib.decorators import log_exceptions
 from p0_backend.lib.process import kill_window_by_criteria
 from p0_backend.lib.rx import rx_error, rx_nop
 from p0_backend.lib.utils import log_string
 from p0_backend.lib.window.find_window import SearchTypeEnum
+from p0_backend.settings import Settings
 
 settings = Settings()
 
@@ -175,10 +174,12 @@ def get_line_observable_from_file(file: TextIO):
     return create(_make_observable)
 
 
-@click.command()
-@click.option("--raw", is_flag=True)
+def tail_ableton_log_file_raw():
+    tail_ableton_log_file(raw=True)
+
+
 @log_exceptions
-def tail_ableton_log_file(raw: bool):
+def tail_ableton_log_file(raw=False):
     if raw:
         LogConfig.PROCESS_LOGS = False
         LogConfig.START_SIZE = 200

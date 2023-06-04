@@ -7,7 +7,7 @@ import pyautogui
 from PySimpleGUI import WIN_CLOSED
 from loguru import logger
 
-from p0_backend.api.settings import Settings
+from p0_backend.settings import Settings
 from p0_backend.lib.task_cache import TaskCache
 from p0_backend.lib.notification.window import Window
 from p0_backend.lib.enum.color_enum import ColorEnum

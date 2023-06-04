@@ -2,11 +2,14 @@ from functools import partial
 
 from typing import Dict, TYPE_CHECKING
 
-from protocol0.domain.lom.track.group_track.matching_track.MatchingTrackCreatorInterface import \
-    MatchingTrackCreatorInterface
+from protocol0.domain.lom.track.group_track.matching_track.MatchingTrackCreatorInterface import (
+    MatchingTrackCreatorInterface,
+)
 from protocol0.domain.shared.backend.Backend import Backend
-from protocol0.domain.lom.track.group_track.matching_track.utils import assert_valid_track_name, \
-    ensure_clips_looped
+from protocol0.domain.lom.track.group_track.matching_track.utils import (
+    assert_valid_track_name,
+    ensure_clips_looped,
+)
 from protocol0.shared.Song import Song
 from protocol0.shared.sequence.Sequence import Sequence
 

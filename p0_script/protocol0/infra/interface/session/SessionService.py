@@ -59,7 +59,4 @@ class SessionService(SessionServiceInterface):
     @property
     def _session_track_offset(self):
         # type: () -> int
-        try:
-            pass
-        except ValueError:
-            return self._session.track_offset() if self._session else 0
+        return self._session.track_offset() if self._session else 0

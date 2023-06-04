@@ -4,8 +4,7 @@ from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.track.group_track.ext_track.ExtArmedEvent import (
     ExtArmedEvent,
 )
-from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import \
-    ExternalSynthTrack
+from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import ExternalSynthTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrackArmedEvent import SimpleTrackArmedEvent
 from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
@@ -32,9 +31,7 @@ class UsamoTrack(SimpleMidiTrack):
             raise Protocol0Error("Cannot find usamo device on usamo track")
 
         DomainEventBus.subscribe(SimpleTrackArmedEvent, self._on_simple_track_armed_event)
-        DomainEventBus.subscribe(
-            ExtArmedEvent, self._on_external_synth_track_armed_event
-        )
+        DomainEventBus.subscribe(ExtArmedEvent, self._on_external_synth_track_armed_event)
         DomainEventBus.subscribe(
             ExtAudioRecordingStartedEvent,
             self._on_external_synth_audio_recording_started_event,

@@ -89,9 +89,7 @@ class DeviceDisplayService(object):
                 d.is_collapsed = True
 
         rack_coords = self._get_rack_show_macros_button_click_coordinates(track, parent_rack)
-        device_coords = self._get_device_show_button_click_coordinates(
-            track, device, parent_rack
-        )
+        device_coords = self._get_device_show_button_click_coordinates(track, device, parent_rack)
 
         seq = Sequence()
         seq.add(partial(self._toggle_ableton_button, rack_coords, activate=False))

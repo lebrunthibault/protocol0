@@ -1,5 +1,5 @@
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.api.settings import DOWN_BBOX
+from p0_backend.settings import DOWN_BBOX
 from p0_backend.lib.ableton.interface.track import get_focused_track_coords
 from p0_backend.lib.ableton_set import AbletonSet
 from p0_backend.lib.explorer import drag_file_to

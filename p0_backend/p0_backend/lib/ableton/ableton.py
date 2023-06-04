@@ -8,7 +8,7 @@ import win32gui  # noqa
 from protocol0.application.command.ResetPlaybackCommand import ResetPlaybackCommand
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.api.settings import Settings
+from p0_backend.settings import Settings
 from p0_backend.celery.celery import notification_window
 from p0_backend.lib.ableton.get_set import get_ableton_windows
 from p0_backend.lib.ableton.get_set import get_last_launched_track_set
@@ -105,7 +105,7 @@ def reload_ableton() -> None:
 def open_set_by_type(set_type: str):
     if set_type == "new":
         go_to_desktop(0)
-        execute_powershell_command(f'& "{settings.ableton_exe}"')
+        execute_powershell_command(f'& "{settings.ableton_exe}"', minimized=True)
         notification_window.delay("Opening new set")
         return
 
@@ -131,7 +131,7 @@ def _open_set(set_path: str):
     notification_window.delay(f"Opening '{relative_path}'")
 
     go_to_desktop(0)
-    execute_powershell_command(f'& "{settings.ableton_exe}" "{set_path}"')
+    execute_powershell_command(f'& "{settings.ableton_exe}" "{set_path}"', minimized=True)
     from p0_backend.lib.ableton_set import AbletonSetManager
 
     AbletonSetManager.LAST_SET_OPENED_AT = time.time()

@@ -1,11 +1,11 @@
-from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import \
-    ExternalSynthTrack
+from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import ExternalSynthTrack
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.track_recorder.config.RecordConfig import RecordConfig
 from protocol0.domain.track_recorder.RecordProcessorInterface import RecordProcessorInterface
-from protocol0.domain.track_recorder.external_synth.ExtAudioRecordingStartedEvent import \
-    ExtAudioRecordingStartedEvent
+from protocol0.domain.track_recorder.external_synth.ExtAudioRecordingStartedEvent import (
+    ExtAudioRecordingStartedEvent,
+)
 
 
 class PreRecordAudio(RecordProcessorInterface):

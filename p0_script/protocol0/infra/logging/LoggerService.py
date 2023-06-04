@@ -28,9 +28,6 @@ class LoggerService(LoggerServiceInterface):
 
                 Logger.warning(e)
 
-        if sys.version_info.major == 2 and not isinstance(message, basestring):
-            message = str(message)
-
         level = level or LogLevelEnum.INFO
         if level.value < Config.LOG_LEVEL.value:
             return
@@ -50,7 +47,7 @@ class LoggerService(LoggerServiceInterface):
                 )
         for line in message.splitlines():
             if sys.version_info.major == 2:
-                line.decode("utf-8").encode("ascii", "replace")
+                line.encode("ascii", "replace")
 
             line = "P0 - %s" % line
             logging.info(line)

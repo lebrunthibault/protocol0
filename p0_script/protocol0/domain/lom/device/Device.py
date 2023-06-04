@@ -22,7 +22,6 @@ class Device(SlotManager):
         self.can_have_drum_pads = self._device.can_have_drum_pads  # type: bool
         self.can_have_chains = self._device.can_have_chains  # type: bool
 
-
     def __repr__(self):
         # type: () -> str
         return "%s(%s)" % (self.__class__.__name__, smart_string(self.name))

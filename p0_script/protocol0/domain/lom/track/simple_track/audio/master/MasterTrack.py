@@ -3,8 +3,9 @@ from functools import partial
 from typing import Any
 
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
-from protocol0.domain.lom.track.simple_track.SimpleTrackSaveStartedEvent import \
-    SimpleTrackSaveStartedEvent
+from protocol0.domain.lom.track.simple_track.SimpleTrackSaveStartedEvent import (
+    SimpleTrackSaveStartedEvent,
+)
 from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
@@ -20,7 +21,9 @@ class MasterTrack(SimpleAudioTrack):
         super(MasterTrack, self).__init__(*a, **k)
 
         self.devices.register_observer(self)
-        DomainEventBus.subscribe(SimpleTrackSaveStartedEvent, self._on_simple_track_save_started_event)
+        DomainEventBus.subscribe(
+            SimpleTrackSaveStartedEvent, self._on_simple_track_save_started_event
+        )
 
     def _on_simple_track_save_started_event(self, _):
         # type: (SimpleTrackSaveStartedEvent) -> None

@@ -21,7 +21,5 @@ class ActionGroupFix(ActionGroupInterface):
             identifier=2,
             name="fix current track",
             filter_active_tracks=True,
-            on_press=lambda: self._container.get(ValidatorService).fix_object(
-                Song.current_track()
-            ),
+            on_press=lambda: self._container.get(ValidatorService).fix_object(Song.current_track()),
         )

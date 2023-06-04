@@ -2,8 +2,9 @@ from functools import partial
 
 from typing import Optional
 
-from protocol0.domain.lom.track.group_track.matching_track.MatchingTrackClipColorManager import \
-    MatchingTrackClipColorManager
+from protocol0.domain.lom.track.group_track.matching_track.MatchingTrackClipColorManager import (
+    MatchingTrackClipColorManager,
+)
 from protocol0.domain.lom.track.group_track.matching_track.MatchingTrackInterface import (
     MatchingTrackInterface,
 )

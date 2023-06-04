@@ -8,7 +8,9 @@ from protocol0.shared.logging.Logger import Logger
 class CheckAudioExportValidCommandHandler(CommandHandlerInterface):
     def handle(self, command):
         # type: (CheckAudioExportValidCommand) -> None
-        sound_id_device = Song.master_track().devices.get_one_from_enum(DeviceEnum.SOUNDID_REFERENCE_PLUGIN)
+        sound_id_device = Song.master_track().devices.get_one_from_enum(
+            DeviceEnum.SOUNDID_REFERENCE_PLUGIN
+        )
         if sound_id_device is not None and sound_id_device.is_enabled:
             sound_id_device.is_enabled = False
             Logger.warning("Deactivating SoundID Reference plugin for export")

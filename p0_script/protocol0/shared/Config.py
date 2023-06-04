@@ -3,8 +3,9 @@ from os.path import dirname, realpath
 
 import Live
 
-from protocol0.domain.track_recorder.recording_bar_length.RecordingBarLengthEnum import \
-    RecordingBarLengthEnum
+from protocol0.domain.track_recorder.recording_bar_length.RecordingBarLengthEnum import (
+    RecordingBarLengthEnum,
+)
 from protocol0.shared.logging.LogLevelEnum import LogLevelEnum
 
 

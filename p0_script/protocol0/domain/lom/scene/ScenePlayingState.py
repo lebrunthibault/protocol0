@@ -32,9 +32,7 @@ class ScenePlayingState(object):
 
             return True
 
-        return Song.is_playing() and any(
-            _is_clip_playing(clip) for clip in self._clips
-        )
+        return Song.is_playing() and any(_is_clip_playing(clip) for clip in self._clips)
 
     @property
     def position(self):

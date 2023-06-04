@@ -9,7 +9,6 @@ from loguru import logger
 from mido import Message
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.api.settings import Settings
 from p0_backend.celery.celery import check_celery_worker_status, notification_window
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.midi.mido import _get_input_port
@@ -21,6 +20,7 @@ from p0_backend.lib.utils import (
     make_dict_from_sysex_message,
     make_script_command_from_sysex_message,
 )
+from p0_backend.settings import Settings
 
 logger = logger.opt(colors=True)
 
@@ -46,11 +46,6 @@ def start():
         _poll_midi_port(midi_port=midi_port_backend_loopback)
 
         time.sleep(0.005)  # release cpu
-
-
-def stop():
-    logger.info("stopping midi server")
-    sys.exit()
 
 
 def system_check():
