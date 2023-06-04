@@ -8,6 +8,8 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
 from loguru import logger
+
+from p0_backend.api.settings import Settings
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from starlette.middleware.cors import CORSMiddleware
@@ -24,6 +26,8 @@ from protocol0.application.command.GetSetStateCommand import GetSetStateCommand 
 from protocol0.application.command.EmitBackendEventCommand import (
     EmitBackendEventCommand,
 )
+
+settings = Settings()
 
 app = FastAPI(debug=True, title="p0_backend", version="1.0.0")
 
@@ -87,7 +91,7 @@ Should be called only after all routes have been added.
 """
 for route in app.routes:
     if isinstance(route, APIRoute):
-        route.operation_id = route.name  # in this case, 'read_items'
+        route.operation_id = route.name
 
 def start():
-    uvicorn.run("p0_backend.api.http_server.main:app", host="0.0.0.0", port=8000, reload=True, workers=2)
+    uvicorn.run("p0_backend.api.http_server.main:app", host="0.0.0.0", port=8000, reload=True, reload_dirs=settings.project_directory)

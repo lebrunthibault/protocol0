@@ -319,7 +319,7 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
-    def fire_scene_to_position(self, bar_length, ):  # noqa: E501
+    def fire_scene_to_position(self, bar_length=1):  # noqa: E501
         # type: (int, ) -> None
         """
             Fire Scene To Position  # noqa: E501
@@ -934,7 +934,7 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
-    def show_info(self, message, centered, ):  # noqa: E501
+    def show_info(self, message, centered=False):  # noqa: E501
         # type: (str, bool, ) -> None
         """
             Show Info  # noqa: E501
@@ -1009,7 +1009,7 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
-    def show_success(self, message, centered, ):  # noqa: E501
+    def show_success(self, message, centered=False):  # noqa: E501
         # type: (str, bool, ) -> None
         """
             Show Success  # noqa: E501
@@ -1024,7 +1024,7 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
-    def show_warning(self, message, centered, ):  # noqa: E501
+    def show_warning(self, message, centered=False):  # noqa: E501
         # type: (str, bool, ) -> None
         """
             Show Warning  # noqa: E501
@@ -1114,22 +1114,7 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
-    def test(self, ):  # noqa: E501
-        # type: () -> None
-        """
-            Test  # noqa: E501
-        """
-
-        dict = {
-            "method": "test",
-            "args": {
-                
-            }
-        }
-
-        self._send_dict_as_midi(dict)
-
-    def toggle_ableton_button(self, x, y, activate, ):  # noqa: E501
+    def toggle_ableton_button(self, x, y, activate=False):  # noqa: E501
         # type: (int, int, bool, ) -> None
         """
              Toggle Ableton Button  # noqa: E501
