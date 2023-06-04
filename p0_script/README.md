@@ -1,6 +1,6 @@
 # Protocol0 Control Surface Script for Ableton
 
-Protocol0 is a control surface script for Ableton Live (tested on 11 and 10)
+Protocol0 is a control surface script for Ableton Live 11
 
 It is a "selected track control" like
 script focused on working in session view. 
