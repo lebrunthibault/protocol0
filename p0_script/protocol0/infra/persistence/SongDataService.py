@@ -17,6 +17,7 @@ class SongDataElement(object):
 
 class SongDataService(object):
     """Service handling data storage in the set"""
+
     _DEBUG = False
 
     def __init__(self, get_data, set_data, scene_component):
@@ -27,15 +28,11 @@ class SongDataService(object):
         self._scene_component = scene_component
 
         self._elements = {
-            SongDataEnum.SELECTED_SCENE_INDEX: SongDataElement(
-                lambda: Song.selected_scene().index
-            ),
+            SongDataEnum.SELECTED_SCENE_INDEX: SongDataElement(lambda: Song.selected_scene().index),
             SongDataEnum.SELECTED_SCENE_POSITION: SongDataElement(
                 lambda: Song.selected_scene().position_scroller.current_value
             ),
-            SongDataEnum.SELECTED_TRACK_INDEX: SongDataElement(
-                lambda: Song.selected_track().index
-            ),
+            SongDataEnum.SELECTED_TRACK_INDEX: SongDataElement(lambda: Song.selected_track().index),
         }
 
         self._restore()
@@ -63,7 +60,9 @@ class SongDataService(object):
             selected_scene = Song.scenes()[selected_scene_index]
             self._scene_component.select_scene(selected_scene)
 
-            selected_scene_position = self._elements.get(SongDataEnum.SELECTED_SCENE_POSITION).saved_value
+            selected_scene_position = self._elements.get(
+                SongDataEnum.SELECTED_SCENE_POSITION
+            ).saved_value
             if selected_scene_position is not None:
                 selected_scene.position_scroller.set_value(selected_scene_position)
 

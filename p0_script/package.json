@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "format": "black .",
-    "lint": "poetry run flake8 . && poetry run mypy . && poetry run vulture .",
+    "lint": "flake8 . && mypy . && vulture .",
     "test": "poetry run pytest -s ."
   },
   "dependencies": {},

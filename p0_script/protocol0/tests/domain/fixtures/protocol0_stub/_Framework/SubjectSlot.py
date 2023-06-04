@@ -1,7 +1,9 @@
 from unittest.mock import Mock
 
+
 class SlotManager:
     pass
+
 
 Subject = Mock()
 

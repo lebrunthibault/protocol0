@@ -4,7 +4,7 @@ from typing import Any
 
 def liveobj_valid(obj):
     # type: (Any) -> bool
-    u"""
+    """
     Check whether obj represents a valid Live API obj.
 
     This will return False both if obj represents a lost weakref or is None.

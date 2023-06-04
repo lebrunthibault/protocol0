@@ -15,7 +15,7 @@ class ClipPlayingPosition(object):
         return "position: %s / %s. beats left: %s" % (
             self.position,
             self._clip_loop.length,
-            self.beats_left
+            self.beats_left,
         )
 
     @property

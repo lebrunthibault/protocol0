@@ -8,8 +8,10 @@ from protocol0.domain.lom.track.group_track.matching_track.MatchingTrackClipColo
 from protocol0.domain.lom.track.group_track.matching_track.MatchingTrackInterface import (
     MatchingTrackInterface,
 )
-from protocol0.domain.lom.track.group_track.matching_track.utils import assert_valid_track_name, \
-    ensure_clips_looped
+from protocol0.domain.lom.track.group_track.matching_track.utils import (
+    assert_valid_track_name,
+    ensure_clips_looped,
+)
 from protocol0.shared.Song import Song
 from protocol0.shared.sequence.Sequence import Sequence
 
@@ -44,16 +46,16 @@ class SimpleMatchingTrack(MatchingTrackInterface):
             if clip.previous_hash == clip_hash:
                 continue
 
-            self._audio_track.clip_mapping.register_hash_equivalence(
-                clip.previous_hash, clip_hash
-            )
+            self._audio_track.clip_mapping.register_hash_equivalence(clip.previous_hash, clip_hash)
             clip.previous_hash = clip_hash
 
-        bounced_clips = [c for c in self._base_track.clips if c.color == ClipColorEnum.DISABLED.value]
+        bounced_clips = [
+            c for c in self._base_track.clips if c.color == ClipColorEnum.DISABLED.value
+        ]
         for clip in bounced_clips:
             assert ClipInfo(clip, self._base_track.devices.parameters).already_bounced_to(
                 self._audio_track
-            ), "clip disabled but not bounced: %s" % clip
+            ), ("clip disabled but not bounced: %s" % clip)
 
         seq = Sequence()
         seq.add(self._base_track.save)

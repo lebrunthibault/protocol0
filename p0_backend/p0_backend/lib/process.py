@@ -1,26 +1,25 @@
 import subprocess
 import sys
+
 import win32process
 from loguru import logger
 from psutil import Process, NoSuchProcess
 
-from p0_backend.api.settings import Settings
+from p0_backend.settings import Settings
 from p0_backend.lib.window.find_window import find_window_handle_by_enum, SearchTypeEnum
 
+settings = Settings()
 
-def execute_powershell_command(*args: str, min=True):
+
+def execute_powershell_command(command: str, minimized=False):
     powershell_command_line = (
-        f"'cmd /c start {'/min' if min else ''} powershell -Command {{ {' '.join(args)} }}'"
+        f"'cmd /c start {'/min' if minimized else ''} powershell -Command {{ {command} }}'"
     )
     logger.info(powershell_command_line)
-    subprocess.run(
-        ["powershell.exe", "invoke-expression", powershell_command_line], stdout=sys.stdout
-    )
-
-
-def execute_python_script_in_new_window(*args: str, min=True):
-    execute_powershell_command(
-        f"{Settings().project_directory}\\venv\\scripts\\python", *args, min=min
+    subprocess.call(
+        ["powershell.exe", "invoke-expression", powershell_command_line],
+        stdout=sys.stdout,
+        cwd=settings.project_directory,
     )
 
 

@@ -3,11 +3,11 @@ import sys
 
 from loguru import logger
 
-from p0_backend.api.settings import Settings
+from p0_backend.settings import Settings
 
 
 def configure_logging() -> None:
-    with open(f"{Settings().project_directory}/lib/logging_config.json") as config_file:
+    with open(f"{Settings().project_directory}/p0_backend/lib/logging_config.json") as config_file:
         logging_config = json.load(config_file)
 
     logger.remove()

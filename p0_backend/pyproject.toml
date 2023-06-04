@@ -54,10 +54,11 @@ watchdog = {extras = ["watchmedo"], version = "^3.0.0"}
 http-server = "p0_backend.api.http_server.main:start"
 midi-server = "p0_backend.api.midi_server.main:start"
 kill = "p0_backend.scripts.kill_old_processes:kill_old_processes"
-logs = "p0_backend.scripts.tail_protocol0_logs:tail_ableton_log_file"
+logs = "p0_backend.scripts.tail_ableton_logs:tail_ableton_log_file"
+logs-raw = "p0_backend.scripts.tail_ableton_logs:tail_ableton_log_file_raw"
 
 [tool.mypy]
-python_version = 3.10
+python_version = "3.11"
 exclude = ['vulture_whitelist.py']
 pretty = false
 ignore_missing_imports = true
@@ -82,4 +83,7 @@ min_confidence = 60
 make_whitelist = true
 sort_by_size = true
 verbose = false
-exclude = []
+exclude = [
+    'p0_backend/api/http_server/routes.py',
+    'protocol0_stub'
+]

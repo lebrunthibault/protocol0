@@ -6,7 +6,7 @@ from typing import List, Optional, Tuple, Iterator
 from PIL import ImageGrab
 from loguru import logger
 
-from p0_backend.api.settings import Settings
+from p0_backend.settings import Settings
 from p0_backend.lib.ableton.interface.coords import Coords, RectCoords
 from p0_backend.lib.ableton.interface.pixel_color_enum import PixelColorEnum, RGBColor
 from p0_backend.lib.decorators import timeit
@@ -60,7 +60,6 @@ class PixelBox:
         yield from line
 
     def get_coords(self, i: int):
-
         rel_width = i % self.width
         rel_height = i // self.width
 

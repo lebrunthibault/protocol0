@@ -94,12 +94,8 @@ class AudioLatencyAnalyzerService(object):
         # type: () -> Sequence
         track = Song.current_external_synth_track()
         seq = Sequence()
-        seq.add(
-            partial(self._track_recorder_service.record_track, track, RecordTypeEnum.AUDIO)
-        )
-        seq.add(
-            lambda: track.audio_track.clip_slots[0].select()
-        )
+        seq.add(partial(self._track_recorder_service.record_track, track, RecordTypeEnum.AUDIO))
+        seq.add(lambda: track.audio_track.clip_slots[0].select())
         seq.add(partial(CommandBus.dispatch, ResetPlaybackCommand()))
         seq.wait(10)
         return seq.done()

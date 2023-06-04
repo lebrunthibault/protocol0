@@ -22,7 +22,7 @@ class SimplerDevice(Device):
 
     def __repr__(self):
         # type: () -> str
-        return "SimplerDevice(name=%s, sample=%s)" % (self.name.encode('utf-8'), "test")
+        return "SimplerDevice(name=%s, sample=%s)" % (self.name, "test")
 
     @property
     def sample(self):

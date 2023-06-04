@@ -1,4 +1,4 @@
-from p0_backend.api.settings import Settings
+from p0_backend.settings import Settings
 from p0_backend.lib.ableton.ableton import show_plugins
 from p0_backend.lib.ableton.interface.coords import CoordsEnum, Coords
 from p0_backend.lib.ableton.interface.pixel import get_absolute_coords

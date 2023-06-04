@@ -99,5 +99,7 @@ class P0SessionRingTrackProvider(SessionRingTrackProvider):
     def disconnect(self):
         # type: () -> None
         super(P0SessionRingTrackProvider, self).disconnect()
-        DomainEventBus.un_subscribe(SelectedTrackChangedEvent, self._on_selected_track_changed_event)
+        DomainEventBus.un_subscribe(
+            SelectedTrackChangedEvent, self._on_selected_track_changed_event
+        )
         DomainEventBus.un_subscribe(SessionUpdatedEvent, self._on_session_updated_event)

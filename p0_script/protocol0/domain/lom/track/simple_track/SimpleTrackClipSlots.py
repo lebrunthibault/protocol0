@@ -72,7 +72,7 @@ class SimpleTrackClipSlots(SlotManager, Observable):
         live_cs_to_cs = {cs._clip_slot: cs for cs in self.clip_slots}
 
         new_clip_slots = []  # type: List[ClipSlot]
-        for (index, live_clip_slot) in enumerate(list(self._live_track.clip_slots)):
+        for index, live_clip_slot in enumerate(list(self._live_track.clip_slots)):
             if live_clip_slot in live_cs_to_cs:
                 clip_slot = live_cs_to_cs[live_clip_slot]
                 # reindexing is necessary

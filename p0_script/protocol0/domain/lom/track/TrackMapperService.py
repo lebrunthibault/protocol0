@@ -154,7 +154,10 @@ class TrackMapperService(SlotManager):
         new_simple_track._index = previous_simple_track._index
         previous_simple_track.disconnect()
 
-        if previous_simple_track.group_track is not None and previous_simple_track.group_track.abstract_group_track is not None:
+        if (
+            previous_simple_track.group_track is not None
+            and previous_simple_track.group_track.abstract_group_track is not None
+        ):
             previous_simple_track.group_track.abstract_group_track.add_or_replace_sub_track(
                 new_simple_track, previous_simple_track
             )
@@ -185,8 +188,7 @@ class TrackMapperService(SlotManager):
                 abstract_group_track, NormalGroupTrack
             ):
                 Backend.client().show_warning(
-                    "%s changed into %s"
-                    % (previous_abstract_group_track, abstract_group_track)
+                    "%s changed into %s" % (previous_abstract_group_track, abstract_group_track)
                 )
 
             if (

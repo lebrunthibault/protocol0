@@ -21,7 +21,7 @@ class TrackRecorderSimpleFactory(AbstractTrackRecorderFactory):
             tracks=[track],
             scene_index=self._get_recording_scene_index(track),
             bar_length=self._get_recording_bar_length(record_type, recording_bar_length),
-            records_midi=True
+            records_midi=True,
         )
 
     def _get_recording_scene_index(self, track):

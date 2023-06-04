@@ -29,7 +29,7 @@ class ScenePositionScroller(ValueScroller):
             beat_division = 1.0 / Song.signature_numerator()
             return [x * beat_division for x in range(0, int(self._scene_length.length))]
         else:
-            return range(0, self._scene_length.bar_length)
+            return list(range(0, self._scene_length.bar_length))
 
     def _get_initial_value(self, go_next):
         # type: (bool) -> int

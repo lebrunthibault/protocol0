@@ -11,8 +11,9 @@ from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import 
 )
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrackArmedEvent import SimpleTrackArmedEvent
-from protocol0.domain.lom.track.simple_track.SimpleTrackSaveStartedEvent import \
-    SimpleTrackSaveStartedEvent
+from protocol0.domain.lom.track.simple_track.SimpleTrackSaveStartedEvent import (
+    SimpleTrackSaveStartedEvent,
+)
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
@@ -28,7 +29,9 @@ class InstrumentDisplayService(object):
         # type: (DeviceDisplayService) -> None
         self._device_display_service = device_display_service
         DomainEventBus.subscribe(SimpleTrackArmedEvent, self._on_simple_track_armed_event)
-        DomainEventBus.subscribe(SimpleTrackSaveStartedEvent, self._on_simple_track_save_started_event)
+        DomainEventBus.subscribe(
+            SimpleTrackSaveStartedEvent, self._on_simple_track_save_started_event
+        )
         DomainEventBus.subscribe(InstrumentSelectedEvent, self._on_instrument_selected_event)
 
     def show_instrument(self, track):

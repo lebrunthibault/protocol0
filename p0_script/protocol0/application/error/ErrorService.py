@@ -36,7 +36,7 @@ class ErrorService(object):
         self._song = song
 
         if self._SET_EXCEPTHOOK:
-            sys.excepthook = self._handle_uncaught_exception
+            sys.excepthook = self._handle_uncaught_exception  # type: ignore[assignment]
 
         DomainEventBus.subscribe(ErrorRaisedEvent, self._on_error_raised_event)
         DomainEventBus.subscribe(BackendEvent, self._on_backend_event)

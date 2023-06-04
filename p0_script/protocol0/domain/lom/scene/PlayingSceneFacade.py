@@ -58,8 +58,8 @@ class PlayingSceneFacade(object):
     def _check_for_unknown_playing_scenes(cls):
         # type: () -> None
         """
-            Monitoring method to find out
-            why some scenes are left out of the playing scene pattern
+        Monitoring method to find out
+        why some scenes are left out of the playing scene pattern
         """
         unknown_playing_scenes = []
         for scene in Song.scenes():

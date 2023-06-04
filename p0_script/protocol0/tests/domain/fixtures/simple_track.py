@@ -43,7 +43,9 @@ class AbletonTrack(Subject):
         self.name = track_type
         self.devices = []  # type: List[AbletonDevice]
         mixer_device = namedtuple("mixer_device", ["sends", "volume", "panning"])
-        self.mixer_device = mixer_device([], AbletonDeviceParameter("volume"), AbletonDeviceParameter("panning"))
+        self.mixer_device = mixer_device(
+            [], AbletonDeviceParameter("volume"), AbletonDeviceParameter("panning")
+        )
         self.can_be_armed = True
         self.arm = False
         self.solo = False

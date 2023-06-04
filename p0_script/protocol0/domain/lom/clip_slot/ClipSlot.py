@@ -120,7 +120,6 @@ class ClipSlot(SlotManager, Observable):
             seq.wait_for_event(ClipCreatedOrDeletedEvent, self._clip_slot)
         return seq.done()
 
-
     def prepare_for_record(self):
         # type: () -> Sequence
         seq = Sequence()

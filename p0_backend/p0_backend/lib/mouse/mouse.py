@@ -4,7 +4,7 @@ from time import sleep
 import pyautogui
 from loguru import logger
 
-from p0_backend.api.settings import Settings
+from p0_backend.settings import Settings
 from p0_backend.lib.ableton.interface.coords import Coords
 
 

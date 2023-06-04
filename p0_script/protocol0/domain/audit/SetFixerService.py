@@ -47,9 +47,7 @@ class SetFixerService(object):
         clip_slots = [cs for track in Song.simple_tracks() for cs in track.clip_slots]
         clips = [clip for track in Song.simple_tracks() for clip in track.clips]
         # noinspection PyTypeChecker
-        objects_to_refresh_appearance = (
-                clip_slots + clips + Song.scenes()
-        )
+        objects_to_refresh_appearance = clip_slots + clips + Song.scenes()
 
         for obj in objects_to_refresh_appearance:
             obj.appearance.refresh()

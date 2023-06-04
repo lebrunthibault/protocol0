@@ -124,7 +124,6 @@ class Clip:
         self._parse_asd_file(clip_path)
 
     def get_time_map(self, bpm: float):
-
         """Parse an Ableton `asd` file into a time map to be used with Rubberband library's `timemap_stretch`.
         Parameters
         ----------
@@ -141,7 +140,6 @@ class Clip:
 
         time_map = []
         for wm in self._warp_markers:
-
             sample_index = int(wm.seconds * self._sr)
 
             if sample_index <= self._num_samples:
@@ -165,7 +163,6 @@ class Clip:
         return time_map
 
     def _parse_asd_file(self, filepath: str):
-
         """Parse an Ableton `asd` file.
         Parameters
         ----------
@@ -218,7 +215,6 @@ class Clip:
         index = asd_bin.find(b"WarpMarker")
         last_good_index = -1
         while True:
-
             index = asd_bin.find(b"WarpMarker", index + 1)
             if index < 0:
                 index = last_good_index

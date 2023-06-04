@@ -110,10 +110,10 @@ def throttle(duration=100):
 def accelerate(func):
     # type: (Func) -> Func
     """
-        Function used to soft accelerate parameter scrolling as done in the hardware
-        Function that will transmit the number of times it was called during the last second
-        The count is given in the factor keyword argument
-        Useful for implementing input acceleration
+    Function used to soft accelerate parameter scrolling as done in the hardware
+    Function that will transmit the number of times it was called during the last second
+    The count is given in the factor keyword argument
+    Useful for implementing input acceleration
     """
     # in ms : the duration considered for increasing the acceleration factor
     ACCELERATION_ACTIVATION_DURATION = 700
@@ -127,7 +127,7 @@ def accelerate(func):
         # type: (Any, Any) -> None
         object_source = a[0] if inspect.ismethod(func) else decorate
 
-        last_calls = decorate.last_calls[object_source]    # type: ignore[attr-defined]
+        last_calls = decorate.last_calls[object_source]  # type: ignore[attr-defined]
         last_calls.append(time.time())
 
         duration_second = float(ACCELERATION_ACTIVATION_DURATION) / 1000

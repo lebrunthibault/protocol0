@@ -1,4 +1,4 @@
-import os
+from os.path import dirname
 
 from pydantic import BaseSettings
 
@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     def log_file(self) -> str:
         return f"{self.user_home}\\AppData\\Roaming\\Ableton\\Live {self.ableton_version}\\Preferences\\Log.txt"
 
-    project_directory = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    project_directory = dirname(dirname(__file__))
 
     @property
     def ableton_exe(self) -> str:

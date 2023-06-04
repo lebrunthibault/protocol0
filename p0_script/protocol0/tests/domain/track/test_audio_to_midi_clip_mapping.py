@@ -2,6 +2,7 @@ from unittest.mock import Mock
 
 from protocol0.domain.lom.track.simple_track.AudioToMidiClipMapping import AudioToMidiClipMapping
 
+
 class ClipInfoTest(object):
     def __init__(self, clip_hash):
         self.hash = clip_hash

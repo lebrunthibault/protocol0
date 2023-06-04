@@ -126,7 +126,6 @@ class RecordService(object):
         if not config.records_midi:
             seq.wait_ms(50)  # so that the record doesn't start before the clip slot is ready
 
-
         # RECORD
         if processors.record is not None:
             seq.add(partial(processors.record.process, track, config))

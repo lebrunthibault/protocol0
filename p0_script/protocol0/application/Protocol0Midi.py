@@ -20,9 +20,7 @@ class Protocol0Midi(ControlSurface):
         super(Protocol0Midi, self).__init__(c_instance=c_instance)
         self.log_message = log_message
         # stop log duplication
-        self._c_instance.log_message = MethodType(
-            lambda s, message: None, self._c_instance
-        )  # noqa
+        self._c_instance.log_message = MethodType(lambda s, message: None, self._c_instance)  # noqa
         self.main_p0_script = find_if(
             lambda s: isinstance(s, Protocol0), get_control_surfaces()
         )  # type: Protocol0
@@ -30,9 +28,7 @@ class Protocol0Midi(ControlSurface):
         self._logger = LoggerService()
 
         if self.main_p0_script is None:
-            self._logger.log(
-                "Error: couldn't find main Protocol0 script", level=LogLevelEnum.ERROR
-            )
+            self._logger.log("Error: couldn't find main Protocol0 script", level=LogLevelEnum.ERROR)
             return
 
         DomainEventBus.subscribe(MidiBytesSentEvent, self._on_midi_bytes_sent_event)

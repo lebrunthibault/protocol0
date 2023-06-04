@@ -21,7 +21,6 @@ logs:
 .PHONY: logs
 
 test:
-	cls
-	@poetry run python scripts/cli.py test
+	@poetry run python p0_backend/scripts/cli.py test
 .PHONY: test
 

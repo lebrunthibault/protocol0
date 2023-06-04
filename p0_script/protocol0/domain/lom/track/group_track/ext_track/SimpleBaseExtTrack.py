@@ -16,4 +16,6 @@ class SimpleBaseExtTrack(SimpleAudioTrack):
             Logger.info("Found %s devices on ext base track %s" % (devices_count, self))
 
             if devices_count == 1:
-                Backend.client().show_warning("Please add this device to the audio sub track", centered=True)
+                Backend.client().show_warning(
+                    "Please add this device to the audio sub track", centered=True
+                )

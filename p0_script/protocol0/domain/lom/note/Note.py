@@ -42,10 +42,7 @@ class Note(object):
     def from_midi_note(cls, note):
         # type: (Live.Clip.MidiNote) -> Note
         return Note(
-            pitch=note.pitch,
-            start=note.start_time,
-            duration=note.duration,
-            velocity=note.velocity
+            pitch=note.pitch, start=note.start_time, duration=note.duration, velocity=note.velocity
         )
 
     def to_data(self):

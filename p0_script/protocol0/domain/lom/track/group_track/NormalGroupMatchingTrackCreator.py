@@ -25,9 +25,7 @@ class NormalGroupMatchingTrackCreator(MatchingTrackCreatorInterface):
         seq.add(partial(self._track_crud_component.create_audio_track, insert_index))
         seq.add(lambda: setattr(Song.selected_track(), "name", self._base_track.name))
         seq.add(lambda: setattr(Song.selected_track(), "color", self._base_track.color))
-        seq.add(
-            lambda: Song.selected_track().devices.mixer_device.update_from_dict(mixer_data)
-        )
+        seq.add(lambda: Song.selected_track().devices.mixer_device.update_from_dict(mixer_data))
         seq.add(lambda: setattr(Song.selected_track().input_routing, "track", self._base_track))
         seq.add(lambda: Song.selected_track().arm_state.arm())
         seq.add(partial(Backend.client().show_success, "Track created, please record clips"))

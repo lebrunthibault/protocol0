@@ -15,7 +15,7 @@ def get_frame_info(frame_count=1):
             break
         call_frame = next_frame
     try:
-        (filename, line, method_name, _, _) = inspect.getframeinfo(call_frame)
+        (filename, line, method_name, _, _) = inspect.getframeinfo(call_frame)  # type: ignore[arg-type]
     except IndexError:
         return None
     filename = filename.replace(Config.PROJECT_ROOT + "\\", "").replace(

@@ -5,7 +5,7 @@ import mido
 
 from loguru import logger
 
-from p0_backend.api.settings import Settings
+from p0_backend.settings import Settings
 from p0_backend.lib.midi.mido import get_output_port
 from p0_backend.lib.utils import make_sysex_message_from_command
 from protocol0.application.command.SerializableCommand import SerializableCommand

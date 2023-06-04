@@ -255,7 +255,6 @@ class Sequence(Observable):
                 self.res = backend_event.data
                 self._execute_next_step()
 
-
         def cancel():
             # type: () -> None
             DomainEventBus.un_subscribe(BackendEvent, on_event)

@@ -47,8 +47,6 @@ def get_class_name_from_method(func):
     if class_name and all(word not in class_name for word in ["function", "None"]):
         return class_name
 
-
-
     try:
         if sys.version_info.major == 2:
             from qualname import qualname

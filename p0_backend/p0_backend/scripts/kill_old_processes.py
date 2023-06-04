@@ -5,8 +5,6 @@ import psutil
 from loguru import logger
 from psutil import NoSuchProcess
 
-from p0_backend.api.settings import Settings
-
 
 def kill_old_processes():
     for p in psutil.process_iter():
@@ -25,9 +23,7 @@ def kill_old_processes():
         if create_time >= time.time() - 10:
             continue
 
-        if (
-            any("p0_backend" in arg for arg in cmd_line)
-        ):
+        if any("p0_backend" in arg for arg in cmd_line):
             logger.info(
                 f"deleting process {pid} {script_name} after {time.time() - 3 - create_time:.2f}s"
             )

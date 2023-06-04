@@ -38,8 +38,12 @@ build = "^0.10.0"
 line-length = 100
 
 [tool.mypy]
-python_version = 2.7
-exclude = ['venv', 'tests', 'vulture_whitelist.py']
+python_version = "3.7"
+exclude = [
+    'tests',
+    'vulture_whitelist.py',
+    'protocol0/domain/shared/backend/p0_backend_client'
+]
 pretty = false
 ignore_missing_imports = true
 follow_imports = 'skip'
@@ -67,7 +71,8 @@ exclude = [
     'command/',
     'command_handler/',
     'push2/',
-    'BarLengthEnum.py'
+    'RecordingBarLengthEnum.py',
+    'protocol0/domain/shared/backend/p0_backend_client'
 ]
 ignore_names = [
     "subject",

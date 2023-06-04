@@ -125,7 +125,6 @@ class SceneService(SlotManager):
             if scene == Song.playing_scene():
                 PlayingSceneFacade.set(None)
 
-
     def generate_scene(self, live_scene, index):
         # type: (Live.Scene.Scene, int) -> None
         # switching to full remap because of persisting mapping problems when moving scenes

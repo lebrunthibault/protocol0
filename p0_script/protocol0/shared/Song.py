@@ -154,12 +154,13 @@ class Song(object):
 
         return track_mapping[live_track._live_ptr]
 
-
     @classmethod
     def optional_simple_track_from_live_track(cls, live_track):
         # type: (Live.Track.Track) -> Optional[SimpleTrack]
         try:
-            return cls._INSTANCE._track_mapper_service._live_track_id_to_simple_track[live_track._live_ptr]
+            return cls._INSTANCE._track_mapper_service._live_track_id_to_simple_track[
+                live_track._live_ptr
+            ]
         except KeyError:
             return None
 

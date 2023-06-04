@@ -62,5 +62,4 @@ class ExtMatchingTrackCreator(MatchingTrackCreatorInterface):
         seq.add(self._base_track.delete)
         seq.add(partial(Backend.client().show_success, "Track bounced"))
 
-
         return seq.done()

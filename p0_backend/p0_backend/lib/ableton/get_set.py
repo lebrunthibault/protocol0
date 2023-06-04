@@ -2,7 +2,7 @@ import glob
 import os
 from typing import List
 
-from p0_backend.api.settings import Settings
+from p0_backend.settings import Settings
 from p0_backend.lib.window.find_window import get_windows_list
 
 settings = Settings()
@@ -35,7 +35,6 @@ def get_set_from_title(title: str) -> str:
 
     for root, _, files in os.walk(settings.ableton_set_directory):
         for file in files:
-
             if file == filename:
                 file_path = os.path.join(root, file)
                 file_paths.append(file_path)

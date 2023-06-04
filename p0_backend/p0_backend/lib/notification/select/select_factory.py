@@ -3,7 +3,9 @@ from typing import List
 import PySimpleGUI as sg
 from PySimpleGUI import Button, BLUES
 
-from p0_backend.lib.notification.decorators.close_window_on_end_decorator import CloseWindowOnEndDecorator
+from p0_backend.lib.notification.decorators.close_window_on_end_decorator import (
+    CloseWindowOnEndDecorator,
+)
 from p0_backend.lib.notification.select.button_colors import ButtonColors
 from p0_backend.lib.notification.select.select import Select
 from p0_backend.lib.notification.window import Window

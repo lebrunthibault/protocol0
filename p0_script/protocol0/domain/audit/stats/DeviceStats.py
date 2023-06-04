@@ -37,7 +37,7 @@ class DevicesStats(object):
         DeviceEnum.USAMO.value,
         DeviceEnum.EXTERNAL_AUDIO_EFFECT.value,
         DeviceEnum.SOUNDID_REFERENCE_PLUGIN.value,
-        "Instrument Rack"
+        "Instrument Rack",
     ]
 
     def __init__(self):
@@ -67,7 +67,7 @@ class DevicesStats(object):
         """Return only devices that matters for stats"""
 
         for track in Song.all_simple_tracks():
-            for device in track.devices.all:  # type: ignore[has-type]
+            for device in track.devices.all:
                 if (
                     not isinstance(device, (SimplerDevice, DrumRackDevice))
                     and device.type_name not in self._EXCLUDED_DEVICE_NAMES

@@ -1,5 +1,6 @@
-from protocol0.domain.lom.track.simple_track.SimpleTrackFlattenedEvent import \
-    SimpleTrackFlattenedEvent
+from protocol0.domain.lom.track.simple_track.SimpleTrackFlattenedEvent import (
+    SimpleTrackFlattenedEvent,
+)
 from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.shared.Song import Song

@@ -32,9 +32,7 @@ class InstrumentRev2(InstrumentInterface):
         DomainEventBus.subscribe(
             ExtAudioRecordingStartedEvent, self._on_audio_recording_started_event
         )
-        DomainEventBus.subscribe(
-            ExtAudioRecordingEndedEvent, self._on_audio_recording_ended_event
-        )
+        DomainEventBus.subscribe(ExtAudioRecordingEndedEvent, self._on_audio_recording_ended_event)
 
     @property
     def needs_exclusive_activation(self):
