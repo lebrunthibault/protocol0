@@ -1,28 +1,22 @@
-#!make
-
-.PHONY: log dev lint icons build test check
+bootstrap:
+	@yarn install
+.PHONY: bootstrap
 
 log:
-	cls && tail -f C:\Users\thiba\AppData\Roaming\Elgato\StreamDeck\logs\StreamDeck0.log
+	@tail -f C:\Users\thiba\AppData\Roaming\Elgato\StreamDeck\logs\StreamDeck0.log
+.PHONY: logs
 
 dev:
-	cls && yarn watch
-
-lint:
-	cls && npm run lint-fix
+	@cls && yarn watch
+.PHONY: dev
 
 icon:
-	cls
-	powershell ./scripts/make_icon.ps1 $(filter-out $@, $(MAKECMDGOALS))
+	@cls
+	@powershell ./scripts/make_icon.ps1 $(filter-out $@, $(MAKECMDGOALS))
 	"Success !"
-
-check:
-	cls
-	make lint
-	make test
+.PHONY: icon
 
 build:
-	cls && powershell ./scripts/build.ps1
-
-test:
-	cls && yarn test
+	@cls
+	@powershell ./scripts/build.ps1
+.PHONY: build

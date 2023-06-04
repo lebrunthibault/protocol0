@@ -2,7 +2,7 @@ from time import sleep
 from typing import List
 from typing import Optional
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.api.http_server.ws import ws_manager
@@ -23,8 +23,10 @@ from p0_backend.lib.ableton.ableton import (
 from p0_backend.lib.ableton.analyze_clip_jitter import analyze_test_audio_clip_jitter
 from p0_backend.lib.ableton.automation import edit_automation_value
 from p0_backend.lib.ableton.automation import set_envelope_loop_length
-from p0_backend.lib.ableton.external_synth_track import activate_rev2_editor, \
-    post_activate_rev2_editor
+from p0_backend.lib.ableton.external_synth_track import (
+    activate_rev2_editor,
+    post_activate_rev2_editor,
+)
 from p0_backend.lib.ableton.interface.browser import preload_sample_category
 from p0_backend.lib.ableton.interface.clip import set_clip_file_path, crop_clip
 from p0_backend.lib.ableton.interface.sample import load_sample_in_simpler
@@ -35,8 +37,7 @@ from p0_backend.lib.ableton.matching_track.load_matching_track import drag_match
 from p0_backend.lib.ableton.matching_track.save_track import save_track_to_sub_tracks
 from p0_backend.lib.ableton.set_profiling.ableton_set_profiler import AbletonSetProfiler
 from p0_backend.lib.ableton_set import AbletonSet
-from p0_backend.lib.ableton_set import AbletonSetManager, show_saved_tracks, \
-    delete_saved_track
+from p0_backend.lib.ableton_set import AbletonSetManager, show_saved_tracks, delete_saved_track
 from p0_backend.lib.decorators import throttle
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
@@ -86,15 +87,18 @@ router.include_router(script_actions_router, prefix="/actions")
 def ping():
     AbletonSetProfiler.end_measurement()
 
-@router.get("/search/{search}")
+
+@router.get("/search")
 def search(search: str):
     send_keys("^f")
     sleep(0.1)
     send_keys(search)
 
-@router.get("/show_sample_category/{category}")
+
+@router.get("/show_sample_category")
 def show_sample_category(category: str):
     preload_sample_category(category)
+
 
 @router.get("/reload_ableton")
 async def _reload_ableton():
@@ -105,39 +109,48 @@ async def _reload_ableton():
 def _flatten_track():
     flatten_track()
 
+
 @router.get("/crop_clip")
 def _crop_clip():
     crop_clip()
 
-@router.get("/move_to/{x}/{y}")
+
+@router.get("/move_to")
 def _move_to(x: int, y: int):
     move_to((x, y))
 
-@router.get("/click/{x}/{y}")
+
+@router.get("/click")
 def _click(x: int, y: int):
     click((x, y))
 
-@router.get("/click_vertical_zone/{x}/{y}")
+
+@router.get("/click_vertical_zone")
 def _click_vertical_zone(x: int, y: int):
     click_vertical_zone((x, y))
+
 
 @router.get("/select_and_copy")
 def select_and_copy():
     send_keys("^a")
     send_keys("^c")
 
+
 @router.get("/select_and_paste")
 def select_and_paste():
     send_keys("^a")
     send_keys("^v")
 
-@router.get("/analyze_test_audio_clip_jitter/{clip_path}")
+
+@router.get("/analyze_test_audio_clip_jitter")
 def _analyze_test_audio_clip_jitter(clip_path: str):
     analyze_test_audio_clip_jitter(clip_path=clip_path)
+
 
 @router.get("/show_plugins")
 def _show_plugins():
     show_plugins()
+
 
 @router.get("/show_hide_plugins")
 def show_hide_plugins():
@@ -148,78 +161,97 @@ def show_hide_plugins():
 def _hide_plugins():
     hide_plugins()
 
+
 @router.get("/save_set")
 def _save_set():
     save_set()
+
 
 @router.get("/clear_arrangement")
 def _clear_arrangement():
     clear_arrangement()
 
-@router.get("/toggle_ableton_button/{x}/{y}/{activate}")
+
+@router.get("/toggle_ableton_button")
 def _toggle_ableton_button(x: int, y: int, activate: bool = False):
     toggle_ableton_button((x, y), activate=activate)
 
-@router.get("/load_instrument_track/{instrument_name}")
+
+@router.get("/load_instrument_track")
 def _load_instrument_track(instrument_name: str):
     load_instrument_track(instrument_name)
 
-@router.get("/load_sample_in_simpler/{sample_path}")
+
+@router.get("/load_sample_in_simpler")
 def _load_sample_in_simpler(sample_path: str):
     load_sample_in_simpler(sample_path)
 
-@router.get("/set_clip_file_path/{file_path}")
+
+@router.get("/set_clip_file_path")
 def _set_clip_file_path(file_path: str):
     set_clip_file_path(file_path)
 
-@router.get("/set_envelope_loop_length/{length}")
+
+@router.get("/set_envelope_loop_length")
 def _set_envelope_loop_length(length: int):
     set_envelope_loop_length(length)
+
 
 @router.get("/activate_rev2_editor")
 def _activate_rev2_editor():
     activate_rev2_editor()
 
+
 @router.get("/post_activate_rev2_editor")
 def _post_activate_rev2_editor():
     post_activate_rev2_editor()
+
 
 @router.get("/start_set_profiling")
 def start_set_profiling():
     AbletonSetProfiler.start_set_profiling()
 
+
 @router.get("/start_profiling_single_measurement")
 def start_profiling_single_measurement():
     AbletonSetProfiler.start_profiling_single_measurement()
+
 
 @router.get("/stop_midi_server")
 def stop_midi_server():
     stop()
 
+
 @router.get("/close_samples_windows")
 def _close_samples_windows():
     close_samples_windows()
+
 
 @router.get("/close_explorer_window")
 def _close_explorer_window(title: str):
     close_explorer_window(title)
 
-@router.get("/show_info/{message}/{centered}")
+
+@router.get("/show_info")
 def show_info(message: str, centered: bool = False):
     notification_window.delay(message, NotificationEnum.INFO.value, centered)
 
-@router.get("/show_success/{message}/{centered}")
+
+@router.get("/show_success")
 def show_success(message: str, centered: bool = False):
     notification_window.delay(message, NotificationEnum.SUCCESS.value, centered)
 
-@router.get("/show_warning/{message}/{centered}")
-def show_warning(message: str, centered: bool = False):
+
+@router.get("/show_warning")
+def show_warning(message: str, centered: Optional[bool] = False):
     notification_window.delay(message, NotificationEnum.WARNING.value, centered)
+
 
 @router.get("/show_error/message")
 @throttle(milliseconds=5000)
 def show_error(message: str):
     notification_window.delay(message, NotificationEnum.ERROR.value, centered=True)
+
 
 @router.post("/select")
 def select(
@@ -229,12 +261,6 @@ def select(
     color: str = NotificationEnum.INFO.value,
 ):
     select_window.delay(question, options, vertical, color)
-
-
-@router.get("/test")
-async def test():
-    p0_script_client().dispatch(MidiNoteCommand(13, 1))  # test
-    # p0_script_client().dispatch(MidiNoteCommand(9, 4))  # bounce set
 
 
 @router.get("/reload_script")
@@ -258,7 +284,7 @@ async def update_set(title: str, path: Optional[str] = None):
     AbletonSetManager.update_set(title, path)
 
 
-@router.get("/close_set/{set_id}")
+@router.get("/close_set")
 async def close_set(set_id: str):
     await AbletonSetManager.remove(set_id)
     await ws_manager.broadcast_server_state()
@@ -287,7 +313,7 @@ async def tail_logs_raw():
     )
 
 
-@router.get("/set/{name}/open")
+@router.get("/set/open")
 async def _open_set(name: str):
     open_set_by_type(name)
 
@@ -297,17 +323,17 @@ async def play_pause():
     p0_script_client().dispatch(PlayPauseSongCommand())
 
 
-@router.get("/load_device/{name}")
+@router.get("/load_device")
 async def load_device(name: str):
     p0_script_client().dispatch(LoadDeviceCommand(name))
 
 
-@router.get("/select_or_load_device/{name}")
+@router.get("/select_or_load_device")
 async def select_or_load_device(name: str):
     p0_script_client().dispatch(SelectOrLoadDeviceCommand(name))
 
 
-@router.get("/load_drum_rack/{category}/{subcategory}")
+@router.get("/load_drum_rack")
 async def load_drum_rack(category: str, subcategory: str):
     p0_script_client().dispatch(LoadDrumRackCommand(category, subcategory))
 
@@ -352,7 +378,7 @@ async def _show_saved_tracks():
     show_saved_tracks()
 
 
-@router.get("/delete_saved_track/{track_name}")
+@router.get("/delete_saved_track")
 async def _delete_saved_track(track_name: str):
     delete_saved_track(track_name)
 
@@ -372,8 +398,8 @@ async def toggle_scene_loop():
     p0_script_client().dispatch(ToggleSceneLoopCommand())
 
 
-@router.get("/fire_scene_to_position/{bar_length}")
-async def fire_scene_to_position(bar_length: Optional[int] = None):
+@router.get("/fire_scene_to_position")
+async def fire_scene_to_position(bar_length: int = 1):
     p0_script_client().dispatch(FireSceneToPositionCommand(bar_length))
 
 
@@ -392,24 +418,24 @@ async def scroll_scenes(direction: str):
     p0_script_client().dispatch(ScrollScenesCommand(go_next=direction == "next"))
 
 
-@router.get("/scroll_scene_position/{direction}")
+@router.get("/scroll_scene_position")
 async def scroll_scene_position(direction: str):
     p0_script_client().dispatch(ScrollScenePositionCommand(go_next=direction == "next"))
 
 
-@router.get("/scroll_scene_position_fine/{direction}")
+@router.get("/scroll_scene_position_fine")
 async def scroll_scene_position_fine(direction: str):
     p0_script_client().dispatch(
         ScrollScenePositionCommand(go_next=direction == "next", use_fine_scrolling=True)
     )
 
 
-@router.get("/scroll_scene_tracks/{direction}")
+@router.get("/scroll_scene_tracks")
 async def scroll_scene_tracks(direction: str):
     p0_script_client().dispatch(ScrollSceneTracksCommand(go_next=direction == "next"))
 
 
-@router.get("/scroll_track_volume/{direction}")
+@router.get("/scroll_track_volume")
 async def scroll_track_volume(direction: str):
     p0_script_client().dispatch(ScrollTrackVolumeCommand(go_next=direction == "next"))
 
@@ -424,7 +450,7 @@ async def show_instrument():
     p0_script_client().dispatch(ShowInstrumentCommand())
 
 
-@router.get("/show_automation/{direction}")
+@router.get("/show_automation")
 async def show_automation(direction: str):
     p0_script_client().dispatch(ShowAutomationCommand(go_next=direction == "next"))
 

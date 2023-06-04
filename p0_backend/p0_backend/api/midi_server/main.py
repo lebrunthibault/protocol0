@@ -11,7 +11,6 @@ from mido import Message
 from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.api.settings import Settings
 from p0_backend.celery.celery import check_celery_worker_status, notification_window
-from p0_backend.lib.ableton_set import AbletonSet
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.midi.mido import _get_input_port
 from p0_backend.lib.notification.notification.notification_factory import NotificationFactory
@@ -115,26 +114,13 @@ def _execute_midi_message(message: Message):
     # or it can exploit the routes public API by passing an operation name
 
     method_name = payload["method"]
-    args = list(payload["args"].values())
+    args = payload["args"]
 
     if method_name == "post_set":
-        requests.post(f"{settings.http_api_url}/set", data=AbletonSet(**args[0]).json())
+        requests.post(f"{settings.http_api_url}/set", json=args["ableton_set"])
         return
     elif method_name == "select":
-        requests.post(
-            f"{settings.http_api_url}/select",
-            json={
-                "question": args[0],
-                "options": args[1],
-                "vertical": args[2],
-                "color": args[3],
-            },
-        )
+        requests.post(f"{settings.http_api_url}/select", json=args)
         return
 
-    api_url = f"{settings.http_api_url}/{method_name}"
-
-    for arg in args:
-        api_url += f"/{arg}"
-
-    requests.get(api_url)
+    requests.get(f"{settings.http_api_url}/{method_name}", params=args)
