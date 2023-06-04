@@ -1,6 +1,52 @@
+from time import sleep
+from typing import List
 from typing import Optional
 
 from fastapi import APIRouter
+
+from p0_backend.api.client.p0_script_api_client import p0_script_client
+from p0_backend.api.http_server.ws import ws_manager
+from p0_backend.api.midi_server.main import stop
+from p0_backend.api.settings import Settings
+from p0_backend.celery.celery import select_window, notification_window
+from p0_backend.lib.ableton.ableton import (
+    reload_ableton,
+    clear_arrangement,
+    save_set,
+    hide_plugins,
+    show_plugins,
+)
+from p0_backend.lib.ableton.ableton import (
+    save_set_as_template,
+    open_set_by_type,
+)
+from p0_backend.lib.ableton.analyze_clip_jitter import analyze_test_audio_clip_jitter
+from p0_backend.lib.ableton.automation import edit_automation_value
+from p0_backend.lib.ableton.automation import set_envelope_loop_length
+from p0_backend.lib.ableton.external_synth_track import activate_rev2_editor, \
+    post_activate_rev2_editor
+from p0_backend.lib.ableton.interface.browser import preload_sample_category
+from p0_backend.lib.ableton.interface.clip import set_clip_file_path, crop_clip
+from p0_backend.lib.ableton.interface.sample import load_sample_in_simpler
+from p0_backend.lib.ableton.interface.toggle_ableton_button import toggle_ableton_button
+from p0_backend.lib.ableton.interface.track import click_focused_track
+from p0_backend.lib.ableton.interface.track import flatten_track, load_instrument_track
+from p0_backend.lib.ableton.matching_track.load_matching_track import drag_matching_track
+from p0_backend.lib.ableton.matching_track.save_track import save_track_to_sub_tracks
+from p0_backend.lib.ableton.set_profiling.ableton_set_profiler import AbletonSetProfiler
+from p0_backend.lib.ableton_set import AbletonSet
+from p0_backend.lib.ableton_set import AbletonSetManager, show_saved_tracks, \
+    delete_saved_track
+from p0_backend.lib.decorators import throttle
+from p0_backend.lib.enum.notification_enum import NotificationEnum
+from p0_backend.lib.errors.Protocol0Error import Protocol0Error
+from p0_backend.lib.explorer import close_samples_windows, close_explorer_window
+from p0_backend.lib.keys import send_keys
+from p0_backend.lib.mouse.mouse import click, click_vertical_zone, move_to
+from p0_backend.lib.process import execute_python_script_in_new_window
+from p0_backend.lib.server_state import ServerState
+from p0_backend.lib.window.find_window import find_window_handle_by_enum
+from p0_backend.lib.window.window import focus_window
 from protocol0.application.command.BounceTrackToAudioCommand import BounceTrackToAudioCommand
 from protocol0.application.command.CheckAudioExportValidCommand import CheckAudioExportValidCommand
 from protocol0.application.command.DrumRackToSimplerCommand import DrumRackToSimplerCommand
@@ -27,25 +73,6 @@ from protocol0.application.command.ToggleArmCommand import ToggleArmCommand
 from protocol0.application.command.ToggleNotesCommand import ToggleNotesCommand
 from protocol0.application.command.ToggleReferenceTrackCommand import ToggleReferenceTrackCommand
 from protocol0.application.command.ToggleSceneLoopCommand import ToggleSceneLoopCommand
-
-from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.api.http_server.ws import ws_manager
-from p0_backend.api.settings import Settings
-from p0_backend.lib.ableton.ableton import (
-    reload_ableton,
-    save_set_as_template,
-    open_set_by_type,
-)
-from p0_backend.lib.ableton.automation import edit_automation_value
-from p0_backend.lib.ableton.interface.track import click_focused_track
-from p0_backend.lib.ableton.matching_track.load_matching_track import drag_matching_track
-from p0_backend.lib.ableton.matching_track.save_track import save_track_to_sub_tracks
-from p0_backend.lib.ableton_set import AbletonSetManager, AbletonSet, show_saved_tracks, delete_saved_track
-from p0_backend.lib.errors.Protocol0Error import Protocol0Error
-from p0_backend.lib.process import execute_python_script_in_new_window
-from p0_backend.lib.server_state import ServerState
-from p0_backend.lib.window.find_window import find_window_handle_by_enum
-from p0_backend.lib.window.window import focus_window
 from .script_actions.router import router as script_actions_router
 
 router = APIRouter()
@@ -55,9 +82,153 @@ settings = Settings()
 router.include_router(script_actions_router, prefix="/actions")
 
 
+@router.get("/ping")
+def ping():
+    AbletonSetProfiler.end_measurement()
+
+@router.get("/search/{search}")
+def search(search: str):
+    send_keys("^f")
+    sleep(0.1)
+    send_keys(search)
+
+@router.get("/show_sample_category/{category}")
+def show_sample_category(category: str):
+    preload_sample_category(category)
+
 @router.get("/reload_ableton")
 async def _reload_ableton():
     reload_ableton()
+
+
+@router.get("/flatten_track")
+def _flatten_track():
+    flatten_track()
+
+@router.get("/crop_clip")
+def _crop_clip():
+    crop_clip()
+
+@router.get("/move_to/{x}/{y}")
+def _move_to(x: int, y: int):
+    move_to((x, y))
+
+@router.get("/click/{x}/{y}")
+def _click(x: int, y: int):
+    click((x, y))
+
+@router.get("/click_vertical_zone/{x}/{y}")
+def _click_vertical_zone(x: int, y: int):
+    click_vertical_zone((x, y))
+
+@router.get("/select_and_copy")
+def select_and_copy():
+    send_keys("^a")
+    send_keys("^c")
+
+@router.get("/select_and_paste")
+def select_and_paste():
+    send_keys("^a")
+    send_keys("^v")
+
+@router.get("/analyze_test_audio_clip_jitter/{clip_path}")
+def _analyze_test_audio_clip_jitter(clip_path: str):
+    analyze_test_audio_clip_jitter(clip_path=clip_path)
+
+@router.get("/show_plugins")
+def _show_plugins():
+    show_plugins()
+
+@router.get("/show_hide_plugins")
+def show_hide_plugins():
+    send_keys("^%p")
+
+
+@router.get("/hide_plugins")
+def _hide_plugins():
+    hide_plugins()
+
+@router.get("/save_set")
+def _save_set():
+    save_set()
+
+@router.get("/clear_arrangement")
+def _clear_arrangement():
+    clear_arrangement()
+
+@router.get("/toggle_ableton_button/{x}/{y}/{activate}")
+def _toggle_ableton_button(x: int, y: int, activate: bool = False):
+    toggle_ableton_button((x, y), activate=activate)
+
+@router.get("/load_instrument_track/{instrument_name}")
+def _load_instrument_track(instrument_name: str):
+    load_instrument_track(instrument_name)
+
+@router.get("/load_sample_in_simpler/{sample_path}")
+def _load_sample_in_simpler(sample_path: str):
+    load_sample_in_simpler(sample_path)
+
+@router.get("/set_clip_file_path/{file_path}")
+def _set_clip_file_path(file_path: str):
+    set_clip_file_path(file_path)
+
+@router.get("/set_envelope_loop_length/{length}")
+def _set_envelope_loop_length(length: int):
+    set_envelope_loop_length(length)
+
+@router.get("/activate_rev2_editor")
+def _activate_rev2_editor():
+    activate_rev2_editor()
+
+@router.get("/post_activate_rev2_editor")
+def _post_activate_rev2_editor():
+    post_activate_rev2_editor()
+
+@router.get("/start_set_profiling")
+def start_set_profiling():
+    AbletonSetProfiler.start_set_profiling()
+
+@router.get("/start_profiling_single_measurement")
+def start_profiling_single_measurement():
+    AbletonSetProfiler.start_profiling_single_measurement()
+
+@router.get("/stop_midi_server")
+def stop_midi_server():
+    stop()
+
+@router.get("/close_samples_windows")
+def _close_samples_windows():
+    close_samples_windows()
+
+@router.get("/close_explorer_window")
+def _close_explorer_window(title: str):
+    close_explorer_window(title)
+
+@router.get("/show_info/{message}/{centered}")
+def show_info(message: str, centered: bool = False):
+    notification_window.delay(message, NotificationEnum.INFO.value, centered)
+
+@router.get("/show_success/{message}/{centered}")
+def show_success(message: str, centered: bool = False):
+    notification_window.delay(message, NotificationEnum.SUCCESS.value, centered)
+
+@router.get("/show_warning/{message}/{centered}")
+def show_warning(message: str, centered: bool = False):
+    notification_window.delay(message, NotificationEnum.WARNING.value, centered)
+
+@router.get("/show_error/message")
+@throttle(milliseconds=5000)
+def show_error(message: str):
+    notification_window.delay(message, NotificationEnum.ERROR.value, centered=True)
+
+@router.post("/select")
+def select(
+    question: str,
+    options: List,
+    vertical: bool = True,
+    color: str = NotificationEnum.INFO.value,
+):
+    select_window.delay(question, options, vertical, color)
 
 
 @router.get("/test")
@@ -82,13 +253,13 @@ async def post_set(ableton_set: AbletonSet):
     await AbletonSetManager.register(ableton_set)
 
 
-@router.put("/set")
+@router.put("/set", include_in_schema=False)
 async def update_set(title: str, path: Optional[str] = None):
     AbletonSetManager.update_set(title, path)
 
 
-@router.delete("/set/{set_id}")
-async def delete_set(set_id: str):
+@router.get("/close_set/{set_id}")
+async def close_set(set_id: str):
     await AbletonSetManager.remove(set_id)
     await ws_manager.broadcast_server_state()
 
@@ -202,7 +373,6 @@ async def toggle_scene_loop():
 
 
 @router.get("/fire_scene_to_position/{bar_length}")
-@router.get("/fire_scene_to_position")
 async def fire_scene_to_position(bar_length: Optional[int] = None):
     p0_script_client().dispatch(FireSceneToPositionCommand(bar_length))
 

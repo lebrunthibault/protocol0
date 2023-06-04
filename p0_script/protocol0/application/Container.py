@@ -1,3 +1,5 @@
+import logging
+
 import Live
 from _Framework.ControlSurface import ControlSurface
 from typing import Type, Dict, Any
@@ -74,20 +76,31 @@ class Container(ContainerInterface):
     def __init__(self, control_surface):
         # type: (ControlSurface) -> None
         self._registry = {}  # type: Dict[Type, Any]
+        logging.info("titi")
 
-        DomainEventBus.subscribe(ScriptDisconnectedEvent, lambda _: self._disconnect())
+        # DomainEventBus.subscribe(ScriptDisconnectedEvent, lambda _: self._disconnect())
 
         live_song = control_surface.song()  # type: Live.Song.Song
+        logging.info("titi")
 
         Logger(LoggerService())
+        logging.info("titi")
         UndoFacade(live_song.begin_undo_step, live_song.end_undo_step)
+        logging.info("titi")
         StatusBar(control_surface.show_message)
+        logging.info("titi")
         Backend(control_surface._send_midi)
+        logging.info("titi")
         ErrorService(live_song)
+        logging.info("titi")
         midi_service = MidiService(control_surface._send_midi)
+        logging.info("titi")
         beat_scheduler = BeatScheduler(live_song)
+        logging.info("titi")
         tick_scheduler = TickScheduler(beat_scheduler, live_song)
+        logging.info("titi")
         Scheduler(tick_scheduler, beat_scheduler)  # setup Scheduler facade
+        logging.info("titi")
 
         # song components
         clip_component = ClipComponent(live_song.view)
@@ -100,6 +113,8 @@ class Container(ContainerInterface):
         scene_crud_component = SceneCrudComponent(
             live_song.create_scene, live_song.duplicate_scene, live_song.delete_scene
         )
+        logging.info("titi")
+
         track_component = TrackComponent(live_song.view)
         track_crud_component = TrackCrudComponent(
             live_song.create_midi_track,
@@ -135,6 +150,8 @@ class Container(ContainerInterface):
             scene_crud_component,
             quantization_component,
         )
+        logging.info("titi")
+        Logger.dev("dev titi")
         SimpleTrackService()
         matching_track_service = MatchingTrackService(track_crud_component)
         scene_service = SceneService(live_song, scene_crud_component)

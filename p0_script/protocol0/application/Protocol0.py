@@ -1,3 +1,5 @@
+import logging
+
 from _Framework.ControlSurface import ControlSurface
 from typing import Any
 
@@ -17,6 +19,7 @@ class Protocol0(ControlSurface):
     def __init__(self, c_instance=None):
         # type: (Any) -> None
         super(Protocol0, self).__init__(c_instance=c_instance)
+
         self._initialize()
 
     def _initialize(self, reset=False):
@@ -31,6 +34,7 @@ class Protocol0(ControlSurface):
             print(e)
             DomainEventBus.emit(ErrorRaisedEvent())
             return
+        logging.info("container saved")
 
         DomainEventBus.subscribe(ScriptResetActivatedEvent, lambda _: self._initialize(reset=True))
         CommandBus.dispatch(ReloadScriptCommand())

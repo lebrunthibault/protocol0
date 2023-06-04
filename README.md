@@ -22,3 +22,4 @@ I've split the project into different modules :
 - [A web frontend](https://github.com/lebrunthibault/protocol0/tree/main/p0_web) : a simple web app
   where the control surface script actions can be triggered from the browser. In case you don't have a midi controller at hand.
 - [A stream deck plugin](https://github.com/lebrunthibault/protocol0/tree/main/p0_stream_deck): an integration with elgato stream deck
+- [An ahk script](https://github.com/lebrunthibault/protocol0/tree/main/p0_ahk): custom keyboard shortcuts for controlling the script

@@ -63,5 +63,6 @@ class Scheduler(object):
     @classmethod
     def reset(cls):
         # type: () -> None
+        return
         cls._INSTANCE._tick_scheduler.stop()
         cls._INSTANCE._beat_scheduler.reset()

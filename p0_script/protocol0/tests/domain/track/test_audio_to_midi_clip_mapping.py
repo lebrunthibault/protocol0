@@ -1,4 +1,5 @@
-from protocol0 import EmptyModule
+from unittest.mock import Mock
+
 from protocol0.domain.lom.track.simple_track.AudioToMidiClipMapping import AudioToMidiClipMapping
 
 class ClipInfoTest(object):
@@ -8,7 +9,7 @@ class ClipInfoTest(object):
 
 # noinspection PyTypeChecker
 def test_audio_to_midi_clip_mapping():
-    mapping = AudioToMidiClipMapping(EmptyModule())  # noqa
+    mapping = AudioToMidiClipMapping(Mock())
     mapping.register_file_path("path1", ClipInfoTest(1))
     mapping.register_file_path("path1_bis", ClipInfoTest(1))
     mapping.register_file_path("path2", ClipInfoTest(2))

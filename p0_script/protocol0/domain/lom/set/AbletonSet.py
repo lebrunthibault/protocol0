@@ -97,7 +97,7 @@ class AbletonSet(object):
         data = self.to_dict()
         if self._cache != data or force:
             seq = Sequence()
-            seq.add(partial(Backend.client().notify_set_state, data))
+            seq.add(partial(Backend.client().post_set, data))
 
             if self._title is None:
                 seq.wait_for_backend_event("set_updated")

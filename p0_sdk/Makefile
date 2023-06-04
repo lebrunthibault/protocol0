@@ -1,4 +1,13 @@
+API_URL          ?= http://localhost:8000/openapi.json
+
+.env:
+	@powershell -Command "cp .env.dist .env"
+	@echo Please edit your .env
+
+bootstrap: .env
+	@npm install
+	@echo project bootstrapped
+
 sdk:
-	@java -jar openapi-generator-cli.jar generate -i http://localhost:8000/openapi.json -g python-legacy -c openapi_config.json -o p0_sdk -t openapi_templates
-	@cd ..\p0_script && poetry install
+	@openapi-generator-cli generate -i $(API_URL) -g python -c openapi_config.json -o ../p0_script/protocol0/domain/shared/backend -t openapi_templates --global-property apis --global-property apiTests=false,apiDocs=false
 .PHONY: sdk

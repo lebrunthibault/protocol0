@@ -10,12 +10,12 @@ from mido import Message
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.api.settings import Settings
-from p0_backend.gui.celery import check_celery_worker_status, notification_window
-from p0_backend.gui.task_cache import TaskCache
-from p0_backend.gui.window.notification.notification_factory import NotificationFactory
+from p0_backend.celery.celery import check_celery_worker_status, notification_window
+from p0_backend.lib.ableton_set import AbletonSet
 from p0_backend.lib.enum.notification_enum import NotificationEnum
-from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.midi.mido import _get_input_port
+from p0_backend.lib.notification.notification.notification_factory import NotificationFactory
+from p0_backend.lib.task_cache import TaskCache
 from p0_backend.lib.timer import start_timer
 from p0_backend.lib.utils import (
     log_string,
@@ -27,7 +27,8 @@ logger = logger.opt(colors=True)
 
 settings = Settings()
 
-def start_midi_server():
+
+def start():
     system_check()
 
     midi_port_backend_loopback = mido.open_input(
@@ -48,7 +49,7 @@ def start_midi_server():
         time.sleep(0.005)  # release cpu
 
 
-def stop_midi_server():
+def stop():
     logger.info("stopping midi server")
     sys.exit()
 
@@ -100,9 +101,6 @@ def _poll_midi_port(midi_port):
             break
 
 
-_SILENT_MESSAGES = ("log",)
-
-
 def _execute_midi_message(message: Message):
     # shortcut to call directly the script api
     command = make_script_command_from_sysex_message(message=message)
@@ -115,21 +113,32 @@ def _execute_midi_message(message: Message):
         return
 
     # or it can exploit the routes public API by passing an operation name
-    from p0_backend.api.midi_server.routes import Routes
 
-    route = Routes()
-    method = getattr(route, payload["method"], None)
+    method_name = payload["method"]
+    args = list(payload["args"].values())
 
-    if method is None:
-        raise Protocol0Error(f"Unknown Route: {payload}")
+    from loguru import logger
+    logger.success(method_name)
+    logger.success(args)
 
-    if method.__name__ not in _SILENT_MESSAGES:
-        logger.info(f"GET: Route.{method.__name__}")
-
-    try:
-        method(**payload["args"])
-    except Protocol0Error as e:
-        notification_window.delay(
-            str(e), notification_enum=NotificationEnum.WARNING.value, centered=True
+    if method_name == "post_set":
+        requests.post(f"{settings.http_api_url}/set", data=AbletonSet(**args[0]).json())
+        return
+    elif method_name == "select":
+        requests.post(
+            f"{settings.http_api_url}/select",
+            json={
+                "question": args[0],
+                "options": args[1],
+                "vertical": args[2],
+                "color": args[3],
+            },
         )
-        raise e
+        return
+
+    api_url = f"{settings.http_api_url}/{method_name}"
+
+    for arg in args:
+        api_url += f"/{arg}"
+
+    requests.get(api_url)

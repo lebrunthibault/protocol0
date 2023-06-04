@@ -20,6 +20,10 @@ def get_last_launched_track_set(excluded_keywords=("default", "master")) -> str:
         f"{settings.ableton_set_directory}\\ideas\\**\\*.als"
     )
 
+    from loguru import logger
+    logger.success(set_filenames)
+    return ""
+
     track_set_filenames = filter(
         lambda name: not any(excluded in name.lower() for excluded in excluded_keywords),
         set_filenames,
