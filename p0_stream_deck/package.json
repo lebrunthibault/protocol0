@@ -1,5 +1,5 @@
 {
-  "name": "@code/p0_stream_deck",
+  "name": "@p0/p0_stream_deck",
   "private": true,
   "version": "1.0.0",
   "description": "Stream Deck Plugin for [Ableton Protocol0 Surface Script](https://github.com/lebrunthibault/Protocol-0-Surface-Script)",

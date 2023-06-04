@@ -1,9 +1,12 @@
 {
-  "name": "code",
+  "name": "p0",
   "private": true,
   "workspaces": [
-    "libs/*",
-    "projects/*"
+    "p0_backend/*",
+    "p0_script/*",
+    "p0_sdk/*",
+    "p0_stream_deck/*",
+    "p0_web/*"
   ],
   "scripts": {
     "build": "turbo run build",
