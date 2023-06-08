@@ -83,18 +83,16 @@ The backend is exposing its api over midi, and I'm using loopMidi virtual ports 
 
 `make bootstrap`
 
-### Install the script
+### Install the script in your remote scripts folder (for Live 11)
 
-- clone the repo in your remote scripts directory
-- create a python virtual env, activate it and `pip install -r .\requirements.txt`
-- Try using a configurable midi controller to match the mappings in ./application/control_surface/group. The main
-  commands are defined in ActionGroupMain
+- `make install_script_p0`
+- `make install_script_p0_midi` to add a midi port proxy
+
+These commands will generate a simple midi remote scripts importing the [protocol0](https://pypi.org/project/protocol0/) pypi library.
 
 ### Install the backend
 
-- clone and follow the README install section of the [backend](https://github.com/lebrunthibault/protocol0/tree/main/p0_backend).
-- You should also 
-
+- follow the README install section of the [backend](https://github.com/lebrunthibault/protocol0/tree/main/p0_backend).
 
 ## Development
 
@@ -103,11 +101,9 @@ scripts concepts are
 explained. [see this article](https://lebrunthibault.github.io/post/music/protocol0/p0-technical-overview/) (might be a bit
 outdated)
 
-I'm working on dev and releasing working versions to master
-
 I've been using DDD concepts to structure the script with a single central domain folder
 
-### Tools
+### Coding tools and tests
 
-- `make test` runs the test suite (pytest).
-- `make check` runs the linting tools and tests on the whole project. I'm using flake8, vulture and mypy.
+- `npm run lint`
+- `npm run test`

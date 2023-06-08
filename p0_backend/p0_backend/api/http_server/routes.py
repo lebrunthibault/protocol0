@@ -2,11 +2,12 @@ from time import sleep
 from typing import List
 from typing import Optional
 
+from celery import Celery
 from fastapi import APIRouter
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.api.http_server.ws import ws_manager
-from p0_backend.celery.celery import select_window, notification_window
+from p0_backend.celery.celery import select_window, notification_window, celery_app, create_app
 from p0_backend.lib.ableton.ableton import (
     reload_ableton,
     clear_arrangement,
@@ -227,22 +228,26 @@ def _close_explorer_window(title: str):
 
 @router.get("/show_info")
 def show_info(message: str, centered: bool = False):
+    create_app()
     notification_window.delay(message, NotificationEnum.INFO.value, centered)
 
 
 @router.get("/show_success")
 def show_success(message: str, centered: bool = False):
+    create_app()
     notification_window.delay(message, NotificationEnum.SUCCESS.value, centered)
 
 
 @router.get("/show_warning")
 def show_warning(message: str, centered: Optional[bool] = False):
+    create_app()
     notification_window.delay(message, NotificationEnum.WARNING.value, centered)
 
 
-@router.get("/show_error/message")
+@router.get("/show_errors/message")
 @throttle(milliseconds=5000)
 def show_error(message: str):
+    create_app()
     notification_window.delay(message, NotificationEnum.ERROR.value, centered=True)
 
 
@@ -253,6 +258,7 @@ def select(
     vertical: bool = True,
     color: str = NotificationEnum.INFO.value,
 ):
+    create_app()
     select_window.delay(question, options, vertical, color)
 
 

@@ -25,13 +25,8 @@ install_script_p0_midi:
 .PHONY: install_script_p0_midi
 
 publish:
-	cls||clear
-	@del dist -fo
+	@del dist /F /Q
 	@bump2version patch --allow-dirty
 	@python -m build
-	twine upload dist/*
+	@twine upload dist/*
 .PHONY: publish
-
-test:
-	@poetry run pytest -s .
-.PHONY: test

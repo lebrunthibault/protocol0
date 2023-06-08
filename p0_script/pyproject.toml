@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "protocol0"
-version = "1.0.13"
+version = "1.0.15"
 description = "Protocol0 ableton remote script"
 readme = "README.md"
 authors = ["Thibault Lebrun <thibaultlebrun@live.fr>"]

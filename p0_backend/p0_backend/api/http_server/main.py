@@ -8,13 +8,13 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
 from loguru import logger
-
-from p0_backend.settings import Settings
-from p0_backend.lib.enum.notification_enum import NotificationEnum
-from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse
+
+from p0_backend.lib.enum.notification_enum import NotificationEnum
+from p0_backend.lib.errors.Protocol0Error import Protocol0Error
+from p0_backend.settings import Settings
 
 load_dotenv()
 
@@ -23,9 +23,6 @@ from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.api.http_server.routes import router  # noqa
 from p0_backend.api.http_server.ws import ws_router  # noqa
 from protocol0.application.command.GetSetStateCommand import GetSetStateCommand  # noqa
-from protocol0.application.command.EmitBackendEventCommand import (
-    EmitBackendEventCommand,
-)
 
 settings = Settings()
 
@@ -68,7 +65,7 @@ async def _catch_protocol0_errors(request: Request, call_next):
 
         notification_window.delay(str(e), notification_enum=notification_level, centered=True)
 
-        p0_script_client().dispatch(EmitBackendEventCommand("error"))
+        # p0_script_client().dispatch(EmitBackendEventCommand("error"))
         return PlainTextResponse(str(e), status_code=500)
 
 
@@ -101,4 +98,5 @@ def start():
         port=8000,
         reload=True,
         reload_dirs=settings.project_directory,
+        workers=2
     )
