@@ -24,3 +24,10 @@ test:
 	@poetry run python p0_backend/scripts/cli.py test
 .PHONY: test
 
+build:
+	@docker compose build
+.PHONY: build
+
+up:
+	@docker compose up
+.PHONY: up

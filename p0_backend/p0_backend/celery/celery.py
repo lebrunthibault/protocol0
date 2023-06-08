@@ -12,7 +12,11 @@ from p0_backend.lib.enum.color_enum import ColorEnum
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 
 os.environ.setdefault("FORKED_BY_MULTIPROCESSING", "1")
-celery_app = Celery("tasks", broker="redis://localhost")
+
+def create_app():
+    return Celery("tasks", broker="redis://localhost")
+
+celery_app = create_app()
 celery_app.control.purge()
 celery_app.conf.result_expires = 1
 
