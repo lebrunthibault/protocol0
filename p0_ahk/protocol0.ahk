@@ -61,11 +61,11 @@ return
 	callBackend("fire_scene_to_position")
 return
 ^NumPad0::
-	callBackend("fire_scene_to_position", "-1")
+	callBackend("fire_scene_to_position?bar_length=-1")
 return
 FireSceneToPosition:
     barLength:=SubStr(A_ThisHotkey,"^NumPad") - 1
-	callBackend("fire_scene_to_position", barLength)
+	callBackend("fire_scene_to_position?bar_length="barLength)
 Return
 ^Enter::
 	callBackend("go_to_group_track")
@@ -74,43 +74,43 @@ return
 	callBackend("record_unlimited")
 return
 ^Left::
-	callBackend("scroll_scene_position", "prev")
+	callBackend("scroll_scene_position?direction=prev")
 return
 ^Right::
-	callBackend("scroll_scene_position", "next")
+	callBackend("scroll_scene_position?direction=next")
 return
 ^+Left::
-	callBackend("scroll_scene_position_fine", "prev")
+	callBackend("scroll_scene_position_fine?direction=prev")
 return
 ^+Right::
-	callBackend("scroll_scene_position_fine", "next")
+	callBackend("scroll_scene_position_fine?direction=next")
 return
 +Left::
-	callBackend("scroll_scene_tracks", "prev")
+	callBackend("scroll_scene_tracks?direction=prev")
 return
 +Right::
-	callBackend("scroll_scene_tracks", "next")
+	callBackend("scroll_scene_tracks?direction=next")
 return
 ^Up::
-	callBackend("scroll_scenes", "next")
+	callBackend("scroll_scenes?direction=next")
 return
 ^Down::
-	callBackend("scroll_scenes", "prev")
+	callBackend("scroll_scenes?direction=prev")
 return
 ^!Up::
-	callBackend("scroll_track_volume", "next")
+	callBackend("scroll_track_volume?direction=next")
 return
 ^!Down::
-	callBackend("scroll_track_volume", "prev")
+	callBackend("scroll_track_volume?direction=prev")
 return
 ^+i::
 	callBackend("show_instrument")
 return
 ^q::
-	callBackend("show_automation", "next")
+	callBackend("show_automation?direction=next")
 return
 ^+q::
-	callBackend("show_automation", "prev")
+	callBackend("show_automation?direction=prev")
 return
 ^e::
 	callBackend("toggle_clip_notes")

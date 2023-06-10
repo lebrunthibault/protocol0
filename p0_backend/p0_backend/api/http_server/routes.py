@@ -2,12 +2,11 @@ from time import sleep
 from typing import List
 from typing import Optional
 
-from celery import Celery
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.api.http_server.ws import ws_manager
-from p0_backend.celery.celery import select_window, notification_window, celery_app, create_app
+from p0_backend.celery.celery import select_window, notification_window, create_app
 from p0_backend.lib.ableton.ableton import (
     reload_ableton,
     clear_arrangement,
@@ -253,10 +252,10 @@ def show_error(message: str):
 
 @router.post("/select")
 def select(
-    question: str,
-    options: List,
-    vertical: bool = True,
-    color: str = NotificationEnum.INFO.value,
+    question: str = Body(...),
+    options: List[str] = Body(...),
+    vertical: bool = Body(True),
+    color: str = Body(NotificationEnum.INFO.value),
 ):
     create_app()
     select_window.delay(question, options, vertical, color)
@@ -395,6 +394,8 @@ async def toggle_scene_loop():
 
 @router.get("/fire_scene_to_position")
 async def fire_scene_to_position(bar_length: int = 1):
+    from loguru import logger
+    logger.success(bar_length)
     p0_script_client().dispatch(FireSceneToPositionCommand(bar_length))
 
 
@@ -408,7 +409,7 @@ async def record_unlimited():
     p0_script_client().dispatch(RecordUnlimitedCommand())
 
 
-@router.get("/scroll_scenes/{direction}")
+@router.get("/scroll_scenes")
 async def scroll_scenes(direction: str):
     p0_script_client().dispatch(ScrollScenesCommand(go_next=direction == "next"))
 

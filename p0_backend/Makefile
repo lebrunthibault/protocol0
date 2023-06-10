@@ -16,10 +16,6 @@ celery:
 	@poetry run celery -A p0_backend.celery.celery.celery_app worker --events --concurrency=10 --without-heartbeat --without-gossip --without-mingle --loglevel=INFO
 .PHONY: celery
 
-logs:
-	@poetry run logs
-.PHONY: logs
-
 test:
 	@poetry run python p0_backend/scripts/cli.py test
 .PHONY: test

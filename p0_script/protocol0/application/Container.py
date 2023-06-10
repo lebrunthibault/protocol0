@@ -149,8 +149,6 @@ class Container(ContainerInterface):
             scene_crud_component,
             quantization_component,
         )
-        logging.info("titi")
-        Logger.dev("dev titi")
         SimpleTrackService()
         matching_track_service = MatchingTrackService(track_crud_component)
         scene_service = SceneService(live_song, scene_crud_component)
