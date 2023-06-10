@@ -85,10 +85,14 @@ The backend is exposing its api over midi, and I'm using loopMidi virtual ports 
 
 ### Install the script in your remote scripts folder (for Live 11)
 
-- `make install_script_p0`
-- `make install_script_p0_midi` to add a midi port proxy
+- `make install_script`
 
-These commands will generate a simple midi remote scripts importing the [protocol0](https://pypi.org/project/protocol0/) pypi library.
+Will install two scripts
+- **p0**: the main script
+- **p0_midi**: a proxy script that forwards input midi messages to the main script (overcomes the windows single midi input limitation)
+
+> These commands will generate two simple midi remote scripts
+> importing control surfaces from the [protocol0](https://pypi.org/project/protocol0/) pypi library.
 
 ### Install the backend
 
