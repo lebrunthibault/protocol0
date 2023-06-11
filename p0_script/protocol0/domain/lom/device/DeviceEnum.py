@@ -229,6 +229,7 @@ class DeviceEnum(AbstractEnum):
             ],
             [
                 cls.DRUM_RACK,
+                cls.SYLENTH1,
                 cls.KONTAKT,
                 cls.OPUS,
             ],

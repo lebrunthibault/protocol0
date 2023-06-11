@@ -61,3 +61,5 @@ COMPUTER_KEYBOARD  # unused variable (domain\lom\track\routing\InputRoutingTypeE
 PRE_FX  # unused variable (domain\lom\track\routing\InputRoutingChannelEnum.py:6)
 POST_MIXER  # unused variable (domain\lom\track\routing\InputRoutingChannelEnum.py:8)
 MASTER  # unused variable (domain\lom\track\routing\OutputRoutingTypeEnum.py:5)
+_.dev  # unused attribute (protocol0\tests\domain\fixtures\p0.py:45)
+_.dev  # unused method (protocol0\shared\logging\Logger.py:17)
