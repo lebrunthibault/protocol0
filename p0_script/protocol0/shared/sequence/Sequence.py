@@ -299,10 +299,12 @@ class Sequence(Observable):
         self.add(
             partial(
                 Backend.client().select,
-                question,
-                options,
-                vertical=vertical,
-                color=color.value,
+                {
+                    "question": question,
+                    "options": options,
+                    "vertical": vertical,
+                    "color": color.value,
+                },
             )
         )
         self.wait_for_backend_event("option_selected")
@@ -313,7 +315,13 @@ class Sequence(Observable):
         """helper method for selects"""
         self.add(
             partial(
-                Backend.client().select, question, options, vertical=vertical, color=color.value
+                Backend.client().select,
+                {
+                    "question": question,
+                    "options": options,
+                    "vertical": vertical,
+                    "color": color.value,
+                }
             )
         )
         self.wait_for_backend_event("option_selected")

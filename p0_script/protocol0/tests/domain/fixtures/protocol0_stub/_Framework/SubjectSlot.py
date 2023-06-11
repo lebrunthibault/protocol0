@@ -2,7 +2,8 @@ from unittest.mock import Mock
 
 
 class SlotManager:
-    pass
+    def disconnect(self):
+        pass
 
 
 Subject = Mock()
