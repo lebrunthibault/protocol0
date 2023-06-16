@@ -11,7 +11,9 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class SceneCrudComponent(object):
-    def __init__(self, create_scene: Callable, duplicate_scene: Callable, delete_scene: Callable) -> None:
+    def __init__(
+        self, create_scene: Callable, duplicate_scene: Callable, delete_scene: Callable
+    ) -> None:
         self._create_scene = create_scene
         self._duplicate_scene = duplicate_scene
         self._delete_scene = delete_scene
@@ -37,8 +39,7 @@ class SceneCrudComponent(object):
         seq = Sequence()
         seq.add(partial(self.duplicate_scene, scene))
         seq.add(partial(start_window.apply_to_scene, scene.clips))
-        seq.defer()
-        seq.add(lambda: end_window.apply_to_scene(Song.selected_scene().clips))
+        seq.add(lambda: end_window.apply_to_scene(Song.scenes()[scene.index + 1].clips))
 
         return seq.done()
 

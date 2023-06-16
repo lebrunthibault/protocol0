@@ -54,7 +54,7 @@ class SceneClips(Observable):
 
     @property
     def tracks(self) -> List[SimpleTrack]:
-        return [scene_clip.track for scene_clip in self._clip_slot_tracks]
+        return [scene_cs.track for scene_cs in self._clip_slot_tracks if scene_cs.clip is not None]
 
     @debounce(duration=50)
     def update(self, observable: Observable) -> None:

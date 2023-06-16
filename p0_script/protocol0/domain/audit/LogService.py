@@ -88,6 +88,8 @@ class LogService(object):
         # Logger.info()
         Logger.info("selected_scene.clips.all: %s" % Song.selected_scene().clips.all)
         Logger.info()
+        Logger.info("selected_scene.clips.tracks: %s" % Song.selected_scene().clips.tracks)
+        Logger.info()
         longest_clip = Song.selected_scene()._scene_length.get_longest_clip()
         clip_track = find_if(lambda t: longest_clip in t.clips, Song.simple_tracks())
         Logger.info("selected_scene.longest_clip: %s (%s)" % (longest_clip, clip_track))

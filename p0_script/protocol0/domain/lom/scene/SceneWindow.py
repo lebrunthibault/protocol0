@@ -34,12 +34,11 @@ class SceneWindow(object):
 
             if not self._contains_scene_end:
                 clip.loop.end = clip.loop.start + self._end_length
+
             clip.loop.start += self._start_length
+            clip.loop.start_marker = clip.loop.start
 
             clip.crop()
-
-            if self._contains_scene_end:
-                clip.delete()
 
     @classmethod
     def create_from_split(cls, scene_length: float, split_bar_length: int) -> Tuple["SceneWindow", "SceneWindow"]:
