@@ -97,6 +97,7 @@ def start():
         host="0.0.0.0",
         port=8000,
         reload=True,
+        log_config="p0_backend/api/http_server/logging-config.yaml",
         reload_dirs=settings.project_directory,
-        workers=1
+        workers=1,
     )

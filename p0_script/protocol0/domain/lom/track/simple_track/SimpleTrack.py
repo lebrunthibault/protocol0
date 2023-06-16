@@ -237,6 +237,10 @@ class SimpleTrack(AbstractTrack):
         for clip in self.clips:
             clip.color = color_index
 
+    def _remove_arrangement_clips(self) -> None:
+        for clip in self._track.arrangement_clips:
+            self._track.delete_clip(clip)
+
     def fire(self, scene_index: int) -> None:
         clip = self.clip_slots[scene_index].clip
         if clip is not None:
@@ -353,6 +357,11 @@ class SimpleTrack(AbstractTrack):
         for clip in self.clips:
             clip.loop.end = clip.loop.end_marker  # to have tails
 
+        self._remove_arrangement_clips()
+
+        from protocol0.shared.logging.Logger import Logger
+        Logger.dev(f"flattening {self}")
+
         seq = Sequence()
 
         if flatten_track:
@@ -361,7 +370,9 @@ class SimpleTrack(AbstractTrack):
             seq.add(Backend.client().flatten_track)
             seq.wait_for_backend_event("track_focused")
             seq.add(recolor_track)
+            seq.log("track focused !")
             seq.wait_for_backend_event("track_flattened")
+            seq.log("track flattened !")
             seq.defer()
         else:
             self.select()

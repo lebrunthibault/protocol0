@@ -118,4 +118,7 @@ def _execute_midi_message(message: Message):
         requests.post(f"{settings.http_api_url}/select", json=args)
         return
 
+    from loguru import logger
+    logger.warning(f"{settings.http_api_url}/{method_name}")
+
     requests.get(f"{settings.http_api_url}/{method_name}", params=args)
