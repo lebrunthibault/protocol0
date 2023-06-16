@@ -7,9 +7,9 @@ from protocol0.domain.shared.ValueScroller import ValueScroller
 class SceneCropScroller(ValueScroller):
     def __init__(self, scene_length: SceneLength) -> None:
         self._scene_length = scene_length
-        super(SceneCropScroller, self).__init__(1)
+        super(SceneCropScroller, self).__init__(int(self._scene_length.bar_length / 2))
 
-    def _get_values(self) -> List:
+    def _get_values(self) -> List[int]:
         bar_lengths = []
         power = 0
         while pow(2, power) < self._scene_length.bar_length:

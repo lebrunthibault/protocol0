@@ -52,4 +52,4 @@ class ActionGroupTest(ActionGroupInterface):
             Logger.info(track.clip_mapping._file_path_mapping)
 
     def action_test(self) -> None:
-        pass
+        Song.selected_clip().loop.start_marker = 2

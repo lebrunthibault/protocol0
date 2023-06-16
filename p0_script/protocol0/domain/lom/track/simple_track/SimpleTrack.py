@@ -359,9 +359,6 @@ class SimpleTrack(AbstractTrack):
 
         self._remove_arrangement_clips()
 
-        from protocol0.shared.logging.Logger import Logger
-        Logger.dev(f"flattening {self}")
-
         seq = Sequence()
 
         if flatten_track:
