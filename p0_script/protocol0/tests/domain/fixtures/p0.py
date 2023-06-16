@@ -1,6 +1,5 @@
 import sys
 from os.path import dirname
-from typing import Optional
 from unittest.mock import Mock
 
 sys.path.insert(0, f"{dirname(__file__)}/protocol0_stub")
@@ -34,7 +33,7 @@ def make_protocol0():
     Scheduler.wait = classmethod(nop)
     monkey_patch_static()
     p0 = Protocol0(Mock())
-    monkey_patch_p0(live_song)
+    Scheduler(TickSchedulerTest(), BeatScheduler(live_song))
     Scheduler.wait = wait
     return p0
 
@@ -66,8 +65,3 @@ def monkey_patch_static():
         print(message)
 
     Logger._log = classmethod(log)
-
-
-def monkey_patch_p0(live_song=None):
-    # type: (Optional[Live.Song.Song]) -> None
-    Scheduler(TickSchedulerTest(), BeatScheduler(live_song))

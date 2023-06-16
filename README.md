@@ -10,6 +10,10 @@ It has a focus on :
 - Recording external synths (both midi and audio) in a smart way
 - Being able to export / import sub tracks so as to always work on flattened audio track with the possibility to recall the base (midi track) at a button push.
 
+## Requirements
+- [Ableton Live 11+](https://www.ableton.com/fr/live/)
+- Python 3.7+
+
 ## Organisation
 
 I've split the project into different modules :
@@ -23,3 +27,4 @@ I've split the project into different modules :
   where the control surface script actions can be triggered from the browser. In case you don't have a midi controller at hand.
 - [A stream deck plugin](https://github.com/lebrunthibault/protocol0/tree/main/p0_stream_deck): an integration with elgato stream deck
 - [An ahk script](https://github.com/lebrunthibault/protocol0/tree/main/p0_ahk): custom keyboard shortcuts for controlling the script
+

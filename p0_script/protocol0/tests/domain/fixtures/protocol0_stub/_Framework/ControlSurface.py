@@ -1,9 +1,9 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, MagicMock
 
 
 class ControlSurface:
     def __init__(self, *a, **k):
-        self.component_guard = Mock()
+        self.component_guard = MagicMock()
         self.set_highlighting_session_component = Mock()
         self.application = Mock()
 

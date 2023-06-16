@@ -57,6 +57,7 @@ def test_multi_encoder_press():
 
 def test_multi_encoder_scroll():
     # type: () -> None
+    make_protocol0()
     res = {"scrolled": False}
 
     # noinspection PyUnusedLocal
