@@ -25,14 +25,12 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class TrackFactory(object):
-    def __init__(self, track_crud_component, browser_service, drum_rack_service):
-        # type: (TrackCrudComponent, BrowserServiceInterface, DrumRackService) -> None
+    def __init__(self, track_crud_component: TrackCrudComponent, browser_service: BrowserServiceInterface, drum_rack_service: DrumRackService) -> None:
         self._track_crud_component = track_crud_component
         self._browser_service = browser_service
         self._drum_rack_service = drum_rack_service
 
-    def create_simple_track(self, track, index, cls=None):
-        # type: (Live.Track.Track, int, Optional[Type[SimpleTrack]]) -> SimpleTrack
+    def create_simple_track(self, track: Live.Track.Track, index: int, cls: Optional[Type[SimpleTrack]] = None) -> SimpleTrack:
         # checking first on existing tracks
         existing_simple_track = Song.optional_simple_track_from_live_track(track)
         if existing_simple_track and (cls is None or isinstance(existing_simple_track, cls)):
@@ -57,8 +55,7 @@ class TrackFactory(object):
 
         return cls(track, index)
 
-    def create_abstract_group_track(self, base_group_track):
-        # type: (SimpleTrack) -> AbstractGroupTrack
+    def create_abstract_group_track(self, base_group_track: SimpleTrack) -> AbstractGroupTrack:
         previous_abstract_group_track = base_group_track.abstract_group_track
 
         if ExternalSynthTrack.is_group_track_valid(base_group_track):
@@ -74,8 +71,7 @@ class TrackFactory(object):
         else:
             return NormalGroupTrack.make(base_group_track)
 
-    def add_sample_track(self, category, sample_sub_category):
-        # type: (SampleCategoryEnum, str) -> Sequence
+    def add_sample_track(self, category: SampleCategoryEnum, sample_sub_category: str) -> Sequence:
         sample_group_track = Song.drums_track()
         if sample_group_track is None:
             raise Protocol0Warning("Sample group track doesn't exist")

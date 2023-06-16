@@ -11,18 +11,15 @@ if TYPE_CHECKING:
 
 
 class SimpleTrackClips(object):
-    def __init__(self, clip_slots, track_devices, track_color):
-        # type: (SimpleTrackClipSlots, SimpleTrackDevices, int) -> None
+    def __init__(self, clip_slots: "SimpleTrackClipSlots", track_devices: SimpleTrackDevices, track_color: int) -> None:
         self._clip_slots = clip_slots
         self.clip_color_manager = SimpleTrackClipColorManager(self, track_devices, track_color)
 
-    def __iter__(self):
-        # type: () -> Iterator[Clip]
+    def __iter__(self) -> Iterator[Clip]:
         return iter(self._clips)
 
     @property
-    def _clips(self):
-        # type: () -> List[Clip]
+    def _clips(self) -> List[Clip]:
         return [
             clip_slot.clip
             for clip_slot in list(self._clip_slots)

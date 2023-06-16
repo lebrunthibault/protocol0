@@ -10,24 +10,20 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class SimpleTrackHasDeviceValidator(ValidatorInterface):
-    def __init__(self, track, device_enum, browser_service):
-        # type: (SimpleTrack, DeviceEnum, BrowserServiceInterface) -> None
+    def __init__(self, track: SimpleTrack, device_enum: DeviceEnum, browser_service: BrowserServiceInterface) -> None:
         self._track = track
         self._device_enum = device_enum
         self._browser_service = browser_service
 
-    def get_error_message(self):
-        # type: () -> Optional[str]
+    def get_error_message(self) -> Optional[str]:
         if self.is_valid():
             return None
         return "Couldn't find device %s in %s" % (self._device_enum, self._track)
 
-    def is_valid(self):
-        # type: () -> bool
+    def is_valid(self) -> bool:
         return self._track.devices.get_one_from_enum(self._device_enum) is not None
 
-    def fix(self):
-        # type: () -> Sequence
+    def fix(self) -> Sequence:
 
         seq = Sequence()
         seq.add(self._track.select)

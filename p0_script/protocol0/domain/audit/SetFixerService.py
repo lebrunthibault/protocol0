@@ -6,13 +6,11 @@ from protocol0.shared.logging.Logger import Logger
 
 
 class SetFixerService(object):
-    def __init__(self, validator_service, set_upgrade_service):
-        # type: (ValidatorService, SetUpgradeService) -> None
+    def __init__(self, validator_service: ValidatorService, set_upgrade_service: SetUpgradeService) -> None:
         self._validator_service = validator_service
         self._set_upgrade_service = set_upgrade_service
 
-    def fix_set(self):
-        # type: () -> bool
+    def fix_set(self) -> bool:
         """Fix the current set to the current standard regarding naming / coloring etc .."""
         Logger.clear()
 
@@ -35,15 +33,13 @@ class SetFixerService(object):
             Logger.info("set fixed")
             return False
 
-    def find_devices_to_remove(self):
-        # type: () -> None
+    def find_devices_to_remove(self) -> None:
         devices_to_remove = list(self._set_upgrade_service.get_deletable_devices())
 
         if len(devices_to_remove):
             Logger.warning("Devices to remove: %s" % devices_to_remove)
 
-    def _refresh_objects_appearance(self):
-        # type: () -> None
+    def _refresh_objects_appearance(self) -> None:
         clip_slots = [cs for track in Song.simple_tracks() for cs in track.clip_slots]
         clips = [clip for track in Song.simple_tracks() for clip in track.clips]
         # noinspection PyTypeChecker

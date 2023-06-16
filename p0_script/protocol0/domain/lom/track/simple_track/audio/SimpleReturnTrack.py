@@ -10,8 +10,7 @@ from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 class SimpleReturnTrack(SimpleAudioTrack):
     IS_ACTIVE = False
 
-    def __init__(self, *a, **k):
-        # type: (Any, Any) -> None
+    def __init__(self, *a: Any, **k: Any) -> None:
         super(SimpleReturnTrack, self).__init__(*a, **k)
         Scheduler.defer(partial(setattr, self.appearance, "color", TrackColorEnum.RETURN.value))
         self.appearance.disconnect()

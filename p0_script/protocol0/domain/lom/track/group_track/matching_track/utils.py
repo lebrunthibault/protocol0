@@ -14,8 +14,7 @@ if TYPE_CHECKING:
     from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 
 
-def assert_valid_track_name(track_name):
-    # type: (str) -> None
+def assert_valid_track_name(track_name: str) -> None:
     from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 
     excluded_names = [d.value.lower() for d in DeviceEnum if d.is_instrument]
@@ -24,8 +23,7 @@ def assert_valid_track_name(track_name):
     assert track_name.lower() not in excluded_names, "Track name should be specific"
 
 
-def ensure_clips_looped(clips):
-    # type: (List[Clip]) -> None
+def ensure_clips_looped(clips: List[Clip]) -> None:
     unlooped_clips = [clip for clip in clips if not clip.looping]
     if len(unlooped_clips) > 0:
         Logger.info("Looping unlooped clips")
@@ -34,8 +32,7 @@ def ensure_clips_looped(clips):
         clip.looping = True
 
 
-def is_valid_matching_track(track, audio_track):
-    # type: (SimpleTrack, SimpleTrack) -> bool
+def is_valid_matching_track(track: "SimpleTrack", audio_track: "SimpleTrack") -> bool:
     from protocol0.domain.lom.track.group_track.NormalGroupTrack import NormalGroupTrack
 
     return (
@@ -46,8 +43,7 @@ def is_valid_matching_track(track, audio_track):
     )
 
 
-def get_matching_audio_track(base_track):
-    # type: (AbstractTrack) -> Optional[SimpleAudioTrack]
+def get_matching_audio_track(base_track: "AbstractTrack") -> Optional["SimpleAudioTrack"]:
     from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 
     # restrict the search

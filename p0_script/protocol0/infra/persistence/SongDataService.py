@@ -9,8 +9,7 @@ from protocol0.shared.Song import Song
 
 
 class SongDataElement(object):
-    def __init__(self, get_value):
-        # type: (Callable) -> None
+    def __init__(self, get_value: Callable) -> None:
         self.get_value = get_value
         self.saved_value = None
 
@@ -20,8 +19,7 @@ class SongDataService(object):
 
     _DEBUG = False
 
-    def __init__(self, get_data, set_data, scene_component):
-        # type: (Callable, Callable, SceneComponent) -> None
+    def __init__(self, get_data: Callable, set_data: Callable, scene_component: SceneComponent) -> None:
 
         self._set_data = set_data
         self._get_data = get_data
@@ -38,14 +36,12 @@ class SongDataService(object):
         self._restore()
         DomainEventBus.subscribe(SceneFiredEvent, lambda _: self._save())
 
-    def _save(self):
-        # type: () -> None
+    def _save(self) -> None:
         """Save watched elements in the set data"""
         for enum, element in self._elements.items():
             self._set_data(enum.value, element.get_value())
 
-    def _restore(self):
-        # type: () -> None
+    def _restore(self) -> None:
         """Restore data from set data to script"""
         for enum, element in self._elements.items():
             element.saved_value = self._get_data(enum.value, None)
@@ -53,8 +49,7 @@ class SongDataService(object):
         # time for script to be initialized
         Scheduler.defer(self._restore_set_state)
 
-    def _restore_set_state(self):
-        # type: () -> None
+    def _restore_set_state(self) -> None:
         selected_scene_index = self._elements.get(SongDataEnum.SELECTED_SCENE_INDEX).saved_value
         if selected_scene_index is not None and selected_scene_index < len(Song.scenes()):
             selected_scene = Song.scenes()[selected_scene_index]

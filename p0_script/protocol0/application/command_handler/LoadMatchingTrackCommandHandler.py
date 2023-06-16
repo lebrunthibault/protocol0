@@ -5,6 +5,5 @@ from protocol0.shared.Song import Song
 
 
 class LoadMatchingTrackCommandHandler(CommandHandlerInterface):
-    def handle(self, command):
-        # type: (LoadMatchingTrackCommand) -> None
+    def handle(self, command: LoadMatchingTrackCommand) -> None:
         Song.selected_track(SimpleAudioTrack).load_full_track()

@@ -32,8 +32,7 @@ from protocol0.shared.Song import Song
 
 
 class TrackRecorderExternalSynthFactory(AbstractTrackRecorderFactory):
-    def get_record_config(self, track, record_type, recording_bar_length):
-        # type: (ExternalSynthTrack, RecordTypeEnum, int) -> RecordConfig
+    def get_record_config(self, track: ExternalSynthTrack, record_type: RecordTypeEnum, recording_bar_length: int) -> RecordConfig:
         tracks = [track.audio_track]
         if record_type.records_midi:
             tracks.insert(0, track.midi_track)
@@ -48,8 +47,7 @@ class TrackRecorderExternalSynthFactory(AbstractTrackRecorderFactory):
             records_midi=record_type.records_midi,
         )
 
-    def _get_scene_index(self, track, record_type):
-        # type: (ExternalSynthTrack, RecordTypeEnum) -> Optional[int]
+    def _get_scene_index(self, track: ExternalSynthTrack, record_type: RecordTypeEnum) -> Optional[int]:
         if record_type.records_midi:
             for i in range(Song.selected_scene().index, len(Song.scenes())):
                 if (
@@ -64,8 +62,7 @@ class TrackRecorderExternalSynthFactory(AbstractTrackRecorderFactory):
                 raise Protocol0Warning("No midi clip selected")
             return Song.selected_scene().index
 
-    def _get_bar_length(self, track, record_type, bar_length):
-        # type: (ExternalSynthTrack, RecordTypeEnum, int) -> int
+    def _get_bar_length(self, track: ExternalSynthTrack, record_type: RecordTypeEnum, bar_length: int) -> int:
         midi_bar_length = 0
         if not record_type.records_midi:
             midi_clip = track.midi_track.clip_slots[Song.selected_scene().index].clip
@@ -79,8 +76,7 @@ class TrackRecorderExternalSynthFactory(AbstractTrackRecorderFactory):
             RecordTypeEnum.AUDIO_MULTI_SCENE: midi_bar_length,
         }[record_type]
 
-    def get_processors(self, record_type):
-        # type: (RecordTypeEnum) -> RecordProcessors
+    def get_processors(self, record_type: RecordTypeEnum) -> RecordProcessors:
         midi_processor_config = RecordProcessors(
             pre_record=PreRecordMidi(), post_record=PostRecordMidi()
         )

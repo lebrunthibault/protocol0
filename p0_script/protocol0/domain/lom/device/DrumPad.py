@@ -15,36 +15,31 @@ class DrumPad(SlotManager):
     _FIRST_DRUM_PAD_WIDTH = 115
     _FIRST_DRUM_PAD_HEIGHT = 987
 
-    def __init__(self, drum_pad):
-        # type: (Live.DrumPad.DrumPad) -> None
+    def __init__(self, drum_pad: Live.DrumPad.DrumPad) -> None:
         super(DrumPad, self).__init__()
         self._drum_pad = drum_pad
-        self.chains = []  # type: List[DeviceChain]
+        self.chains: List[DeviceChain] = []
         self._chains_listener.subject = self._drum_pad
         self._chains_listener()
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         out = "DrumPad(name='%s', note=%s" % (self.name, self.note)
         if self.is_empty:
             out += ", empty=True"
         return out + ")"
 
     @subject_slot("chains")
-    def _chains_listener(self):
-        # type: () -> None
+    def _chains_listener(self) -> None:
         self.chains = [
             DeviceChain(chain, index) for index, chain in enumerate(self._drum_pad.chains)
         ]
 
     @property
-    def name(self):
-        # type: () -> str
+    def name(self) -> str:
         return smart_string(self._drum_pad.name)
 
     @property
-    def sample(self):
-        # type: () -> Sample
+    def sample(self) -> Sample:
         assert not self.is_empty, "pad is empty"
         simpler = cast(SimplerDevice, self.chains[0].devices[0])
         assert isinstance(simpler, SimplerDevice), "pad device is not a simpler"
@@ -52,17 +47,14 @@ class DrumPad(SlotManager):
         return simpler.sample
 
     @property
-    def note(self):
-        # type: () -> int
+    def note(self) -> int:
         return self._drum_pad.note
 
     @property
-    def is_empty(self):
-        # type: () -> bool
+    def is_empty(self) -> bool:
         return len(self._drum_pad.chains) == 0
 
     @classmethod
-    def select_first_pad(cls):
-        # type: () -> Sequence
+    def select_first_pad(cls) -> Sequence:
         Backend.client().click(cls._FIRST_DRUM_PAD_WIDTH, cls._FIRST_DRUM_PAD_HEIGHT)
         return Sequence().wait(2).done()

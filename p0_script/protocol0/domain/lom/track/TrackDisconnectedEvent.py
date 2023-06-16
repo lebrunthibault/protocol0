@@ -5,6 +5,5 @@ if TYPE_CHECKING:
 
 
 class TrackDisconnectedEvent(object):
-    def __init__(self, track):
-        # type: (AbstractTrack) -> None
+    def __init__(self, track: "AbstractTrack") -> None:
         self.track = track

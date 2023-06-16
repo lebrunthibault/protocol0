@@ -8,12 +8,10 @@ from protocol0.domain.lom.instrument.preset.preset_importer.PresetImportInterfac
 
 
 class PluginDevicePresetImporter(PresetImportInterface):
-    def __init__(self, device):
-        # type: (PluginDevice) -> None
+    def __init__(self, device: PluginDevice) -> None:
         self._device = device
 
-    def _import_presets(self):
-        # type: () -> List[InstrumentPreset]
+    def _import_presets(self) -> List[InstrumentPreset]:
         return [
             InstrumentPreset(index=i, name=preset)
             for i, preset in enumerate(self._device.presets[0:128])

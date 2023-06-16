@@ -5,11 +5,9 @@ from protocol0.domain.lom.instrument.preset.InstrumentPreset import InstrumentPr
 
 
 class PresetChangerInterface(object):
-    def __init__(self, device, preset_offset):
-        # type: (Optional[Device], int) -> None
+    def __init__(self, device: Optional[Device], preset_offset: int) -> None:
         self._device = device
         self._preset_offset = preset_offset
 
-    def load(self, preset):
-        # type: (InstrumentPreset) -> None
+    def load(self, preset: InstrumentPreset) -> None:
         raise NotImplementedError

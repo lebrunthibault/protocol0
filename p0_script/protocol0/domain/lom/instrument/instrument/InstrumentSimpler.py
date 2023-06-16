@@ -18,7 +18,6 @@ class InstrumentSimpler(InstrumentInterface):
     CAN_BE_SHOWN = False
     PRESET_CHANGER = SamplePresetChanger
 
-    def __init__(self, *a, **k):
-        # type: (Any, Any) -> None
+    def __init__(self, *a: Any, **k: Any) -> None:
         super(InstrumentSimpler, self).__init__(*a, **k)
         self.device = cast(SimplerDevice, self.device)

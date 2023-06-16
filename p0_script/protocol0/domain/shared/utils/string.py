@@ -1,13 +1,11 @@
 from typing import Any
 
 
-def smart_string(s):
-    # type: (Any) -> str
+def smart_string(s: Any) -> str:
     return s
 
 
-def title(s):
-    # type: (str) -> str
+def title(s: str) -> str:
     # .title is not good because of words starting with numbers
     if not s:
         return s

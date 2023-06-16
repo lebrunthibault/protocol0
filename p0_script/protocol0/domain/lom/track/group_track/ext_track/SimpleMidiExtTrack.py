@@ -8,14 +8,12 @@ from protocol0.domain.shared.utils.list import find_if
 class SimpleMidiExtTrack(SimpleMidiTrack):
     """Tagging class for the main midi track of an ExternalSynthTrack"""
 
-    def __init__(self, *a, **k):
-        # type: (Any, Any) -> None
+    def __init__(self, *a: Any, **k: Any) -> None:
         super(SimpleMidiExtTrack, self).__init__(*a, **k)
         self.clip_tail.active = False
 
     @property
-    def external_device(self):
-        # type: () -> Optional[Device]
+    def external_device(self) -> Optional[Device]:
         return find_if(
             lambda d: d.enum is not None and d.enum.is_external_device, list(self.devices)
         )

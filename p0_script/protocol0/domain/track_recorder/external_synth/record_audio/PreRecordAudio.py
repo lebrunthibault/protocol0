@@ -9,8 +9,7 @@ from protocol0.domain.track_recorder.external_synth.ExtAudioRecordingStartedEven
 
 
 class PreRecordAudio(RecordProcessorInterface):
-    def process(self, track, config):
-        # type: (ExternalSynthTrack, RecordConfig) -> None
+    def process(self, track: ExternalSynthTrack, config: RecordConfig) -> None:
         track.monitoring_state.monitor_midi()
         midi_clip = track.midi_track.clip_slots[config.scene_index].clip
         if midi_clip.loop.start != 0:

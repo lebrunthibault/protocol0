@@ -25,30 +25,26 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 class SceneService(SlotManager):
     # noinspection PyInitNewSignature
-    def __init__(self, live_song, scene_crud_component):
-        # type: (Live.Song.Song, SceneCrudComponent) -> None
+    def __init__(self, live_song: Live.Song.Song, scene_crud_component: SceneCrudComponent) -> None:
         super(SceneService, self).__init__()
         self._live_song = live_song
         self._scene_crud_component = scene_crud_component
 
         self.scenes_listener.subject = live_song
         self._selected_scene_listener.subject = live_song.view
-        self._live_scene_id_to_scene = collections.OrderedDict()  # type: Dict[int, Scene]
+        self._live_scene_id_to_scene: Dict[int, Scene] = collections.OrderedDict()
 
         DomainEventBus.subscribe(TrackAddedEvent, self._on_track_added_event)
 
-    def get_scene(self, live_scene):
-        # type: (Live.Scene.Scene) -> Scene
+    def get_scene(self, live_scene: Live.Scene.Scene) -> Scene:
         return self._live_scene_id_to_scene[live_scene._live_ptr]
 
     @property
-    def scenes(self):
-        # type: () -> List[Scene]
+    def scenes(self) -> List[Scene]:
         return list(self._live_scene_id_to_scene.values())
 
     @property
-    def last_scene(self):
-        # type: () -> Scene
+    def last_scene(self) -> Scene:
         current_scene = self.scenes[0]
         while current_scene.next_scene and current_scene.next_scene != current_scene:
             current_scene = current_scene.next_scene
@@ -57,8 +53,7 @@ class SceneService(SlotManager):
 
     @subject_slot("scenes")
     @handle_error
-    def scenes_listener(self):
-        # type: () -> None
+    def scenes_listener(self) -> None:
         previous_live_scenes_ids = self._live_scene_id_to_scene.keys()
 
         self._generate_scenes()
@@ -73,24 +68,22 @@ class SceneService(SlotManager):
     @subject_slot("selected_scene")
     @handle_error
     @debounce(duration=50)
-    def _selected_scene_listener(self):
-        # type: () -> None
+    def _selected_scene_listener(self) -> None:
         """
         debounce necessary when multiple scenes are added at the same time
         (e.g. when importing a track)
         """
         DomainEventBus.emit(SessionUpdatedEvent())
 
-    def _generate_scenes(self):
-        # type: () -> None
+    def _generate_scenes(self) -> None:
         # save playing scene
         playing_live_scene = Song.playing_scene()._scene if Song.playing_scene() else None
         self._clean_deleted_scenes()
 
         # mapping cs should be done before generating the scenes
-        tracks = chain(
+        tracks: Iterator[AbstractTrack] = chain(
             Song.simple_tracks(), Song.abstract_tracks()
-        )  # type: Iterator[AbstractTrack]
+        )
         for track in collections.OrderedDict.fromkeys(tracks):
             track.on_scenes_change()
 
@@ -107,8 +100,7 @@ class SceneService(SlotManager):
             playing_scene = find_if(lambda s: s._scene == playing_live_scene, Song.scenes())
             PlayingSceneFacade.set(playing_scene)
 
-    def _clean_deleted_scenes(self):
-        # type: () -> None
+    def _clean_deleted_scenes(self) -> None:
         """cleaning all scenes always"""
         existing_scene_ids = [scene._live_ptr for scene in self._live_song.scenes]
 
@@ -125,25 +117,21 @@ class SceneService(SlotManager):
             if scene == Song.playing_scene():
                 PlayingSceneFacade.set(None)
 
-    def generate_scene(self, live_scene, index):
-        # type: (Live.Scene.Scene, int) -> None
+    def generate_scene(self, live_scene: Live.Scene.Scene, index: int) -> None:
         # switching to full remap because of persisting mapping problems when moving scenes
         scene = Scene(live_scene, index)
         self._live_scene_id_to_scene[scene.live_id] = scene
 
-    def _sort_scenes(self):
-        # type: () -> None
+    def _sort_scenes(self) -> None:
         sorted_dict = collections.OrderedDict()
         for scene in self._live_song.scenes:
             sorted_dict[scene._live_ptr] = self.get_scene(scene)
         self._live_scene_id_to_scene = sorted_dict
 
-    def _on_track_added_event(self, _):
-        # type: (TrackAddedEvent) -> Sequence
+    def _on_track_added_event(self, _: TrackAddedEvent) -> Sequence:
         seq = Sequence()
 
-        def delete_empty_scenes():
-            # type: () -> None
+        def delete_empty_scenes() -> None:
             for scene in list(reversed(Song.scenes()))[1:]:
                 if len(scene.clips.all) == 0:
                     self._scene_crud_component.delete_scene(scene)

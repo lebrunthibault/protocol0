@@ -7,8 +7,7 @@ from protocol0.shared.Song import Song
 class ActionGroupFix(ActionGroupInterface):
     CHANNEL = 5
 
-    def configure(self):
-        # type: () -> None
+    def configure(self) -> None:
         # SET encoder
         self.add_encoder(
             identifier=1,

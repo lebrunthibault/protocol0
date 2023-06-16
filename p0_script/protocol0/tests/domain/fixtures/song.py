@@ -22,8 +22,7 @@ class AbletonSong(Subject):
         "current_song_time",
     )
 
-    def __init__(self):
-        # type: () -> None
+    def __init__(self) -> None:
         self.view = AbletonSongView()
         self.tempo = 120
         self.signature_numerator = 4
@@ -32,7 +31,7 @@ class AbletonSong(Subject):
         first_track.name = "First"
         self.tracks = [first_track]
         self.visible_tracks = self.tracks
-        self.return_tracks = []  # type: List[AbletonTrack]
+        self.return_tracks: List[AbletonTrack] = []
         self.master_track = AbletonTrack(track_type=TrackType.AUDIO)
         self.master_track.name = "Master"
         self.scenes = [AbletonScene()]
@@ -42,63 +41,48 @@ class AbletonSong(Subject):
         self.view.selected_scene = self.scenes[0]
         self.is_playing = False
 
-    def __repr__(self):
-        # type: () -> str
-        return
+    def __repr__(self) -> str:
+        return "AbletonSong"
 
-    def stop_playing(self):
-        # type: () -> None
+    def stop_playing(self) -> None:
         pass
 
-    def stop_all_clips(self, _):
-        # type: (bool) -> None
+    def stop_all_clips(self, _: bool) -> None:
         pass
 
-    def get_current_beats_song_time(self):
-        # type: () -> namedtuple
+    def get_current_beats_song_time(self) -> namedtuple:
         beats_song_time = namedtuple("beats_song_time", ["bars", "beats", "sub_division", "ticks"])
         return beats_song_time(1, 1, 1, 1)
 
-    def get_data(self, _, default):
-        # type: () -> Any
+    def get_data(self, _, default) -> Any:
         return default
 
-    def set_data(self, _, __):
-        # type: (str, Any) -> None
+    def set_data(self, _: str, __: Any) -> None:
         pass
 
-    def begin_undo_step(self):
-        # type: () -> None
+    def begin_undo_step(self) -> None:
         pass
 
-    def end_undo_step(self):
-        # type: () -> None
+    def end_undo_step(self) -> None:
         pass
 
-    def create_midi_track(self, _):
-        # type: (int) -> None
+    def create_midi_track(self, _: int) -> None:
         pass
 
-    def create_audio_track(self, _):
-        # type: (int) -> None
+    def create_audio_track(self, _: int) -> None:
         pass
 
-    def duplicate_track(self, _):
-        # type: (int) -> None
+    def duplicate_track(self, _: int) -> None:
         pass
 
-    def delete_track(self, _):
-        # type: (int) -> None
+    def delete_track(self, _: int) -> None:
         pass
 
-    def create_scene(self, _):
-        # type: (int) -> None
+    def create_scene(self, _: int) -> None:
         pass
 
-    def duplicate_scene(self, _):
-        # type: (int) -> None
+    def duplicate_scene(self, _: int) -> None:
         pass
 
-    def delete_scene(self, _):
-        # type: (int) -> None
+    def delete_scene(self, _: int) -> None:
         pass

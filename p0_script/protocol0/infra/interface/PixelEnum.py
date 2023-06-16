@@ -7,6 +7,5 @@ class PixelEnum(AbstractEnum):
     SAVE_SAMPLE = (534, 1316)
 
     @property
-    def coordinates(self):
-        # type: () -> Tuple[int, int]
+    def coordinates(self) -> Tuple[int, int]:
         return self.value

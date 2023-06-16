@@ -12,20 +12,17 @@ from protocol0.shared.sequence.Sequence import Sequence
 class AudioClipSlot(ClipSlot):
     CLIP_CLASS = AudioClip
 
-    def __init__(self, *a, **k):
-        # type: (Any, Any) -> None
+    def __init__(self, *a: Any, **k: Any) -> None:
         super(AudioClipSlot, self).__init__(*a, **k)
-        self.clip = self.clip  # type: Optional[AudioClip]
+        self.clip: Optional[AudioClip] = self.clip
 
-    def duplicate_clip_to(self, clip_slot):
-        # type: (AudioClipSlot) -> Sequence
+    def duplicate_clip_to(self, clip_slot: "AudioClipSlot") -> Sequence:
         seq = Sequence()
         seq.add(partial(super(AudioClipSlot, self).duplicate_clip_to, clip_slot))
         seq.add(clip_slot.notify_observers)
         return seq.done()
 
-    def replace_clip_sample(self, source_cs=None, file_path=None):
-        # type: (Optional["AudioClipSlot"], Optional[str]) -> Optional[Sequence]
+    def replace_clip_sample(self, source_cs: Optional["AudioClipSlot"] = None, file_path: Optional[str] = None) -> Optional[Sequence]:
         if not self._clip_slot:
             return None
 
@@ -58,6 +55,5 @@ class AudioClipSlot(ClipSlot):
         seq.add(lambda: setattr(self.clip, "name", clip_name))
         return seq.done()
 
-    def _assert_clip_file_path(self, clip, file_path):
-        # type: (AudioClip, str) -> None
+    def _assert_clip_file_path(self, clip: AudioClip, file_path: str) -> None:
         assert clip.file_path == file_path, "file path not replaced for %s" % clip

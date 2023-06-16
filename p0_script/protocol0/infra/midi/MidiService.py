@@ -20,24 +20,20 @@ class MidiService(object):
     _DEBUG = False
     _MIDI_STATUS_BYTES = {"note": 144, "cc": 176, "pc": 192}
 
-    def __init__(self, send_midi):
-        # type: (Callable) -> None
+    def __init__(self, send_midi: Callable) -> None:
         self._send_midi = send_midi
 
         DomainEventBus.subscribe(MidiBytesReceivedEvent, self._on_midi_bytes_received_event)
         DomainEventBus.subscribe(PresetProgramSelectedEvent, self._on_preset_program_selected_event)
         DomainEventBus.once(SongInitializedEvent, self._on_song_initialized_event)
 
-    def _sysex_to_string(self, sysex):
-        # type: (Tuple) -> str
+    def _sysex_to_string(self, sysex: Tuple) -> str:
         return bytearray(sysex[1:-1]).decode()
 
-    def _send_program_change(self, value, channel=0):
-        # type: (int, int) -> None
+    def _send_program_change(self, value: int, channel: int = 0) -> None:
         self._send_formatted_midi_message("pc", channel, value)
 
-    def _send_formatted_midi_message(self, message_type, channel, value, value2=None):
-        # type: (str, int, int, Optional[int]) -> None
+    def _send_formatted_midi_message(self, message_type: str, channel: int, value: int, value2: Optional[int] = None) -> None:
         status = self._MIDI_STATUS_BYTES[message_type]
         status += channel
         msg = [status, value]
@@ -48,25 +44,21 @@ class MidiService(object):
         self._send_midi(midi_message)
         DomainEventBus.emit(MidiBytesSentEvent(midi_message))
 
-    def _on_midi_bytes_received_event(self, event):
-        # type: (MidiBytesReceivedEvent) -> None
+    def _on_midi_bytes_received_event(self, event: MidiBytesReceivedEvent) -> None:
         message = self._sysex_to_string(sysex=event.midi_bytes)
         if self._DEBUG:
             Logger.info("message: %s" % message)
         command = SerializableCommand.un_serialize(message)
         CommandBus.dispatch(command)
 
-    def _on_preset_program_selected_event(self, event):
-        # type: (PresetProgramSelectedEvent) -> None
+    def _on_preset_program_selected_event(self, event: PresetProgramSelectedEvent) -> None:
         self._send_program_change(event.preset_index)
 
-    def _on_song_initialized_event(self, _):
-        # type: (SongInitializedEvent) -> None
+    def _on_song_initialized_event(self, _: SongInitializedEvent) -> None:
         Backend.client().ping()
         Scheduler.wait(10, self._check_protocol_midi_is_up)  # waiting for Protocol0_midi to boot
 
-    def _check_protocol_midi_is_up(self):
-        # type: () -> None
+    def _check_protocol_midi_is_up(self) -> None:
         from protocol0.application.Protocol0Midi import Protocol0Midi
 
         protocol0_midi = find_if(lambda cs: isinstance(cs, Protocol0Midi), get_control_surfaces())

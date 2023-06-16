@@ -10,8 +10,7 @@ from protocol0.domain.shared.utils.timing import defer
 
 class NormalGroupTrack(AbstractGroupTrack):
     @classmethod
-    def make(cls, base_group_track):
-        # type: (SimpleTrack) -> NormalGroupTrack
+    def make(cls, base_group_track: SimpleTrack) -> "NormalGroupTrack":
         from protocol0.domain.lom.track.group_track.DrumsTrack import DrumsTrack
         from protocol0.domain.lom.track.simple_track.audio.special.ReferenceTrack import (
             ReferenceTrack,
@@ -27,8 +26,7 @@ class NormalGroupTrack(AbstractGroupTrack):
         else:
             return NormalGroupTrack(base_group_track)
 
-    def on_added(self):
-        # type: () -> None
+    def on_added(self) -> None:
         super(NormalGroupTrack, self).on_added()
         self.name = self.computed_name
         if len(set(t.color for t in self.sub_tracks)) == 1:
@@ -36,15 +34,13 @@ class NormalGroupTrack(AbstractGroupTrack):
 
     @subject_slot("solo")
     @defer
-    def _solo_listener(self):
-        # type: () -> None
+    def _solo_listener(self) -> None:
         if self.solo:
             for sub_track in self.sub_tracks:
                 sub_track.solo = True
 
     @property
-    def computed_name(self):
-        # type: () -> str
+    def computed_name(self) -> str:
         # tracks have all the same name
         base_name = self._computed_base_name
         if base_name != self.name:
@@ -53,8 +49,7 @@ class NormalGroupTrack(AbstractGroupTrack):
             return self.name
 
     @property
-    def _computed_base_name(self):
-        # type: () -> str
+    def _computed_base_name(self) -> str:
         unique_sub_track_names = list(set([sub_track.name for sub_track in self.sub_tracks]))
         if len(unique_sub_track_names) == 1:
             return unique_sub_track_names[0]
@@ -65,8 +60,7 @@ class NormalGroupTrack(AbstractGroupTrack):
         if common_sub_tracks_instrument_class:
             return common_sub_tracks_instrument_class.NAME
 
-        def _name_prefix(track):
-            # type: (AbstractTrack) -> str
+        def _name_prefix(track: AbstractTrack) -> str:
             return track.base_track.name.split(" ")[0]
 
         # checking if all sub tracks have the same prefix
@@ -79,8 +73,7 @@ class NormalGroupTrack(AbstractGroupTrack):
         return self.name
 
     @property
-    def _common_sub_tracks_instrument_class(self):
-        # type: () -> Optional[Type[InstrumentInterface]]
+    def _common_sub_tracks_instrument_class(self) -> Optional[Type[InstrumentInterface]]:
         sub_tracks_instrument_classes = [
             sub_track.instrument.__class__ for sub_track in self.sub_tracks if sub_track.instrument
         ]

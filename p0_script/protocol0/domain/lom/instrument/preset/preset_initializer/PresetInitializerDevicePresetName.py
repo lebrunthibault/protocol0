@@ -8,7 +8,6 @@ from protocol0.domain.shared.utils.list import find_if
 
 
 class PresetInitializerDevicePresetName(PresetInitializerInterface):
-    def get_selected_preset(self, presets):
-        # type: (List[InstrumentPreset]) -> Optional[InstrumentPreset]
+    def get_selected_preset(self, presets: List[InstrumentPreset]) -> Optional[InstrumentPreset]:
         assert self._device, "no device"
         return find_if(lambda p: p.name == self._device.preset_name, presets)

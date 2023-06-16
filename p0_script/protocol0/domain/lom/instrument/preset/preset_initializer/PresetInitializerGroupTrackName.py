@@ -8,6 +8,5 @@ from protocol0.domain.shared.utils.list import find_if
 
 
 class PresetInitializerGroupTrackName(PresetInitializerInterface):
-    def get_selected_preset(self, presets):
-        # type: (List[InstrumentPreset]) -> Optional[InstrumentPreset]
+    def get_selected_preset(self, presets: List[InstrumentPreset]) -> Optional[InstrumentPreset]:
         return find_if(lambda p: p.name == self._track_name, presets)

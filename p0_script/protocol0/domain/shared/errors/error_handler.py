@@ -5,11 +5,9 @@ from typing import Any
 from protocol0.shared.types import Func
 
 
-def handle_error(func):
-    # type: (Func) -> Func
+def handle_error(func: Func) -> Func:
     @wraps(func)
-    def decorate(*a, **k):
-        # type: (Any, Any) -> Any
+    def decorate(*a: Any, **k: Any) -> Any:
         # noinspection PyBroadException
         try:
             return func(*a, **k)

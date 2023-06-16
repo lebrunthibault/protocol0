@@ -6,8 +6,7 @@ from typing import List, Optional, Iterator
 from protocol0.shared.Config import Config
 
 
-def get_code_filenames(exclude_folder_list=None):
-    # type: (Optional[List[str]]) -> Iterator[str]
+def get_code_filenames(exclude_folder_list: Optional[List[str]] = None) -> Iterator[str]:
     exclude_folder_list = (exclude_folder_list or []) + [
         ".git",
         "pytest",
@@ -25,8 +24,7 @@ def get_code_filenames(exclude_folder_list=None):
 
 
 @pytest.mark.skip(reason="slow")
-def test_sequence_pattern():
-    # type: () -> None
+def test_sequence_pattern() -> None:
     """test sequence pattern is respected"""
     for filename in get_code_filenames(["sequence", "tests"]):
         with open(filename, "r") as f:

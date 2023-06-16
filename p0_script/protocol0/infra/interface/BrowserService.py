@@ -13,15 +13,13 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class BrowserService(BrowserServiceInterface):
-    def __init__(self, browser, browser_loader_service):
-        # type: (Live.Browser.Browser, BrowserLoaderService) -> None
+    def __init__(self, browser: Live.Browser.Browser, browser_loader_service: BrowserLoaderService) -> None:
         super(BrowserService, self).__init__()
         self._browser = browser
         self._browser_loader_service = browser_loader_service
         DomainEventBus.subscribe(SampleSelectedEvent, self._on_sample_selected_event)
 
-    def load_device_from_enum(self, device_enum):
-        # type: (DeviceEnum) -> Sequence
+    def load_device_from_enum(self, device_enum: DeviceEnum) -> Sequence:
         seq = Sequence()
         browser_name = device_enum.browser_name
         if browser_name.endswith(".adv") or browser_name.endswith(".adg"):
@@ -35,22 +33,19 @@ class BrowserService(BrowserServiceInterface):
         seq.add(partial(DomainEventBus.emit, DeviceLoadedEvent(device_enum)))
         return seq.done()
 
-    def load_sample(self, name):
-        # type: (str) -> Sequence
+    def load_sample(self, name: str) -> Sequence:
         self._browser_loader_service.load_sample(name)
         seq = Sequence()
         seq.wait(10)
         return seq.done()
 
-    def load_from_user_library(self, name):
-        # type: (str) -> Sequence
+    def load_from_user_library(self, name: str) -> Sequence:
         self._browser_loader_service.load_from_user_library(name)
         seq = Sequence()
         seq.wait(20)
         return seq.done()
 
-    def load_drum_pad_sample(self, name):
-        # type: (str) -> Sequence
+    def load_drum_pad_sample(self, name: str) -> Sequence:
         ApplicationView.toggle_browse()
         self._browser_loader_service.load_sample(name)
         seq = Sequence()
@@ -58,8 +53,7 @@ class BrowserService(BrowserServiceInterface):
         seq.add(ApplicationView.toggle_browse)
         return seq.done()
 
-    def _on_sample_selected_event(self, event):
-        # type: (SampleSelectedEvent) -> None
+    def _on_sample_selected_event(self, event: SampleSelectedEvent) -> None:
         item = self._browser_loader_service.get_sample(sample_name=event.sample_name)
 
         if item is not None and item.is_loadable:

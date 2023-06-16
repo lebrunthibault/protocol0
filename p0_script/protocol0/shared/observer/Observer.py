@@ -5,6 +5,5 @@ if TYPE_CHECKING:
 
 
 class Observer(Protocol):
-    def update(self, observable):
-        # type: (Observable) -> None
+    def update(self, observable: "Observable") -> None:
         pass

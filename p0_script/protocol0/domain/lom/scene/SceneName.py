@@ -17,33 +17,28 @@ from protocol0.shared.logging.Logger import Logger
 
 
 class SceneName(SlotManager):
-    def __init__(self, scene, scene_length, scene_playing_state):
-        # type: (Live.Scene.Scene, SceneLength, ScenePlayingState) -> None
+    def __init__(self, scene: Live.Scene.Scene, scene_length: SceneLength, scene_playing_state: ScenePlayingState) -> None:
         super(SceneName, self).__init__()
         self._scene = scene
         self._scene_length = scene_length
         self._scene_playing_state = scene_playing_state
         self._name_listener.subject = scene
         self._last_updated_at = time.time()
-        self._cached_name = self._scene.name  # type: str
+        self._cached_name: str = self._scene.name
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "name of %s" % self._scene
 
-    def set_name(self, name):
-        # type: (str) -> None
+    def set_name(self, name: str) -> None:
         self._scene.name = title(name)
         self._cached_name = self._scene.name
 
     @subject_slot("name")
-    def _name_listener(self):
-        # type: () -> None
+    def _name_listener(self) -> None:
         if time.time() >= self._last_updated_at + 0.1:
             Scheduler.defer(self.update)
 
-    def _get_base_name(self):
-        # type: () -> str
+    def _get_base_name(self) -> str:
         if not self._scene:
             raise Protocol0Error("invalid scene object")
 
@@ -57,8 +52,7 @@ class SceneName(SlotManager):
 
         return base_name
 
-    def update(self, base_name=None, bar_position=None):
-        # type: (str, Optional[int]) -> None
+    def update(self, base_name: str = None, bar_position: Optional[int] = None) -> None:
         """throttling to avoid multiple calls due to name listener"""
         try:
             base_name = base_name if base_name else self._get_base_name()

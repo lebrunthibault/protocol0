@@ -10,21 +10,18 @@ from protocol0.shared.Config import Config
 from protocol0.shared.logging.Logger import Logger
 
 
-def clamp(val, min_v, max_v):
-    # type: (float, float, float) -> float
+def clamp(val: float, min_v: float, max_v: float) -> float:
     return max(min_v, min(val, max_v))
 
 
-def import_package(package):
-    # type: (types.ModuleType) -> None
+def import_package(package: types.ModuleType) -> None:
     """import all modules in a package"""
     prefix = package.__name__ + "."
     for _, mod_name, _ in pkgutil.iter_modules(package.__path__, prefix):
         __import__(mod_name)
 
 
-def locate(name):
-    # type: (str) -> Any
+def locate(name: str) -> Any:
     components = name.split(".")
     mod = __import__(components[0])
 
@@ -34,8 +31,7 @@ def locate(name):
     return mod
 
 
-def compare_values(value, expected_value):
-    # type: (Any, Any) -> bool
+def compare_values(value: Any, expected_value: Any) -> bool:
     if isinstance(value, float):
         value = round(value, 3)
         expected_value = round(expected_value, 3)
@@ -43,24 +39,21 @@ def compare_values(value, expected_value):
     return value == expected_value
 
 
-def get_length_legend(beat_length, signature_numerator):
-    # type: (float, int) -> str
+def get_length_legend(beat_length: float, signature_numerator: int) -> str:
     if int(beat_length) % signature_numerator != 0:
         return "%d beat%s" % (beat_length, "s" if beat_length > 1 else "")
     else:
         return str(int(beat_length / signature_numerator))
 
 
-def get_minutes_legend(seconds):
-    # type: (float) -> str
+def get_minutes_legend(seconds: float) -> str:
     minutes = int(seconds / 60)
     seconds = int(seconds % 60)
 
     return "%02d:%02d" % (minutes, seconds)
 
 
-def volume_to_db(vol):
-    # type: (float) -> float
+def volume_to_db(vol: float) -> float:
     if round(vol, 3) == round(Config.ZERO_VOLUME, 3):
         return 0
 
@@ -69,8 +62,7 @@ def volume_to_db(vol):
     )
 
 
-def db_to_volume(db):
-    # type: (float) -> float
+def db_to_volume(db: float) -> float:
     if db == 0:
         return Config.ZERO_VOLUME
 
@@ -92,13 +84,11 @@ def db_to_volume(db):
     )
 
 
-def polynomial(x, coeffs):
-    # type: (float, List[float]) -> float
+def polynomial(x: float, coeffs: List[float]) -> float:
     """Using polynomial interpolation"""
     coeffs = list(reversed(coeffs))
 
-    def make_term(val, index):
-        # type: (float, int) -> float
+    def make_term(val: float, index: int) -> float:
         term = coeffs[index]
         if index > 0:
             term *= pow(val, index)
@@ -107,8 +97,7 @@ def polynomial(x, coeffs):
     return sum([make_term(x, i) for i in range(len(coeffs))])
 
 
-def previous_power_of_2(x):
-    # type: (int) -> int
+def previous_power_of_2(x: int) -> int:
     if x == 0:
         return 0
 
@@ -120,10 +109,8 @@ def previous_power_of_2(x):
         return int(res / 2)
 
 
-def timeit(func):
-    # type: (Callable) -> Callable
-    def decorate(*a, **k):
-        # type: (Any, Any) -> None
+def timeit(func: Callable) -> Callable:
+    def decorate(*a: Any, **k: Any) -> None:
         start_at = time.time()
         res = func(*a, **k)
 
@@ -135,8 +122,7 @@ def timeit(func):
     return decorate
 
 
-def float_seq(start, end, step):
-    # type: (int, int, float) -> Iterable
+def float_seq(start: int, end: int, step: float) -> Iterable:
     assert step != 0
     sample_count = int(abs(end - start) / step)
 

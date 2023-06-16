@@ -2,7 +2,6 @@ from protocol0.application.command.SerializableCommand import SerializableComman
 
 
 class LoadDeviceCommand(SerializableCommand):
-    def __init__(self, enum_name):
-        # type: (str) -> None
+    def __init__(self, enum_name: str) -> None:
         super(LoadDeviceCommand, self).__init__()
         self.enum_name = enum_name

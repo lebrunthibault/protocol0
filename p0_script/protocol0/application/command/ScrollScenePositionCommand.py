@@ -2,8 +2,7 @@ from protocol0.application.command.SerializableCommand import SerializableComman
 
 
 class ScrollScenePositionCommand(SerializableCommand):
-    def __init__(self, go_next=False, use_fine_scrolling=False):
-        # type: (bool, bool) -> None
+    def __init__(self, go_next: bool = False, use_fine_scrolling: bool = False) -> None:
         """
         go_next == True: go right
         use_fine_scrolling True: scroll by beat instead of bars

@@ -7,8 +7,7 @@ from protocol0.shared.observer.Observable import Observable
 class SimpleBaseExtTrack(SimpleAudioTrack):
     """Tagging class for the main base track of and ExternalSynthTrack"""
 
-    def update(self, observable):
-        # type: (Observable) -> None
+    def update(self, observable: Observable) -> None:
         super(SimpleBaseExtTrack, self).update(observable)
 
         devices_count = len(list(self.devices))

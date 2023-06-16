@@ -18,10 +18,9 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class ClipSlot(SlotManager, Observable):
-    CLIP_CLASS = Clip  # type: Type[Clip]
+    CLIP_CLASS: Type[Clip] = Clip
 
-    def __init__(self, live_clip_slot, index, clip_config):
-        # type: (Live.ClipSlot.ClipSlot, int, ClipConfig) -> None
+    def __init__(self, live_clip_slot: Live.ClipSlot.ClipSlot, index: int, clip_config: ClipConfig) -> None:
         super(ClipSlot, self).__init__()
         self._clip_slot = live_clip_slot
         self._index = index
@@ -29,24 +28,20 @@ class ClipSlot(SlotManager, Observable):
         self.appearance = ClipSlotAppearance(live_clip_slot)
 
         self._has_clip_listener.subject = self._clip_slot
-        self.clip = None  # type: Optional[Clip]
+        self.clip: Optional[Clip] = None
         self._map_clip()
 
-    def __nonzero__(self):
-        # type: () -> bool
+    def __nonzero__(self) -> bool:
         return self._clip_slot is not None
 
-    def __eq__(self, clip_slot):
-        # type: (object) -> bool
+    def __eq__(self, clip_slot: object) -> bool:
         return isinstance(clip_slot, ClipSlot) and self._clip_slot == clip_slot._clip_slot
 
-    def __repr__(self, **k):
-        # type: (Any) -> str
+    def __repr__(self, **k: Any) -> str:
         return "%s (%s)" % (self.__class__.__name__, self.clip.name if self.clip else "empty")
 
     @subject_slot("has_clip")
-    def _has_clip_listener(self):
-        # type: () -> None
+    def _has_clip_listener(self) -> None:
         self._map_clip(is_new=True)
 
         DomainEventBus.emit(ClipCreatedOrDeletedEvent(self._clip_slot))
@@ -54,8 +49,7 @@ class ClipSlot(SlotManager, Observable):
 
         Scheduler.defer(self.appearance.refresh)
 
-    def _map_clip(self, is_new=False):
-        # type: (bool) -> None
+    def _map_clip(self, is_new: bool = False) -> None:
         if self.has_clip:
             self.clip = self.CLIP_CLASS(self._clip_slot.clip, self.index, self._clip_config)
 
@@ -69,8 +63,7 @@ class ClipSlot(SlotManager, Observable):
 
             self.clip = None
 
-    def update(self, observable):
-        # type: (Observable) -> None
+    def update(self, observable: Observable) -> None:
         if isinstance(observable, Clip):
             if observable.deleted:
                 self.delete_clip()
@@ -78,50 +71,41 @@ class ClipSlot(SlotManager, Observable):
                 self.select()
 
     @property
-    def has_clip(self):
-        # type: () -> bool
+    def has_clip(self) -> bool:
         return self._clip_slot and self._clip_slot.has_clip
 
     @property
-    def index(self):
-        # type: () -> int
+    def index(self) -> int:
         return self._index
 
     @index.setter
-    def index(self, index):
-        # type: (int) -> None
+    def index(self, index: int) -> None:
         self._index = index
         if self.clip:
             self.clip.index = index
 
     @property
-    def is_triggered(self):
-        # type: () -> bool
+    def is_triggered(self) -> bool:
         return self._clip_slot and self._clip_slot.is_triggered
 
     @property
-    def is_playing(self):
-        # type: () -> bool
+    def is_playing(self) -> bool:
         return self._clip_slot and self._clip_slot.is_playing
 
-    def fire(self):
-        # type: () -> None
+    def fire(self) -> None:
         self._clip_slot.fire()
 
-    def select(self):
-        # type: () -> None
+    def select(self) -> None:
         DomainEventBus.emit(ClipSlotSelectedEvent(self._clip_slot))
 
-    def delete_clip(self):
-        # type: () -> Sequence
+    def delete_clip(self) -> Sequence:
         seq = Sequence()
         if self._clip_slot and self.has_clip and self.clip:
             seq.add(self._clip_slot.delete_clip)
             seq.wait_for_event(ClipCreatedOrDeletedEvent, self._clip_slot)
         return seq.done()
 
-    def prepare_for_record(self):
-        # type: () -> Sequence
+    def prepare_for_record(self) -> Sequence:
         seq = Sequence()
         if self.clip:
             seq.add(self.delete_clip)
@@ -131,8 +115,7 @@ class ClipSlot(SlotManager, Observable):
         seq.defer()
         return seq.done()
 
-    def create_clip(self):
-        # type: () -> Optional[Sequence]
+    def create_clip(self) -> Optional[Sequence]:
         """creating one bar clip"""
         if self._clip_slot is None:
             return None
@@ -150,8 +133,7 @@ class ClipSlot(SlotManager, Observable):
         seq.add(lambda: self.clip.clip_name._name_listener())
         return seq.done()
 
-    def duplicate_clip_to(self, clip_slot):
-        # type: (ClipSlot) -> Sequence
+    def duplicate_clip_to(self, clip_slot: "ClipSlot") -> Sequence:
         seq = Sequence()
         if self._clip_slot:
             seq.add(partial(self._clip_slot.duplicate_clip_to, clip_slot._clip_slot))
@@ -159,8 +141,7 @@ class ClipSlot(SlotManager, Observable):
             seq.defer()
         return seq.done()
 
-    def disconnect(self):
-        # type: () -> None
+    def disconnect(self) -> None:
         super(ClipSlot, self).disconnect()
         if self.clip:
             self.clip.disconnect()

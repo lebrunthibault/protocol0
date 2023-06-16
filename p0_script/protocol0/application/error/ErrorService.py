@@ -27,12 +27,9 @@ class ErrorService(object):
     _SET_EXCEPTHOOK = False
     _IGNORED_ERROR_STRINGS = ("Cannot convert MIDI clip",)
 
-    _IGNORED_ERROR_TYPES = "Push2.push2.QmlError"
-
     _IGNORED_ERROR_FILENAMES = ("\\venv\\", "\\sequence\\", "\\decorators.py")
 
-    def __init__(self, song):
-        # type: (Live.Song.Song) -> None
+    def __init__(self, song: Live.Song.Song) -> None:
         self._song = song
 
         if self._SET_EXCEPTHOOK:
@@ -41,8 +38,7 @@ class ErrorService(object):
         DomainEventBus.subscribe(ErrorRaisedEvent, self._on_error_raised_event)
         DomainEventBus.subscribe(BackendEvent, self._on_backend_event)
 
-    def _on_error_raised_event(self, event):
-        # type: (ErrorRaisedEvent) -> None
+    def _on_error_raised_event(self, event: ErrorRaisedEvent) -> None:
         UndoFacade.end_undo_step()
         exc_type, exc_value, tb = sys.exc_info()
         assert exc_type and exc_value and tb, "cannot determine exception type and value"
@@ -54,34 +50,27 @@ class ErrorService(object):
         else:
             self._handle_exception(exc_type, exc_value, tb, event.context)
 
-    def _on_backend_event(self, event):
-        # type: (BackendEvent) -> None
+    def _on_backend_event(self, event: BackendEvent) -> None:
         if event.event == "error":
             self._restart()
 
-    def _handle_uncaught_exception(self, exc_type, exc_value, tb):
-        # type: (Type[BaseException], BaseException, TracebackType) -> None
-        if any([string in str(exc_value) for string in self._IGNORED_ERROR_STRINGS]) or any(
-            [string in str(exc_type) for string in self._IGNORED_ERROR_TYPES]
-        ):
+    def _handle_uncaught_exception(self, exc_type: Type[BaseException], exc_value: BaseException, tb: TracebackType) -> None:
+        if any([string in str(exc_value) for string in self._IGNORED_ERROR_STRINGS]):
             pass
         Logger.error("unhandled exception caught")
         self._handle_exception(exc_type, exc_value, tb)
 
     @classmethod
-    def log_stack_trace(cls):
-        # type: () -> None
+    def log_stack_trace(cls) -> None:
         """This will be logged and displayed nicely by the Service"""
 
         @handle_error
-        def raise_exception():
-            # type: () -> None
+        def raise_exception() -> None:
             raise RuntimeError("debug stack trace")
 
         raise_exception()
 
-    def _handle_exception(self, exc_type, exc_value, tb, context=None):
-        # type: (Type[BaseException], BaseException, TracebackType, Optional[str]) -> None
+    def _handle_exception(self, exc_type: Type[BaseException], exc_value: BaseException, tb: TracebackType, context: Optional[str] = None) -> None:
         entries = [fs for fs in extract_tb(tb) if self._log_file(fs[0])]
         if self._DEBUG:
             entries = extract_tb(tb)
@@ -98,16 +87,14 @@ class ErrorService(object):
 
         self._log_error(error_message)
 
-    def _restart(self):
-        # type: () -> None
+    def _restart(self) -> None:
         Sequence.reset()
 
         # Scheduler.restart()
         # noinspection PyArgumentList
         self._song.stop_playing()  # prevent more errors coming through
 
-    def _log_file(self, name):
-        # type: (str) -> bool
+    def _log_file(self, name: str) -> bool:
         if not name:
             return False
         elif not name.startswith(Config.PROJECT_ROOT):
@@ -117,8 +104,7 @@ class ErrorService(object):
 
         return True
 
-    def _format_list(self, extracted_list, print_line=True):
-        # type: (List[Any], bool) -> List[str]
+    def _format_list(self, extracted_list: List[Any], print_line: bool = True) -> List[str]:
         """Format a list of traceback entry tuples for printing.
 
         Given a list of tuples as returned by extract_tb() or
@@ -141,8 +127,7 @@ class ErrorService(object):
             trace_list.append(item)
         return trace_list
 
-    def _log_error(self, message):
-        # type: (str) -> None
+    def _log_error(self, message: str) -> None:
         Logger.error(message, show_notification=False, debug=False)
 
         seq = Sequence()

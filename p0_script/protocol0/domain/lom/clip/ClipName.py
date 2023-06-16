@@ -15,8 +15,7 @@ from protocol0.shared.logging.Logger import Logger
 class ClipName(SlotManager):
     _DEBUG = False
 
-    def __init__(self, live_clip):
-        # type: (Live.Clip.Clip) -> None
+    def __init__(self, live_clip: Live.Clip.Clip) -> None:
         super(ClipName, self).__init__()
         self._live_clip = live_clip
         self.register_slot(self._live_clip, partial(self._name_listener, force=True), "loop_start")
@@ -26,38 +25,33 @@ class ClipName(SlotManager):
         )
         self.register_slot(self._live_clip, partial(self._name_listener, force=True), "end_marker")
         self._name_listener.subject = self._live_clip
-        self._base_name = None  # type: Optional[str]
+        self._base_name: Optional[str] = None
 
     @property
-    def name(self):
-        # type: () -> str
+    def name(self) -> str:
         if self._live_clip:
             return smart_string(self._live_clip.name)
         else:
             return ""
 
     @name.setter
-    def name(self, name):
-        # type: (str) -> None
+    def name(self, name: str) -> None:
         if self._live_clip and name:
             self._live_clip.name = str(name).strip()  # noqa
 
     @property
-    def base_name(self):
-        # type: () -> str
+    def base_name(self) -> str:
         """lazy loading"""
         if self._base_name is None:
             self._base_name = self._get_base_name()
         return self._base_name
 
     @base_name.setter
-    def base_name(self, base_name):
-        # type: (str) -> None
+    def base_name(self, base_name: str) -> None:
         self._base_name = base_name
 
     @subject_slot("name")
-    def _name_listener(self, force=False):
-        # type: (bool) -> None
+    def _name_listener(self, force: bool = False) -> None:
         base_name = self._get_base_name()
         # base_name != "" is for renaming empty clips
         if (
@@ -70,8 +64,7 @@ class ClipName(SlotManager):
         self.base_name = base_name
         Scheduler.defer(self.update)
 
-    def _get_base_name(self):
-        # type: () -> str
+    def _get_base_name(self) -> str:
         # noinspection PyBroadException
         try:
             clip_name = self._live_clip.name or ""
@@ -89,8 +82,7 @@ class ClipName(SlotManager):
         else:
             return base_name
 
-    def _get_length_legend(self):
-        # type: () -> str
+    def _get_length_legend(self) -> str:
         try:
             if hasattr(self._live_clip, "warping") and not self._live_clip.warping:
                 return ""
@@ -102,8 +94,7 @@ class ClipName(SlotManager):
             Song.signature_numerator(),
         )
 
-    def update(self, base_name=None):
-        # type: (Optional[str]) -> None
+    def update(self, base_name: Optional[str] = None) -> None:
         if not self._live_clip:
             return None
         if self._live_clip.is_recording:

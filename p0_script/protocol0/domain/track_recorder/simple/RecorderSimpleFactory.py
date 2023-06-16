@@ -14,8 +14,7 @@ from protocol0.shared.Song import Song
 
 
 class TrackRecorderSimpleFactory(AbstractTrackRecorderFactory):
-    def get_record_config(self, track, record_type, recording_bar_length):
-        # type: (SimpleTrack, RecordTypeEnum, int) -> RecordConfig
+    def get_record_config(self, track: SimpleTrack, record_type: RecordTypeEnum, recording_bar_length: int) -> RecordConfig:
         return RecordConfig(
             record_name=record_type.value,
             tracks=[track],
@@ -24,16 +23,14 @@ class TrackRecorderSimpleFactory(AbstractTrackRecorderFactory):
             records_midi=True,
         )
 
-    def _get_recording_scene_index(self, track):
-        # type: (SimpleTrack) -> Optional[int]
+    def _get_recording_scene_index(self, track: SimpleTrack) -> Optional[int]:
         for i in range(Song.selected_scene().index, len(Song.scenes())):
             if not track.clip_slots[i].clip:
                 return i
 
         return None
 
-    def _get_recording_bar_length(self, record_type, bar_length):
-        # type: (RecordTypeEnum, int) -> int
+    def _get_recording_bar_length(self, record_type: RecordTypeEnum, bar_length: int) -> int:
         if record_type == RecordTypeEnum.MIDI_UNLIMITED:
             return 0
         elif record_type == RecordTypeEnum.MIDI:
@@ -45,6 +42,5 @@ class TrackRecorderSimpleFactory(AbstractTrackRecorderFactory):
         else:
             raise Protocol0Warning("Invalid record type")
 
-    def get_processors(self, record_type):
-        # type: (RecordTypeEnum) -> RecordProcessors
+    def get_processors(self, record_type: RecordTypeEnum) -> RecordProcessors:
         return RecordProcessors(post_record=PostRecordSimple())

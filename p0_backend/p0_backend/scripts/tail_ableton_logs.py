@@ -53,7 +53,6 @@ class LogConfig:
         "\.wav. could not be opened",
         "traceback.format_stack",
         "Link: Disabled",
-        "Push2.push2",
         "MemoryUsage:",
         "VST 2.4",
         "is an invalid filename",

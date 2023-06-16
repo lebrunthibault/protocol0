@@ -6,12 +6,10 @@ from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.shared.sequence.Sequence import Sequence
 
 
-def test_sequence_parallel():
-    # type: () -> None
+def test_sequence_parallel() -> None:
     test_res = []
 
-    def inner_seq(val):
-        # type: (int) -> Sequence
+    def inner_seq(val: int) -> Sequence:
         # noinspection PyShadowingNames
         seq = Sequence()
 
@@ -21,8 +19,7 @@ def test_sequence_parallel():
 
         return seq.done()
 
-    def check_res():
-        # type: () -> None
+    def check_res() -> None:
         assert test_res == [0, 2, 1, 3, 4]
 
     seq = Sequence()
@@ -38,16 +35,13 @@ def test_sequence_parallel_wait_for_event_match():
     test_res = []
 
     class TestEvent(object):
-        def __init__(self, value):
-            # type: (int) -> None
+        def __init__(self, value: int) -> None:
             self.value = value
 
-        def target(self):
-            # type: () -> int
+        def target(self) -> int:
             return self.value
 
-    def inner_sequence(value):
-        # type: (int) -> Sequence
+    def inner_sequence(value: int) -> Sequence:
         inner_seq = Sequence()
         inner_seq.wait_for_event(TestEvent, value)
         inner_seq.add(lambda: test_res.append(value))

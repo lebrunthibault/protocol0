@@ -71,13 +71,12 @@ from protocol0.shared.types import T
 class Container(ContainerInterface):
     """Direct DI container"""
 
-    def __init__(self, control_surface):
-        # type: (ControlSurface) -> None
-        self._registry = {}  # type: Dict[Type, Any]
+    def __init__(self, control_surface: ControlSurface) -> None:
+        self._registry: Dict[Type, Any] = {}
 
         # DomainEventBus.subscribe(ScriptDisconnectedEvent, lambda _: self._disconnect())
 
-        live_song = control_surface.song()  # type: Live.Song.Song
+        live_song: Live.Song.Song = control_surface.song()
 
         Logger(LoggerService())
         UndoFacade(live_song.begin_undo_step, live_song.end_undo_step)
@@ -231,8 +230,7 @@ class Container(ContainerInterface):
 
         ActionGroupFactory.create_action_groups(self, control_surface.component_guard)
 
-    def _register(self, service):
-        # type: (object) -> None
+    def _register(self, service: object) -> None:
 
         if service.__class__ in self._registry:
             raise Protocol0Error("service already registered in container : %s" % service)
@@ -244,15 +242,13 @@ class Container(ContainerInterface):
                 raise Protocol0Error("interface already registered in container : %s" % base_class)
             self._registry[base_class] = service
 
-    def get(self, cls):
-        # type: (Type[T]) -> T
+    def get(self, cls: Type[T]) -> T:
         if cls not in self._registry:
             raise Protocol0Error("Couldn't find %s in container" % cls)
 
         return self._registry[cls]
 
-    def _disconnect(self):
-        # type: () -> None
+    def _disconnect(self) -> None:
         Scheduler.reset()
         self.get(SceneService).disconnect()
         self.get(PlaybackComponent).disconnect()

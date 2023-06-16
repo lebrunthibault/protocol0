@@ -76,13 +76,11 @@ INSTRUMENTS = (
 
 
 class BrowserLoaderService(object):
-    def __init__(self, browser):
-        # type: (Live.Browser.Browser) -> None
+    def __init__(self, browser: Live.Browser.Browser) -> None:
         self._browser = browser
-        self._cached_browser_items = {}  # type: Dict[str, Dict[str, Live.Browser.BrowserItem]]
+        self._cached_browser_items: Dict[str, Dict[str, Live.Browser.BrowserItem]] = {}
 
-    def load_device(self, device_name):
-        # type: (str) -> None
+    def load_device(self, device_name: str) -> None:
         """Loads a built-in Live device."""
         if device_name in MIDI_FX:
             self._do_load_item(self._get_item_for_category("midi_effects", device_name))
@@ -98,23 +96,19 @@ class BrowserLoaderService(object):
 
             self._do_load_item(item, "Plugin")
 
-    def load_sample(self, name):
-        # type: (str) -> None
+    def load_sample(self, name: str) -> None:
         """Loads items from the sample category."""
         self._do_load_item(self._get_item_for_category("samples", name), "Sample")
 
-    def load_from_user_library(self, name):
-        # type: (str) -> None
+    def load_from_user_library(self, name: str) -> None:
         """Loads items from the user library category"""
         self._do_load_item(self._get_item_for_category("user_library", name), "from User Library")
 
-    def get_sample(self, sample_name):
-        # type: (str) -> Live.Browser.BrowserItem
+    def get_sample(self, sample_name: str) -> Live.Browser.BrowserItem:
         self._cache_category("samples")
         return self._cached_browser_items["samples"].get(sample_name, None)
 
-    def _do_load_item(self, item, header="Device"):
-        # type: (Live.Browser.BrowserItem, str) -> None
+    def _do_load_item(self, item: Live.Browser.BrowserItem, header: str = "Device") -> None:
         """Handles loading an item and displaying load info in status bar."""
         # NB : activating this will hotswap drum rack pads if a drum rack is selected
         # ApplicationView.toggle_browse()
@@ -127,8 +121,7 @@ class BrowserLoaderService(object):
         else:
             raise Protocol0Error("Couldn't load %s item" % header)
 
-    def _get_item_for_category(self, category, name):
-        # type: (str, str) -> Live.Browser.BrowserItem
+    def _get_item_for_category(self, category: str, name: str) -> Live.Browser.BrowserItem:
         """Returns the cached item for the category."""
         self._cache_category(category)
         item = self._cached_browser_items[category].get(name, None)
@@ -137,8 +130,7 @@ class BrowserLoaderService(object):
 
         return item
 
-    def _cache_category(self, category):
-        # type: (str) -> None
+    def _cache_category(self, category: str) -> None:
         """This will cache an entire dict of items for the category if one doesn't
         already exist."""
         if category == "user_library" and self._cached_browser_items.get(category, False):
@@ -149,8 +141,7 @@ class BrowserLoaderService(object):
                 getattr(self._browser, category), self._cached_browser_items[category]
             )
 
-    def _get_children_for_item(self, item, i_dict, is_drum_rack=False):
-        # type: (Live.Browser.BrowserItem, Dict[str, Live.Browser.BrowserItem], bool) -> None
+    def _get_children_for_item(self, item: Live.Browser.BrowserItem, i_dict: Dict[str, Live.Browser.BrowserItem], is_drum_rack: bool = False) -> None:
         """Recursively builds dict of children items for the given item. This is needed
         to deal with children that are folders. If is_drum_rack, will only deal with
         racks in the root (not drum hits)."""

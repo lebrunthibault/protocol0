@@ -22,12 +22,10 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class DrumRackService(object):
-    def __init__(self, browser_service):
-        # type: (BrowserServiceInterface) -> None
+    def __init__(self, browser_service: BrowserServiceInterface) -> None:
         self._browser_service = browser_service
 
-    def load_category_drum_rack(self, sample_category):
-        # type: (SampleCategory) -> Sequence
+    def load_category_drum_rack(self, sample_category: SampleCategory) -> Sequence:
         seq = Sequence()
         try:
             self._browser_service.load_from_user_library(sample_category.drum_rack_name)
@@ -45,8 +43,7 @@ class DrumRackService(object):
         seq.add(partial(DomainEventBus.emit, DrumRackLoadedEvent()))
         return seq.done()
 
-    def _assert_valid_rack_or_populate(self, drum_category):
-        # type: (SampleCategory) -> Optional[Sequence]
+    def _assert_valid_rack_or_populate(self, drum_category: SampleCategory) -> Optional[Sequence]:
         device = cast(DrumRackDevice, Song.selected_track().instrument.device)
         preset_names = [p.name for p in drum_category.live_presets]
 
@@ -64,8 +61,7 @@ class DrumRackService(object):
 
         return None
 
-    def _populate_drum_rack(self, drum_category):
-        # type: (SampleCategory) -> Sequence
+    def _populate_drum_rack(self, drum_category: SampleCategory) -> Sequence:
         device = cast(DrumRackDevice, Song.selected_track().devices.selected)
         assert isinstance(device, DrumRackDevice), "device is not a drum rack"
         assert device == list(Song.selected_track().devices)[0], "device is not the first device"
@@ -85,8 +81,7 @@ class DrumRackService(object):
         # seq.add(partial(Backend.client().save_drum_rack, drum_category.drum_rack_name))
         return seq.done()
 
-    def drum_rack_to_simpler(self, track):
-        # type: (SimpleTrack) -> Optional[Sequence]
+    def drum_rack_to_simpler(self, track: SimpleTrack) -> Optional[Sequence]:
         assert track.instrument
         device = cast(DrumRackDevice, track.instrument.device)
         if not isinstance(device, DrumRackDevice):
@@ -120,8 +115,7 @@ class DrumRackService(object):
         seq.add(partial(Backend.client().show_success, "Sample loaded"))
         return seq.done()
 
-    def _from_drum_rack_to_simpler_notes(self):
-        # type: () -> None
+    def _from_drum_rack_to_simpler_notes(self) -> None:
         for clip in cast(SimpleMidiTrack, Song.selected_track()).clips:
             notes = clip.get_notes()
             for note in notes:
@@ -129,8 +123,7 @@ class DrumRackService(object):
 
             clip.set_notes(notes)
 
-    def clean_racks(self, track=None):
-        # type: (Optional[SimpleTrack]) -> None
+    def clean_racks(self, track: Optional[SimpleTrack] = None) -> None:
         seq = Sequence()
 
         tracks = [track] if track is not None else Song.simple_tracks()

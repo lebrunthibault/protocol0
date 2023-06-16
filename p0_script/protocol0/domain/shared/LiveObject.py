@@ -2,8 +2,7 @@ from typing_extensions import Protocol
 from typing import Any
 
 
-def liveobj_valid(obj):
-    # type: (Any) -> bool
+def liveobj_valid(obj: Any) -> bool:
     """
     Check whether obj represents a valid Live API obj.
 
@@ -16,6 +15,5 @@ def liveobj_valid(obj):
 
 class LiveObject(Protocol):
     @property
-    def _live_ptr(self):
-        # type: () -> int
+    def _live_ptr(self) -> int:
         raise NotImplementedError

@@ -3,20 +3,17 @@ from typing import Any, Optional
 from protocol0.domain.lom.validation.ValidatorInterface import ValidatorInterface
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.utils.utils import compare_values
-from protocol0.shared.logging.Logger import Logger
 
 
 class PropertyValueValidator(ValidatorInterface):
-    def __init__(self, obj, attribute, expected_value, name=None, fix=True):
-        # type: (Any, str, Any, Optional[str], bool) -> None
+    def __init__(self, obj: Any, attribute: str, expected_value: Any, name: Optional[str] = None, fix: bool = True) -> None:
         self._obj = obj
         self._attr = attribute
         self._expected_value = expected_value
         self._name = name
         self._fix = fix
 
-    def get_error_message(self):
-        # type: () -> Optional[str]
+    def get_error_message(self) -> Optional[str]:
         if self.is_valid():
             return None
         if hasattr(self._obj, self._attr):
@@ -32,15 +29,13 @@ class PropertyValueValidator(ValidatorInterface):
             error,
         )
 
-    def is_valid(self):
-        # type: () -> bool
+    def is_valid(self) -> bool:
         try:
             return compare_values(getattr(self._obj, self._attr), self._expected_value)
         except AttributeError:
             return False
 
-    def fix(self):
-        # type: () -> None
+    def fix(self) -> None:
         if not self._fix:
             return
         if hasattr(self._obj, self._attr):

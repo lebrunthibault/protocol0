@@ -4,8 +4,7 @@ from protocol0.application.command.SerializableCommand import SerializableComman
 
 
 class EmitBackendEventCommand(SerializableCommand):
-    def __init__(self, event, data=None):
-        # type: (str, Any) -> None
+    def __init__(self, event: str, data: Any = None) -> None:
         super(EmitBackendEventCommand, self).__init__()
         self.event = event
         self.data = data

@@ -40,8 +40,7 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class MatchingTrackService(object):
-    def __init__(self, track_component):
-        # type: (TrackCrudComponent) -> None
+    def __init__(self, track_component: TrackCrudComponent) -> None:
         self._track_crud_component = track_component
         DomainEventBus.subscribe(TrackAddedEvent, self._on_track_added_event)
         DomainEventBus.subscribe(TrackDisconnectedEvent, self._on_track_disconnected_event)
@@ -49,8 +48,7 @@ class MatchingTrackService(object):
 
         Scheduler.defer(self._generate_clip_hashes)
 
-    def _generate_clip_hashes(self):
-        # type: () -> None
+    def _generate_clip_hashes(self) -> None:
         for track in Song.abstract_tracks():
             matching_track = self._create_matching_track(track)
 
@@ -58,8 +56,7 @@ class MatchingTrackService(object):
                 Logger.info("init clips of %s" % track)
                 matching_track.init_clips()
 
-    def _on_track_added_event(self, _):
-        # type: (TrackAddedEvent) -> None
+    def _on_track_added_event(self, _: TrackAddedEvent) -> None:
         matching_track = self._create_matching_track(Song.current_track())
 
         if matching_track is None:
@@ -72,8 +69,7 @@ class MatchingTrackService(object):
         if not Song.is_track_recording():
             Song.current_track().arm_state.arm()
 
-    def bounce_current_track(self):
-        # type: () -> Optional[Sequence]
+    def bounce_current_track(self) -> Optional[Sequence]:
         current_track = Song.current_track()
 
         matching_track = self._create_matching_track(current_track)
@@ -83,8 +79,7 @@ class MatchingTrackService(object):
 
         return self._create_matching_track_creator(current_track).bounce()
 
-    def _create_matching_track(self, track):
-        # type: (AbstractTrack) -> Optional[MatchingTrackInterface]
+    def _create_matching_track(self, track: AbstractTrack) -> Optional[MatchingTrackInterface]:
         try:
             if isinstance(track, SimpleTrack):
                 return SimpleMatchingTrack(track)
@@ -97,8 +92,7 @@ class MatchingTrackService(object):
 
         return None
 
-    def _create_matching_track_creator(self, track):
-        # type: (AbstractTrack) -> Optional[MatchingTrackCreatorInterface]
+    def _create_matching_track_creator(self, track: AbstractTrack) -> Optional[MatchingTrackCreatorInterface]:
         if isinstance(track, SimpleTrack):
             return SimpleMatchingTrackCreator(self._track_crud_component, track)
         elif isinstance(track, ExternalSynthTrack):
@@ -108,8 +102,7 @@ class MatchingTrackService(object):
 
         return None
 
-    def _on_simple_track_flattened_event(self, event):
-        # type: (SimpleTrackFlattenedEvent) -> Optional[Sequence]
+    def _on_simple_track_flattened_event(self, event: SimpleTrackFlattenedEvent) -> Optional[Sequence]:
         clip_infos = event.clip_infos
         flattened_track = Song.selected_track(SimpleAudioTrack)
 
@@ -131,8 +124,7 @@ class MatchingTrackService(object):
 
         return matching_track.clip_manager.broadcast_clips(flattened_track, clip_infos)
 
-    def _on_track_disconnected_event(self, event):
-        # type: (TrackDisconnectedEvent) -> None
+    def _on_track_disconnected_event(self, event: TrackDisconnectedEvent) -> None:
         matching_track = self._create_matching_track(event.track)
 
         if matching_track is not None:
@@ -149,8 +141,7 @@ class MatchingTrackService(object):
                 ):
                     track.output_routing.track = track.group_track or Song.master_track()  # type: ignore[assignment]
 
-    def match_clip_colors(self):
-        # type: () -> None
+    def match_clip_colors(self) -> None:
         matching_track = self._create_matching_track(Song.current_track())
 
         if matching_track is not None and matching_track.clip_color_manager is not None:

@@ -7,18 +7,15 @@ from protocol0.shared.AbstractEnum import AbstractEnum
 
 
 class RoutingDisplayNameDescriptor(object):
-    def __init__(self, routing_attribute_name, routing_enum_class):
-        # type: (str, Type[AbstractEnum]) -> None
+    def __init__(self, routing_attribute_name: str, routing_enum_class: Type[AbstractEnum]) -> None:
         self.routing_enum_class = routing_enum_class
         self.routing_attribute_name = routing_attribute_name
         self.available_routings_attribute_name = "available_%ss" % routing_attribute_name
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "RoutingDisplayName.%s" % self.routing_attribute_name
 
-    def __get__(self, track_routing, _):
-        # type: (TrackRoutingInterface, Type) -> Optional[Any]
+    def __get__(self, track_routing: TrackRoutingInterface, _: Type) -> Optional[Any]:
         try:
             return self.routing_enum_class.from_value(
                 getattr(track_routing.live_track, self.routing_attribute_name).display_name
@@ -26,8 +23,7 @@ class RoutingDisplayNameDescriptor(object):
         except Protocol0Error:
             return None
 
-    def __set__(self, track_routing, routing_enum):
-        # type: (TrackRoutingInterface, AbstractEnum) -> None
+    def __set__(self, track_routing: TrackRoutingInterface, routing_enum: AbstractEnum) -> None:
         routing = find_if(
             lambda r: r.display_name == routing_enum.value,
             getattr(track_routing.live_track, self.available_routings_attribute_name),

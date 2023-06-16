@@ -13,11 +13,10 @@ from protocol0.domain.shared.utils.utils import import_package
 
 
 class InstrumentFactory(object):
-    _INSTRUMENT_CLASSES = []  # type: List[Type[InstrumentInterface]]
+    _INSTRUMENT_CLASSES: List[Type[InstrumentInterface]] = []
 
     @classmethod
-    def make_instrument_from_simple_track(cls, devices, instrument, track_name):
-        # type: (SimpleTrackDevices, Optional[InstrumentInterface], str) -> Optional[InstrumentInterface]
+    def make_instrument_from_simple_track(cls, devices: SimpleTrackDevices, instrument: Optional[InstrumentInterface], track_name: str) -> Optional[InstrumentInterface]:
         """
         If the instrument didn't change we keep the same instrument and don't instantiate a new one
         to keep instrument state
@@ -44,8 +43,7 @@ class InstrumentFactory(object):
             return instrument_class(instrument_device, track_name)
 
     @classmethod
-    def _get_instrument_class(cls, device):
-        # type: (Device) -> Optional[Type[InstrumentInterface]]
+    def _get_instrument_class(cls, device: Device) -> Optional[Type[InstrumentInterface]]:
         # checking for grouped devices
         if isinstance(device, DrumRackDevice):
             from protocol0.domain.lom.instrument.instrument.InstrumentDrumRack import (
@@ -77,8 +75,7 @@ class InstrumentFactory(object):
         return None
 
     @classmethod
-    def _get_device_from_instrument_rack_device(cls, rack_device):
-        # type: (RackDevice) -> Optional[Device]
+    def _get_device_from_instrument_rack_device(cls, rack_device: RackDevice) -> Optional[Device]:
         """Here, we fetch the appropriate instrument device from the instrument rack"""
         if len(rack_device.chains) and len(rack_device.chains[0].devices):
             # keeping only racks containing the same device
@@ -94,8 +91,7 @@ class InstrumentFactory(object):
         return None
 
     @classmethod
-    def _get_instrument_classes(cls):
-        # type: () -> List[Type[InstrumentInterface]]
+    def _get_instrument_classes(cls) -> List[Type[InstrumentInterface]]:
         if not cls._INSTRUMENT_CLASSES:
             import_package(instrument_package)
             cls._INSTRUMENT_CLASSES = InstrumentInterface.__subclasses__()

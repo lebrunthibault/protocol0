@@ -5,13 +5,11 @@ from protocol0.shared.Song import Song
 
 
 class TrackService(object):
-    def __init__(self):
-        # type: () -> None
+    def __init__(self) -> None:
         super(TrackService, self).__init__()
         DomainEventBus.subscribe(SelectedTrackChangedEvent, self._on_selected_track_changed_event)
 
-    def _on_selected_track_changed_event(self, _):
-        # type: (SelectedTrackChangedEvent) -> None
+    def _on_selected_track_changed_event(self, _: SelectedTrackChangedEvent) -> None:
         pass
         # if Song.selected_track().is_foldable:
         #     try:
@@ -19,8 +17,7 @@ class TrackService(object):
         #     except RuntimeError:  # can happen on startup
         #         pass
 
-    def go_to_group_track(self):
-        # type: () -> None
+    def go_to_group_track(self) -> None:
         if Song.selected_track().group_track is not None:
             Song.selected_track().group_track.select()
             ApplicationView.focus_session()

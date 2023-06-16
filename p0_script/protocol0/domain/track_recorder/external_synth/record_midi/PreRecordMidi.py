@@ -4,6 +4,5 @@ from protocol0.domain.track_recorder.RecordProcessorInterface import RecordProce
 
 
 class PreRecordMidi(RecordProcessorInterface):
-    def process(self, track, _):
-        # type: (ExternalSynthTrack, RecordConfig) -> None
+    def process(self, track: ExternalSynthTrack, _: RecordConfig) -> None:
         track.monitoring_state.monitor_midi()

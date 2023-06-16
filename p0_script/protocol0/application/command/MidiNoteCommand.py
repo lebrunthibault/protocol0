@@ -2,8 +2,7 @@ from protocol0.application.command.SerializableCommand import SerializableComman
 
 
 class MidiNoteCommand(SerializableCommand):
-    def __init__(self, channel, note):
-        # type: (int, int) -> None
+    def __init__(self, channel: int, note: int) -> None:
         super(MidiNoteCommand, self).__init__()
         self.channel = channel
         self.note = note

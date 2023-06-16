@@ -12,8 +12,7 @@ from protocol0.shared.observer.Observable import Observable
 class ClipLoop(SlotManager, Observable, LoopableInterface):
     """handle start / end markers and loop gracefully"""
 
-    def __init__(self, clip):
-        # type: (Live.Clip.Clip) -> None
+    def __init__(self, clip: Live.Clip.Clip) -> None:
         super(ClipLoop, self).__init__()
         self._clip = clip
 
@@ -21,16 +20,14 @@ class ClipLoop(SlotManager, Observable, LoopableInterface):
         self._loop_end_listener.subject = self._clip
         self._looping_listener.subject = self._clip
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "ClipLoop(start=%s, end=%s, length=%s)" % (
             self.start,
             self.end,
             self.length,
         )
 
-    def to_dict(self):
-        # type: () -> Dict
+    def to_dict(self) -> Dict:
         return {
             "looping": self.looping,
             "start_marker": self.start_marker,
@@ -39,8 +36,7 @@ class ClipLoop(SlotManager, Observable, LoopableInterface):
             "end": self.end,
         }
 
-    def update_from_dict(self, loop_data):
-        # type: (Dict) -> None
+    def update_from_dict(self, loop_data: Dict) -> None:
         self.looping = loop_data["looping"]
         self.start_marker = loop_data["start_marker"]
         self.end_marker = loop_data["end_marker"]
@@ -48,45 +44,38 @@ class ClipLoop(SlotManager, Observable, LoopableInterface):
         self.end = loop_data["end"]
 
     @subject_slot("loop_start")
-    def _loop_start_listener(self):
-        # type: () -> None
+    def _loop_start_listener(self) -> None:
         self.notify_observers()
 
     @subject_slot("loop_end")
-    def _loop_end_listener(self):
-        # type: () -> None
+    def _loop_end_listener(self) -> None:
         self.notify_observers()
 
     @subject_slot("looping")
-    def _looping_listener(self):
-        # type: () -> None
+    def _looping_listener(self) -> None:
         self.notify_observers()
 
     @property
-    def looping(self):
-        # type: () -> bool
+    def looping(self) -> bool:
         if self._clip:
             return self._clip.looping
         else:
             return False
 
     @looping.setter
-    def looping(self, looping):
-        # type: (bool) -> None
+    def looping(self, looping: bool) -> None:
         if self._clip:
             self._clip.looping = looping
 
     @property
-    def start(self):
-        # type: () -> float
+    def start(self) -> float:
         if self._clip:
             return self._clip.loop_start
         else:
             return 0
 
     @start.setter
-    def start(self, start):
-        # type: (float) -> None
+    def start(self, start: float) -> None:
         looping = self.looping
         self.looping = True
         try:
@@ -97,29 +86,25 @@ class ClipLoop(SlotManager, Observable, LoopableInterface):
         self.looping = looping
 
     @property
-    def start_marker(self):
-        # type: () -> float
+    def start_marker(self) -> float:
         if self._clip:
             return self._clip.start_marker
         else:
             return 0
 
     @start_marker.setter
-    def start_marker(self, start_marker):
-        # type: (float) -> None
+    def start_marker(self, start_marker: float) -> None:
         self._clip._start_marker = start_marker
 
     @property
-    def end(self):
-        # type: () -> float
+    def end(self) -> float:
         if self._clip:
             return self._clip.loop_end
         else:
             return 0
 
     @end.setter
-    def end(self, end):
-        # type: (float) -> None
+    def end(self, end: float) -> None:
         looping = self.looping
         self.looping = True
         try:
@@ -129,26 +114,22 @@ class ClipLoop(SlotManager, Observable, LoopableInterface):
         self.looping = looping
 
     @property
-    def end_marker(self):
-        # type: () -> float
+    def end_marker(self) -> float:
         if self._clip:
             return self._clip.end_marker
         else:
             return 0
 
     @end_marker.setter
-    def end_marker(self, end_marker):
-        # type: (float) -> None
+    def end_marker(self, end_marker: float) -> None:
         self._clip._end_marker = end_marker
 
     @property
-    def bar_offset(self):
-        # type: () -> float
+    def bar_offset(self) -> float:
         return (self.start - self.start_marker) / Song.signature_numerator()
 
     @property
-    def length(self):
-        # type: () -> float
+    def length(self) -> float:
         """
         For looped clips: loop length in beats.
         not using unwarped audio clips
@@ -163,30 +144,25 @@ class ClipLoop(SlotManager, Observable, LoopableInterface):
             return float(self._clip.length)
 
     @length.setter
-    def length(self, length):
-        # type: (float) -> None
+    def length(self, length: float) -> None:
         try:
             self.end = self.start + length
         except Exception as e:
             Logger.warning("clip loop length error: %s" % e)
 
     @property
-    def bar_length(self):
-        # type: () -> float
+    def bar_length(self) -> float:
         return int(self.length / Song.signature_numerator())
 
     @bar_length.setter
-    def bar_length(self, bar_length):
-        # type: (float) -> None
+    def bar_length(self, bar_length: float) -> None:
         self.length = bar_length * Song.signature_numerator()
 
-    def match(self, loop):
-        # type: (ClipLoop) -> None
+    def match(self, loop: "ClipLoop") -> None:
         self.start = loop.start
         self.end = loop.end
 
-    def matches(self, loop):
-        # type: (ClipLoop) -> bool
+    def matches(self, loop: "ClipLoop") -> bool:
         return (
             self.start_marker == loop.start_marker
             and self.start == loop.start
@@ -194,7 +170,6 @@ class ClipLoop(SlotManager, Observable, LoopableInterface):
             and self.end == loop.end
         )
 
-    def fix(self):
-        # type: () -> None
+    def fix(self) -> None:
         self.start = self.start_marker
         self.end = self.end_marker

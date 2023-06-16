@@ -3,8 +3,7 @@ from protocol0.domain.lom.validation.sub_validators.AggregateValidator import Ag
 
 
 class SimpleTrackValidator(AggregateValidator):
-    def __init__(self, track):
-        # type: (SimpleTrack) -> None
+    def __init__(self, track: SimpleTrack) -> None:
         self._track = track
         # nothing done here
         super(SimpleTrackValidator, self).__init__([])

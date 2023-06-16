@@ -12,8 +12,7 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class EncoderAction(object):
-    def __init__(self, func, move_type, name):
-        # type: (Callable, EncoderMoveEnum, Optional[str]) -> None
+    def __init__(self, func: Callable, move_type: EncoderMoveEnum, name: Optional[str]) -> None:
         """
         base moves are listed in the enum. press is the default choice
         """
@@ -23,12 +22,10 @@ class EncoderAction(object):
         self.move_type = move_type
         self.name = name
 
-    def __repr__(self, **k):
-        # type: (Any) -> str
+    def __repr__(self, **k: Any) -> str:
         return "%s : %s" % (self.name, get_callable_repr(self.func))
 
-    def execute(self, encoder_name, *a, **k):
-        # type: (str, Any, Any) -> Optional[Sequence]
+    def execute(self, encoder_name: str, *a: Any, **k: Any) -> Optional[Sequence]:
         """
         NB : Here lambda is just a way to act on the right objects at runtime
             like this we can display the function name
@@ -57,10 +54,9 @@ class EncoderAction(object):
         return seq.done()
 
     @classmethod
-    def make_actions(cls, name, on_press, on_long_press, on_scroll):
-        # type: (str, Optional[Callable], Optional[Callable], Optional[Callable]) -> List[EncoderAction]
+    def make_actions(cls, name: str, on_press: Optional[Callable], on_long_press: Optional[Callable], on_scroll: Optional[Callable]) -> List["EncoderAction"]:
 
-        actions = []  # type: List[EncoderAction]
+        actions: List[EncoderAction] = []
         if on_press:
             actions.append(EncoderAction(on_press, move_type=EncoderMoveEnum.PRESS, name=name))
         if on_long_press:

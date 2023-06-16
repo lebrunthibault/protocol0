@@ -24,15 +24,14 @@ from protocol0.shared.sequence.Sequence import Sequence
 class SessionToArrangementService(object):
     def __init__(
         self,
-        playback_component,  # type: PlaybackComponent
-        recording_component,  # type: RecordingComponent
-        quantization_component,  # type: QuantizationComponent
-        scene_component,  # type: SceneComponent
-        tempo_component,  # type: TempoComponent
-        track_component,  # type: TrackComponent
-        set_fixer_service,  # type: SetFixerService
-    ):
-        # type: (...) -> None
+        playback_component: PlaybackComponent,
+        recording_component: RecordingComponent,
+        quantization_component: QuantizationComponent,
+        scene_component: SceneComponent,
+        tempo_component: TempoComponent,
+        track_component: TrackComponent,
+        set_fixer_service: SetFixerService,
+    ) -> None:
         self._playback_component = playback_component
         self._recording_component = recording_component
         self._quantization_component = quantization_component
@@ -48,12 +47,10 @@ class SessionToArrangementService(object):
         self._recorded_bar_length = 0
         DomainEventBus.subscribe(BarChangedEvent, self._on_bar_changed_event)
 
-    def _on_bar_changed_event(self, _):
-        # type: (BarChangedEvent) -> None
+    def _on_bar_changed_event(self, _: BarChangedEvent) -> None:
         self._recorded_bar_length += 1
 
-    def bounce_session_to_arrangement(self):
-        # type: () -> None
+    def bounce_session_to_arrangement(self) -> None:
         if self.is_bouncing:
             self._playback_component.stop_playing()
             return None
@@ -64,8 +61,7 @@ class SessionToArrangementService(object):
         self._stop_playing_on_last_scene_end()
         self._bounce()
 
-    def _bounce(self):
-        # type: () -> None
+    def _bounce(self) -> None:
         self._setup_bounce()
 
         seq = Sequence()
@@ -84,8 +80,7 @@ class SessionToArrangementService(object):
         # seq.add(Song.scenes()[0].fire)
         seq.done()
 
-    def _setup_bounce(self):
-        # type: () -> None
+    def _setup_bounce(self) -> None:
         self._scene_component.looping_scene_toggler.reset()
         self.is_bouncing = True
         self._track_component.un_focus_all_tracks(including_current=True)
@@ -96,8 +91,7 @@ class SessionToArrangementService(object):
         for track in Song.external_synth_tracks():
             track.midi_track.external_device.is_enabled = False
 
-    def _pre_fire_first_scene(self):
-        # type: () -> Sequence
+    def _pre_fire_first_scene(self) -> Sequence:
         scene = Song.scenes()[0]
         scene.fire()
         self._playback_component.stop_playing()
@@ -105,8 +99,7 @@ class SessionToArrangementService(object):
         seq.wait(2)
         return seq.done()
 
-    def _stop_playing_on_last_scene_end(self):
-        # type: () -> None
+    def _stop_playing_on_last_scene_end(self) -> None:
         """Stop the song when the last scene finishes"""
         self._scene_component.looping_scene_toggler.reset()
 
@@ -121,8 +114,7 @@ class SessionToArrangementService(object):
         seq.add(self._playback_component.stop_playing)
         seq.done()
 
-    def _song_stopped_event_listener(self, _):
-        # type: (SongStoppedEvent) -> None
+    def _song_stopped_event_listener(self, _: SongStoppedEvent) -> None:
         if not self.is_bouncing:
             return None
 
@@ -136,8 +128,7 @@ class SessionToArrangementService(object):
         self._playback_component.re_enable_automation()
         self.is_bouncing = False
 
-    def _validate_recording_duration(self):
-        # type: () -> None
+    def _validate_recording_duration(self) -> None:
         expected_bar_length = SceneStats().bar_length
 
         if expected_bar_length != self._recorded_bar_length:

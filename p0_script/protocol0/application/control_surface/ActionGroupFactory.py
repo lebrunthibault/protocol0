@@ -8,8 +8,7 @@ from protocol0.domain.shared.utils.utils import import_package
 
 class ActionGroupFactory(object):
     @classmethod
-    def create_action_groups(cls, container, component_guard):
-        # type: (ContainerInterface, Callable) -> None
+    def create_action_groups(cls, container: ContainerInterface, component_guard: Callable) -> None:
         import_package(group_package)
         group_classes = ActionGroupInterface.__subclasses__()
 

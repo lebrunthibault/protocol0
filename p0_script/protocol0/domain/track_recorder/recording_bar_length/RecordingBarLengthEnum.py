@@ -14,10 +14,8 @@ class RecordingBarLengthEnum(AbstractEnum):
     SIXTY_FOUR = 64
 
     @property
-    def bar_length_value(self):
-        # type: () -> int
+    def bar_length_value(self) -> int:
         return self.value
 
-    def __str__(self):
-        # type: () -> str
+    def __str__(self) -> str:
         return "%s bar%s" % (self.value, "s" if abs(self.value) != 1 else "")

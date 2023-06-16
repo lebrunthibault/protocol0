@@ -12,11 +12,9 @@ if TYPE_CHECKING:
 class RecordProcessorInterface(object):
     __metaclass__ = ABCMeta
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return self.__class__.__name__
 
     @abstractmethod
-    def process(self, track, config):
-        # type: (AbstractTrack, RecordConfig) -> Optional[Sequence]
+    def process(self, track: "AbstractTrack", config: "RecordConfig") -> Optional[Sequence]:
         raise NotImplementedError

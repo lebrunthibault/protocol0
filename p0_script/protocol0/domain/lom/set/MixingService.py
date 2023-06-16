@@ -3,8 +3,7 @@ from protocol0.shared.Song import Song
 
 
 class MixingService(object):
-    def scroll_all_tracks_volume(self, go_next):
-        # type: (bool) -> None
+    def scroll_all_tracks_volume(self, go_next: bool) -> None:
         for track in Song.abstract_tracks():
             if isinstance(track, NormalGroupTrack):
                 continue

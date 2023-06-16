@@ -14,8 +14,7 @@ from protocol0.domain.track_recorder.RecordProcessorInterface import RecordProce
 
 
 class PostRecordMidi(RecordProcessorInterface):
-    def process(self, track, config):
-        # type: (ExternalSynthTrack, RecordConfig) -> None
+    def process(self, track: ExternalSynthTrack, config: RecordConfig) -> None:
         track.monitoring_state.monitor_midi()
 
         midi_clip = cast(MidiClip, track.midi_track.clip_slots[config.scene_index].clip)

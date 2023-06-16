@@ -9,8 +9,7 @@ from protocol0.shared.logging.Logger import Logger
 class TimeoutLimit(object):
     TICKS_COUNT = 100  # around 1.7s
 
-    def __init__(self, func, timeout_limit, awaited_listener=None, on_timeout=None):
-        # type: (Callable, int, Callable, Callable) -> None
+    def __init__(self, func: Callable, timeout_limit: int, awaited_listener: Callable = None, on_timeout: Callable = None) -> None:
         """timeout_limit in ms"""
         super(TimeoutLimit, self).__init__()
         self.func = func
@@ -20,15 +19,13 @@ class TimeoutLimit(object):
         self.executed = False
         self.timed_out = False
 
-    def __repr__(self, **k):
-        # type: (Any) -> str
+    def __repr__(self, **k: Any) -> str:
         output = "%s" % get_callable_repr(self.func)
         if self.awaited_listener:
             output += " (waiting for listener call %s)" % get_callable_repr(self.awaited_listener)
         return output
 
-    def __call__(self, *a, **k):
-        # type: (Any, Any) -> None
+    def __call__(self, *a: Any, **k: Any) -> None:
         if self.timed_out:
             Logger.warning("Tried to execute function after timeout: %s" % self)
             return
@@ -36,8 +33,7 @@ class TimeoutLimit(object):
         self.executed = True
         self.func(*a, **k)
 
-    def _after_timeout(self):
-        # type: () -> None
+    def _after_timeout(self) -> None:
         if self.timed_out:
             raise Protocol0Error("Tried to execute timeout function twice: %s" % self)
 

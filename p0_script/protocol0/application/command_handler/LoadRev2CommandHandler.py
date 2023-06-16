@@ -5,6 +5,5 @@ from protocol0.domain.lom.instrument.instrument.InstrumentRev2 import Instrument
 
 
 class LoadRev2CommandHandler(CommandHandlerInterface):
-    def handle(self, command):
-        # type: (LoadRev2Command) -> None
+    def handle(self, command: LoadRev2Command) -> None:
         load_instrument_track(InstrumentRev2)

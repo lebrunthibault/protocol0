@@ -21,8 +21,7 @@ from protocol0.shared.Song import Song
 
 
 class TrackComponent(SlotManager):
-    def __init__(self, song_view):
-        # type: (Live.Song.Song.View) -> None
+    def __init__(self, song_view: Live.Song.Song.View) -> None:
         super(TrackComponent, self).__init__()
         self._song_view = song_view
         DomainEventBus.subscribe(
@@ -33,13 +32,11 @@ class TrackComponent(SlotManager):
         self._selected_track_listener.subject = self._song_view  # SongFacade is not hydrated
 
     @subject_slot("selected_track")
-    def _selected_track_listener(self):
-        # type: () -> None
+    def _selected_track_listener(self) -> None:
         ApplicationView.focus_current_track()
         DomainEventBus.emit(SelectedTrackChangedEvent())
 
-    def _on_abstract_track_selected_event(self, event):
-        # type: (AbstractTrackSelectedEvent) -> None
+    def _on_abstract_track_selected_event(self, event: AbstractTrackSelectedEvent) -> None:
         track = Song.live_track_to_simple_track(event.live_track)
         if track.group_track:
             track.group_track.is_folded = False
@@ -50,14 +47,12 @@ class TrackComponent(SlotManager):
         if len(scrollable_tracks) != 0 and track == scrollable_tracks[-1]:
             ApplicationView.focus_current_track()
 
-    def _on_simple_track_armed_event(self, _):
-        # type: (SimpleTrackArmedEvent) -> None
+    def _on_simple_track_armed_event(self, _: SimpleTrackArmedEvent) -> None:
         if not Song.is_track_recording():
             self.un_focus_all_tracks()
 
     @property
-    def abstract_tracks(self):
-        # type: () -> Iterator[AbstractTrack]
+    def abstract_tracks(self) -> Iterator[AbstractTrack]:
         for track in Song.simple_tracks():
             if track.abstract_group_track:
                 # skipping ExternalSynthTrack sub tracks
@@ -67,8 +62,7 @@ class TrackComponent(SlotManager):
                 yield track
 
     @property
-    def scrollable_tracks(self):
-        # type: () -> Iterator[AbstractTrack]
+    def scrollable_tracks(self) -> Iterator[AbstractTrack]:
         for track in self.abstract_tracks:
             if not track.is_visible:
                 continue
@@ -81,27 +75,23 @@ class TrackComponent(SlotManager):
                 continue
             yield track
 
-    def un_focus_all_tracks(self, including_current=False):
-        # type: (bool) -> None
+    def un_focus_all_tracks(self, including_current: bool = False) -> None:
         self._un_solo_all_tracks(including_current)
         self._un_arm_all_tracks(including_current)
 
-    def _un_arm_all_tracks(self, including_current):
-        # type: (bool) -> None
+    def _un_arm_all_tracks(self, including_current: bool) -> None:
         for t in Song.armed_tracks():
             if not including_current and t.abstract_track == Song.current_track():
                 continue
             t.arm_state.unarm()
 
-    def _un_solo_all_tracks(self, including_current):
-        # type: (bool) -> None
+    def _un_solo_all_tracks(self, including_current: bool) -> None:
         for track in Song.abstract_tracks():
             if not including_current and track == Song.current_track():
                 continue
             track.solo = False
 
-    def scroll_tracks(self, go_next):
-        # type: (bool) -> None
+    def scroll_tracks(self, go_next: bool) -> None:
         if not Song.selected_track().IS_ACTIVE:
             next(Song.simple_tracks()).select()
             return None

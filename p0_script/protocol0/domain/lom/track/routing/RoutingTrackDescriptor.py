@@ -12,17 +12,14 @@ if TYPE_CHECKING:
 
 
 class RoutingTrackDescriptor(object):
-    def __init__(self, routing_attribute_name):
-        # type: (str) -> None
+    def __init__(self, routing_attribute_name: str) -> None:
         self.routing_attribute_name = routing_attribute_name
         self.available_routings_attribute_name = "available_%ss" % routing_attribute_name
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "RoutingTrack.%s" % self.routing_attribute_name
 
-    def __get__(self, track_routing, _):
-        # type: (TrackRoutingInterface, Type) -> Optional[SimpleTrack]
+    def __get__(self, track_routing: TrackRoutingInterface, _: Type) -> Optional["SimpleTrack"]:
         track = getattr(track_routing.live_track, self.routing_attribute_name).attached_object
         if track:
             return Song.live_track_to_simple_track(track)
@@ -35,8 +32,7 @@ class RoutingTrackDescriptor(object):
             return None
 
     # noinspection PyShadowingNames
-    def __set__(self, track_routing, track):
-        # type: (TrackRoutingInterface, P0TrackInterface) -> None
+    def __set__(self, track_routing: TrackRoutingInterface, track: P0TrackInterface) -> None:
         live_track = track._track
 
         if live_track == track_routing.live_track:

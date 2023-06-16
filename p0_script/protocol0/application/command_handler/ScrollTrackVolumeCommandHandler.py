@@ -4,6 +4,5 @@ from protocol0.shared.Song import Song
 
 
 class ScrollTrackVolumeCommandHandler(CommandHandlerInterface):
-    def handle(self, command):
-        # type: (ScrollTrackVolumeCommand) -> None
+    def handle(self, command: ScrollTrackVolumeCommand) -> None:
         Song.current_track().base_track.scroll_volume(command.go_next)

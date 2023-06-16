@@ -11,8 +11,7 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class RecordAudioMulti(RecordProcessorInterface):
-    def process(self, track, config):
-        # type: (ExternalSynthTrack, RecordConfig) -> Sequence
+    def process(self, track: ExternalSynthTrack, config: RecordConfig) -> Sequence:
         config.recording_scene.fire()
         for cs in config.clip_slots:
             cs.fire()
@@ -27,8 +26,7 @@ class RecordAudioMulti(RecordProcessorInterface):
         seq.add(self._launch_record_on_next_scene)
         return seq.done()
 
-    def _launch_record_on_next_scene(self, track, config):
-        # type: (ExternalSynthTrack, RecordConfig) -> Optional[Sequence]
+    def _launch_record_on_next_scene(self, track: ExternalSynthTrack, config: RecordConfig) -> Optional[Sequence]:
         next_scene = config.recording_scene.next_scene
         audio_clip = track.audio_track.clip_slots[config.recording_scene].clip
 

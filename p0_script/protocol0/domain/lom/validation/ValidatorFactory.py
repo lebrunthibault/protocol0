@@ -24,12 +24,10 @@ from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 
 
 class ValidatorFactory(object):
-    def __init__(self, browser_service):
-        # type: (BrowserServiceInterface) -> None
+    def __init__(self, browser_service: BrowserServiceInterface) -> None:
         self._browser_service = browser_service
 
-    def create_from_object(self, obj):
-        # type: (object) -> ValidatorInterface
+    def create_from_object(self, obj: object) -> ValidatorInterface:
         if isinstance(obj, Scene):
             return SceneValidator(obj)
 

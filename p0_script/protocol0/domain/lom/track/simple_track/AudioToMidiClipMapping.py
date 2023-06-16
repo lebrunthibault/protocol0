@@ -19,21 +19,17 @@ class AudioToMidiClipMapping(object):
 
     _DEBUG = False
 
-    def __init__(self, track_data, file_path_mapping=None):
-        # type: (TrackData, Dict[str, List[int]]) -> None
+    def __init__(self, track_data: "TrackData", file_path_mapping: Dict[str, List[int]] = None) -> None:
         self._track_data = track_data
-        self._file_path_mapping = file_path_mapping or {}  # type: Dict[str, List[int]]
+        self._file_path_mapping: Dict[str, List[int]] = file_path_mapping or {}
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return json.dumps({basename(k): v for k, v in self._file_path_mapping.items()}, indent=4)
 
-    def to_dict(self):
-        # type: () -> Dict
+    def to_dict(self) -> Dict:
         return self._file_path_mapping
 
-    def update(self, other_mapping):
-        # type: (AudioToMidiClipMapping) -> None
+    def update(self, other_mapping: "AudioToMidiClipMapping") -> None:
         for file_path, equivalences in other_mapping._file_path_mapping.items():
             for clip_hash in equivalences:
                 if file_path not in self._file_path_mapping:
@@ -42,8 +38,7 @@ class AudioToMidiClipMapping(object):
                 if clip_hash not in self._file_path_mapping[file_path]:
                     self._file_path_mapping[file_path].append(clip_hash)
 
-    def register_file_path(self, file_path, clip_info):
-        # type: (str, ClipInfo) -> None
+    def register_file_path(self, file_path: str, clip_info: ClipInfo) -> None:
         if self._DEBUG:
             Logger.info("register %s -> %s" % (basename(file_path), clip_info.hash))
 
@@ -55,8 +50,7 @@ class AudioToMidiClipMapping(object):
 
         self._track_data.save()
 
-    def register_hash_equivalence(self, existing_hash, new_hash):
-        # type: (int, int) -> None
+    def register_hash_equivalence(self, existing_hash: int, new_hash: int) -> None:
         if self._DEBUG:
             Logger.info("registering equivalence: %s -> %s" % (existing_hash, new_hash))
 
@@ -64,8 +58,7 @@ class AudioToMidiClipMapping(object):
             if existing_hash in equivalences and new_hash not in equivalences:
                 equivalences.append(new_hash)
 
-    def path_matches_hash(self, file_path, clip_hash, exact):
-        # type: (str, int, bool) -> bool
+    def path_matches_hash(self, file_path: str, clip_hash: int, exact: bool) -> bool:
         if file_path not in self._file_path_mapping:
             return False
 

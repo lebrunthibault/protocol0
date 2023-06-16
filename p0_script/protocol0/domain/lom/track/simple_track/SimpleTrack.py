@@ -53,25 +53,24 @@ class SimpleTrack(AbstractTrack):
     CLIP_SLOT_CLASS = ClipSlot
 
     # noinspection PyInitNewSignature
-    def __init__(self, live_track, index):
-        # type: (Live.Track.Track, int) -> None
-        self._track = live_track  # type: Live.Track.Track
+    def __init__(self, live_track: Live.Track.Track, index: int) -> None:
+        self._track: Live.Track.Track = live_track
         self._index = index
 
         super(SimpleTrack, self).__init__(self)
 
-        self.live_id = live_track._live_ptr  # type: int
+        self.live_id: int = live_track._live_ptr
         DomainEventBus.emit(SimpleTrackCreatedEvent(self))
         # Note : SimpleTracks represent the first layer of abstraction and know nothing about
         # AbstractGroupTracks except with self.abstract_group_track which links both layers
         # and is handled by the abg
-        self.group_track = self.group_track  # type: Optional[SimpleTrack]
+        self.group_track: Optional[SimpleTrack] = self.group_track
         if self.group_track is not None:
             self.color = self.group_track.color
 
-        self.sub_tracks = []  # type: List[SimpleTrack]
+        self.sub_tracks: List[SimpleTrack] = []
 
-        self._instrument = None  # type: Optional[InstrumentInterface]
+        self._instrument: Optional[InstrumentInterface] = None
         self._view = live_track.view
 
         self.devices = SimpleTrackDevices(live_track)
@@ -99,19 +98,16 @@ class SimpleTrack(AbstractTrack):
 
     device_insert_mode = cast(int, ForwardTo("_view", "device_insert_mode"))
 
-    def on_tracks_change(self):
-        # type: () -> None
+    def on_tracks_change(self) -> None:
         self._link_to_group_track()
         # because we traverse the tracks left to right : sub tracks will register themselves
         if self.is_foldable:
             self.sub_tracks[:] = []
 
-    def on_scenes_change(self):
-        # type: () -> None
+    def on_scenes_change(self) -> None:
         self._clip_slots.build()
 
-    def _link_to_group_track(self):
-        # type: () -> None
+    def _link_to_group_track(self) -> None:
         """
         1st layer linking
         Connect to the enclosing simple group track is any
@@ -127,21 +123,18 @@ class SimpleTrack(AbstractTrack):
             Scheduler.wait(2, lambda: setattr(self, "color", self.group_track.color))
 
     @property
-    def clip_slots(self):
-        # type: () -> List[ClipSlot]
+    def clip_slots(self) -> List[ClipSlot]:
         return list(self._clip_slots)
 
     @property
-    def clips(self):
-        # type: () -> List[Clip]
+    def clips(self) -> List[Clip]:
         return [
             clip_slot.clip
             for clip_slot in self.clip_slots
             if clip_slot.has_clip and clip_slot.clip is not None
         ]
 
-    def update(self, observable):
-        # type: (Observable) -> None
+    def update(self, observable: Observable) -> None:
         if isinstance(observable, SimpleTrackDevices):
             # Refreshing is only really useful from simpler devices that change when a new sample is loaded
             if self.IS_ACTIVE and not self.is_foldable:
@@ -152,8 +145,7 @@ class SimpleTrack(AbstractTrack):
             DomainEventBus.emit(SimpleTrackArmedEvent(self._track))
 
     @subject_slot("output_meter_level")
-    def _output_meter_level_listener(self):
-        # type: () -> None
+    def _output_meter_level_listener(self) -> None:
         if not Config.TRACK_VOLUME_MONITORING:
             return
         if self._track.output_meter_level > Config.CLIPPING_TRACK_VOLUME:
@@ -165,56 +157,47 @@ class SimpleTrack(AbstractTrack):
             )
 
     @property
-    def current_monitoring_state(self):
-        # type: () -> CurrentMonitoringStateEnum
+    def current_monitoring_state(self) -> CurrentMonitoringStateEnum:
         if self._track is None:
             return CurrentMonitoringStateEnum.AUTO
         return CurrentMonitoringStateEnum.from_value(self._track.current_monitoring_state)
 
     @current_monitoring_state.setter
-    def current_monitoring_state(self, monitoring_state):
-        # type: (CurrentMonitoringStateEnum) -> None
+    def current_monitoring_state(self, monitoring_state: CurrentMonitoringStateEnum) -> None:
         try:
             self._track.current_monitoring_state = monitoring_state.value  # noqa
         except Exception as e:
             Backend.client().show_warning(str(e))
 
     @property
-    def output_meter_left(self):
-        # type: () -> float
+    def output_meter_left(self) -> float:
         return self._track.output_meter_left if self._track else 0
 
     @property
-    def instrument(self):
-        # type: () -> Optional[InstrumentInterface]
+    def instrument(self) -> Optional[InstrumentInterface]:
         return self._instrument
 
     @instrument.setter
-    def instrument(self, instrument):
-        # type: (Optional[InstrumentInterface]) -> None
+    def instrument(self, instrument: Optional[InstrumentInterface]) -> None:
         self._instrument = instrument
         self.appearance.set_instrument(instrument)
         self._clip_slots.set_instrument(instrument)
 
     @property
-    def instrument_track(self):
-        # type: () -> SimpleTrack
+    def instrument_track(self) -> "SimpleTrack":
         assert self.instrument, "track has not instrument"
         return self.base_track
 
     @property
-    def is_foldable(self):
-        # type: () -> bool
+    def is_foldable(self) -> bool:
         return self._track and self._track.is_foldable
 
     @property
-    def is_folded(self):
-        # type: () -> bool
+    def is_folded(self) -> bool:
         return bool(self._track.fold_state) if self.is_foldable and self._track else True
 
     @is_folded.setter
-    def is_folded(self, is_folded):
-        # type: (bool) -> None
+    def is_folded(self, is_folded: bool) -> None:
         if not is_folded:
             for group_track in self.group_tracks:
                 group_track.base_track.is_folded = False
@@ -222,19 +205,16 @@ class SimpleTrack(AbstractTrack):
             self._track.fold_state = int(is_folded)
 
     @property
-    def is_triggered(self):
-        # type: () -> bool
+    def is_triggered(self) -> bool:
         return any(clip_slot.is_triggered for clip_slot in self.clip_slots)
 
     @property
-    def volume(self):
-        # type: () -> float
+    def volume(self) -> float:
         volume = self._track.mixer_device.volume.value if self._track else 0
         return volume_to_db(volume)
 
     @volume.setter
-    def volume(self, volume):
-        # type: (float) -> None
+    def volume(self, volume: float) -> None:
         volume = db_to_volume(volume)
         if self._track:
             Scheduler.defer(
@@ -246,27 +226,23 @@ class SimpleTrack(AbstractTrack):
             )
 
     @property
-    def color(self):
-        # type: () -> int
+    def color(self) -> int:
         return self.appearance.color
 
     @color.setter
-    def color(self, color_index):
-        # type: (int) -> None
+    def color(self, color_index: int) -> None:
         self.appearance.color = color_index
         self._clip_config.color = color_index
 
         for clip in self.clips:
             clip.color = color_index
 
-    def fire(self, scene_index):
-        # type: (int) -> None
+    def fire(self, scene_index: int) -> None:
         clip = self.clip_slots[scene_index].clip
         if clip is not None:
             clip.fire()
 
-    def stop(self, scene_index=None, next_scene_index=None, immediate=False):
-        # type: (Optional[int], Optional[int], bool) -> None
+    def stop(self, scene_index: Optional[int] = None, next_scene_index: Optional[int] = None, immediate: bool = False) -> None:
         if scene_index is None:
             self._track.stop_all_clips(not immediate)  # noqa
             return
@@ -277,13 +253,11 @@ class SimpleTrack(AbstractTrack):
         if clip is not None and clip.is_playing:
             clip.stop(wait_until_end=True)
 
-    def delete(self):
-        # type: () -> Sequence
+    def delete(self) -> Sequence:
         DomainEventBus.emit(SimpleTrackDeletedEvent(self))
         return Sequence().wait_for_event(TracksMappedEvent).done()
 
-    def get_automated_parameters(self, scene_index):
-        # type: (int) -> Dict[DeviceParameter, SimpleTrack]
+    def get_automated_parameters(self, scene_index: int) -> Dict[DeviceParameter, "SimpleTrack"]:
         if len(self.clip_slots) < scene_index + 1:
             return {}
 
@@ -296,8 +270,7 @@ class SimpleTrack(AbstractTrack):
             for param in clip.automation.get_automated_parameters(self.devices.parameters)
         }
 
-    def scroll_volume(self, go_next):
-        # type: (bool) -> None
+    def scroll_volume(self, go_next: bool) -> None:
         """Editing directly the mixer device volume"""
         volume = self._track.mixer_device.volume.value
         volume += 0.01 if go_next else -0.01
@@ -315,18 +288,15 @@ class SimpleTrack(AbstractTrack):
         seq.add(lambda: StatusBar.show_message("Track volume: %.1f dB" % self.volume))
         seq.done()
 
-    def clear_arrangement(self):
-        # type: () -> None
+    def clear_arrangement(self) -> None:
         pass
 
-    def reset_mixer(self):
-        # type: () -> None
+    def reset_mixer(self) -> None:
         self.volume = 0
         for param in self.devices.mixer_device.parameters:
             param.value = param.default_value
 
-    def focus(self):
-        # type: () -> Sequence
+    def focus(self) -> Sequence:
         # track can disappear out of view if this is done later
         track_color = self.color
 
@@ -350,8 +320,7 @@ class SimpleTrack(AbstractTrack):
 
         return seq.done()
 
-    def click(self):
-        # type: () -> Sequence
+    def click(self) -> Sequence:
         track_color = self.color
 
         seq = Sequence()
@@ -362,8 +331,7 @@ class SimpleTrack(AbstractTrack):
 
         return seq.done()
 
-    def save(self):
-        # type: () -> Sequence
+    def save(self) -> Sequence:
         track_color = self.color
 
         seq = Sequence()
@@ -376,8 +344,7 @@ class SimpleTrack(AbstractTrack):
 
         return seq.done()
 
-    def flatten(self, flatten_track=True):
-        # type: (bool) -> Sequence
+    def flatten(self, flatten_track: bool = True) -> Sequence:
         # this is needed to have flattened clip of the right length
         Song._live_song().stop_playing()
 
@@ -405,8 +372,7 @@ class SimpleTrack(AbstractTrack):
 
         return seq.done()
 
-    def isolate_clip_tail(self):
-        # type: () -> Sequence
+    def isolate_clip_tail(self) -> Sequence:
         clip = Song.selected_clip()
         assert clip.has_tail, "clip has no tail"
         assert len(self.clip_slots) > clip.index + 1, "No next clip slot"
@@ -423,12 +389,10 @@ class SimpleTrack(AbstractTrack):
         return seq.done()
 
     @property
-    def load_time(self):
-        # type: () -> int
+    def load_time(self) -> int:
         return self.devices.load_time
 
-    def disconnect(self):
-        # type: () -> None
+    def disconnect(self) -> None:
         super(SimpleTrack, self).disconnect()
         self.devices.disconnect()
         self._clip_slots.disconnect()

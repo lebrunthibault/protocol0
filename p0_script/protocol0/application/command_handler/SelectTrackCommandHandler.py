@@ -5,8 +5,7 @@ from protocol0.shared.Song import Song
 
 
 class SelectTrackCommandHandler(CommandHandlerInterface):
-    def handle(self, command):
-        # type: (SelectTrackCommand) -> None
+    def handle(self, command: SelectTrackCommand) -> None:
         track = find_if(lambda t: t.name == command.track_name, Song.simple_tracks())
 
         assert track is not None, "Couldn't find track %s" % command.track_name

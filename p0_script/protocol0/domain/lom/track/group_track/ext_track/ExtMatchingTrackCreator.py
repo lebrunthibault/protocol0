@@ -17,15 +17,13 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class ExtMatchingTrackCreator(MatchingTrackCreatorInterface):
-    def __init__(self, *a, **k):
-        # type: (Any, Any) -> None
+    def __init__(self, *a: Any, **k: Any) -> None:
         super(ExtMatchingTrackCreator, self).__init__(*a, **k)
         self._base_track = cast(SimpleAudioTrack, self._base_track)
         self._midi_track = cast(SimpleMidiTrack, self._base_track.sub_tracks[0])
         self._audio_track = cast(SimpleAudioTrack, self._base_track.sub_tracks[1])
 
-    def bounce(self):
-        # type: () -> Sequence
+    def bounce(self) -> Sequence:
         assert_valid_track_name(self._base_track.name)
 
         if len(list(self._base_track.devices)) != 0:

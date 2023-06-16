@@ -7,8 +7,7 @@ from protocol0.shared.logging.Logger import Logger
 class ActionGroupLog(ActionGroupInterface):
     CHANNEL = 9
 
-    def configure(self):
-        # type: () -> None
+    def configure(self) -> None:
         # LOG encoder
         self.add_encoder(
             identifier=1, name="log current", on_press=self._container.get(LogService).log_current

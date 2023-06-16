@@ -15,42 +15,35 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class AudioClip(Clip):
-    def __init__(self, *a, **k):
-        # type: (Any, Any) -> None
+    def __init__(self, *a: Any, **k: Any) -> None:
         super(AudioClip, self).__init__(*a, **k)
         Scheduler.defer(self.appearance.refresh)
 
         # associate the clip with a midi content
-        self.previous_file_path = None  # type: Optional[str]
+        self.previous_file_path: Optional[str] = None
 
         if self.name == Config.DUMMY_CLIP_NAME:
             Scheduler.defer(self.config_dummy_clip)
 
-    def get_hash(self, device_parameters):
-        # type: (List[DeviceParameter]) -> int
+    def get_hash(self, device_parameters: List[DeviceParameter]) -> int:
         return hash((self.file_path, self.automation.get_hash(device_parameters)))
 
     @property
-    def warp_mode(self):
-        # type: () -> Live.Clip.WarpMode
+    def warp_mode(self) -> Live.Clip.WarpMode:
         return self._clip.warp_mode
 
     @warp_mode.setter
-    def warp_mode(self, warp_mode):
-        # type: (Live.Clip.WarpMode) -> None
+    def warp_mode(self, warp_mode: Live.Clip.WarpMode) -> None:
         self._clip.warp_mode = warp_mode
 
     @property
-    def file_path(self):
-        # type: () -> str
+    def file_path(self) -> str:
         return self._clip.file_path if self._clip else ""
 
-    def focus(self):
-        # type: () -> None
+    def focus(self) -> None:
         self.color = ColorEnum.FOCUSED.value
 
-    def crop(self):
-        # type: () -> Optional[Sequence]
+    def crop(self) -> Optional[Sequence]:
         self.loop.fix()
 
         clip_color = self.color
@@ -64,8 +57,7 @@ class AudioClip(Clip):
         seq.add(partial(setattr, self, "color", clip_color))
         return seq.done()
 
-    def config_dummy_clip(self):
-        # type: () -> None
+    def config_dummy_clip(self) -> None:
         self._clip.warping = True
 
         self.looping = True

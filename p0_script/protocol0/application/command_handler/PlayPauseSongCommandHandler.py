@@ -4,6 +4,5 @@ from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackCompo
 
 
 class PlayPauseSongCommandHandler(CommandHandlerInterface):
-    def handle(self, command):
-        # type: (PlayPauseSongCommand) -> None
+    def handle(self, command: PlayPauseSongCommand) -> None:
         return self._container.get(PlaybackComponent).play_pause()

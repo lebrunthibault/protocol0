@@ -13,28 +13,24 @@ from protocol0.shared.sequence.SequenceTransition import SequenceStateEnum
 class ParallelSequence(SlotManager, Observable):
     """executes steps in parallel"""
 
-    def __init__(self, funcs):
-        # type: (List[Callable]) -> None
+    def __init__(self, funcs: List[Callable]) -> None:
         super(ParallelSequence, self).__init__()
         self._steps = deque([SequenceStep(func, get_callable_repr(func), True) for func in funcs])
         self._steps_terminated_count = 0
         self.state = SequenceState()
         self.res = None
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "ParallelSequence(%s / %s)" % (self._steps_terminated_count, len(self._steps))
 
-    def update(self, observable):
-        # type: (Observable) -> None
+    def update(self, observable: Observable) -> None:
         if isinstance(observable, SequenceStep):
             if observable.state.terminated:
                 self._steps_terminated_count += 1
                 self._check_for_parallel_step_completion()
                 observable.remove_observer(self)
 
-    def start(self):
-        # type: () -> ParallelSequence
+    def start(self) -> "ParallelSequence":
         if not self.state.started and not self.state.terminated:
             self.state.change_to(SequenceStateEnum.STARTED)
 
@@ -47,8 +43,7 @@ class ParallelSequence(SlotManager, Observable):
 
         return self
 
-    def _check_for_parallel_step_completion(self):
-        # type: () -> None
+    def _check_for_parallel_step_completion(self) -> None:
         if self._steps_terminated_count == len(self._steps) and not self.state.terminated:
             self.state.change_to(SequenceStateEnum.TERMINATED)
             self.notify_observers()

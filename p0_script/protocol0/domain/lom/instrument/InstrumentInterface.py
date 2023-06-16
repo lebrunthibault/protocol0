@@ -30,8 +30,7 @@ from protocol0.shared.Song import Song
 from protocol0.shared.sequence.Sequence import Sequence
 
 
-def load_instrument_track(instrument_cls):
-    # type: (Type["InstrumentInterface"]) -> Sequence
+def load_instrument_track(instrument_cls: Type["InstrumentInterface"]) -> Sequence:
     insert_track = Song.current_track().base_track
     track_color = insert_track.color
 
@@ -48,7 +47,7 @@ def load_instrument_track(instrument_cls):
 
 class InstrumentInterface(SlotManager):
     NAME = ""
-    DEVICE = None  # type: Optional[DeviceEnum]
+    DEVICE: Optional[DeviceEnum] = None
     TRACK_COLOR = InstrumentColorEnum.UNKNOWN
     CAN_BE_SHOWN = True
     PRESETS_PATH = ""
@@ -56,14 +55,13 @@ class InstrumentInterface(SlotManager):
     PRESET_DISPLAY_OPTION = PresetDisplayOptionEnum.NAME
     DEFAULT_NOTE = 60
     PRESET_OFFSET = 0  # if we store presets not at the beginning of the list
-    PRESET_CHANGER = ProgramChangePresetChanger  # type: Type[PresetChangerInterface]
-    PRESET_INITIALIZER = PresetInitializerDevicePresetName  # type: Type[PresetInitializerInterface]
+    PRESET_CHANGER: Type[PresetChangerInterface] = ProgramChangePresetChanger
+    PRESET_INITIALIZER: Type[PresetInitializerInterface] = PresetInitializerDevicePresetName
     INSTRUMENT_TRACK_NAME = ""
     IS_EXTERNAL_SYNTH = False
 
     # noinspection PyInitNewSignature
-    def __init__(self, device, track_name):
-        # type: (Optional[Device], str) -> None
+    def __init__(self, device: Optional[Device], track_name: str) -> None:
         super(InstrumentInterface, self).__init__()
         self._track_name = track_name
         self.device = device
@@ -76,13 +74,11 @@ class InstrumentInterface(SlotManager):
 
         self.preset_list = InstrumentPresetList(preset_importer, preset_initializer, preset_changer)
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return self.__class__.__name__
 
     @property
-    def name(self):
-        # type: () -> str
+    def name(self) -> str:
         if self.PRESET_DISPLAY_OPTION == PresetDisplayOptionEnum.NAME and self.selected_preset:
             return self.selected_preset.name
         elif (
@@ -96,19 +92,15 @@ class InstrumentInterface(SlotManager):
             return self.device.name
 
     @property
-    def needs_exclusive_activation(self):
-        # type: () -> bool
+    def needs_exclusive_activation(self) -> bool:
         return False
 
-    def exclusive_activate(self):
-        # type: () -> Optional[Sequence]
+    def exclusive_activate(self) -> Optional[Sequence]:
         pass
 
-    def post_activate(self):
-        # type: () -> Optional[Sequence]
+    def post_activate(self) -> Optional[Sequence]:
         pass
 
     @property
-    def selected_preset(self):
-        # type: () -> Optional[InstrumentPreset]
+    def selected_preset(self) -> Optional[InstrumentPreset]:
         return self.preset_list.selected_preset

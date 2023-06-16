@@ -5,6 +5,5 @@ if TYPE_CHECKING:
 
 
 class SimpleTrackDeletedEvent(object):
-    def __init__(self, track):
-        # type: (SimpleTrack) -> None
+    def __init__(self, track: "SimpleTrack") -> None:
         self.track = track

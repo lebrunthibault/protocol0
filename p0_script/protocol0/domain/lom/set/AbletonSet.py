@@ -22,12 +22,11 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class AbletonSet(object):
-    def __init__(self):
-        # type: () -> None
-        self._cache = {}  # type: Dict[str, Any]
+    def __init__(self) -> None:
+        self._cache: Dict[str, Any] = {}
 
-        self._path = None  # type: Optional[str]
-        self._title = None  # type: Optional[str]
+        self._path: Optional[str] = None
+        self._title: Optional[str] = None
         self._id = str(uuid4())
         self.active = True
 
@@ -46,23 +45,19 @@ class AbletonSet(object):
         for event in (SelectedTrackChangedEvent,):
             Scheduler.wait(2, partial(DomainEventBus.subscribe, event, lambda _: self.notify()))
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "AbletonSet(%s)" % self._title
 
     @property
-    def is_unknown(self):
-        # type: () -> bool
+    def is_unknown(self) -> bool:
         return self._path is None
 
     @property
-    def is_test(self):
-        # type: () -> bool
+    def is_test(self) -> bool:
         return self._title in ("Toto", "Default")
 
     @property
-    def _saved_tracks(self):
-        # type: () -> List[str]
+    def _saved_tracks(self) -> List[str]:
         assert self._path, "set path not set"
         tracks_folder = "%s\\tracks" % dirname(self._path)
 
@@ -70,12 +65,10 @@ class AbletonSet(object):
 
         return [basename(t).replace(".als", "") for t in filenames]
 
-    def get_id(self):
-        # type: () -> str
+    def get_id(self) -> str:
         return self._id
 
-    def to_dict(self):
-        # type: () -> Dict
+    def to_dict(self) -> Dict:
         muted = Song.master_track() is not None and Song.master_track().muted
 
         return {
@@ -90,8 +83,7 @@ class AbletonSet(object):
             "drum_rack_visible": isinstance(Song.selected_track().instrument, InstrumentDrumRack),
         }
 
-    def notify(self, force=False):
-        # type: (bool) -> None
+    def notify(self, force: bool = False) -> None:
         data = self.to_dict()
         if self._cache != data or force:
             seq = Sequence()
@@ -105,8 +97,7 @@ class AbletonSet(object):
 
         self._cache = data
 
-    def _set_from_server_response(self, res):
-        # type: (Dict) -> None
+    def _set_from_server_response(self, res: Dict) -> None:
         if self._title is not None:
             Logger.warning("Tried overwriting set title of %s" % self)
             # return
@@ -124,6 +115,5 @@ class AbletonSet(object):
                 )
                 Backend.client().show_saved_tracks()
 
-    def _disconnect(self):
-        # type: () -> None
+    def _disconnect(self) -> None:
         Backend.client().close_set(self._id)

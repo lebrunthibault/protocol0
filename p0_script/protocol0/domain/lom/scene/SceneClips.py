@@ -14,19 +14,16 @@ from protocol0.shared.observer.Observable import Observable
 
 
 class SceneClipSlot(object):
-    def __init__(self, track, clip_slot):
-        # type: (SimpleTrack, ClipSlot) -> None
+    def __init__(self, track: SimpleTrack, clip_slot: ClipSlot) -> None:
         self.track = track
         self.clip_slot = clip_slot
         self.is_main_clip = not isinstance(track, SimpleAudioExtTrack)
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "SceneClips(%s, %s)" % (self.track, self.clip)
 
     @property
-    def clip(self):
-        # type: () -> Optional[Clip]
+    def clip(self) -> Optional[Clip]:
         if self.clip_slot.has_clip and not isinstance(self.track, ResamplingTrack):
             return self.clip_slot.clip
         else:
@@ -34,20 +31,17 @@ class SceneClipSlot(object):
 
 
 class SceneClips(Observable):
-    def __init__(self, index):
-        # type: (int) -> None
+    def __init__(self, index: int) -> None:
         super(SceneClips, self).__init__()
         self.index = index
-        self._clip_slot_tracks = []  # type: List[SceneClipSlot]
+        self._clip_slot_tracks: List[SceneClipSlot] = []
 
         self.build()
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "SceneClips(%s)" % self.index
 
-    def __iter__(self):
-        # type: () -> Iterator[Clip]
+    def __iter__(self) -> Iterator[Clip]:
         return iter(
             scene_cs.clip
             for scene_cs in self._clip_slot_tracks
@@ -55,24 +49,20 @@ class SceneClips(Observable):
         )
 
     @property
-    def all(self):
-        # type: () -> List[Clip]
+    def all(self) -> List[Clip]:
         return [scene_cs.clip for scene_cs in self._clip_slot_tracks if scene_cs.clip is not None]
 
     @property
-    def tracks(self):
-        # type: () -> List[SimpleTrack]
+    def tracks(self) -> List[SimpleTrack]:
         return [scene_clip.track for scene_clip in self._clip_slot_tracks]
 
     @debounce(duration=50)
-    def update(self, observable):
-        # type: (Observable) -> None
+    def update(self, observable: Observable) -> None:
         if isinstance(observable, ClipSlot) or isinstance(observable, Clip):
             self.build()
             self.notify_observers()
 
-    def build(self):
-        # type: () -> None
+    def build(self) -> None:
         self._clip_slot_tracks = []
 
         for track in Song.simple_tracks():
@@ -85,8 +75,7 @@ class SceneClips(Observable):
         for clip in self:
             clip.register_observer(self)
 
-    def on_added_scene(self):
-        # type: () -> None
+    def on_added_scene(self) -> None:
         """Renames clips when doing consolidate time to new scene"""
         if any(clip for clip in self.all if self._clip_has_default_recording_name(clip)):
             for clip in self.all:
@@ -94,6 +83,5 @@ class SceneClips(Observable):
                     clip.appearance.color = ClipColorEnum.AUDIO_UN_QUANTIZED.value
                 clip.clip_name.update("")
 
-    def _clip_has_default_recording_name(self, clip):
-        # type: (Clip) -> bool
+    def _clip_has_default_recording_name(self, clip: Clip) -> bool:
         return bool(re.match(".*\\[\\d{4}-\\d{2}-\\d{2} \\d+]$", clip.name))

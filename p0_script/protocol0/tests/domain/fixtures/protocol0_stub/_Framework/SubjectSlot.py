@@ -1,5 +1,5 @@
-from functools import wraps, partial
-from unittest.mock import Mock, MagicMock
+from functools import partial
+from unittest.mock import Mock
 
 from protocol0.domain.shared.utils.func import nop
 
@@ -18,34 +18,6 @@ class Subject:
     def __getattr__(self, name):
         return self
 
-# Subject = MagicMock()
-
-class Subject2:
-
-    def __init__(self, func):
-        self.func = func
-        self.subject = "toto"
-
-
-    def __call__(self, *a, **k):
-        print((self, a, k))
-        return self.func(self, *a, **k)
-        # return self
-
-def subject_slot2(*_, **__):
-    def decorator(func):
-        @wraps(func)
-        def decorated(self, *a, **k):
-            print("return")
-            print(self)
-            print(a)
-            print(k)
-            return func(self, *a, **k)
-
-        return Subject2(func)
-        # return Mock(side_effect=partial(decorated)
-
-    return decorator
 
 def subject_slot(*_, **__):
     @instance_decorator

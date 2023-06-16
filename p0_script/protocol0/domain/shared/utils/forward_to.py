@@ -29,19 +29,15 @@ class ForwardTo(object):
     Returns:   An object that will forward any calls as described above.
     """
 
-    def __init__(self, object_name, attr_name):
-        # type: (str, str) -> None
+    def __init__(self, object_name: str, attr_name: str) -> None:
         self.object_name = object_name
         self.attr_name = attr_name
 
-    def __get__(self, instance, _=None):
-        # type: (object, Optional[object]) -> None
+    def __get__(self, instance: object, _: Optional[object] = None) -> None:
         return getattr(getattr(instance, self.object_name), self.attr_name)
 
-    def __set__(self, instance, value):
-        # type: (object, Any) -> None
+    def __set__(self, instance: object, value: Any) -> None:
         setattr(getattr(instance, self.object_name), self.attr_name, value)
 
-    def __delete__(self, instance):
-        # type: (object) -> None
+    def __delete__(self, instance: object) -> None:
         delattr(getattr(instance, self.object_name), self.attr_name)

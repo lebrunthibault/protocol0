@@ -5,6 +5,5 @@ from protocol0.shared.Song import Song
 
 
 class FireSelectedSceneCommandHandler(CommandHandlerInterface):
-    def handle(self, _):
-        # type: (FireSelectedSceneCommand) -> None
+    def handle(self, _: FireSelectedSceneCommand) -> None:
         self._container.get(ScenePlaybackService).fire_scene(Song.selected_scene())

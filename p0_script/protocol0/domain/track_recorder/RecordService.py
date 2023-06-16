@@ -47,8 +47,7 @@ from protocol0.shared.sequence.Sequence import Sequence
 class RecordService(object):
     _DEBUG = False
 
-    def __init__(self, playback_component, scene_crud_component, quantization_component):
-        # type: (PlaybackComponent, SceneCrudComponent, QuantizationComponent) -> None
+    def __init__(self, playback_component: PlaybackComponent, scene_crud_component: SceneCrudComponent, quantization_component: QuantizationComponent) -> None:
         self._playback_component = playback_component
         self._scene_crud_component = scene_crud_component
         self._quantization_component = quantization_component
@@ -56,15 +55,13 @@ class RecordService(object):
         self.recording_bar_length_scroller = RecordingBarLengthScroller(
             Config.DEFAULT_RECORDING_BAR_LENGTH
         )
-        self._recorder = None  # type: Optional[BaseRecorder]
+        self._recorder: Optional[BaseRecorder] = None
 
     @property
-    def is_recording(self):
-        # type: () -> bool
+    def is_recording(self) -> bool:
         return self._recorder is not None
 
-    def _get_track_recorder_factory(self, track):
-        # type: (AbstractTrack) -> AbstractTrackRecorderFactory
+    def _get_track_recorder_factory(self, track: AbstractTrack) -> AbstractTrackRecorderFactory:
         if isinstance(track, SimpleTrack):
             return TrackRecorderSimpleFactory()
         elif isinstance(track, ExternalSynthTrack):
@@ -72,8 +69,7 @@ class RecordService(object):
         else:
             raise Protocol0Warning("This track is not recordable")
 
-    def record_track(self, track, record_type):
-        # type: (AbstractTrack, RecordTypeEnum) -> Optional[Sequence]
+    def record_track(self, track: AbstractTrack, record_type: RecordTypeEnum) -> Optional[Sequence]:
         # we'll subscribe back later
         DomainEventBus.un_subscribe(SongStoppedEvent, self._on_song_stopped_event)
 
@@ -108,8 +104,7 @@ class RecordService(object):
         seq.add(partial(self._start_recording, track, record_type, config, processors))
         return seq.done()
 
-    def _start_recording(self, track, record_type, config, processors):
-        # type: (AbstractTrack, RecordTypeEnum, RecordConfig, RecordProcessors) -> Optional[Sequence]
+    def _start_recording(self, track: AbstractTrack, record_type: RecordTypeEnum, config: RecordConfig, processors: RecordProcessors) -> Optional[Sequence]:
         # this will stop the previous playing scene on playback stop
         PlayingSceneFacade.set(config.recording_scene)
         DomainEventBus.once(ErrorRaisedEvent, self._on_error_raised_event)
@@ -147,13 +142,11 @@ class RecordService(object):
 
         return seq.done()
 
-    def _on_error_raised_event(self, _):
-        # type: (ErrorRaisedEvent) -> None
+    def _on_error_raised_event(self, _: ErrorRaisedEvent) -> None:
         """Cancel the recording on any exception"""
         self._cancel_record(show_notification=False)
 
-    def _cancel_record(self, show_notification=True):
-        # type: (bool) -> None
+    def _cancel_record(self, show_notification: bool = True) -> None:
         DomainEventBus.emit(RecordCancelledEvent())
         Scheduler.restart()
 
@@ -164,8 +157,7 @@ class RecordService(object):
         if show_notification:
             Backend.client().show_warning("Recording cancelled")
 
-    def _on_song_stopped_event(self, _):
-        # type: (SongStoppedEvent) -> None
+    def _on_song_stopped_event(self, _: SongStoppedEvent) -> None:
         """happens when manually stopping song while recording."""
         if self._recorder is None:
             return

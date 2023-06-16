@@ -24,10 +24,8 @@ class ActionGroupMain(ActionGroupInterface):
 
     CHANNEL = 4
 
-    def configure(self):
-        # type: () -> None
-        def record_track(record_type):
-            # type: (RecordTypeEnum) -> Optional[Sequence]
+    def configure(self) -> None:
+        def record_track(record_type: RecordTypeEnum) -> Optional[Sequence]:
             return self._container.get(RecordService).record_track(
                 Song.current_track(), record_type
             )
@@ -73,8 +71,7 @@ class ActionGroupMain(ActionGroupInterface):
             on_long_press=lambda: partial(record_track, RecordTypeEnum.AUDIO_FULL),
         )
 
-        def switch_monitoring():
-            # type: () -> None
+        def switch_monitoring() -> None:
             assert hasattr(
                 Song.current_track(), "monitoring_state"
             ), "current track cannot be monitored"

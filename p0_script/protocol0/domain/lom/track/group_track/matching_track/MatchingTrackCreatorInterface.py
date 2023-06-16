@@ -8,11 +8,9 @@ if TYPE_CHECKING:
 
 
 class MatchingTrackCreatorInterface(object):
-    def __init__(self, track_crud_component, base_track):
-        # type: (TrackCrudComponent, SimpleTrack) -> None
+    def __init__(self, track_crud_component: "TrackCrudComponent", base_track: "SimpleTrack") -> None:
         self._track_crud_component = track_crud_component
         self._base_track = base_track
 
-    def bounce(self):
-        # type: () -> Sequence
+    def bounce(self) -> Sequence:
         raise NotImplementedError

@@ -5,15 +5,12 @@ if TYPE_CHECKING:
 
 
 class DeviceEnumGroup(object):
-    def __init__(self, name, enums):
-        # type: (str, List[DeviceEnum]) -> None
+    def __init__(self, name: str, enums: List["DeviceEnum"]) -> None:
         self.name = name
         self.enums = enums
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "DeviceEnumGroup('%s')" % self.name
 
-    def to_dict(self):
-        # type: () -> Dict
+    def to_dict(self) -> Dict:
         return {"name": self.name, "devices": [d.name for d in self.enums]}

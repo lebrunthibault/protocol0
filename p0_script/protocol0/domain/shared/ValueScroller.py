@@ -8,18 +8,15 @@ from protocol0.shared.types import T
 
 
 class ValueScroller(Generic[T]):
-    def __init__(self, initial_value):
-        # type: (T) -> None
+    def __init__(self, initial_value: T) -> None:
         self._current_value = initial_value
 
-    def __str__(self):
-        # type: () -> str
+    def __str__(self) -> str:
         return self.__class__.__name__
 
     @classmethod
-    def scroll_values(cls, items, current_value, go_next, rotate=True):
-        # type: (Iterable[T], Optional[T], bool, bool) -> T
-        values = list(items)  # type: List[T]
+    def scroll_values(cls, items: Iterable[T], current_value: Optional[T], go_next: bool, rotate: bool = True) -> T:
+        values: List[T] = list(items)
         if len(values) == 0:
             raise Protocol0Warning("empty list handed to scroll_values")
 
@@ -43,25 +40,20 @@ class ValueScroller(Generic[T]):
         return values[next_index]
 
     @property
-    def current_value(self):
-        # type: () -> T
+    def current_value(self) -> T:
         return self._current_value
 
-    def scroll(self, go_next):
-        # type: (bool) -> None
+    def scroll(self, go_next: bool) -> None:
         self._current_value = self.scroll_values(
             self._get_values(), self._get_initial_value(go_next), go_next=go_next
         )
         self._value_scrolled()
 
-    def _get_initial_value(self, go_next):
-        # type: (bool) -> T
+    def _get_initial_value(self, go_next: bool) -> T:
         return self._current_value
 
-    def _get_values(self):
-        # type: () -> List[T]
+    def _get_values(self) -> List[T]:
         raise NotImplementedError
 
-    def _value_scrolled(self):
-        # type: () -> None
+    def _value_scrolled(self) -> None:
         StatusBar.show_message("%s : %s" % (self, self.current_value))

@@ -4,17 +4,14 @@ from protocol0.shared.types import T
 
 
 class ValueToggler(Generic[T]):
-    def __init__(self, value=None):
-        # type: (Optional[T]) -> None
+    def __init__(self, value: Optional[T] = None) -> None:
         self._value = value
 
     @property
-    def value(self):
-        # type: () -> Optional[T]
+    def value(self) -> Optional[T]:
         return self._value
 
-    def toggle(self):
-        # type: () -> None
+    def toggle(self) -> None:
         old_value = self._value
         new_value = self._get_value()
         if old_value == new_value:
@@ -26,18 +23,14 @@ class ValueToggler(Generic[T]):
         if old_value:
             self._value_unset(old_value)
 
-    def reset(self):
-        # type: () -> None
+    def reset(self) -> None:
         self._value = None
 
-    def _value_set(self, value):
-        # type: (T) -> None
+    def _value_set(self, value: T) -> None:
         pass
 
-    def _value_unset(self, value):
-        # type: (T) -> None
+    def _value_unset(self, value: T) -> None:
         pass
 
-    def _get_value(self):
-        # type: () -> T
+    def _get_value(self) -> T:
         raise NotImplementedError

@@ -7,6 +7,5 @@ from protocol0.domain.lom.instrument.preset.preset_importer.PresetImportInterfac
 
 
 class NullPresetImporter(PresetImportInterface):
-    def _import_presets(self):
-        # type: () -> List[InstrumentPreset]
+    def _import_presets(self) -> List[InstrumentPreset]:
         return []

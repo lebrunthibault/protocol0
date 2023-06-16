@@ -8,14 +8,12 @@ if TYPE_CHECKING:
 
 
 class SimpleTrackClipColorManager(object):
-    def __init__(self, clips, track_devices, track_color):
-        # type: (SimpleTrackClips, SimpleTrackDevices, int) -> None
+    def __init__(self, clips: "SimpleTrackClips", track_devices: SimpleTrackDevices, track_color: int) -> None:
         self._clips = clips
         self._track_devices = track_devices
         self._track_color = track_color
 
-    def toggle_colors(self):
-        # type: () -> None
+    def toggle_colors(self) -> None:
         colors_on = any(c.color != self._track_color for c in list(self._clips))
 
         if colors_on:
@@ -23,13 +21,11 @@ class SimpleTrackClipColorManager(object):
         else:
             self._set_colors()
 
-    def _revert_coloring(self):
-        # type: () -> None
+    def _revert_coloring(self) -> None:
         for clip in self._clips:
             clip.color = self._track_color
 
-    def _set_colors(self):
-        # type: () -> None
+    def _set_colors(self) -> None:
         color_index = 0
 
         clip_infos = ClipInfo.create_from_clips(list(self._clips), self._track_devices.parameters)

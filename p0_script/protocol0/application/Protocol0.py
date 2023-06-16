@@ -16,14 +16,12 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class Protocol0(ControlSurface):
-    def __init__(self, c_instance=None):
-        # type: (Any) -> None
+    def __init__(self, c_instance: Any = None) -> None:
         super(Protocol0, self).__init__(c_instance=c_instance)
 
         self._initialize()
 
-    def _initialize(self, reset=False):
-        # type: (bool) -> None
+    def _initialize(self, reset: bool = False) -> None:
         if reset:
             self.disconnect(reset)
 
@@ -41,8 +39,7 @@ class Protocol0(ControlSurface):
 
         Logger.info("P0 script loaded")
 
-    def disconnect(self, reset=False):
-        # type: (bool) -> None
+    def disconnect(self, reset: bool = False) -> None:
         if not reset:
             super(Protocol0, self).disconnect()
 

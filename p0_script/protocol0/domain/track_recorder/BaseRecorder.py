@@ -14,27 +14,23 @@ from protocol0.shared.sequence.Sequence import Sequence
 class BaseRecorder(object):
     """Common recording operations"""
 
-    def __init__(self, track, record_config):
-        # type: (AbstractTrack, RecordConfig) -> None
+    def __init__(self, track: AbstractTrack, record_config: RecordConfig) -> None:
         self._track = track
         self.config = record_config
 
-    def pre_record(self):
-        # type: () -> Sequence
+    def pre_record(self) -> Sequence:
         seq = Sequence()
         seq.add(self._arm_track)
         seq.add(self._prepare_clip_slots_for_record)
         return seq.done()
 
-    def _prepare_clip_slots_for_record(self):
-        # type: () -> Sequence
+    def _prepare_clip_slots_for_record(self) -> Sequence:
         """isolating this, we need clip slots to be computed at runtime (if the track changes)"""
         seq = Sequence()
         seq.add([clip_slot.prepare_for_record for clip_slot in self.config.clip_slots])
         return seq.done()
 
-    def _arm_track(self):
-        # type: () -> Sequence
+    def _arm_track(self) -> Sequence:
         seq = Sequence()
         if not Song.current_track().arm_state.is_armed and len(list(Song.armed_tracks())) != 0:
             options = ["Arm current track", "Record on armed track"]
@@ -49,8 +45,7 @@ class BaseRecorder(object):
 
         return seq.done()
 
-    def record(self):
-        # type: () -> Sequence
+    def record(self) -> Sequence:
         # launch the record
         DomainEventBus.emit(
             RecordStartedEvent(
@@ -77,8 +72,7 @@ class BaseRecorder(object):
 
         return seq.done()
 
-    def cancel_record(self):
-        # type: () -> None
+    def cancel_record(self) -> None:
         for clip_slot in self.config.clip_slots:
             clip_slot.delete_clip()
         self._track.stop(immediate=True)

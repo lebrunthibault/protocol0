@@ -18,14 +18,13 @@ from protocol0.shared.logging.Logger import Logger
 class MultiEncoder(SlotManager):
     LONG_PRESS_THRESHOLD = 0.25  # maximum time in seconds we consider a simple press
 
-    def __init__(self, channel, identifier, name, filter_active_tracks, component_guard):
-        # type: (int, int, str, bool, Callable) -> None
+    def __init__(self, channel: int, identifier: int, name: str, filter_active_tracks: bool, component_guard: Callable) -> None:
         """
         Actions are triggered at the end of the press not the start. Allows press vs long_press (Note) vs scroll (CC)
         NB : for press actions the action is triggered on button release (allowing long_press)
         """
         super(MultiEncoder, self).__init__()
-        self._actions = []  # type: List[EncoderAction]
+        self._actions: List[EncoderAction] = []
         self.identifier = identifier
         self.name = name.title()
         self._active = True
@@ -35,21 +34,18 @@ class MultiEncoder(SlotManager):
         with component_guard():
             self._press_listener.subject = ButtonElement(True, MIDI_NOTE_TYPE, channel, identifier)
             self._scroll_listener.subject = ButtonElement(True, MIDI_CC_TYPE, channel, identifier)
-        self._pressed_at = None  # type: Optional[float]
+        self._pressed_at: Optional[float] = None
         self._has_long_press = False
 
         DomainEventBus.subscribe(AbletonSetChangedEvent, self._on_script_state_changed_event)
 
-    def _on_script_state_changed_event(self, event):
-        # type: (AbletonSetChangedEvent) -> None
+    def _on_script_state_changed_event(self, event: AbletonSetChangedEvent) -> None:
         self._active = event.set.active
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return json.dumps({"channel": self._channel, "name": self.name, "id": self.identifier})
 
-    def add_action(self, action):
-        # type: (EncoderAction) -> MultiEncoder
+    def add_action(self, action: EncoderAction) -> "MultiEncoder":
         assert self._find_matching_action(action.move_type) is None, "duplicate move %s" % action
         if action.move_type == EncoderMoveEnum.LONG_PRESS:
             self._has_long_press = True
@@ -57,16 +53,14 @@ class MultiEncoder(SlotManager):
         return self
 
     @property
-    def _is_long_pressed(self):
-        # type: () -> bool
+    def _is_long_pressed(self) -> bool:
         return bool(
             self._pressed_at
             and (time.time() - self._pressed_at) > MultiEncoder.LONG_PRESS_THRESHOLD
         )
 
     @subject_slot("value")
-    def _press_listener(self, value):
-        # type: (int) -> None
+    def _press_listener(self, value: int) -> None:
         if value:
             if self._has_long_press:
                 self._pressed_at = time.time()
@@ -81,12 +75,10 @@ class MultiEncoder(SlotManager):
                 self._find_and_execute_action(move_type=move_type)
 
     @subject_slot("value")
-    def _scroll_listener(self, value):
-        # type: (int) -> None
+    def _scroll_listener(self, value: int) -> None:
         self._find_and_execute_action(move_type=EncoderMoveEnum.SCROLL, go_next=value == 1)
 
-    def _find_and_execute_action(self, move_type, go_next=None):
-        # type: (EncoderMoveEnum, Optional[bool]) -> None
+    def _find_and_execute_action(self, move_type: EncoderMoveEnum, go_next: Optional[bool] = None) -> None:
         # noinspection PyBroadException
         try:
             if not self._active:
@@ -121,8 +113,7 @@ class MultiEncoder(SlotManager):
         except Exception as e:  # noqa
             DomainEventBus.emit(ErrorRaisedEvent())
 
-    def _find_matching_action(self, move_type):
-        # type: (EncoderMoveEnum) -> Optional[EncoderAction]
+    def _find_matching_action(self, move_type: EncoderMoveEnum) -> Optional[EncoderAction]:
         actions = [
             encoder_action
             for encoder_action in self._actions

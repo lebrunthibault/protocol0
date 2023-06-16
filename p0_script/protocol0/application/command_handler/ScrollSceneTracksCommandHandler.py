@@ -4,6 +4,5 @@ from protocol0.shared.Song import Song
 
 
 class ScrollSceneTracksCommandHandler(CommandHandlerInterface):
-    def handle(self, command):
-        # type: (ScrollSceneTracksCommand) -> None
+    def handle(self, command: ScrollSceneTracksCommand) -> None:
         Song.selected_scene().scroll_tracks(command.go_next)

@@ -4,27 +4,24 @@ from protocol0.domain.track_recorder.RecordProcessorInterface import RecordProce
 class RecordProcessors(object):
     def __init__(
         self,
-        pre_record=None,  # type: RecordProcessorInterface
-        record=None,  # type: RecordProcessorInterface
-        on_record_end=None,  # type: RecordProcessorInterface
-        post_record=None,  # type: RecordProcessorInterface
-    ):
-        # type: (...) -> None
+        pre_record: RecordProcessorInterface = None,
+        record: RecordProcessorInterface = None,
+        on_record_end: RecordProcessorInterface = None,
+        post_record: RecordProcessorInterface = None,
+    ) -> None:
         self.pre_record = pre_record
         self.record = record
         self.on_record_end = on_record_end
         self.post_record = post_record
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         # noinspection SpellCheckingInspection
         return (
             "RecordProcessors(\npre_record=%s,\nrecord=%s,\non_record_end=%s,\npost_record=%s"
             % (self.pre_record, self.record, self.on_record_end, self.post_record)
         )
 
-    def copy(self):
-        # type: () -> RecordProcessors
+    def copy(self) -> "RecordProcessors":
         return RecordProcessors(
             pre_record=self.pre_record,
             record=self.record,

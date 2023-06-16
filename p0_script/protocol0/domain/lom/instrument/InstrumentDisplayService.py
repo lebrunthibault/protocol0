@@ -25,8 +25,7 @@ RecordableTrack = Union[ExternalSynthTrack, SimpleTrack]
 
 
 class InstrumentDisplayService(object):
-    def __init__(self, device_display_service):
-        # type: (DeviceDisplayService) -> None
+    def __init__(self, device_display_service: DeviceDisplayService) -> None:
         self._device_display_service = device_display_service
         DomainEventBus.subscribe(SimpleTrackArmedEvent, self._on_simple_track_armed_event)
         DomainEventBus.subscribe(
@@ -34,8 +33,7 @@ class InstrumentDisplayService(object):
         )
         DomainEventBus.subscribe(InstrumentSelectedEvent, self._on_instrument_selected_event)
 
-    def show_instrument(self, track):
-        # type: (AbstractTrack) -> Optional[Sequence]
+    def show_instrument(self, track: AbstractTrack) -> Optional[Sequence]:
         if track.instrument is None or not track.instrument.CAN_BE_SHOWN:
             raise Protocol0Warning("Instrument cannot be shown")
 
@@ -43,8 +41,7 @@ class InstrumentDisplayService(object):
             cast(RecordableTrack, track).instrument_track, force_activate=True
         )
 
-    def _on_simple_track_armed_event(self, event):
-        # type: (SimpleTrackArmedEvent) -> Optional[Sequence]
+    def _on_simple_track_armed_event(self, event: SimpleTrackArmedEvent) -> Optional[Sequence]:
         track = Song.live_track_to_simple_track(event.live_track)
 
         current_track = Song.current_track()
@@ -64,8 +61,7 @@ class InstrumentDisplayService(object):
 
         return seq.done()
 
-    def _on_simple_track_save_started_event(self, _):
-        # type: (SimpleTrackSaveStartedEvent) -> Optional[Sequence]
+    def _on_simple_track_save_started_event(self, _: SimpleTrackSaveStartedEvent) -> Optional[Sequence]:
         """Hide the plugin window so it does not reappear while freezing"""
         track = Song.selected_track()
         if track.instrument is None:  # e.g. minitaur
@@ -77,12 +73,10 @@ class InstrumentDisplayService(object):
             track, track.instrument.device, activate=False
         )
 
-    def _on_instrument_selected_event(self, _):
-        # type: (InstrumentSelectedEvent) -> Optional[Sequence]
+    def _on_instrument_selected_event(self, _: InstrumentSelectedEvent) -> Optional[Sequence]:
         return self.show_instrument(Song.current_track())
 
-    def activate_plugin_window(self, track, force_activate=False):
-        # type: (SimpleTrack, bool) -> Optional[Sequence]
+    def activate_plugin_window(self, track: SimpleTrack, force_activate: bool = False) -> Optional[Sequence]:
         seq = Sequence()
         instrument = track.instrument
         if instrument is None:

@@ -8,43 +8,37 @@ from protocol0.domain.shared.utils.timing import defer
 
 
 class ExtSoloState(SlotManager):
-    def __init__(self, base_track):
-        # type: (SimpleAudioTrack) -> None
+    def __init__(self, base_track: SimpleAudioTrack) -> None:
         super(ExtSoloState, self).__init__()
         self._base_track = base_track
 
         # this is necessary to monitor the group track solo state
-        self._un_soloed_at = time.time()  # type: float
+        self._un_soloed_at: float = time.time()
 
         self._solo_listener.subject = self._base_track._track
 
-    def update(self):
-        # type: () -> None
+    def update(self) -> None:
         self._sub_track_solo_listener.replace_subjects(
             [sub_track._track for sub_track in self._base_track.sub_tracks]
         )
 
     @property
-    def solo(self):
-        # type: () -> bool
+    def solo(self) -> bool:
         return self._base_track.solo
 
     @solo.setter
-    def solo(self, solo):
-        # type: (bool) -> None
+    def solo(self, solo: bool) -> None:
         self._base_track.solo = solo
 
     @subject_slot("solo")
-    def _solo_listener(self):
-        # type: () -> None
+    def _solo_listener(self) -> None:
         """We want to solo only the base track"""
         if not self.solo:
             self._un_soloed_at = time.time()
 
     @subject_slot_group("solo")
     @defer
-    def _sub_track_solo_listener(self, track):
-        # type: (Live.Track.Track) -> None
+    def _sub_track_solo_listener(self, track: Live.Track.Track) -> None:
         """We want to solo only the base track"""
         if not track.solo:
             return

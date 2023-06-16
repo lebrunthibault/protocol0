@@ -5,6 +5,5 @@ class NextSceneStartedEvent(object):
     (so that firing a scene doesn't change the selected scene)
     """
 
-    def __init__(self, selected_scene_index):
-        # type: (int) -> None
+    def __init__(self, selected_scene_index: int) -> None:
         self.selected_scene_index = selected_scene_index

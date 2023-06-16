@@ -20,15 +20,13 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class DeviceService(object):
-    def __init__(self, track_crud_component, device_component, browser_service):
-        # type: (TrackCrudComponent, DeviceComponent, BrowserServiceInterface) -> None
+    def __init__(self, track_crud_component: TrackCrudComponent, device_component: DeviceComponent, browser_service: BrowserServiceInterface) -> None:
         self._track_crud_component = track_crud_component
         self._device_component = device_component
         self._browser_service = browser_service
         DomainEventBus.subscribe(DeviceLoadedEvent, self._on_device_loaded_event)
 
-    def load_device(self, enum_name):
-        # type: (str) -> Sequence
+    def load_device(self, enum_name: str) -> Sequence:
         device_enum = DeviceEnum[enum_name]
         track = self._track_to_select(device_enum)
 
@@ -52,8 +50,7 @@ class DeviceService(object):
 
         return seq.done()
 
-    def select_or_load_device(self, enum_name):
-        # type: (str) -> Optional[Sequence]
+    def select_or_load_device(self, enum_name: str) -> Optional[Sequence]:
         device_enum = DeviceEnum[enum_name]
         track = self._track_to_select(device_enum)
 
@@ -69,8 +66,7 @@ class DeviceService(object):
         self._device_component.select_device(track, next_device)
         return None
 
-    def _track_to_select(self, device_enum):
-        # type: (DeviceEnum) -> SimpleTrack
+    def _track_to_select(self, device_enum: DeviceEnum) -> SimpleTrack:
         selected_track = Song.selected_track()
         current_track = Song.current_track()
 
@@ -82,16 +78,14 @@ class DeviceService(object):
 
         return selected_track
 
-    def _on_device_loaded_event(self, _):
-        # type: (DeviceLoadedEvent) -> None
+    def _on_device_loaded_event(self, _: DeviceLoadedEvent) -> None:
         """Select the default parameter if it exists"""
         device = Song.selected_track().devices.selected
         if device.enum.default_parameter is not None:
             parameter = device.get_parameter_by_name(device.enum.default_parameter)
             self._device_component.selected_parameter = parameter
 
-    def _create_default_automation(self, clip):
-        # type: (Clip) -> None
+    def _create_default_automation(self, clip: Clip) -> None:
         device = Song.selected_track().devices.selected
         assert device.enum.default_parameter, "Loaded device has no default parameter"
         parameter = device.get_parameter_by_name(device.enum.default_parameter)

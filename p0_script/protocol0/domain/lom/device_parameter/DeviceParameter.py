@@ -8,9 +8,8 @@ from protocol0.shared.logging.Logger import Logger
 
 
 class DeviceParameter(object):
-    def __init__(self, device_parameter, enum=None):
-        # type: (Live.DeviceParameter.DeviceParameter, Optional[DeviceParameterEnum]) -> None
-        self._device_parameter = device_parameter  # type: Live.DeviceParameter.DeviceParameter
+    def __init__(self, device_parameter: Live.DeviceParameter.DeviceParameter, enum: Optional[DeviceParameterEnum] = None) -> None:
+        self._device_parameter: Live.DeviceParameter.DeviceParameter = device_parameter
         self.device_name = ""
 
         try:
@@ -21,45 +20,39 @@ class DeviceParameter(object):
         except (RuntimeError, AttributeError):
             self.default_value = 0
 
-    def __repr__(self, **k):
-        # type: (Any) -> str
+    def __repr__(self, **k: Any) -> str:
         return "%s: %s" % (self.name, self.value)
 
     @classmethod
-    def create_from_name(cls, device_name, device_parameter):
-        # type: (str, Live.DeviceParameter.DeviceParameter) -> DeviceParameter
+    def create_from_name(cls, device_name: str, device_parameter: Live.DeviceParameter.DeviceParameter) -> "DeviceParameter":
         enum = DeviceParameterEnum.from_name(device_name, device_parameter.name)
         param = cls(device_parameter, enum=enum)
         param.device_name = device_name
         return param
 
     @property
-    def name(self):
-        # type: () -> str
+    def name(self) -> str:
         if self._device_parameter:
             return self._device_parameter.name
         else:
             return ""
 
     @property
-    def original_name(self):
-        # type: () -> str
+    def original_name(self) -> str:
         if self._device_parameter:
             return self._device_parameter.original_name
         else:
             return ""
 
     @property
-    def value(self):
-        # type: () -> float
+    def value(self) -> float:
         if self._device_parameter:
             return self._device_parameter.value
         else:
             return 0
 
     @value.setter
-    def value(self, value):
-        # type: (float) -> None
+    def value(self, value: float) -> None:
         if self.is_enabled and self._device_parameter:
             try:
                 self._device_parameter.value = value
@@ -67,53 +60,46 @@ class DeviceParameter(object):
                 Logger.warning(e)
 
     @property
-    def automation_state(self):
-        # type: () -> float
+    def automation_state(self) -> float:
         if self._device_parameter:
             return self._device_parameter.automation_state
         else:
             return 0
 
     @property
-    def is_automated(self):
-        # type: () -> bool
+    def is_automated(self) -> bool:
         return self.automation_state != Live.DeviceParameter.AutomationState.none
 
     @property
-    def min(self):
-        # type: () -> float
+    def min(self) -> float:
         if self._device_parameter:
             return self._device_parameter.min
         else:
             return 0
 
     @property
-    def max(self):
-        # type: () -> float
+    def max(self) -> float:
         if self._device_parameter:
             return self._device_parameter.max
         else:
             return 0
 
     @property
-    def is_quantized(self):
-        # type: () -> bool
+    def is_quantized(self) -> bool:
         if self._device_parameter:
             return self._device_parameter.is_quantized
         else:
             return False
 
     @property
-    def is_enabled(self):
-        # type: () -> bool
+    def is_enabled(self) -> bool:
         if self._device_parameter:
             return self._device_parameter.is_enabled
         else:
             return False
 
     @classmethod
-    def set_live_device_parameter(cls, param, value):
-        # type: (Live.DeviceParameter.DeviceParameter, float) -> None
+    def set_live_device_parameter(cls, param: Live.DeviceParameter.DeviceParameter, value: float) -> None:
         if not param or not param.is_enabled:
             return None
         value = max(param.min, value)
@@ -122,8 +108,7 @@ class DeviceParameter(object):
         param.value = value
 
     @accelerate
-    def scroll(self, go_next, factor=1):
-        # type: (bool, int) -> None
+    def scroll(self, go_next: bool, factor: int = 1) -> None:
         # using factor acceleration
         value_range = self.max - self.min
         step = value_range / 1000
@@ -131,8 +116,7 @@ class DeviceParameter(object):
         value = self.value + step if go_next else self.value - step
         self.value = clamp(value, self.min, self.max)
 
-    def reset(self):
-        # type: () -> None
+    def reset(self) -> None:
         if self.name == "Device On":
             # we define arbitrarily that toggling a device always starts from disabled state
             # not the opposite

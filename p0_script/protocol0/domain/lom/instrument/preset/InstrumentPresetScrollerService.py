@@ -12,8 +12,7 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 class InstrumentPresetScrollerService(object):
     @lock
-    def scroll_presets_or_samples(self, track, go_next):
-        # type: (AbstractTrack, bool) -> Sequence
+    def scroll_presets_or_samples(self, track: AbstractTrack, go_next: bool) -> Sequence:
         assert track.instrument is not None, "track has not instrument"
         ApplicationView.show_device()
 
@@ -22,8 +21,7 @@ class InstrumentPresetScrollerService(object):
         seq.add(partial(track.instrument.preset_list.scroll, go_next))
         return seq.done()
 
-    def scroll_preset_categories(self, track, go_next):
-        # type: (AbstractTrack, bool) -> None
+    def scroll_preset_categories(self, track: AbstractTrack, go_next: bool) -> None:
         assert track.instrument, "track has not instrument"
         instrument = track.instrument
 

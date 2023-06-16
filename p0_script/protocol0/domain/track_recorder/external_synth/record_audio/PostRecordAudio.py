@@ -16,8 +16,7 @@ from protocol0.shared.Song import Song
 
 
 class PostRecordAudio(RecordProcessorInterface):
-    def process(self, track, config):
-        # type: (ExternalSynthTrack, RecordConfig) -> None
+    def process(self, track: ExternalSynthTrack, config: RecordConfig) -> None:
         DomainEventBus.emit(ExtAudioRecordingEndedEvent(track))
 
         midi_clip = cast(MidiClip, track.midi_track.clip_slots[config.scene_index].clip)
