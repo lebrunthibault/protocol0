@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "description": "python sdk generator for protocol0",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lebrunthibault/protocol0.git"

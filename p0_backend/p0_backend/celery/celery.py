@@ -5,16 +5,18 @@ from typing import List, Optional
 from celery import Celery
 from loguru import logger
 
-from p0_backend.lib.task_cache import TaskCache, TaskCacheKey
-from p0_backend.lib.notification.notification.notification_factory import NotificationFactory
-from p0_backend.lib.notification.select.select_factory import SelectFactory
 from p0_backend.lib.enum.color_enum import ColorEnum
 from p0_backend.lib.enum.notification_enum import NotificationEnum
+from p0_backend.lib.notification.notification.notification_factory import NotificationFactory
+from p0_backend.lib.notification.select.select_factory import SelectFactory
+from p0_backend.lib.task_cache import TaskCache, TaskCacheKey
 
 os.environ.setdefault("FORKED_BY_MULTIPROCESSING", "1")
 
+
 def create_app():
     return Celery("tasks", broker="redis://localhost")
+
 
 celery_app = create_app()
 celery_app.control.purge()
