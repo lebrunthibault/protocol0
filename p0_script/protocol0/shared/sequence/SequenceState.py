@@ -3,8 +3,7 @@ from protocol0.shared.sequence.SequenceTransition import SequenceTransition, Seq
 
 
 class SequenceState(object):
-    def __init__(self):
-        # type: () -> None
+    def __init__(self) -> None:
         terminated_state = SequenceTransition(SequenceStateEnum.TERMINATED, [])
         cancelled_state = SequenceTransition(SequenceStateEnum.CANCELLED, [])
         errored_state = SequenceTransition(SequenceStateEnum.ERRORED, [])
@@ -16,8 +15,7 @@ class SequenceState(object):
         self.state = un_started_state
         self.res = None
 
-    def change_to(self, enum):
-        # type: (SequenceStateEnum) -> None
+    def change_to(self, enum: SequenceStateEnum) -> None:
         new_state = self.state.get_transition(enum)
         if new_state is None:
             raise Protocol0Error(
@@ -27,21 +25,17 @@ class SequenceState(object):
         self.state = new_state
 
     @property
-    def started(self):
-        # type: () -> bool
+    def started(self) -> bool:
         return self.state.enum == SequenceStateEnum.STARTED
 
     @property
-    def errored(self):
-        # type: () -> bool
+    def errored(self) -> bool:
         return self.state.enum == SequenceStateEnum.ERRORED
 
     @property
-    def cancelled(self):
-        # type: () -> bool
+    def cancelled(self) -> bool:
         return self.state.enum == SequenceStateEnum.CANCELLED
 
     @property
-    def terminated(self):
-        # type: () -> bool
+    def terminated(self) -> bool:
         return self.state.enum == SequenceStateEnum.TERMINATED

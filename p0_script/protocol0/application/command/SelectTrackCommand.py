@@ -2,7 +2,6 @@ from protocol0.application.command.SerializableCommand import SerializableComman
 
 
 class SelectTrackCommand(SerializableCommand):
-    def __init__(self, track_name):
-        # type: (str) -> None
+    def __init__(self, track_name: str) -> None:
         super(SelectTrackCommand, self).__init__()
         self.track_name = track_name

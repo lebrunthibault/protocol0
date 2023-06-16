@@ -16,8 +16,7 @@ from protocol0.domain.shared.utils.utils import volume_to_db
 class MasterTrack(SimpleAudioTrack):
     IS_ACTIVE = False
 
-    def __init__(self, *a, **k):
-        # type: (Any, Any) -> None
+    def __init__(self, *a: Any, **k: Any) -> None:
         super(MasterTrack, self).__init__(*a, **k)
 
         self.devices.register_observer(self)
@@ -25,8 +24,7 @@ class MasterTrack(SimpleAudioTrack):
             SimpleTrackSaveStartedEvent, self._on_simple_track_save_started_event
         )
 
-    def _on_simple_track_save_started_event(self, _):
-        # type: (SimpleTrackSaveStartedEvent) -> None
+    def _on_simple_track_save_started_event(self, _: SimpleTrackSaveStartedEvent) -> None:
         """youlean makes saving a track 10s + long"""
         youlean = self.devices.get_one_from_enum(DeviceEnum.YOULEAN)
 
@@ -35,12 +33,10 @@ class MasterTrack(SimpleAudioTrack):
             Backend.client().show_warning("Youlean removed")
 
     @property
-    def muted(self):
-        # type: () -> bool
+    def muted(self) -> bool:
         return self.volume != 0
 
-    def mute_for(self, duration):
-        # type: (int) -> None
+    def mute_for(self, duration: int) -> None:
         """
         Master track can not be muted so we set volume to 0
         duration: ms
@@ -49,8 +45,7 @@ class MasterTrack(SimpleAudioTrack):
         Scheduler.wait_ms(duration, (partial(setattr, self, "volume", 0)))
         Scheduler.wait_ms(500, self._check_volume, unique=True)
 
-    def _check_volume(self):
-        # type: () -> None
+    def _check_volume(self) -> None:
         if self.volume != 0:
             Backend.client().show_warning("Master volume is not at 0 db, fixing")
             self.volume = 0

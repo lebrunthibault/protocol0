@@ -19,8 +19,7 @@ from protocol0.shared.sequence.Sequence import Sequence
 class PlaybackComponent(SlotManager):
     _DEBUG = False
 
-    def __init__(self, song):
-        # type: (Live.Song.Song) -> None
+    def __init__(self, song: Live.Song.Song) -> None:
         super(PlaybackComponent, self).__init__()
         self._live_song = song
         self._is_playing = (
@@ -33,8 +32,7 @@ class PlaybackComponent(SlotManager):
         DomainEventBus.subscribe(SongStoppedEvent, self._on_song_stopped_event)
 
     @subject_slot("is_playing")
-    def _is_playing_listener(self):
-        # type: () -> None
+    def _is_playing_listener(self) -> None:
         # deduplicate calls with is_playing True
         if self.is_playing == self._is_playing:
             return
@@ -49,8 +47,7 @@ class PlaybackComponent(SlotManager):
 
             DomainEventBus.defer_emit(SongStartedEvent())
 
-    def _on_scene_position_scrolled_event(self, _):
-        # type: (ScenePositionScrolledEvent) -> None
+    def _on_scene_position_scrolled_event(self, _: ScenePositionScrolledEvent) -> None:
         scene = Song.selected_scene()
         if scene.position_scroller.current_value == 0:
             beat_offset = 0.0
@@ -69,38 +66,31 @@ class PlaybackComponent(SlotManager):
 
         self._live_song.scrub_by(beat_offset)
 
-    def _on_record_ended_event(self, _):
-        # type: (RecordEndedEvent) -> None
+    def _on_record_ended_event(self, _: RecordEndedEvent) -> None:
         self.metronome = False
         # this is delayed in the case an encoder is touched after the recording is finished by mistake
         for tick in [1, 10, 50, 100]:
             Scheduler.wait(tick, self.re_enable_automation)
 
-    def _on_record_cancelled_event(self, _):
-        # type: (RecordCancelledEvent) -> None
+    def _on_record_cancelled_event(self, _: RecordCancelledEvent) -> None:
         self.metronome = False
         self._live_song.stop_playing()
 
-    def _on_song_stopped_event(self, _):
-        # type: (SongStoppedEvent) -> None
+    def _on_song_stopped_event(self, _: SongStoppedEvent) -> None:
         self.metronome = False
 
     @property
-    def is_playing(self):
-        # type: () -> bool
+    def is_playing(self) -> bool:
         return self._live_song.is_playing
 
     @is_playing.setter
-    def is_playing(self, is_playing):
-        # type: (bool) -> None
+    def is_playing(self, is_playing: bool) -> None:
         self._live_song.is_playing = is_playing
 
-    def start_playing(self):
-        # type: () -> None
+    def start_playing(self) -> None:
         self._live_song.is_playing = True
 
-    def stop(self):
-        # type: () -> Sequence
+    def stop(self) -> Sequence:
         self.stop_all_clips(quantized=False)
         self.stop_playing()
 
@@ -109,24 +99,20 @@ class PlaybackComponent(SlotManager):
             seq.wait_for_event(SongStoppedEvent)
         return seq.done()
 
-    def stop_playing(self):
-        # type: () -> None
+    def stop_playing(self) -> None:
         self._live_song.stop_playing()
 
-    def stop_all_clips(self, quantized=True):
-        # type: (bool) -> None
+    def stop_all_clips(self, quantized: bool = True) -> None:
         # noinspection PyTypeChecker
         self._live_song.stop_all_clips(quantized)
 
-    def play_pause(self):
-        # type: () -> None
+    def play_pause(self) -> None:
         if self.is_playing:
             self.stop_playing()
         else:
             self.start_playing()
 
-    def reset(self):
-        # type: () -> None
+    def reset(self) -> None:
         """stopping immediately"""
         self.stop_playing()
         # noinspection PyPropertyAccess
@@ -134,15 +120,12 @@ class PlaybackComponent(SlotManager):
         self.stop_all_clips()
 
     @property
-    def metronome(self):
-        # type: () -> bool
+    def metronome(self) -> bool:
         return self._live_song.metronome
 
     @metronome.setter
-    def metronome(self, metronome):
-        # type: (bool) -> None
+    def metronome(self, metronome: bool) -> None:
         self._live_song.metronome = metronome
 
-    def re_enable_automation(self):
-        # type: () -> None
+    def re_enable_automation(self) -> None:
         self._live_song.re_enable_automation()

@@ -5,12 +5,10 @@ from protocol0.domain.lom.validation.ValidatorInterface import ValidatorInterfac
 
 
 class AggregateValidator(ValidatorInterface):
-    def __init__(self, validators):
-        # type: (List[ValidatorInterface]) -> None
+    def __init__(self, validators: List[ValidatorInterface]) -> None:
         self._validators = validators
 
-    def get_error_message(self):
-        # type: () -> Optional[str]
+    def get_error_message(self) -> Optional[str]:
         error_messages = list(
             filter(None, [validator.get_error_message() for validator in self._validators])
         )
@@ -19,12 +17,10 @@ class AggregateValidator(ValidatorInterface):
         else:
             return "\n".join(error_messages)
 
-    def is_valid(self):
-        # type: () -> bool
+    def is_valid(self) -> bool:
         return all(validator.is_valid() for validator in self._validators)
 
-    def fix(self):
-        # type: () -> Sequence
+    def fix(self) -> Sequence:
         seq = Sequence()
         for validator in self._validators:
             if not validator.is_valid():

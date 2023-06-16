@@ -6,6 +6,5 @@ class OutputRoutingTypeEnum(AbstractEnum):
     SENDS_ONLY = "Sends Only"
 
     @property
-    def label(self):
-        # type: () -> str
+    def label(self) -> str:
         return self.value

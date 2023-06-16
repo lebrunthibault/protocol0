@@ -4,6 +4,5 @@ from protocol0.domain.lom.song.components.SceneComponent import SceneComponent
 
 
 class ScrollScenesCommandHandler(CommandHandlerInterface):
-    def handle(self, command):
-        # type: (ScrollScenesCommand) -> None
+    def handle(self, command: ScrollScenesCommand) -> None:
         self._container.get(SceneComponent).scroll_scenes(command.go_next)

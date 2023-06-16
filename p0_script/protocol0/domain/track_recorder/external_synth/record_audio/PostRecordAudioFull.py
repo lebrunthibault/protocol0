@@ -8,8 +8,7 @@ from protocol0.shared.Song import Song
 
 
 class PostRecordAudioFull(RecordProcessorInterface):
-    def process(self, track, config):
-        # type: (ExternalSynthTrack, RecordConfig) -> None
+    def process(self, track: ExternalSynthTrack, config: RecordConfig) -> None:
         PostRecordAudio().process(track, config)
 
         audio_clip = track.audio_track.clip_slots[config.scene_index].clip

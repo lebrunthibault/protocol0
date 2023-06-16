@@ -4,6 +4,5 @@ from typing_extensions import Protocol
 
 class P0TrackInterface(Protocol):
     @property
-    def _track(self):
-        # type: () -> Live.Track.Track
+    def _track(self) -> Live.Track.Track:
         raise NotImplementedError

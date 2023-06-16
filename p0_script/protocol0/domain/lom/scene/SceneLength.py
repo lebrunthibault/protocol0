@@ -8,23 +8,19 @@ from protocol0.shared.logging.Logger import Logger
 
 
 class SceneLength(object):
-    def __init__(self, clips, scene_index):
-        # type: (SceneClips, int) -> None
+    def __init__(self, clips: SceneClips, scene_index: int) -> None:
         self._clips = clips
         self._scene_index = scene_index
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "SceneLength(index=%s, length=%f)" % (self._scene_index, self.length)
 
     @property
-    def _is_playing(self):
-        # type: () -> bool
+    def _is_playing(self) -> bool:
         return any(clip.is_playing for clip in self._clips)
 
     @property
-    def length(self):
-        # type: () -> float
+    def length(self) -> float:
         longest_clip = (
             self.get_longest_clip(is_playing=True) if self._is_playing else self.get_longest_clip()
         )
@@ -38,15 +34,13 @@ class SceneLength(object):
         return previous_power_of_2(int(clip_length / numerator)) * numerator
 
     @property
-    def bar_length(self):
-        # type: () -> int
+    def bar_length(self) -> int:
         if self.length % Song.signature_numerator() != 0:
             # can happen when changing the longest clip length
             Logger.warning("%s invalid length: %s" % (self, self.length))
         return int(self.length / Song.signature_numerator())
 
-    def get_longest_clip(self, is_playing=False):
-        # type: (bool) -> Optional[Clip]
+    def get_longest_clip(self, is_playing: bool = False) -> Optional[Clip]:
         """
             We take any clip except
             - recording clips that have a non integer length

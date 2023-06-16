@@ -5,6 +5,5 @@ from protocol0.shared.Song import Song
 
 
 class DrumRackToSimplerCommandHandler(CommandHandlerInterface):
-    def handle(self, _):
-        # type: (DrumRackToSimplerCommand) -> None
+    def handle(self, _: DrumRackToSimplerCommand) -> None:
         self._container.get(DrumRackService).drum_rack_to_simpler(Song.selected_track())

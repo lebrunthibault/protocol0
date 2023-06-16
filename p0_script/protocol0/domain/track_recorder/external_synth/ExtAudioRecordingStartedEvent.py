@@ -4,6 +4,5 @@ from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import 
 
 
 class ExtAudioRecordingStartedEvent(object):
-    def __init__(self, track):
-        # type: (ExternalSynthTrack) -> None
+    def __init__(self, track: ExternalSynthTrack) -> None:
         self.track = track

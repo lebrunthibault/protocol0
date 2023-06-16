@@ -9,8 +9,7 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class CountInOneBar(CountInInterface):
-    def launch(self, playback_component, track):
-        # type: (PlaybackComponent, AbstractTrack) -> Sequence
+    def launch(self, playback_component: PlaybackComponent, track: AbstractTrack) -> Sequence:
         playback_component.stop()
         # solo for count in
         track_solo = track.solo
@@ -29,8 +28,7 @@ class CountInOneBar(CountInInterface):
         # this leaves 1 bar (because of quantization)
         return Sequence().defer().done()
 
-    def _stop_count_in(self, playback_component, track):
-        # type: (PlaybackComponent, AbstractTrack) -> None
+    def _stop_count_in(self, playback_component: PlaybackComponent, track: AbstractTrack) -> None:
         if (
             len([clip for clip in Song.selected_scene().clips if not clip.muted]) >= 1
             and not track.solo

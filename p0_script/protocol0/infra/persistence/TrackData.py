@@ -9,28 +9,24 @@ if TYPE_CHECKING:
 
 
 class TrackData(object):
-    def __init__(self, track):
-        # type: (SimpleAudioTrack) -> None
+    def __init__(self, track: "SimpleAudioTrack") -> None:
         self._track = track
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "TrackData(%s)" % self._track
 
-    def save(self):
-        # type: () -> None
+    def save(self) -> None:
         if liveobj_valid(self._track._track):
             self._track._track.set_data(
                 TrackDataEnum.CLIP_MAPPING.value,
                 self._track.clip_mapping.to_dict(),
             )
 
-    def restore(self):
-        # type: () -> None
+    def restore(self) -> None:
         # noinspection PyTypeChecker
-        mapping_data = self._track._track.get_data(
+        mapping_data: Dict = self._track._track.get_data(
             TrackDataEnum.CLIP_MAPPING.value, None
-        )  # type: Dict
+        )
 
         if mapping_data is not None:
             self._track.clip_mapping = AudioToMidiClipMapping(self, mapping_data)

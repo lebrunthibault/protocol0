@@ -22,8 +22,7 @@ from protocol0.shared.sequence.Sequence import Sequence
 class SimpleAudioTrack(SimpleTrack):
     CLIP_SLOT_CLASS = AudioClipSlot
 
-    def __init__(self, *a, **k):
-        # type: (Any, Any) -> None
+    def __init__(self, *a: Any, **k: Any) -> None:
         super(SimpleAudioTrack, self).__init__(*a, **k)
         # don't flatten when the track did not change since last flatten (used to retry on error)
         self._needs_flattening = True
@@ -35,22 +34,18 @@ class SimpleAudioTrack(SimpleTrack):
         self._has_clip_listener.replace_subjects(self._track.clip_slots)
 
     @property
-    def clip_slots(self):
-        # type: () -> List[AudioClipSlot]
+    def clip_slots(self) -> List[AudioClipSlot]:
         return cast(List[AudioClipSlot], super(SimpleAudioTrack, self).clip_slots)
 
     @property
-    def clips(self):
-        # type: () -> List[AudioClip]
+    def clips(self) -> List[AudioClip]:
         return super(SimpleAudioTrack, self).clips  # noqa
 
     @subject_slot_group("has_clip")
-    def _has_clip_listener(self, _):
-        # type: (Live.ClipSlot.ClipSlot) -> None
+    def _has_clip_listener(self, _: Live.ClipSlot.ClipSlot) -> None:
         self._needs_flattening = True
 
-    def load_full_track(self):
-        # type: () -> Sequence
+    def load_full_track(self) -> Sequence:
         assert isinstance(Song.current_track(), SimpleAudioTrack), "Track already loaded"
         matching_track = find_if(
             lambda t: t != self and t.name == self.name and not t.is_foldable,
@@ -72,12 +67,10 @@ class SimpleAudioTrack(SimpleTrack):
         seq.add(partial(Backend.client().show_success, "Track loaded"))
         return seq.done()
 
-    def flatten(self, flatten_track=True):
-        # type: (bool) -> Sequence
+    def flatten(self, flatten_track: bool = True) -> Sequence:
         return super(SimpleAudioTrack, self).flatten(self._needs_flattening)
 
-    def replace_clip_sample(self, dest_cs, source_cs=None, file_path=None):
-        # type: (AudioClipSlot, AudioClipSlot, str) -> Optional[Sequence]
+    def replace_clip_sample(self, dest_cs: AudioClipSlot, source_cs: AudioClipSlot = None, file_path: str = None) -> Optional[Sequence]:
         assert source_cs is not None or file_path is not None, "provide clip_slot or file path"
 
         Logger.info(
@@ -97,8 +90,7 @@ class SimpleAudioTrack(SimpleTrack):
 
             return dest_cs.replace_clip_sample(None, file_path)
 
-    def back_to_previous_clip_file_path(self, clip):
-        # type: (AudioClip) -> Sequence
+    def back_to_previous_clip_file_path(self, clip: AudioClip) -> Sequence:
         clip_slot = self.clip_slots[clip.index]
         previous_file_path = clip.previous_file_path
 
@@ -114,8 +106,7 @@ class SimpleAudioTrack(SimpleTrack):
 
         return seq.done()
 
-    def disconnect(self):
-        # type: () -> None
+    def disconnect(self) -> None:
         self._data.save()
 
         super(SimpleAudioTrack, self).disconnect()

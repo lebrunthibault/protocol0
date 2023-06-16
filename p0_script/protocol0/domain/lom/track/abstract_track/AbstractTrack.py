@@ -22,49 +22,42 @@ if TYPE_CHECKING:
 
 
 class AbstractTrack(SlotManager):
-    def __init__(self, track):
-        # type: (SimpleTrack) -> None
+    def __init__(self, track: "SimpleTrack") -> None:
         super(AbstractTrack, self).__init__()
         # TRACKS
-        self._track = track._track  # type: Live.Track.Track
-        self.base_track = track  # type: SimpleTrack
-        self.group_track = None  # type: Optional[AbstractTrack]
+        self._track: Live.Track.Track = track._track
+        self.base_track: SimpleTrack = track
+        self.group_track: Optional[AbstractTrack] = None
         # NB : .group_track is simple for simple tracks and abg for abg tracks
-        self.abstract_group_track = None  # type: Optional[AbstractGroupTrack]
-        self.sub_tracks = []  # type: List[AbstractTrack]
+        self.abstract_group_track: Optional["AbstractGroupTrack"] = None
+        self.sub_tracks: List[AbstractTrack] = []
 
         # MISC
-        self.arm_state = AbstractTrackArmState(self._track)  # type: AbstractTrackArmState
+        self.arm_state: AbstractTrackArmState = AbstractTrackArmState(self._track)
         self.appearance = AbstractTrackAppearance(self._track)
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "%s : %s (%s)" % (self.__class__.__name__, self._track.name, self.index + 1)
 
-    def on_added(self):
-        # type: () -> Optional[Sequence]
+    def on_added(self) -> Optional[Sequence]:
         if self.group_track is not None:
             if self.group_track.color != self.color:
                 self.color = self.group_track.color
 
         return None
 
-    def on_tracks_change(self):
-        # type: () -> None
+    def on_tracks_change(self) -> None:
         raise NotImplementedError
 
-    def on_scenes_change(self):
-        # type: () -> None
+    def on_scenes_change(self) -> None:
         pass
 
     @property
-    def index(self):
-        # type: () -> int
+    def index(self) -> int:
         return self.base_track._index
 
     @property
-    def abstract_track(self):
-        # type: () -> AbstractTrack
+    def abstract_track(self) -> "AbstractTrack":
         """
         For top level SimpleTracks, will return self
         For AbstractGroupTracks, will return self (NormalGroupTrack and ExternalSynthTrack)
@@ -76,14 +69,12 @@ class AbstractTrack(SlotManager):
             return self
 
     @property
-    def group_tracks(self):
-        # type: () -> List[AbstractGroupTrack]
+    def group_tracks(self) -> List["AbstractTrack"]:
         if not self.group_track:
             return []
         return [self.group_track.abstract_track] + self.group_track.group_tracks
 
-    def add_or_replace_sub_track(self, sub_track, previous_sub_track=None):
-        # type: (AbstractTrack, Optional[AbstractTrack]) -> None
+    def add_or_replace_sub_track(self, sub_track: "AbstractTrack", previous_sub_track: Optional["AbstractTrack"] = None) -> None:
         if sub_track in self.sub_tracks:
             return
 
@@ -96,83 +87,67 @@ class AbstractTrack(SlotManager):
             sub_track_index = self.sub_tracks.index(previous_sub_track)
             self.sub_tracks[sub_track_index] = sub_track
 
-    def get_view_track(self, scene_index):
-        # type: (int) -> Optional[SimpleTrack]
+    def get_view_track(self, scene_index: int) -> Optional["SimpleTrack"]:
         """Depending on the current view returns the appropriate track"""
         return self.base_track
 
     @property
-    def instrument(self):
-        # type: () -> Optional[InstrumentInterface]
+    def instrument(self) -> Optional[InstrumentInterface]:
         return None
 
     name = cast(str, ForwardTo("appearance", "name"))
 
     @property
-    def color(self):
-        # type: () -> int
+    def color(self) -> int:
         raise NotImplementedError
 
     @color.setter
-    def color(self, color_index):
-        # type: (int) -> None
+    def color(self, color_index: int) -> None:
         raise NotImplementedError
 
     @property
-    def solo(self):
-        # type: () -> bool
+    def solo(self) -> bool:
         return self._track and self._track.solo
 
     @solo.setter
-    def solo(self, solo):
-        # type: (bool) -> None
+    def solo(self, solo: bool) -> None:
         if self._track:
             self._track.solo = solo
 
     @property
-    def is_visible(self):
-        # type: () -> bool
+    def is_visible(self) -> bool:
         return self._track and self._track.is_visible
 
     @property
-    def muted(self):
-        # type: () -> bool
+    def muted(self) -> bool:
         return self._track and self._track.mute
 
     @muted.setter
-    def muted(self, mute):
-        # type: (bool) -> None
+    def muted(self, mute: bool) -> None:
         if self._track:
             self._track.mute = mute
 
-    def select(self):
-        # type: () -> None
+    def select(self) -> None:
         DomainEventBus.emit(AbstractTrackSelectedEvent(self._track))
 
-    def fire(self, scene_index):
-        # type: (int) -> None
+    def fire(self, scene_index: int) -> None:
         raise NotImplementedError
 
-    def stop(self, scene_index=None, next_scene_index=None, immediate=False):
-        # type: (Optional[int], Optional[int], bool) -> None
+    def stop(self, scene_index: Optional[int] = None, next_scene_index: Optional[int] = None, immediate: bool = False) -> None:
         raise NotImplementedError
 
-    def get_automated_parameters(self, scene_index):
-        # type: (int) -> Dict[DeviceParameter, SimpleTrack]
+    def get_automated_parameters(self, scene_index: int) -> Dict[DeviceParameter, "SimpleTrack"]:
         """Due to AbstractGroupTrack we cannot do this only at clip level"""
         raise NotImplementedError
 
     @property
-    def load_time(self):
-        # type: () -> int
+    def load_time(self) -> int:
         raise NotImplementedError
 
-    def to_dict(self):
-        # type: () -> Dict
+    def to_dict(self) -> Dict:
         return {"name": self.name, "type": self.__class__.__name__, "index": self.index}
 
-    def disconnect(self):
-        # type: () -> None
+    def disconnect(self) -> None:
         super(AbstractTrack, self).disconnect()
         self.appearance.disconnect()
         DomainEventBus.emit(TrackDisconnectedEvent(self))

@@ -15,8 +15,7 @@ from protocol0.shared.Song import Song
 
 
 class ClipComponent(SlotManager):
-    def __init__(self, song_view):
-        # type: (Live.Song.Song.View) -> None
+    def __init__(self, song_view: Live.Song.Song.View) -> None:
         super(ClipComponent, self).__init__()
         self._view = song_view
 
@@ -28,8 +27,7 @@ class ClipComponent(SlotManager):
     # CLIP SLOTS
 
     @subject_slot("detail_clip")
-    def _detail_clip_listener(self):
-        # type: () -> None
+    def _detail_clip_listener(self) -> None:
         if not Config.EXPERIMENTAL_FEATURES:
             return
 
@@ -40,8 +38,7 @@ class ClipComponent(SlotManager):
 
         detail_clip.show_notes()
 
-    def on_clip_slot_selected_event(self, event):
-        # type: (ClipSlotSelectedEvent) -> None
+    def on_clip_slot_selected_event(self, event: ClipSlotSelectedEvent) -> None:
         # we need all tracks un folded for this
         ApplicationView.show_clip()
 
@@ -57,16 +54,13 @@ class ClipComponent(SlotManager):
     # CLIPS
 
     @property
-    def selected_clip(self):
-        # type: () -> Optional[Clip]
+    def selected_clip(self) -> Optional[Clip]:
         return Song.selected_clip()
 
     @property
-    def draw_mode(self):
-        # type: () -> bool
+    def draw_mode(self) -> bool:
         return self._view.draw_mode
 
     @draw_mode.setter
-    def draw_mode(self, draw_mode):
-        # type: (bool) -> None
+    def draw_mode(self, draw_mode: bool) -> None:
         self._view.draw_mode = draw_mode

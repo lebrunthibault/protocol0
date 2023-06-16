@@ -10,8 +10,7 @@ from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 
 
 class ProgramChangePresetChanger(PresetChangerInterface):
-    def load(self, preset):
-        # type: (InstrumentPreset) -> None
+    def load(self, preset: InstrumentPreset) -> None:
         if isinstance(self._device, PluginDevice):
             self._device.selected_preset_index = preset.index
         DomainEventBus.emit(PresetProgramSelectedEvent(preset.index + self._preset_offset))

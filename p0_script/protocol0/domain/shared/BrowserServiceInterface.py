@@ -3,18 +3,14 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class BrowserServiceInterface(object):
-    def load_device_from_enum(self, device_enum):
-        # type: (DeviceEnum) -> Sequence
+    def load_device_from_enum(self, device_enum: DeviceEnum) -> Sequence:
         raise NotImplementedError
 
-    def load_from_user_library(self, name):
-        # type: (str) -> Sequence
+    def load_from_user_library(self, name: str) -> Sequence:
         raise NotImplementedError
 
-    def load_sample(self, sample_name):
-        # type: (str) -> Sequence
+    def load_sample(self, sample_name: str) -> Sequence:
         raise NotImplementedError
 
-    def load_drum_pad_sample(self, sample_name):
-        # type: (str) -> Sequence
+    def load_drum_pad_sample(self, sample_name: str) -> Sequence:
         raise NotImplementedError

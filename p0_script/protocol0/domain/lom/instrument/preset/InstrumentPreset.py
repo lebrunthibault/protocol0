@@ -6,23 +6,20 @@ from protocol0.domain.shared.utils.string import smart_string
 
 
 class InstrumentPreset(object):
-    def __init__(self, index, name, category=None):
-        # type: (int, Optional[str], Optional[str]) -> None
+    def __init__(self, index: int, name: Optional[str], category: Optional[str] = None) -> None:
         self.index = index
         name = smart_string(name) if name else None
         self.original_name = name
         self.name = self._format_name(name)
         self.category = category.lower() if category else ""
 
-    def __repr__(self, **k):
-        # type: (Any) -> str
+    def __repr__(self, **k: Any) -> str:
         name = "%s (%s)" % (self.name, self.index + 1)
         if self.category:
             name += "(%s)" % self.category
         return name
 
-    def _format_name(self, name):
-        # type: (Optional[str]) -> str
+    def _format_name(self, name: Optional[str]) -> str:
         if name is None:
             return "empty"
 

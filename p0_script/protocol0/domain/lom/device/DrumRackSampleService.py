@@ -8,29 +8,25 @@ from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.shared.Song import Song
 
 
-def _get_drum_rack(track):
-    # type: (SimpleTrack) -> DrumRackDevice
+def _get_drum_rack(track: SimpleTrack) -> DrumRackDevice:
     if not isinstance(track.instrument, InstrumentDrumRack):
         raise Protocol0Warning("track has no drum rack")
 
     return cast(DrumRackDevice, track.instrument.device)
 
 
-def _get_selected_sample(track):
-    # type: (SimpleTrack) -> Sample
+def _get_selected_sample(track: SimpleTrack) -> Sample:
     drum_rack = _get_drum_rack(track)
 
     return drum_rack.selected_drum_pad.sample
 
 
 class DrumRackSampleService(object):
-    def warp_selected_sample(self):
-        # type: () -> None
+    def warp_selected_sample(self) -> None:
         sample = _get_selected_sample(Song.selected_track())
         sample.warping = not sample.warping
 
-    def warp_all(self):
-        # type: () -> None
+    def warp_all(self) -> None:
         drum_rack = _get_drum_rack(Song.selected_track())
 
         pads = drum_rack.filled_drum_pads

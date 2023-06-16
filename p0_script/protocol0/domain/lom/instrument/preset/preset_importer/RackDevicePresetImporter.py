@@ -8,12 +8,10 @@ from protocol0.domain.lom.instrument.preset.preset_importer.PresetImportInterfac
 
 
 class RackDevicePresetImporter(PresetImportInterface):
-    def __init__(self, device):
-        # type: (RackDevice) -> None
+    def __init__(self, device: RackDevice) -> None:
         self._device = device
 
-    def _import_presets(self):
-        # type: () -> List[InstrumentPreset]
+    def _import_presets(self) -> List[InstrumentPreset]:
         return [
             InstrumentPreset(index=i, name=chain.name)
             for i, chain in enumerate(self._device.chains)

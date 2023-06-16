@@ -15,31 +15,26 @@ class ActionGroupTest(ActionGroupInterface):
         pass
 
 
-def _press_encoder(encoder):
-    # type: (MultiEncoder) -> None
+def _press_encoder(encoder: MultiEncoder) -> None:
     encoder._press_listener(1)
     encoder._press_listener(0)
 
 
-def _scroll_encoder(encoder):
-    # type: (MultiEncoder) -> None
+def _scroll_encoder(encoder: MultiEncoder) -> None:
     encoder._scroll_listener(1)
 
 
-def _make_multi_encoder(identifier=1):
-    # type: (int) -> MultiEncoder
+def _make_multi_encoder(identifier: int = 1) -> MultiEncoder:
     p0 = make_protocol0()
     return ActionGroupTest(TestContainer(), p0.component_guard).add_encoder(
         identifier=identifier, name="pytest"
     )
 
 
-def test_multi_encoder_press():
-    # type: () -> None
+def test_multi_encoder_press() -> None:
     res = {"pressed": False}
 
-    def press():
-        # type: () -> None
+    def press() -> None:
         res["pressed"] = True
 
     multi_encoder = _make_multi_encoder().add_action(
@@ -55,14 +50,12 @@ def test_multi_encoder_press():
     # assert res["pressed"] is True
 
 
-def test_multi_encoder_scroll():
-    # type: () -> None
+def test_multi_encoder_scroll() -> None:
     make_protocol0()
     res = {"scrolled": False}
 
     # noinspection PyUnusedLocal
-    def scroll(go_next):
-        # type: (bool) -> None
+    def scroll(go_next: bool) -> None:
         res["scrolled"] = True
 
     multi_encoder = _make_multi_encoder().add_action(
@@ -72,17 +65,14 @@ def test_multi_encoder_scroll():
     assert res["scrolled"] is True
 
 
-def test_multi_encoder_press_and_scroll():
-    # type: () -> None
+def test_multi_encoder_press_and_scroll() -> None:
     res = {"pressed": False, "scrolled": False}
 
     # noinspection PyUnusedLocal
-    def scroll(go_next):
-        # type: (bool) -> None
+    def scroll(go_next: bool) -> None:
         res["scrolled"] = True
 
-    def press():
-        # type: () -> None
+    def press() -> None:
         res["pressed"] = True
 
     multi_encoder = (

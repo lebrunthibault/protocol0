@@ -19,53 +19,43 @@ class SampleCategory(object):
     Used to access my library easily
     """
 
-    def __init__(self, category, name):
-        # type: (SampleCategoryEnum, str) -> None
+    def __init__(self, category: SampleCategoryEnum, name: str) -> None:
         self._category = category
         self._name = name
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "SampleCategory(category=%s, name=%s)" % (self._category, self._name)
 
     @property
-    def name(self):
-        # type: () -> str
+    def name(self) -> str:
         return self._name
 
     @property
-    def color(self):
-        # type: () -> int
+    def color(self) -> int:
         return self._parent_track.color
 
     @property
-    def _sample_directory(self):
-        # type: () -> str
+    def _sample_directory(self) -> str:
         return "%s\\%s" % (self._category.sample_directory, self._name)
 
     @property
-    def drum_rack_name(self):
-        # type: () -> str
+    def drum_rack_name(self) -> str:
         return "%s %s.adg" % (self._category.drum_rack_prefix, self._name.title())
 
     @property
-    def presets(self):
-        # type: () -> List[InstrumentPreset]
+    def presets(self) -> List[InstrumentPreset]:
         return DirectoryPresetImporter(self._sample_directory).import_presets()
 
     @property
-    def live_presets(self):
-        # type: () -> List[InstrumentPreset]
+    def live_presets(self) -> List[InstrumentPreset]:
         return DirectoryPresetImporter(self._sample_directory).import_presets(use_cache=False)
 
     @property
-    def create_track_index(self):
-        # type: () -> int
+    def create_track_index(self) -> int:
         assert self._parent_track is not None, "Sample group track doesn't exist"
         sample_tracks = self._parent_track.get_all_simple_sub_tracks()
 
-        def index_from_track(matched_track):
-            # type: (SimpleTrack) -> int
+        def index_from_track(matched_track: SimpleTrack) -> int:
             if matched_track.is_foldable:
                 return index_from_track(matched_track.sub_tracks[-1])
 
@@ -81,8 +71,7 @@ class SampleCategory(object):
             return index_from_track(self._parent_track.sub_tracks[0].base_track)
 
     @property
-    def _parent_track(self):
-        # type: () -> Optional[AbstractGroupTrack]
+    def _parent_track(self) -> Optional[AbstractGroupTrack]:
         if self._category == SampleCategoryEnum.VOCALS and Song.vocals_track() is None:
             Backend.client().show_warning(
                 "Couldn't find %s track. Using drums track instead" % VocalsTrack.TRACK_NAME

@@ -27,14 +27,13 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class Scene(SlotManager):
-    LAST_MANUALLY_STARTED_SCENE = None  # type: Optional[Scene]
+    LAST_MANUALLY_STARTED_SCENE: Optional["Scene"] = None
 
-    def __init__(self, live_scene, index):
-        # type: (Live.Scene.Scene, int) -> None
+    def __init__(self, live_scene: Live.Scene.Scene, index: int) -> None:
         super(Scene, self).__init__()
         self._scene = live_scene
         self.index = index
-        self.live_id = self._scene._live_ptr  # type: int
+        self.live_id: int = self._scene._live_ptr
 
         self.clips = SceneClips(self.index)
         self._scene_length = SceneLength(self.clips, self.index)
@@ -48,36 +47,30 @@ class Scene(SlotManager):
         self.clips.register_observer(self)
         self.is_triggered_listener.subject = self._scene
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "Scene(%s (%s))" % (self.name, self.index)
 
     @property
-    def abstract_tracks(self):
-        # type: () -> List[AbstractTrack]
-        tracks = collections.OrderedDict()  # type: Dict[int, AbstractTrack]
+    def abstract_tracks(self) -> List[AbstractTrack]:
+        tracks: Dict[int, AbstractTrack] = collections.OrderedDict()
         for track in self.clips.tracks:
             tracks[track.abstract_track.index] = track.abstract_track
 
         return list(sorted(tracks.values(), key=lambda t: t.index))
 
-    def update(self, observable):
-        # type: (Observable) -> None
+    def update(self, observable: Observable) -> None:
         if isinstance(observable, SceneClips):
             self.appearance.refresh()
 
-    def on_tracks_change(self):
-        # type: () -> None
+    def on_tracks_change(self) -> None:
         self.clips.build()
 
-    def on_added(self):
-        # type: () -> None
+    def on_added(self) -> None:
         self.clips.on_added_scene()
         self.scene_name.update("")
 
     @property
-    def next_scene(self):
-        # type: () -> Scene
+    def next_scene(self) -> "Scene":
         if self.should_loop:
             return self
         else:
@@ -88,8 +81,7 @@ class Scene(SlotManager):
                 return next_scene
 
     @property
-    def should_loop(self):
-        # type: () -> bool
+    def should_loop(self) -> bool:
         return (
             self == Song.looping_scene()
             or self == Song.scenes()[-1]
@@ -97,8 +89,7 @@ class Scene(SlotManager):
         )
 
     @property
-    def previous_scene(self):
-        # type: () -> Scene
+    def previous_scene(self) -> "Scene":
         if self == Song.scenes()[0]:
             return self
         else:
@@ -109,8 +100,7 @@ class Scene(SlotManager):
                 return previous_scene
 
     @property
-    def is_triggered(self):
-        # type: () -> bool
+    def is_triggered(self) -> bool:
         return bool(self._scene.is_triggered) if self._scene else False
 
     name = cast(str, ForwardTo("appearance", "name"))
@@ -118,12 +108,10 @@ class Scene(SlotManager):
     bar_length = cast(int, ForwardTo("_scene_length", "bar_length"))
 
     @property
-    def skipped(self):
-        # type: () -> bool
+    def skipped(self) -> bool:
         return self.name.strip().lower().startswith("skip")
 
-    def on_bar_end(self):
-        # type: () -> None
+    def on_bar_end(self) -> None:
         if Song.is_track_recording():
             return
 
@@ -144,8 +132,7 @@ class Scene(SlotManager):
                 seq.done()
 
     @subject_slot("is_triggered")
-    def is_triggered_listener(self):
-        # type: () -> None
+    def is_triggered_listener(self) -> None:
         """
         This is called on scene trigger:
         - on click
@@ -165,15 +152,13 @@ class Scene(SlotManager):
 
         DomainEventBus.emit(SceneFiredEvent(self.index))
 
-    def fire(self):
-        # type: () -> None
+    def fire(self) -> None:
         # stop the previous scene in advance, using clip launch quantization
         DomainEventBus.emit(SceneFiredEvent(self.index))
 
         self._scene.fire()
 
-    def stop(self, next_scene=None, immediate=False):
-        # type: (Optional[Scene], bool) -> None
+    def stop(self, next_scene: Optional["Scene"] = None, immediate: bool = False) -> None:
         """Used to manually stopping previous scene
         because we don't display clip slot stop buttons
         """
@@ -190,8 +175,7 @@ class Scene(SlotManager):
         seq.done()
 
     @throttle(duration=40)
-    def fire_to_position(self, bar_length):
-        # type: (int) -> Sequence
+    def fire_to_position(self, bar_length: int) -> Sequence:
         seq = Sequence()
 
         self.scene_name.update(bar_position=bar_length)
@@ -201,8 +185,7 @@ class Scene(SlotManager):
 
         return seq.done()
 
-    def scroll_tracks(self, go_next):
-        # type: (bool) -> None
+    def scroll_tracks(self, go_next: bool) -> None:
         tracks = [track.get_view_track(self.index) for track in self.abstract_tracks]
         tracks = list(filter(None, tracks))
         tracks.sort(key=lambda t: t.index)
@@ -211,8 +194,7 @@ class Scene(SlotManager):
 
         ApplicationView.focus_session()
 
-    def unfold(self):
-        # type: () -> None
+    def unfold(self) -> None:
         """Show only scene tracks"""
         for track in Song.abstract_tracks():
             if track.base_track.is_foldable:
@@ -224,7 +206,6 @@ class Scene(SlotManager):
             if track.group_track:
                 track.base_track.group_track.is_folded = False
 
-    def disconnect(self):
-        # type: () -> None
+    def disconnect(self) -> None:
         super(Scene, self).disconnect()
         self.scene_name.disconnect()

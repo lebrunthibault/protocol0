@@ -6,8 +6,7 @@ from protocol0.shared.logging.Logger import Logger
 
 
 class CheckAudioExportValidCommandHandler(CommandHandlerInterface):
-    def handle(self, command):
-        # type: (CheckAudioExportValidCommand) -> None
+    def handle(self, command: CheckAudioExportValidCommand) -> None:
         sound_id_device = Song.master_track().devices.get_one_from_enum(
             DeviceEnum.SOUNDID_REFERENCE_PLUGIN
         )

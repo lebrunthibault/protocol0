@@ -42,23 +42,20 @@ class DomainEventBus(object):
         SessionUpdatedEvent,
         MidiBytesReceivedEvent,
     )
-    _registry = {}  # type: Dict[Type, List[Callable]]
+    _registry: Dict[Type, List[Callable]] = {}
 
     @classmethod
-    def once(cls, domain_event, subscriber):
-        # type: (Type[T], Callable) -> None
+    def once(cls, domain_event: Type[T], subscriber: Callable) -> None:
         """helper method for unique reaction"""
 
-        def execute(event):
-            # type: (T) -> None
+        def execute(event: T) -> None:
             subscriber(event)
             cls.un_subscribe(domain_event, execute)
 
         cls.subscribe(domain_event, execute)
 
     @classmethod
-    def subscribe(cls, domain_event, subscriber, unique_method=False):
-        # type: (Type, Callable, bool) -> None
+    def subscribe(cls, domain_event: Type, subscriber: Callable, unique_method: bool = False) -> None:
         if domain_event not in cls._registry:
             cls._registry[domain_event] = []
 
@@ -77,15 +74,13 @@ class DomainEventBus(object):
         cls._registry[domain_event].append(subscriber)
 
     @classmethod
-    def un_subscribe(cls, domain_event, subscriber):
-        # type: (Type, Callable) -> None
+    def un_subscribe(cls, domain_event: Type, subscriber: Callable) -> None:
         if domain_event in cls._registry and subscriber in cls._registry[domain_event]:
             cls._registry[domain_event].remove(subscriber)
 
     @classmethod
     @handle_error
-    def emit(cls, domain_event):
-        # type: (object) -> Sequence
+    def emit(cls, domain_event: object) -> "Sequence":
         if cls._DEBUG and type(domain_event) not in cls._SILENT_EVENTS:
             Logger.info("Event emitted: %s" % domain_event.__class__.__name__)
 
@@ -106,13 +101,11 @@ class DomainEventBus(object):
         return seq.done()
 
     @classmethod
-    def defer_emit(cls, domain_event):
-        # type: (object) -> None
+    def defer_emit(cls, domain_event: object) -> None:
         """for events notified in listeners we can defer to avoid the changes by notification error"""
         Scheduler.defer(partial(cls.emit, domain_event))
 
     @classmethod
-    def reset(cls):
-        # type: () -> None
+    def reset(cls) -> None:
         """Resets the bus (removing all events and listeners)"""
         cls._registry = {}

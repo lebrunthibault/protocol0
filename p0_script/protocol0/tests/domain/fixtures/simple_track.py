@@ -18,8 +18,7 @@ class TrackType(object):
 
 
 class TrackRoutingType(object):
-    def __init__(self, display_name=""):
-        # type: (str) -> None
+    def __init__(self, display_name: str = "") -> None:
         self.display_name = display_name
         self.attached_object = None
         self.category = Live.Track.RoutingTypeCategory.none
@@ -37,11 +36,10 @@ class AbletonTrack(Subject):
         "output_meter_level",
     )
 
-    def __init__(self, track_type=TrackType.MIDI):
-        # type: (str) -> None
+    def __init__(self, track_type: str = TrackType.MIDI) -> None:
         self._live_ptr = id(self)
         self.name = track_type
-        self.devices = []  # type: List[AbletonDevice]
+        self.devices: List[AbletonDevice] = []
         mixer_device = namedtuple("mixer_device", ["sends", "volume", "panning"])
         self.mixer_device = mixer_device(
             [], AbletonDeviceParameter("volume"), AbletonDeviceParameter("panning")
@@ -75,21 +73,17 @@ class AbletonTrack(Subject):
         if track_type == TrackType.AUDIO:
             self.has_audio_input = True
 
-    def get_data(self, _, __):
-        # type: (Any, Any) -> None
+    def get_data(self, _: Any, __: Any) -> None:
         pass
 
-    def set_data(self, _, __):
-        # type: (Any, Any) -> None
+    def set_data(self, _: Any, __: Any) -> None:
         pass
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "%s - %s" % (self.track_type, self.name)
 
 
-def add_track(track_type):
-    # type: (str) -> AbletonTrack
+def add_track(track_type: str) -> AbletonTrack:
     live_track = AbletonTrack(track_type=track_type)
     Song._live_song().tracks.append(cast(Live.Track.Track, live_track))
     return live_track

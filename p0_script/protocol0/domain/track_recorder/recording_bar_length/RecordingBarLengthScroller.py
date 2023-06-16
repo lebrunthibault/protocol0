@@ -12,11 +12,9 @@ from protocol0.shared.logging.StatusBar import StatusBar
 
 
 class RecordingBarLengthScroller(ValueScroller):
-    def _get_values(self):
-        # type: () -> List[RecordingBarLengthEnum]
+    def _get_values(self) -> List[RecordingBarLengthEnum]:
         return list(RecordingBarLengthEnum)
 
-    def _value_scrolled(self):
-        # type: () -> None
+    def _value_scrolled(self) -> None:
         StatusBar.show_message("Fixed Recording : %s" % self.current_value)
         DomainEventBus.emit(SelectedRecordingBarLengthUpdatedEvent())

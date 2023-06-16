@@ -7,8 +7,7 @@ from protocol0.tests.domain.fixtures.device_parameter import AbletonDeviceParame
 class AbletonDevice(Subject):
     __subject_events__ = ("parameters",)
 
-    def __init__(self, name):
-        # type: (str) -> None
+    def __init__(self, name: str) -> None:
         self._live_ptr = id(self)
         self.name = name
         self.view = None

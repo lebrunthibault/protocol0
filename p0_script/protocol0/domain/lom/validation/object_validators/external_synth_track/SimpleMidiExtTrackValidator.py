@@ -14,8 +14,7 @@ from protocol0.domain.shared.BrowserServiceInterface import BrowserServiceInterf
 
 
 class SimpleMidiExtTrackValidator(AggregateValidator):
-    def __init__(self, track, browser_service):
-        # type: (SimpleMidiExtTrack, BrowserServiceInterface) -> None
+    def __init__(self, track: SimpleMidiExtTrack, browser_service: BrowserServiceInterface) -> None:
         self._track = track
 
         validators = [

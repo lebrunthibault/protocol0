@@ -3,8 +3,7 @@ from protocol0.tests.domain.fixtures.device import AbletonDevice
 from protocol0.tests.domain.fixtures.simple_track import add_track, AbletonTrack, TrackType
 
 
-def add_external_synth_track(add_tail=False):
-    # type: (bool) -> AbletonTrack
+def add_external_synth_track(add_tail: bool = False) -> AbletonTrack:
     group_track = add_track(track_type=TrackType.GROUP)
     midi_track = add_track(track_type=TrackType.MIDI)
     # add external device

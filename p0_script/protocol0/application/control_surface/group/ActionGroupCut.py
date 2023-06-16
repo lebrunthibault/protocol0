@@ -8,8 +8,7 @@ from protocol0.shared.Song import Song
 class ActionGroupCut(ActionGroupInterface):
     CHANNEL = 8
 
-    def configure(self):
-        # type: () -> None
+    def configure(self) -> None:
         # SPLiT encoder
         self.add_encoder(
             identifier=8,

@@ -12,28 +12,24 @@ if TYPE_CHECKING:
 
 
 class PlayingSceneFacade(object):
-    _INSTANCE = None  # type: Optional[PlayingSceneFacade]
+    _INSTANCE: Optional["PlayingSceneFacade"] = None
 
-    def __init__(self, scene_component):
-        # type: (SceneComponent) -> None
+    def __init__(self, scene_component: "SceneComponent") -> None:
         PlayingSceneFacade._INSTANCE = self
 
         self._scene_component = scene_component
-        self._last_playing_scenes = [None] * 5  # type: List[Optional[Scene]]
+        self._last_playing_scenes: List[Optional[Scene]] = [None] * 5
 
     @classmethod
-    def get(cls):
-        # type: () -> Optional[Scene]
+    def get(cls) -> Optional["Scene"]:
         return cls._INSTANCE._last_playing_scenes[-1]
 
     @classmethod
-    def get_previous(cls):
-        # type: () -> Optional[Scene]
+    def get_previous(cls) -> Optional["Scene"]:
         return cls._INSTANCE._last_playing_scenes[-2]
 
     @classmethod
-    def set(cls, scene):
-        # type: (Optional[Scene]) -> None
+    def set(cls, scene: Optional["Scene"]) -> None:
         if scene == cls.get():
             return None
 
@@ -50,13 +46,11 @@ class PlayingSceneFacade(object):
         # Scheduler.wait_ms(500, cls._check_for_unknown_playing_scenes)
 
     @classmethod
-    def history(cls):
-        # type: () -> List[Optional[Scene]]
+    def history(cls) -> List[Optional["Scene"]]:
         return cls._INSTANCE._last_playing_scenes
 
     @classmethod
-    def _check_for_unknown_playing_scenes(cls):
-        # type: () -> None
+    def _check_for_unknown_playing_scenes(cls) -> None:
         """
         Monitoring method to find out
         why some scenes are left out of the playing scene pattern

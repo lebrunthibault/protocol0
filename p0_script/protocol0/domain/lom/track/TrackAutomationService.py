@@ -19,14 +19,12 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class TrackAutomationService(object):
-    def __init__(self, track_factory):
-        # type: (TrackFactory) -> None
+    def __init__(self, track_factory: TrackFactory) -> None:
         self._track_factory = track_factory
-        self._last_selected_parameter = None  # type: Optional[DeviceParameter]
-        self._last_scrolled_parameter = None  # type: Optional[DeviceParameter]
+        self._last_selected_parameter: Optional[DeviceParameter] = None
+        self._last_scrolled_parameter: Optional[DeviceParameter] = None
 
-    def show_automation(self, go_next):
-        # type: (bool) -> Sequence
+    def show_automation(self, go_next: bool) -> Sequence:
         selected_parameter = Song.selected_parameter() or self._last_scrolled_parameter
 
         seq = Sequence()
@@ -38,8 +36,7 @@ class TrackAutomationService(object):
 
         return seq.done()
 
-    def _show_selected_parameter_automation(self, selected_parameter):
-        # type: (DeviceParameter) -> None
+    def _show_selected_parameter_automation(self, selected_parameter: DeviceParameter) -> None:
         if selected_parameter not in Song.selected_track().devices.parameters:
             self._last_scrolled_parameter = None
             raise Protocol0Warning("parameter does not belong to selected track")
@@ -56,8 +53,7 @@ class TrackAutomationService(object):
             if bar_length != clip.bar_length:
                 Scheduler.defer(partial(Backend.client().set_envelope_loop_length, bar_length))
 
-    def _scroll_automated_parameters(self, go_next):
-        # type: (bool) -> Sequence
+    def _scroll_automated_parameters(self, go_next: bool) -> Sequence:
         """Scroll the automated parameters of the clip"""
         current_track = Song.current_track()
         index = Song.selected_scene().index
@@ -82,8 +78,7 @@ class TrackAutomationService(object):
         self._last_selected_parameter = selected_parameter
         return seq.done()
 
-    def select_or_sync_automation(self):
-        # type: () -> None
+    def select_or_sync_automation(self) -> None:
         """
         Either we have a midi clip focused and we sync the automation (rev2) layers
         Or we create a new automation lane for the selected parameter
@@ -101,8 +96,7 @@ class TrackAutomationService(object):
         else:
             self._create_automation_from_selected_parameter()
 
-    def _create_automation_from_selected_parameter(self):
-        # type: () -> Sequence
+    def _create_automation_from_selected_parameter(self) -> Sequence:
         selected_track = Song.selected_track()
         selected_clip = selected_track.clip_slots[Song.selected_scene().index].clip
         selected_parameter = Song.selected_parameter()
@@ -122,8 +116,7 @@ class TrackAutomationService(object):
 
         return seq.done()
 
-    def color_clip_with_automation(self):
-        # type: () -> None
+    def color_clip_with_automation(self) -> None:
         track = Song.selected_track()
         colors_on = any(c.color != track.color for c in track.clips)
 

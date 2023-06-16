@@ -6,6 +6,5 @@ class DrumsTrack(NormalGroupTrack):
     TRACK_NAME = "Drums"
 
     @classmethod
-    def is_track_valid(cls, track):
-        # type: (SimpleTrack) -> bool
+    def is_track_valid(cls, track: SimpleTrack) -> bool:
         return track.name.split(" ")[0] == cls.TRACK_NAME

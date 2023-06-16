@@ -30,18 +30,17 @@ class Sequence(Observable):
     Encapsulates and composes all asynchronous tasks done in the script.
     """
 
-    RUNNING_SEQUENCES = []  # type: List[Sequence]
+    RUNNING_SEQUENCES: List["Sequence"] = []
     _DEBUG = False
     _STEP_TIMEOUT = 50  # seconds
 
-    def __init__(self, name=None):
-        # type: (Optional[str]) -> None
+    def __init__(self, name: Optional[str] = None) -> None:
         super(Sequence, self).__init__()
 
-        self._steps = deque()  # type: Deque[SequenceStep]
-        self._current_step = None  # type: Optional[SequenceStep]
+        self._steps: Deque[SequenceStep] = deque()
+        self._current_step: Optional[SequenceStep] = None
         self.state = SequenceState()
-        self.res = None  # type: Optional[Any]
+        self.res: Optional[Any] = None
         frame_info = get_frame_info(2)
         if name:
             self.name = name
@@ -50,12 +49,10 @@ class Sequence(Observable):
         else:
             self.name = "Unknown"
 
-    def __repr__(self, **k):
-        # type: (Any) -> str
+    def __repr__(self, **k: Any) -> str:
         return self.name
 
-    def add(self, func=nop, name=None, notify_terminated=True):
-        # type: (Union[Iterable, Callable, object], str, bool) -> Sequence
+    def add(self, func: Union[Iterable, Callable, object] = nop, name: str = None, notify_terminated: bool = True) -> "Sequence":
         """callback can be a callable or a list of callable (will execute in parallel)"""
         assert callable(func) or isinstance(
             func, Iterable
@@ -72,15 +69,13 @@ class Sequence(Observable):
 
         return self
 
-    def done(self):
-        # type: () -> Sequence
+    def done(self) -> "Sequence":
         self.state.change_to(SequenceStateEnum.STARTED)
         self.RUNNING_SEQUENCES.append(self)
         self._execute_next_step()
         return self
 
-    def _execute_next_step(self):
-        # type: () -> None
+    def _execute_next_step(self) -> None:
         if not self.state.started:
             return
         if len(self._steps):
@@ -93,8 +88,7 @@ class Sequence(Observable):
             self._terminate()
 
     @classmethod
-    def reset(cls, name=None):
-        # type: (Optional[str]) -> None
+    def reset(cls, name: Optional[str] = None) -> None:
         for seq in reversed(Sequence.RUNNING_SEQUENCES):
             if name is not None and seq.name != name:
                 continue
@@ -102,8 +96,7 @@ class Sequence(Observable):
             seq._cancel()
         Sequence.RUNNING_SEQUENCES = []
 
-    def update(self, observable):
-        # type: (Observable) -> None
+    def update(self, observable: Observable) -> None:
         if isinstance(observable, SequenceStep):
             if observable.state.terminated:
                 if self._DEBUG:
@@ -116,15 +109,13 @@ class Sequence(Observable):
 
             observable.remove_observer(self)
 
-    def _error(self):
-        # type: () -> None
+    def _error(self) -> None:
         self.state.change_to(SequenceStateEnum.ERRORED)
         self.disconnect()
         if self._DEBUG:
             Logger.warning("Sequence errored : %s" % self)
 
-    def _cancel(self):
-        # type: () -> None
+    def _cancel(self) -> None:
         if self.state.started:
             self.state.change_to(SequenceStateEnum.CANCELLED)
             Logger.warning("%s has been cancelled" % self)
@@ -132,8 +123,7 @@ class Sequence(Observable):
                 self._current_step.cancel()
             self.disconnect()
 
-    def _terminate(self):
-        # type: () -> None
+    def _terminate(self) -> None:
         self.state.change_to(SequenceStateEnum.TERMINATED)
 
         self.res = self._current_step.res if self._current_step else None
@@ -142,28 +132,23 @@ class Sequence(Observable):
 
     """ ACTIONS """
 
-    def log(self, message):
-        # type: (str) -> Sequence
+    def log(self, message: str) -> "Sequence":
         return self.add(lambda: Logger.warning(message))
 
-    def defer(self):
-        # type: () -> Sequence
+    def defer(self) -> "Sequence":
         return self.add(partial(Scheduler.defer, self._execute_next_step), notify_terminated=False)
 
-    def wait(self, ticks):
-        # type: (int) -> Sequence
+    def wait(self, ticks: int) -> "Sequence":
         return self.add(
             partial(Scheduler.wait, ticks, self._execute_next_step), notify_terminated=False
         )
 
-    def wait_ms(self, ms):
-        # type: (int) -> Sequence
+    def wait_ms(self, ms: int) -> "Sequence":
         return self.add(
             partial(Scheduler.wait_ms, ms, self._execute_next_step), notify_terminated=False
         )
 
-    def wait_bars(self, bars, wait_for_song_start=False, continue_on_song_stop=False):
-        # type: (float, bool, bool) -> Sequence
+    def wait_bars(self, bars: float, wait_for_song_start: bool = False, continue_on_song_stop: bool = False) -> "Sequence":
         if not Song.is_playing() and wait_for_song_start:
             self.wait_for_event(SongStartedEvent)
 
@@ -171,10 +156,8 @@ class Sequence(Observable):
             bars * Song.signature_numerator(), continue_on_song_stop=continue_on_song_stop
         )
 
-    def wait_beats(self, beats, continue_on_song_stop=False):
-        # type: (float, bool) -> Sequence
-        def execute():
-            # type: () -> None
+    def wait_beats(self, beats: float, continue_on_song_stop: bool = False) -> "Sequence":
+        def execute() -> None:
             if not Song.is_playing():
                 if continue_on_song_stop:
                     self._execute_next_step()
@@ -190,8 +173,7 @@ class Sequence(Observable):
 
         return self.add(execute, notify_terminated=False)
 
-    def wait_for_event(self, event_class, expected_emitter=None, continue_on_song_stop=False):
-        # type: (Type[object], object, bool) -> Sequence
+    def wait_for_event(self, event_class: Type[object], expected_emitter: object = None, continue_on_song_stop: bool = False) -> "Sequence":
         """
         Will continue the sequence after an event of type event_class is fired
 
@@ -206,8 +188,7 @@ class Sequence(Observable):
         if expected_emitter is not None:
             assert issubclass(event_class, HasEmitter), "expected emitter should be an Emitter"
 
-        def subscribe():
-            # type: () -> None
+        def subscribe() -> None:
             DomainEventBus.subscribe(event_class, on_event)
             if continue_on_song_stop:
                 if not Song.is_playing():
@@ -215,8 +196,7 @@ class Sequence(Observable):
                 else:
                     DomainEventBus.once(SongStoppedEvent, on_event)
 
-        def on_event(event):
-            # type: (object) -> None
+        def on_event(event: object) -> None:
             if expected_emitter is not None and isinstance(event, HasEmitter):
                 if self._DEBUG:
                     Logger.info(
@@ -233,19 +213,16 @@ class Sequence(Observable):
 
         return self._add_timeout_step(subscribe, "wait_for_event %s" % event_class)
 
-    def wait_for_backend_event(self, event_type, timeout=0):
-        # type: (str, int) -> Sequence
+    def wait_for_backend_event(self, event_type: str, timeout: int = 0) -> "Sequence":
         """event types are hardcoded in the script and backend"""
 
-        def step():
-            # type: () -> None
+        def step() -> None:
             DomainEventBus.subscribe(BackendEvent, on_event)
 
             if timeout:
                 Scheduler.wait_ms(timeout, cancel)
 
-        def on_event(backend_event):
-            # type: (BackendEvent) -> None
+        def on_event(backend_event: BackendEvent) -> None:
             if event_type != backend_event.event:
                 return
 
@@ -255,8 +232,7 @@ class Sequence(Observable):
                 self.res = backend_event.data
                 self._execute_next_step()
 
-        def cancel():
-            # type: () -> None
+        def cancel() -> None:
             DomainEventBus.un_subscribe(BackendEvent, on_event)
             self._cancel()
 
@@ -264,33 +240,28 @@ class Sequence(Observable):
 
         return self
 
-    def _add_timeout_step(self, func, legend):
-        # type: (Callable, str) -> Sequence
+    def _add_timeout_step(self, func: Callable, legend: str) -> "Sequence":
         seconds = self._STEP_TIMEOUT
 
-        def cancel():
-            # type: () -> None
+        def cancel() -> None:
             if self._current_step and self._current_step._callable == execute:
                 self._cancel()
                 Logger.warning("cancelling after %s seconds : %s on %s" % (seconds, self, legend))
 
-        def execute():
-            # type: () -> None
+        def execute() -> None:
             Scheduler.wait_ms(seconds * 1000, cancel)
             func()
 
         return self.add(execute, notify_terminated=False)
 
-    def prompt(self, question, vertical=False, color=NotificationColorEnum.INFO, default=True):
-        # type: (str, bool, NotificationColorEnum, bool) -> None
+    def prompt(self, question: str, vertical: bool = False, color: NotificationColorEnum = NotificationColorEnum.INFO, default: bool = True) -> None:
         """helper method for prompts"""
         if default:
             options = ["Yes", "No"]
         else:
             options = ["No", "Yes"]
 
-        def on_response():
-            # type: () -> None
+        def on_response() -> None:
             if self.res == "Yes":
                 self._execute_next_step()
             else:
@@ -310,8 +281,7 @@ class Sequence(Observable):
         self.wait_for_backend_event("option_selected")
         self.add(on_response)
 
-    def select(self, question, options, vertical=True, color=NotificationColorEnum.INFO):
-        # type: (str, List, bool, NotificationColorEnum) -> None
+    def select(self, question: str, options: List, vertical: bool = True, color: NotificationColorEnum = NotificationColorEnum.INFO) -> None:
         """helper method for selects"""
         self.add(
             partial(
@@ -326,8 +296,7 @@ class Sequence(Observable):
         )
         self.wait_for_backend_event("option_selected")
 
-    def disconnect(self):
-        # type: () -> None
+    def disconnect(self) -> None:
         self._current_step = None
         try:
             self.RUNNING_SEQUENCES.remove(self)

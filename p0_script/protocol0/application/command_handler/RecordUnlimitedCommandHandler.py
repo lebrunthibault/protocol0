@@ -8,8 +8,7 @@ from protocol0.shared.Song import Song
 
 
 class RecordUnlimitedCommandHandler(CommandHandlerInterface):
-    def handle(self, command):
-        # type: (RecordUnlimitedCommand) -> None
+    def handle(self, command: RecordUnlimitedCommand) -> None:
         self._container.get(RecordService).record_track(
             Song.current_track(), RecordTypeEnum.MIDI_UNLIMITED
         )

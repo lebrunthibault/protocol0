@@ -7,6 +7,5 @@ from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 
 
 class EmitBackendEventCommandHandler(CommandHandlerInterface):
-    def handle(self, command):
-        # type: (EmitBackendEventCommand) -> None
+    def handle(self, command: EmitBackendEventCommand) -> None:
         DomainEventBus.emit(BackendEvent(command.event, command.data))

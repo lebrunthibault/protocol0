@@ -5,6 +5,5 @@ from protocol0.shared.Song import Song
 
 
 class ShowInstrumentCommandHandler(CommandHandlerInterface):
-    def handle(self, _):
-        # type: (ShowInstrumentCommand) -> None
+    def handle(self, _: ShowInstrumentCommand) -> None:
         self._container.get(InstrumentDisplayService).show_instrument(Song.current_track())

@@ -11,23 +11,19 @@ from protocol0.shared.Song import Song
 
 
 class DeviceStats(object):
-    def __init__(self, name):
-        # type: (str) -> None
+    def __init__(self, name: str) -> None:
         self.count = 0
         self.device_enum = find_if(lambda enums: enums.class_name == name, list(DeviceEnum))
         self.name = self.device_enum.value if self.device_enum else name
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "%s: %s => %sms" % (self.name, self.count, self.total_load_time)
 
-    def increment(self):
-        # type: () -> None
+    def increment(self) -> None:
         self.count += 1
 
     @property
-    def total_load_time(self):
-        # type: () -> int
+    def total_load_time(self) -> int:
         load_time = self.device_enum.load_time if self.device_enum else 0
         return load_time * self.count
 
@@ -40,10 +36,9 @@ class DevicesStats(object):
         "Instrument Rack",
     ]
 
-    def __init__(self):
-        # type: () -> None
+    def __init__(self) -> None:
         devices = list(self._get_devices())
-        device_stats_dict = {}  # type: Dict[str, DeviceStats]
+        device_stats_dict: Dict[str, DeviceStats] = {}
 
         # group by name
         for device in devices:
@@ -62,8 +57,7 @@ class DevicesStats(object):
         self.opus_instances = len([d for d in devices if d.enum == DeviceEnum.OPUS])
         self.kontakt_instances = len([d for d in devices if d.enum == DeviceEnum.KONTAKT])
 
-    def _get_devices(self):
-        # type: () -> Iterator[Device]
+    def _get_devices(self) -> Iterator[Device]:
         """Return only devices that matters for stats"""
 
         for track in Song.all_simple_tracks():
@@ -74,9 +68,8 @@ class DevicesStats(object):
                 ):
                     yield device
 
-    def to_dict(self):
-        # type: () -> Dict
-        output = collections.OrderedDict()  # type: Dict[str, Any]
+    def to_dict(self) -> Dict:
+        output: Dict[str, Any] = collections.OrderedDict()
         output["count"] = self.count
         output["total load time"] = "%.2fs" % (float(self.total_load_time) / 1000)
         # output["top devices"] = [str(stat) for stat in self.device_stats[0:10]]

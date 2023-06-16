@@ -35,10 +35,9 @@ broadcast_commands = [
 
 class CommandBus(object):
     _DEBUG = False
-    _INSTANCE = None  # type: Optional[CommandBus]
+    _INSTANCE: Optional["CommandBus"] = None
 
-    def __init__(self, container, ableton_set):
-        # type: (ContainerInterface, AbletonSet) -> None
+    def __init__(self, container: ContainerInterface, ableton_set: AbletonSet) -> None:
         self._container = container
         self._ableton_set = ableton_set
         self._command_mapping = self._create_command_mapping()
@@ -46,8 +45,7 @@ class CommandBus(object):
         self._history = CommandBusHistory()
         CommandBus._INSTANCE = self
 
-    def _create_command_mapping(self):
-        # type: () -> CommandMapping
+    def _create_command_mapping(self) -> CommandMapping:
         import_package(command_package)
         import_package(command_handler_package)
 
@@ -58,7 +56,7 @@ class CommandBus(object):
             handler_class.__name__: handler_class for handler_class in handler_classes
         }
 
-        mapping = {}  # type: CommandMapping
+        mapping: CommandMapping = {}
         # matching on class name
         for command_class in command_classes:
             handler_class_name = command_class.__name__ + "Handler"
@@ -70,8 +68,7 @@ class CommandBus(object):
         return mapping
 
     @classmethod
-    def dispatch(cls, command):
-        # type: (SerializableCommand) -> Optional[Sequence]
+    def dispatch(cls, command: SerializableCommand) -> Optional[Sequence]:
         if cls._INSTANCE is None:
             return None
         else:
@@ -79,8 +76,7 @@ class CommandBus(object):
             return cls._INSTANCE._dispatch_command(command)
 
     @handle_error
-    def _dispatch_command(self, command):
-        # type: (SerializableCommand) -> Optional[Sequence]
+    def _dispatch_command(self, command: SerializableCommand) -> Optional[Sequence]:
         start_at = time.time()
 
         if (
@@ -107,6 +103,5 @@ class CommandBus(object):
         return seq.done()
 
     @classmethod
-    def get_recent_command(cls, command_class, delay, except_current=False):
-        # type: (Type[T], float, bool) -> Optional[T]
+    def get_recent_command(cls, command_class: Type[T], delay: float, except_current: bool = False) -> Optional[T]:
         return cls._INSTANCE._history.get_recent_command(command_class, delay, except_current)  # type: ignore[type-var]

@@ -11,27 +11,23 @@ from protocol0.domain.shared.utils.string import smart_string
 
 
 class SimplerDevice(Device):
-    def __init__(self, *a, **k):
-        # type: (Any, Any) -> None
+    def __init__(self, *a: Any, **k: Any) -> None:
         super(SimplerDevice, self).__init__(*a, **k)
-        self._device = cast(
+        self._device: Live.SimplerDevice.SimplerDevice = cast(
             Live.SimplerDevice.SimplerDevice, self._device
-        )  # type: Live.SimplerDevice.SimplerDevice
+        )
         self._sample = Sample(self._device.sample)
         Scheduler.defer(self._set_warping)
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "SimplerDevice(name=%s, sample=%s)" % (self.name, "test")
 
     @property
-    def sample(self):
-        # type: () -> Sample
+    def sample(self) -> Sample:
         return self._sample
 
     @property
-    def preset_name(self):
-        # type: () -> Optional[str]
+    def preset_name(self) -> Optional[str]:
         """overridden"""
         # noinspection PyBroadException
         try:
@@ -44,8 +40,7 @@ class SimplerDevice(Device):
         else:
             return None
 
-    def _set_warping(self):
-        # type: () -> None
+    def _set_warping(self) -> None:
         if hasattr(self, "sample") and "loop" in self.sample.file_path.lower():
             self.sample.warping = True
             self._device.playback_mode = Live.SimplerDevice.PlaybackMode.classic

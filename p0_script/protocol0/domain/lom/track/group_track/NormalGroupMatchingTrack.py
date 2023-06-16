@@ -14,12 +14,10 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 class NormalGroupMatchingTrack(MatchingTrackInterface):
     @property
-    def clip_color_manager(self):
-        # type: () -> Optional[MatchingTrackClipColorManager]
+    def clip_color_manager(self) -> Optional[MatchingTrackClipColorManager]:
         return None
 
-    def bounce(self):
-        # type: () -> Sequence
+    def bounce(self) -> Sequence:
         seq = Sequence()
 
         self._audio_track.input_routing.track = self._base_track

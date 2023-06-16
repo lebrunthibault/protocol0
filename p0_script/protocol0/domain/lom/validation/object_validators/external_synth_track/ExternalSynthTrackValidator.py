@@ -17,15 +17,14 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class ExternalSynthTrackValidator(AggregateValidator):
-    def __init__(self, track, browser_service):
-        # type: (ExternalSynthTrack, BrowserServiceInterface) -> None
+    def __init__(self, track: ExternalSynthTrack, browser_service: BrowserServiceInterface) -> None:
         self._track = track
 
-        validators = [
+        validators: List[ValidatorInterface] = [
             CallbackValidator(
                 track, lambda t: t.instrument is not None, None, "track should have an instrument"
             ),
-        ]  # type: List[ValidatorInterface]
+        ]
 
         # SUB TRACKS
         validators += SimpleMidiExtTrackValidator(track.midi_track, browser_service)._validators
@@ -33,15 +32,13 @@ class ExternalSynthTrackValidator(AggregateValidator):
 
         super(ExternalSynthTrackValidator, self).__init__(validators)
 
-    def get_error_message(self):
-        # type: () -> Optional[str]
+    def get_error_message(self) -> Optional[str]:
         error_message = super(ExternalSynthTrackValidator, self).get_error_message()
         if error_message:
             return "%s -> %s" % (self._track, error_message)
         return error_message
 
-    def fix(self):
-        # type: () -> Sequence
+    def fix(self) -> Sequence:
         self._track.monitoring_state.monitor_audio()
         seq = Sequence()
         seq.add(super(ExternalSynthTrackValidator, self).fix)

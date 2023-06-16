@@ -4,6 +4,5 @@ from protocol0.shared.Song import Song
 
 
 class ToggleNotesCommandHandler(CommandHandlerInterface):
-    def handle(self, _):
-        # type: (ToggleNotesCommand) -> None
+    def handle(self, _: ToggleNotesCommand) -> None:
         Song.selected_clip().toggle_notes()

@@ -84,8 +84,7 @@ class DeviceEnum(AbstractEnum):
     YOULEAN = "Youlean Loudness Meter 2"
 
     @property
-    def is_device_preset(self):
-        # type: () -> bool
+    def is_device_preset(self) -> bool:
         return self in [
             DeviceEnum.AUTO_FILTER_HIGH_PASS,
             DeviceEnum.AUTO_FILTER_LOW_PASS,
@@ -93,8 +92,7 @@ class DeviceEnum(AbstractEnum):
         ]
 
     @property
-    def is_rack_preset(self):
-        # type: () -> bool
+    def is_rack_preset(self) -> bool:
         return self in [
             DeviceEnum.MASTERING_RACK,
             DeviceEnum.SAMPLE_PITCH_RACK,
@@ -106,18 +104,15 @@ class DeviceEnum(AbstractEnum):
         ]
 
     @property
-    def is_external_device(self):
-        # type: () -> bool
+    def is_external_device(self) -> bool:
         return self.value in ("Ext. Audio Effect", "Ext. Instrument")
 
     @property
-    def can_be_saved(self):
-        # type: () -> bool
+    def can_be_saved(self) -> bool:
         return self not in [DeviceEnum.REV2_EDITOR, DeviceEnum.PLAY, DeviceEnum.OPUS]
 
     @property
-    def browser_name(self):
-        # type: () -> str
+    def browser_name(self) -> str:
         try:
             return self.get_value_from_mapping(
                 {
@@ -134,8 +129,7 @@ class DeviceEnum(AbstractEnum):
                 return self.value
 
     @property
-    def class_name(self):
-        # type: () -> str
+    def class_name(self) -> str:
         try:
             return self.get_value_from_mapping(
                 {
@@ -152,8 +146,7 @@ class DeviceEnum(AbstractEnum):
             return self.value
 
     @property
-    def main_parameters_default(self):
-        # type: () -> List[DeviceParameterValue]
+    def main_parameters_default(self) -> List[DeviceParameterValue]:
         return self.get_value_from_mapping(
             {
                 DeviceEnum.COMPRESSOR: [
@@ -180,8 +173,7 @@ class DeviceEnum(AbstractEnum):
         )
 
     @property
-    def default_parameter(self):
-        # type: () -> Optional[DeviceParameterEnum]
+    def default_parameter(self) -> Optional[DeviceParameterEnum]:
         """Represents the main parameter for a specific device. We want to make it easily accessible"""
         try:
             return self.get_value_from_mapping(
@@ -199,8 +191,7 @@ class DeviceEnum(AbstractEnum):
             return None
 
     @classmethod
-    def favorites(cls):
-        # type: () -> List[List[Union[DeviceEnum, DeviceEnumGroup]]]
+    def favorites(cls) -> List[List[Union["DeviceEnum", DeviceEnumGroup]]]:
         return [
             [
                 DeviceEnumGroup(
@@ -236,8 +227,7 @@ class DeviceEnum(AbstractEnum):
         ]
 
     @property
-    def load_time(self):
-        # type: () -> int
+    def load_time(self) -> int:
         """
         load time in ms : by how much loading a single device / plugin instance slows down the set startup
         measured by loading multiple device instances (20) in an empty set and timing multiple times the set load
@@ -309,8 +299,7 @@ class DeviceEnum(AbstractEnum):
             return 0
 
     @property
-    def is_instrument(self):
-        # type: () -> bool
+    def is_instrument(self) -> bool:
         return self in [
             DeviceEnum.REV2_EDITOR,
             DeviceEnum.KONTAKT,
@@ -321,7 +310,6 @@ class DeviceEnum(AbstractEnum):
         ]
 
     @classmethod
-    def missing_plugin_names(cls):
-        # type: () -> List[str]
+    def missing_plugin_names(cls) -> List[str]:
         """Plugins that I've used, but I don't currently have (formerly cracks)"""
         return ["Vocal Rider Stereo", "API-2500 Stereo", DeviceEnum.SATURN_2.value]

@@ -8,27 +8,22 @@ from protocol0.shared.Song import Song
 
 
 class LoopingSceneToggler(ValueToggler):
-    def __init__(self):
-        # type: () -> None
+    def __init__(self) -> None:
         super(LoopingSceneToggler, self).__init__()
         DomainEventBus.subscribe(PlayingSceneChangedEvent, self._on_playing_scene_changed_event)
 
-    def _on_playing_scene_changed_event(self, _):
-        # type: (PlayingSceneChangedEvent) -> None
+    def _on_playing_scene_changed_event(self, _: PlayingSceneChangedEvent) -> None:
         if self.value and self.value != Song.playing_scene():
             self.reset()
 
-    def _get_value(self):
-        # type: () -> Scene
+    def _get_value(self) -> Scene:
         if Song.is_playing():
             return cast(Scene, Song.playing_scene())
         else:
             return Song.selected_scene()
 
-    def _value_set(self, scene):
-        # type: (Scene) -> None
+    def _value_set(self, scene: Scene) -> None:
         scene.scene_name.update()
 
-    def _value_unset(self, scene):
-        # type: (Scene) -> None
+    def _value_unset(self, scene: Scene) -> None:
         scene.scene_name.update()

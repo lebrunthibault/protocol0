@@ -12,8 +12,7 @@ class SampleCategoryEnum(AbstractEnum):
     VOCALS = "VOCALS"
 
     @property
-    def sample_directory(self):
-        # type: () -> str
+    def sample_directory(self) -> str:
         return self.get_value_from_mapping(
             {
                 SampleCategoryEnum.DRUMS: Config.SAMPLE_DIRECTORY,
@@ -22,8 +21,7 @@ class SampleCategoryEnum(AbstractEnum):
         )
 
     @property
-    def drum_rack_prefix(self):
-        # type: () -> str
+    def drum_rack_prefix(self) -> str:
         return self.get_value_from_mapping(
             {
                 SampleCategoryEnum.DRUMS: "DR",
@@ -32,8 +30,7 @@ class SampleCategoryEnum(AbstractEnum):
         )
 
     @property
-    def subcategories(self):
-        # type: () -> List[str]
+    def subcategories(self) -> List[str]:
         subcategories = set()
 
         presets = DirectoryPresetImporter(self.sample_directory).import_presets()

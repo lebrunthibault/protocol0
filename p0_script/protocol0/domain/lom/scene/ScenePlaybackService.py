@@ -22,12 +22,11 @@ from protocol0.shared.sequence.Sequence import Sequence
 class ScenePlaybackService(SlotManager):
     _DEBUG = False
 
-    def __init__(self, playback_component):
-        # type: (PlaybackComponent) -> None
+    def __init__(self, playback_component: PlaybackComponent) -> None:
         super(ScenePlaybackService, self).__init__()
         self._playback_component = playback_component
 
-        self._live_scene_id_to_scene = collections.OrderedDict()  # type: Dict[int, Scene]
+        self._live_scene_id_to_scene: Dict[int, Scene] = collections.OrderedDict()
 
         DomainEventBus.subscribe(BarChangedEvent, self._on_bar_changed_event)
         DomainEventBus.subscribe(ThirdBeatPassedEvent, self._on_third_beat_passed_event)
@@ -35,24 +34,20 @@ class ScenePlaybackService(SlotManager):
         DomainEventBus.subscribe(SongStoppedEvent, self._on_song_stopped_event)
         DomainEventBus.subscribe(SceneFiredEvent, self._on_scene_fired_event)
 
-    def _on_bar_changed_event(self, _):
-        # type: (BarChangedEvent) -> None
+    def _on_bar_changed_event(self, _: BarChangedEvent) -> None:
         if Song.playing_scene():
             Song.playing_scene().scene_name.update()
 
-    def _on_third_beat_passed_event(self, _):
-        # type: (ThirdBeatPassedEvent) -> None
+    def _on_third_beat_passed_event(self, _: ThirdBeatPassedEvent) -> None:
         if Song.playing_scene() and Song.playing_scene().playing_state.is_playing:
             Scheduler.defer(Song.playing_scene().on_bar_end)
 
-    def _on_scene_position_scrolled_event(self, _):
-        # type: (ScenePositionScrolledEvent) -> None
+    def _on_scene_position_scrolled_event(self, _: ScenePositionScrolledEvent) -> None:
         scene = Song.selected_scene()
         Scene.LAST_MANUALLY_STARTED_SCENE = scene
         scene.scene_name.update(bar_position=scene.position_scroller.current_value)
 
-    def fire_scene(self, scene):
-        # type: (Scene) -> Optional[Sequence]
+    def fire_scene(self, scene: Scene) -> Optional[Sequence]:
         seq = Sequence()
         # stop to start the scene right again
         # also it will stop the tails
@@ -61,8 +56,7 @@ class ScenePlaybackService(SlotManager):
 
         return seq.done()
 
-    def fire_scene_to_position(self, scene, bar_length=None):
-        # type: (Scene, Optional[int]) -> Sequence
+    def fire_scene_to_position(self, scene: Scene, bar_length: Optional[int] = None) -> Sequence:
         if bar_length is not None and bar_length >= scene.bar_length:
             bar_length = 0
 
@@ -83,8 +77,7 @@ class ScenePlaybackService(SlotManager):
         seq.add(partial(scene.fire_to_position, bar_length))
         return seq.done()
 
-    def fire_previous_scene_to_last_bar(self):
-        # type: () -> None
+    def fire_previous_scene_to_last_bar(self) -> None:
         previous_scene = Song.selected_scene().previous_scene
         if previous_scene == Song.selected_scene():
             self.fire_scene(previous_scene)
@@ -92,22 +85,19 @@ class ScenePlaybackService(SlotManager):
 
         self.fire_scene_to_position(previous_scene, previous_scene.bar_length - 1)
 
-    def _get_position_bar_length(self, scene, bar_length):
-        # type: (Scene, Optional[int]) -> int
+    def _get_position_bar_length(self, scene: Scene, bar_length: Optional[int]) -> int:
         # as we use single digits
         if bar_length is None:
             return scene.position_scroller.current_value
 
         return bar_length
 
-    def _on_song_stopped_event(self, _):
-        # type: (SongStoppedEvent) -> None
+    def _on_song_stopped_event(self, _: SongStoppedEvent) -> None:
         # don't activate when doing quick play / stop (e.g. in FireSelectedSceneCommand)
         if not Song.is_playing():
             self._stop_previous_playing_scene()
 
-    def _on_scene_fired_event(self, event):
-        # type: (SceneFiredEvent) -> None
+    def _on_scene_fired_event(self, event: SceneFiredEvent) -> None:
         """Event is fired *before* the scene starts playing"""
         # Stop the previous scene : quantized or immediate
         playing_scene = Song.playing_scene()
@@ -123,8 +113,7 @@ class ScenePlaybackService(SlotManager):
         seq.add(partial(PlayingSceneFacade.set, fired_scene))
         seq.done()
 
-    def _stop_previous_playing_scene(self):
-        # type: () -> None
+    def _stop_previous_playing_scene(self) -> None:
         """
         Stop previous playing scene,
         else on play

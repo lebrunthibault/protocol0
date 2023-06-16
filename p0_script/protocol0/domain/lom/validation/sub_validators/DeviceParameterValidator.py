@@ -7,14 +7,12 @@ from protocol0.domain.lom.validation.ValidatorInterface import ValidatorInterfac
 
 
 class DeviceParameterValidator(ValidatorInterface):
-    def __init__(self, device, device_parameter_enum, expected_value):
-        # type: (Device, DeviceParameterEnum, Any) -> None
+    def __init__(self, device: Device, device_parameter_enum: DeviceParameterEnum, expected_value: Any) -> None:
         self._device = device
         self._device_parameter_enum = device_parameter_enum
         self._expected_value = expected_value
 
-    def get_error_message(self):
-        # type: () -> Optional[str]
+    def get_error_message(self) -> Optional[str]:
         if self.is_valid():
             return None
         return "Expected %s.%s to be %s" % (
@@ -23,16 +21,14 @@ class DeviceParameterValidator(ValidatorInterface):
             self._expected_value,
         )
 
-    def is_valid(self):
-        # type: () -> bool
+    def is_valid(self) -> bool:
         parameter = self._device.get_parameter_by_name(self._device_parameter_enum)
         if parameter is None:
             return False
 
         return parameter.value == self._expected_value
 
-    def fix(self):
-        # type: () -> None
+    def fix(self) -> None:
         parameter = self._device.get_parameter_by_name(self._device_parameter_enum)
         if parameter is None:
             raise Protocol0Error(

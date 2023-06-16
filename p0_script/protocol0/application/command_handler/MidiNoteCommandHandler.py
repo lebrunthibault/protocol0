@@ -11,8 +11,7 @@ from protocol0.domain.shared.utils.list import find_if
 
 
 @contextmanager
-def component_guard():
-    # type: () -> Iterator
+def component_guard() -> Iterator:
     # noinspection PyBroadException
     try:
         yield
@@ -21,8 +20,7 @@ def component_guard():
 
 
 class MidiNoteCommandHandler(CommandHandlerInterface):
-    def handle(self, command):
-        # type: (MidiNoteCommand) -> None
+    def handle(self, command: MidiNoteCommand) -> None:
         action_group_class = find_if(
             lambda a: a.CHANNEL == command.channel, ActionGroupInterface.__subclasses__()
         )
@@ -34,9 +32,9 @@ class MidiNoteCommandHandler(CommandHandlerInterface):
         action_group = action_group_class(self._container, component_guard)
         action_group.configure()
 
-        encoder = find_if(
+        encoder: Optional[MultiEncoder] = find_if(
             lambda m: m.identifier == command.note, action_group._multi_encoders
-        )  # type: Optional[MultiEncoder]
+        )
 
         assert encoder is not None, "encoder %s not found in action group %s" % (
             command.note,

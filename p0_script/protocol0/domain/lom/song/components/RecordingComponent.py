@@ -12,16 +12,14 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class RecordingComponent(object):
-    def __init__(self, song):
-        # type: (Live.Song.Song) -> None
+    def __init__(self, song: Live.Song.Song) -> None:
         self._live_song = song
         DomainEventBus.subscribe(ClipEnvelopeShowedEvent, lambda _: song.re_enable_automation())
         DomainEventBus.subscribe(RecordStartedEvent, self._on_record_started_event)
         DomainEventBus.subscribe(RecordEndedEvent, self._on_record_ended_event)
 
     @defer
-    def _on_record_started_event(self, event):
-        # type: (RecordStartedEvent) -> None
+    def _on_record_started_event(self, event: RecordStartedEvent) -> None:
         recording_scene = Song.scenes()[event.scene_index]
         recording_scene.fire()
         seq = Sequence()
@@ -30,54 +28,44 @@ class RecordingComponent(object):
         seq.add(partial(self._start_session_record, event))
         seq.done()
 
-    def _start_session_record(self, event):
-        # type: (RecordStartedEvent) -> None
+    def _start_session_record(self, event: RecordStartedEvent) -> None:
         self.session_automation_record = True
         self.session_record = True
         if event.full_record:
             self.record_mode = True
 
-    def _on_record_ended_event(self, _):
-        # type: (RecordEndedEvent) -> None
+    def _on_record_ended_event(self, _: RecordEndedEvent) -> None:
         self.session_automation_record = False
         self.session_record = False
 
     @property
-    def back_to_arranger(self):
-        # type: () -> bool
+    def back_to_arranger(self) -> bool:
         return self._live_song.back_to_arranger
 
     @back_to_arranger.setter
-    def back_to_arranger(self, back_to_arranger):
-        # type: (bool) -> None
+    def back_to_arranger(self, back_to_arranger: bool) -> None:
         self._live_song.back_to_arranger = back_to_arranger
 
     @property
-    def session_record(self):
-        # type: () -> bool
+    def session_record(self) -> bool:
         return self._live_song.session_record
 
     @session_record.setter
-    def session_record(self, session_record):
-        # type: (bool) -> None
+    def session_record(self, session_record: bool) -> None:
         self._live_song.session_record = session_record
 
     @property
-    def record_mode(self):
-        # type: () -> bool
+    def record_mode(self) -> bool:
         return self._live_song.record_mode
 
     @record_mode.setter
-    def record_mode(self, record_mode):
-        # type: (bool) -> None
+    def record_mode(self, record_mode: bool) -> None:
         self._live_song.record_mode = record_mode
 
     @property
-    def session_automation_record(self):
-        # type: () -> bool
+    def session_automation_record(self) -> bool:
         return self._live_song.session_automation_record
 
     @session_automation_record.setter
-    def session_automation_record(self, session_automation_record):
-        # type: (bool) -> None
+    def session_automation_record(self, session_automation_record: bool) -> None:
         self._live_song.session_automation_record = session_automation_record

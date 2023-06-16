@@ -5,8 +5,7 @@ from protocol0.shared.Song import Song
 class LOMAnalyzerService(object):
     """Audit object model"""
 
-    def check_tracks_tree_consistency(self):
-        # type: () -> None
+    def check_tracks_tree_consistency(self) -> None:
         for simple_track in Song.simple_tracks():
             # 1st layer checks
             if simple_track.group_track:

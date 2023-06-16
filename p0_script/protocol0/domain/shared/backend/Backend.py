@@ -8,11 +8,9 @@ from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.types import Func
 
 
-def show_and_log(backend_client_func, log_func):
-    # type: (Func, Func) -> Func
+def show_and_log(backend_client_func: Func, log_func: Func) -> Func:
     @wraps(backend_client_func)
-    def decorate(message, *a, **k):
-        # type: (str, Any, Any) -> None
+    def decorate(message: str, *a: Any, **k: Any) -> None:
         log_func(message)
         backend_client_func(message, *a, **k)
 
@@ -22,10 +20,9 @@ def show_and_log(backend_client_func, log_func):
 class Backend(object):
     """Backend API facade"""
 
-    _INSTANCE = None  # type: Optional[Backend]
+    _INSTANCE: Optional["Backend"] = None
 
-    def __init__(self, send_midi):
-        # type: (Callable) -> None
+    def __init__(self, send_midi: Callable) -> None:
         Backend._INSTANCE = self
         logging.info(P0BackendClient)
         self._client = P0BackendClient(send_midi)
@@ -37,6 +34,5 @@ class Backend(object):
         self._client.show_error = show_and_log(self._client.show_error, Logger.warning)
 
     @classmethod
-    def client(cls):
-        # type: () -> P0BackendClient
+    def client(cls) -> P0BackendClient:
         return cls._INSTANCE._client

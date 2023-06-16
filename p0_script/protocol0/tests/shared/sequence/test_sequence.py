@@ -8,16 +8,14 @@ from protocol0.shared.sequence.Sequence import Sequence
 from protocol0.tests.domain.fixtures.p0 import make_protocol0
 
 
-def test_sanity_checks():
-    # type: () -> None
+def test_sanity_checks() -> None:
     seq = Sequence()
     seq.add([])
     seq.done()
     assert seq.state.terminated
 
 
-def test_async():
-    # type: () -> None
+def test_async() -> None:
     test_res = []
     seq = Sequence()
     seq.defer()
@@ -52,12 +50,10 @@ def test_wait_for_event_match():
     test_res = []
 
     class TestEvent(object):
-        def __init__(self, value):
-            # type: (int) -> None
+        def __init__(self, value: int) -> None:
             self.value = value
 
-        def target(self):
-            # type: () -> int
+        def target(self) -> int:
             return self.value
 
     seq = Sequence()

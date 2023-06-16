@@ -10,23 +10,20 @@ from protocol0.shared.Song import Song
 
 
 class SessionService(SessionServiceInterface):
-    def __init__(self, component_guard, set_highlighting_session_component):
-        # type: (Callable, Callable) -> None
+    def __init__(self, component_guard: Callable, set_highlighting_session_component: Callable) -> None:
         super(SessionService, self).__init__()
         self._component_guard = component_guard
         self._set_highlighting_session_component = set_highlighting_session_component
-        self._session = None  # type: Optional[SessionComponent]
+        self._session: Optional[SessionComponent] = None
         DomainEventBus.subscribe(
             ClipCreatedOrDeletedEvent, lambda _: DomainEventBus.emit(SessionUpdatedEvent())
         )
 
-    def toggle_session_ring(self):
-        # type: () -> None
+    def toggle_session_ring(self) -> None:
         self._display_session_ring()
         self._hide_session_ring()
 
-    def _display_session_ring(self):
-        # type: () -> None
+    def _display_session_ring(self) -> None:
         if self._session:
             self._hide_session_ring()
 
@@ -50,13 +47,11 @@ class SessionService(SessionServiceInterface):
             track_offset=track_offset, scene_offset=Song.selected_scene().index
         )
 
-    def _hide_session_ring(self):
-        # type: () -> None
+    def _hide_session_ring(self) -> None:
         if self._session:
             self._session.set_show_highlight(False)
             self._session.disconnect()
 
     @property
-    def _session_track_offset(self):
-        # type: () -> int
+    def _session_track_offset(self) -> int:
         return self._session.track_offset() if self._session else 0

@@ -17,24 +17,20 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class SimpleMatchingTrack(MatchingTrackInterface):
-    def __init__(self, *a, **k):
-        # type: (Any, Any) -> None
+    def __init__(self, *a: Any, **k: Any) -> None:
         super(SimpleMatchingTrack, self).__init__(*a, **k)
         # clean the mixer if necessary (e.g. when loading back a midi track for the 1st time)
         self._base_track.reset_mixer()
 
     @property
-    def clip_color_manager(self):
-        # type: () -> Optional[MatchingTrackClipColorManager]
+    def clip_color_manager(self) -> Optional[MatchingTrackClipColorManager]:
         return MatchingTrackClipColorManager(self.router, self._base_track, self._audio_track)
 
-    def init_clips(self):
-        # type: () -> None
+    def init_clips(self) -> None:
         for clip in self._base_track.clips:
             clip.previous_hash = clip.get_hash(self._base_track.devices.parameters)
 
-    def bounce(self):
-        # type: () -> Optional[Sequence]
+    def bounce(self) -> Optional[Sequence]:
         assert self._base_track.devices.mixer_device.is_default, "Mixer was changed"
         assert_valid_track_name(self._base_track.name)
 

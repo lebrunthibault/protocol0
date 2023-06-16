@@ -7,21 +7,18 @@ T = TypeVar("T", bound=Enum)
 
 
 class AbstractEnum(Enum):
-    def __str__(self):
-        # type: () -> str
+    def __str__(self) -> str:
         return self.name
 
     @classmethod
-    def from_value(cls, value):
-        # type: (Any) -> T
+    def from_value(cls, value: Any) -> T:
         for _, enum in cls.__members__.items():
             if value == enum.value:
                 return cast(T, enum)
 
         raise Protocol0Error("Couldn't find matching enum for value %s" % value)
 
-    def get_value_from_mapping(self, mapping):
-        # type: (Dict[AbstractEnum, Any]) -> Any
+    def get_value_from_mapping(self, mapping: Dict["AbstractEnum", Any]) -> Any:
         if self not in mapping:
             raise Protocol0Error("Couldn't find enum %s in mapping" % self)
         return mapping[self]

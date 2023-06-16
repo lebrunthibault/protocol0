@@ -6,6 +6,5 @@ from protocol0.domain.lom.track.group_track.matching_track.MatchingTrackService 
 
 
 class BounceTrackToAudioCommandHandler(CommandHandlerInterface):
-    def handle(self, command):
-        # type: (BounceTrackToAudioCommand) -> None
+    def handle(self, command: BounceTrackToAudioCommand) -> None:
         self._container.get(MatchingTrackService).bounce_current_track()

@@ -23,8 +23,7 @@ class UsamoTrack(SimpleMidiTrack):
 
     TRACK_NAME = "Usamo"
 
-    def __init__(self, *a, **k):
-        # type: (Any, Any) -> None
+    def __init__(self, *a: Any, **k: Any) -> None:
         super(UsamoTrack, self).__init__(*a, **k)
         self._usamo_device = self.devices.get_one_from_enum(DeviceEnum.USAMO)
         if self._usamo_device is None:
@@ -37,24 +36,20 @@ class UsamoTrack(SimpleMidiTrack):
             self._on_external_synth_audio_recording_started_event,
         )
 
-    def _activate(self):
-        # type: () -> None
+    def _activate(self) -> None:
         self._usamo_device.is_enabled = True
 
-    def _inactivate(self):
-        # type: () -> None
+    def _inactivate(self) -> None:
         self._usamo_device.is_enabled = False
 
-    def _on_simple_track_armed_event(self, event):
-        # type: (SimpleTrackArmedEvent) -> None
+    def _on_simple_track_armed_event(self, event: SimpleTrackArmedEvent) -> None:
         track = Song.live_track_to_simple_track(event.live_track)
         if isinstance(track.abstract_track, ExternalSynthTrack):
             return None
 
         self._inactivate()
 
-    def _on_external_synth_track_armed_event(self, event):
-        # type: (ExtArmedEvent) -> None
+    def _on_external_synth_track_armed_event(self, event: ExtArmedEvent) -> None:
         if event.arm:
             # noinspection PyUnresolvedReferences
             self.input_routing.track = event.track.abstract_track.midi_track
@@ -62,6 +57,5 @@ class UsamoTrack(SimpleMidiTrack):
         else:
             self._inactivate()
 
-    def _on_external_synth_audio_recording_started_event(self, _):
-        # type: (ExtAudioRecordingStartedEvent) -> None
+    def _on_external_synth_audio_recording_started_event(self, _: ExtAudioRecordingStartedEvent) -> None:
         self._activate()

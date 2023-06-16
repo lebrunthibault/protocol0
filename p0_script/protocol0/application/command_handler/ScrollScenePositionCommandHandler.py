@@ -4,8 +4,7 @@ from protocol0.shared.Song import Song
 
 
 class ScrollScenePositionCommandHandler(CommandHandlerInterface):
-    def handle(self, command):
-        # type: (ScrollScenePositionCommand) -> None
+    def handle(self, command: ScrollScenePositionCommand) -> None:
         position_scroller = Song.selected_scene().position_scroller
 
         position_scroller.use_fine_scrolling = command.use_fine_scrolling

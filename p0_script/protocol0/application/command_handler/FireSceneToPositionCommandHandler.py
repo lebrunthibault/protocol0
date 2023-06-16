@@ -7,8 +7,7 @@ from protocol0.shared.Song import Song
 
 
 class FireSceneToPositionCommandHandler(CommandHandlerInterface):
-    def handle(self, command):
-        # type: (FireSceneToPositionCommand) -> None
+    def handle(self, command: FireSceneToPositionCommand) -> None:
         """
         command.bar_length :
 

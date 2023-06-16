@@ -9,8 +9,7 @@ from protocol0.domain.shared.utils.list import find_if
 
 
 class InstrumentRackPresetChanger(PresetChangerInterface):
-    def load(self, preset):
-        # type: (InstrumentPreset) -> None
+    def load(self, preset: InstrumentPreset) -> None:
         device = cast(RackDevice, self._device)
         chain_selector = find_if(
             lambda p: p.original_name.startswith("Chain Selector") and p.is_enabled,

@@ -7,8 +7,7 @@ from protocol0.shared.Song import Song
 
 
 class SceneStats(object):
-    def __init__(self):
-        # type: () -> None
+    def __init__(self) -> None:
         beat_duration = float(60) / Song.tempo()
 
         current_scene = Song.scenes()[0]
@@ -22,9 +21,8 @@ class SceneStats(object):
         self.bar_length = sum([scene.bar_length for scene in scenes])
         self.total_duration = sum([scene.length for scene in scenes]) * beat_duration
 
-    def to_dict(self):
-        # type: () -> Dict
-        output = collections.OrderedDict()  # type: Dict[str, Any]
+    def to_dict(self) -> Dict:
+        output: Dict[str, Any] = collections.OrderedDict()
         output["count"] = self.count
         output["total duration"] = get_minutes_legend(self.total_duration)
 

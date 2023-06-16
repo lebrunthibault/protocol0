@@ -6,7 +6,7 @@ from protocol0.application.Container import Container
 class ContainerTest(Container):
     # noinspection PyMissingConstructor
     def __init__(self):
-        self._registry = {}  # type: Dict[Type, Any]
+        self._registry: Dict[Type, Any] = {}
 
 
 class Interface(object):

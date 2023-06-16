@@ -1,40 +1,32 @@
 class LoopableInterface(object):
     @property
-    def looping(self):
-        # type: () -> bool
+    def looping(self) -> bool:
         raise NotImplementedError
 
     @looping.setter
-    def looping(self, loop):
-        # type: (bool) -> None
+    def looping(self, loop: bool) -> None:
         raise NotImplementedError
 
     @property
-    def start(self):
-        # type: () -> float
+    def start(self) -> float:
         raise NotImplementedError
 
     @start.setter
-    def start(self, start):
-        # type: (float) -> None
+    def start(self, start: float) -> None:
         raise NotImplementedError
 
     @property
-    def end(self):
-        # type: () -> float
+    def end(self) -> float:
         raise NotImplementedError
 
     @end.setter
-    def end(self, end):
-        # type: (float) -> None
+    def end(self, end: float) -> None:
         raise NotImplementedError
 
     @property
-    def length(self):
-        # type: () -> float
+    def length(self) -> float:
         raise NotImplementedError
 
     @length.setter
-    def length(self, length):
-        # type: (float) -> None
+    def length(self, length: float) -> None:
         raise NotImplementedError

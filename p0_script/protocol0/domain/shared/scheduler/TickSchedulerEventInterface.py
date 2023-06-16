@@ -1,4 +1,3 @@
 class TickSchedulerEventInterface(object):
-    def cancel(self):
-        # type: () -> None
+    def cancel(self) -> None:
         raise NotImplementedError

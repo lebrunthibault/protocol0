@@ -17,36 +17,30 @@ from protocol0.shared.observer.Observable import Observable
 
 
 class SimpleTrackDevices(SlotManager, Observable):
-    def __init__(self, live_track):
-        # type: (Live.Track.Track) -> None
+    def __init__(self, live_track: Live.Track.Track) -> None:
         super(SimpleTrackDevices, self).__init__()
         self._track = live_track
-        self._devices = []  # type: List[Device]
-        self._all_devices = []  # type: List[Device]
+        self._devices: List[Device] = []
+        self._all_devices: List[Device] = []
         self._devices_listener.subject = live_track
         self._devices_mapping = LiveObjectMapping(Device.make)
         self.mixer_device = MixerDevice(live_track.mixer_device)
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "SimpleTrackDevices(%s)" % self._track.name
 
-    def __iter__(self):
-        # type: () -> Iterator[Device]
+    def __iter__(self) -> Iterator[Device]:
         return iter(self._devices)
 
-    def update(self, observable):
-        # type: (Observable) -> None
+    def update(self, observable: Observable) -> None:
         if isinstance(observable, RackDevice):
             self.build()
 
-    def build(self):
-        # type: () -> None
+    def build(self) -> None:
         self._devices_listener()
 
     @subject_slot("devices")
-    def _devices_listener(self):
-        # type: () -> None
+    def _devices_listener(self) -> None:
         for device in self._devices:
             device.disconnect()
 
@@ -60,17 +54,15 @@ class SimpleTrackDevices(SlotManager, Observable):
         self.notify_observers()
 
     @property
-    def all(self):
-        # type: () -> List[Device]
+    def all(self) -> List[Device]:
         return self._all_devices
 
     @property
-    def selected(self):
-        # type: () -> Optional[Device]
+    def selected(self) -> Optional[Device]:
         if self._track and self._track.view.selected_device:
-            device = find_if(
+            device: Optional[Device] = find_if(
                 lambda d: d._device == self._track.view.selected_device, self.all
-            )  # type: Optional[Device]
+            )
             if device is None:
                 raise Protocol0Warning(
                     "%s is not in %s devices"
@@ -83,12 +75,10 @@ class SimpleTrackDevices(SlotManager, Observable):
         else:
             return None
 
-    def get_one_from_enum(self, device_enum):
-        # type: (DeviceEnum) -> Optional[Device]
+    def get_one_from_enum(self, device_enum: DeviceEnum) -> Optional[Device]:
         return find_if(lambda d: d.enum == device_enum, self._all_devices)
 
-    def get_from_enum(self, device_enum):
-        # type: (DeviceEnum) -> List[Device]
+    def get_from_enum(self, device_enum: DeviceEnum) -> List[Device]:
         devices = []
         for d in self._all_devices:
             try:
@@ -99,8 +89,7 @@ class SimpleTrackDevices(SlotManager, Observable):
 
         return devices
 
-    def _find_all_devices(self, devices, only_visible=False):
-        # type: (Optional[List[Device]], bool) -> List[Device]
+    def _find_all_devices(self, devices: Optional[List[Device]], only_visible: bool = False) -> List[Device]:
         """Returns a list with all devices from a track or chain"""
         all_devices = []
         if devices is None:
@@ -123,8 +112,7 @@ class SimpleTrackDevices(SlotManager, Observable):
 
         return all_devices
 
-    def delete(self, device):
-        # type: (Device) -> None
+    def delete(self, device: Device) -> None:
         if device not in self.all:
             return None
 
@@ -133,19 +121,16 @@ class SimpleTrackDevices(SlotManager, Observable):
         self.build()
 
     @property
-    def parameters(self):
-        # type: () -> List[DeviceParameter]
+    def parameters(self) -> List[DeviceParameter]:
         return (
             list(chain(*[device.parameters for device in self.all])) + self.mixer_device.parameters
         )
 
     @property
-    def load_time(self):
-        # type: () -> int
+    def load_time(self) -> int:
         return sum(d.enum.load_time for d in self if d.enum is not None)
 
-    def disconnect(self):
-        # type: () -> None
+    def disconnect(self) -> None:
         super(SimpleTrackDevices, self).disconnect()
         for device in self.all:
             device.disconnect()

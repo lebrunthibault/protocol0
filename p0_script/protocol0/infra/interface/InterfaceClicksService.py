@@ -4,6 +4,5 @@ from protocol0.infra.interface.PixelEnum import PixelEnum
 
 
 class InterfaceClicksService(InterfaceClicksServiceInterface):
-    def save_sample(self):
-        # type: () -> None
+    def save_sample(self) -> None:
         Backend.client().click_vertical_zone(*PixelEnum.SAVE_SAMPLE.coordinates)

@@ -3,6 +3,5 @@ from protocol0.domain.lom.validation.sub_validators.AggregateValidator import Ag
 
 
 class AbstractGroupTrackValidator(AggregateValidator):
-    def __init__(self, _):
-        # type: (AbstractGroupTrack) -> None
+    def __init__(self, _: AbstractGroupTrack) -> None:
         super(AbstractGroupTrackValidator, self).__init__([])

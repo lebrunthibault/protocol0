@@ -25,8 +25,7 @@ from protocol0.domain.lom.instrument.InstrumentDisplayService import InstrumentD
 from protocol0.tests.infra.scheduler.TickSchedulerTest import TickSchedulerTest
 
 
-def make_protocol0():
-    # type: () -> Protocol0
+def make_protocol0() -> Protocol0:
     live_song = AbletonSong()
     Protocol0.song = lambda _: live_song
     wait = Scheduler.wait

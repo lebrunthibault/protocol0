@@ -6,8 +6,7 @@ from typing import Optional, Any
 from protocol0.shared.Config import Config
 
 
-def get_frame_info(frame_count=1):
-    # type: (int) -> Optional[Any]
+def get_frame_info(frame_count: int = 1) -> Optional[Any]:
     call_frame = inspect.currentframe()
     for _ in range(frame_count):
         next_frame = call_frame.f_back

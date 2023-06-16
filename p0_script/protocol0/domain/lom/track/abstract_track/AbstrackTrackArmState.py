@@ -8,23 +8,19 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class AbstractTrackArmState(Observable):
-    def __init__(self, live_track):
-        # type: (Live.Track.Track) -> None
+    def __init__(self, live_track: Live.Track.Track) -> None:
         super(AbstractTrackArmState, self).__init__()
         self._live_track = live_track
 
     @property
-    def is_armed(self):
-        # type: () -> bool
+    def is_armed(self) -> bool:
         return False
 
     @is_armed.setter
-    def is_armed(self, _):
-        # type: (bool) -> None
+    def is_armed(self, _: bool) -> None:
         pass
 
-    def toggle(self):
-        # type: () -> Optional[Sequence]
+    def toggle(self) -> Optional[Sequence]:
         if not Song.selected_track().IS_ACTIVE:
             return None
         if self.is_armed:
@@ -33,8 +29,7 @@ class AbstractTrackArmState(Observable):
         else:
             return self.arm()
 
-    def arm(self):
-        # type: () -> Optional[Sequence]
+    def arm(self) -> Optional[Sequence]:
         if self.is_armed:
             return None
         if self._live_track.is_foldable:
@@ -44,12 +39,10 @@ class AbstractTrackArmState(Observable):
 
         return self.arm_track()
 
-    def arm_track(self):
-        # type: () -> Optional[Sequence]
+    def arm_track(self) -> Optional[Sequence]:
         Logger.warning("Tried arming un-armable track")
 
         return None
 
-    def unarm(self):
-        # type: () -> None
+    def unarm(self) -> None:
         self.is_armed = False

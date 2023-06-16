@@ -8,12 +8,10 @@ if TYPE_CHECKING:
 
 
 class SimpleTrackMonitoringState(object):
-    def __init__(self, track):
-        # type: (SimpleTrack) -> None
+    def __init__(self, track: "SimpleTrack") -> None:
         self._track = track
 
-    def switch(self):
-        # type: () -> None
+    def switch(self) -> None:
         from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 
         if self._track.current_monitoring_state == CurrentMonitoringStateEnum.AUTO:

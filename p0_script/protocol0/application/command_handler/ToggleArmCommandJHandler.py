@@ -7,6 +7,5 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class ToggleArmCommandHandler(CommandHandlerInterface):
-    def handle(self, _):
-        # type: (ToggleArmCommand) -> Optional[Sequence]
+    def handle(self, _: ToggleArmCommand) -> Optional[Sequence]:
         return Song.current_track().arm_state.toggle()

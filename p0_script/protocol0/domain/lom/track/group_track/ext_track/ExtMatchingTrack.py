@@ -13,8 +13,7 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class ExtMatchingTrack(MatchingTrackInterface):
-    def __init__(self, base_track):
-        # type: (SimpleAudioTrack) -> None
+    def __init__(self, base_track: SimpleAudioTrack) -> None:
         super(ExtMatchingTrack, self).__init__(base_track)
         self._midi_sub_track = cast(SimpleAudioTrack, base_track.sub_tracks[0])
         self._audio_sub_track = cast(SimpleAudioTrack, base_track.sub_tracks[1])
@@ -23,14 +22,12 @@ class ExtMatchingTrack(MatchingTrackInterface):
         self._audio_sub_track.clip_mapping = self._audio_track.clip_mapping
 
     @property
-    def clip_color_manager(self):
-        # type: () -> Optional[MatchingTrackClipColorManager]
+    def clip_color_manager(self) -> Optional[MatchingTrackClipColorManager]:
         return MatchingTrackClipColorManager(
             self.router, self._midi_sub_track, self._audio_track, self._audio_sub_track
         )
 
-    def bounce(self):
-        # type: () -> Optional[Sequence]
+    def bounce(self) -> Optional[Sequence]:
         assert len(list(self._base_track.devices)) == 0, "Please move devices to audio track"
         assert self._base_track.devices.mixer_device.is_default, "Mixer was changed"
 

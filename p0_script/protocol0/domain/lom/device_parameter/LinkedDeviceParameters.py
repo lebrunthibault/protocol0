@@ -12,17 +12,14 @@ class LinkedDeviceParameters(object):
     and we cannot edit multiple automation curves at the same time
     """
 
-    def __init__(self, param_a, param_b):
-        # type: (DeviceParameter, DeviceParameter) -> None
+    def __init__(self, param_a: DeviceParameter, param_b: DeviceParameter) -> None:
         self._param_a = param_a
         self._param_b = param_b
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "(param_a: %s, param_b: %s)" % (self._param_a, self._param_b)
 
-    def link_clip_automation(self, automation):
-        # type: (ClipAutomation) -> Sequence
+    def link_clip_automation(self, automation: ClipAutomation) -> Sequence:
         a_env = automation.get_envelope(self._param_a)
         b_env = automation.get_envelope(self._param_b)
 

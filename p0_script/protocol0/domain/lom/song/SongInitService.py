@@ -13,13 +13,11 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class SongInitService(object):
-    def __init__(self, playback_component, ableton_set):
-        # type: (PlaybackComponent, AbletonSet) -> None
+    def __init__(self, playback_component: PlaybackComponent, ableton_set: AbletonSet) -> None:
         self._playback_component = playback_component
         self._ableton_set = ableton_set
 
-    def init_song(self):
-        # type: () -> Sequence
+    def init_song(self) -> Sequence:
         # the song usually starts playing after this method is executed
         CommandBus.dispatch(ResetPlaybackCommand())
 
@@ -36,8 +34,7 @@ class SongInitService(object):
 
         return seq.done()
 
-    def _check_sound_id_device(self):
-        # type: () -> None
+    def _check_sound_id_device(self) -> None:
         sound_id_device = Song.master_track().devices.get_one_from_enum(DeviceEnum.SOUNDID_REFERENCE_PLUGIN)  # type: ignore
 
         if sound_id_device is None:

@@ -12,11 +12,9 @@ from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.types import Func
 
 
-def defer(func):
-    # type: (Callable) -> Callable
+def defer(func: Callable) -> Callable:
     @wraps(func)
-    def decorate(*a, **k):
-        # type: (Any, Any) -> None
+    def decorate(*a: Any, **k: Any) -> None:
         from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 
         Scheduler.defer(partial(func, *a, **k))
@@ -25,15 +23,12 @@ def defer(func):
     return decorate
 
 
-def debounce(duration=100):
-    # type: (int) -> Func
+def debounce(duration: int = 100) -> Func:
     """duration: ms"""
 
-    def wrap(func):
-        # type: (Func) -> Func
+    def wrap(func: Func) -> Func:
         @wraps(func)
-        def decorate(*a, **k):
-            # type: (Any, Any) -> None
+        def decorate(*a: Any, **k: Any) -> None:
             object_source = a[0] if inspect.ismethod(func) else decorate
 
             decorate.count[object_source] += 1  # type: ignore[attr-defined]
@@ -44,8 +39,7 @@ def debounce(duration=100):
 
         decorate.count = defaultdict(int)  # type: ignore[attr-defined]
 
-        def execute(real_func, *a, **k):
-            # type: (Callable, Any, Any) -> Any
+        def execute(real_func: Callable, *a: Any, **k: Any) -> Any:
             object_source = a[0] if inspect.ismethod(real_func) else decorate
             decorate.count[object_source] -= 1  # type: ignore[attr-defined]
             if decorate.count[object_source] == 0:  # type: ignore[attr-defined]
@@ -57,17 +51,15 @@ def debounce(duration=100):
 
 
 class Throttler(object):
-    def __init__(self, func, duration):
-        # type: (Callable, int) -> None
+    def __init__(self, func: Callable, duration: int) -> None:
         self._func = func
         self._func_repr = get_callable_repr(func)
         self._duration = duration
         self._last_res = None
-        self._last_args = None  # type: Optional[Tuple[Any, Any]]
+        self._last_args: Optional[Tuple[Any, Any]] = None
         self._throttled = False
 
-    def execute(self, *a, **k):
-        # type: (Any, Any) -> Any
+    def execute(self, *a: Any, **k: Any) -> Any:
         if not self._throttled:
             self._last_res = self._func(*a, **k)
             Scheduler.wait_ms(self._duration, self._on_duration_elapsed)
@@ -78,8 +70,7 @@ class Throttler(object):
             self._last_args = (a, k)
             return self._last_res
 
-    def _on_duration_elapsed(self):
-        # type: () -> None
+    def _on_duration_elapsed(self) -> None:
         self._throttled = False
         if self._last_args is not None:
             a, k = self._last_args
@@ -87,15 +78,12 @@ class Throttler(object):
             self.execute(*a, **k)
 
 
-def throttle(duration=100):
-    # type: (int) -> Func
+def throttle(duration: int = 100) -> Func:
     """duration in ms"""
 
-    def wrap(func):
-        # type: (Func) -> Func
+    def wrap(func: Func) -> Func:
         @wraps(func)
-        def decorate(*a, **k):
-            # type: (Any, Any) -> Any
+        def decorate(*a: Any, **k: Any) -> Any:
             object_source = a[0] if inspect.ismethod(func) else decorate
 
             return decorate._throttler[object_source].execute(*a, **k)  # type: ignore[attr-defined]
@@ -107,8 +95,7 @@ def throttle(duration=100):
     return wrap
 
 
-def accelerate(func):
-    # type: (Func) -> Func
+def accelerate(func: Func) -> Func:
     """
     Function used to soft accelerate parameter scrolling as done in the hardware
     Function that will transmit the number of times it was called during the last second
@@ -123,8 +110,7 @@ def accelerate(func):
     FINE_TUNING_RANGE = 2
 
     @wraps(func)
-    def decorate(*a, **k):
-        # type: (Any, Any) -> None
+    def decorate(*a: Any, **k: Any) -> None:
         object_source = a[0] if inspect.ismethod(func) else decorate
 
         last_calls = decorate.last_calls[object_source]  # type: ignore[attr-defined]

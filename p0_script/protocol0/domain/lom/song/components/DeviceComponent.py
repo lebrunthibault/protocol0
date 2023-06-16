@@ -14,8 +14,7 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class DeviceComponent(SlotManager):
-    def __init__(self, song_view):
-        # type: (Live.Song.Song.View) -> None
+    def __init__(self, song_view: Live.Song.Song.View) -> None:
         super(DeviceComponent, self).__init__()
         self._view = song_view
 
@@ -25,17 +24,15 @@ class DeviceComponent(SlotManager):
         # it will make the getter return the parameter we want even though it is not
         # currently selected in the interface
         # for most uses it's enough and works as though we did view.selected_parameter = param
-        self._overridden_selected_parameter = None  # type: Optional[DeviceParameter]
+        self._overridden_selected_parameter: Optional[DeviceParameter] = None
 
     @subject_slot("selected_parameter")
-    def _selected_parameter_listener(self):
-        # type: () -> None
+    def _selected_parameter_listener(self) -> None:
         """Reset the parameter"""
         self._overridden_selected_parameter = None
 
     @property
-    def selected_parameter(self):
-        # type: () -> Optional[DeviceParameter]
+    def selected_parameter(self) -> Optional[DeviceParameter]:
         if self._overridden_selected_parameter is not None:
             return self._overridden_selected_parameter
         all_parameters = [
@@ -46,12 +43,10 @@ class DeviceComponent(SlotManager):
         )
 
     @selected_parameter.setter
-    def selected_parameter(self, parameter):
-        # type: (Optional[DeviceParameter]) -> None
+    def selected_parameter(self, parameter: Optional[DeviceParameter]) -> None:
         self._overridden_selected_parameter = parameter
 
-    def select_device(self, track, device):
-        # type: (SimpleTrack, Device) -> Sequence
+    def select_device(self, track: SimpleTrack, device: Device) -> Sequence:
         seq = Sequence()
         seq.add(track.select)
         seq.add(partial(self._view.select_device, device._device))

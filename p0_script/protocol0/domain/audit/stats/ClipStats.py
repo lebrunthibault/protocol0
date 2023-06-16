@@ -9,8 +9,7 @@ from protocol0.shared.Song import Song
 
 
 class ClipStats(object):
-    def __init__(self):
-        # type: () -> None
+    def __init__(self) -> None:
         self.clips = [clip for track in Song.simple_tracks() for clip in track.clips]
         self.abstract_clips = []
         for track in Song.simple_tracks():
@@ -25,9 +24,8 @@ class ClipStats(object):
         recorded_audio_length = sum([clip.length for clip in self.audio_clips])
         self.recorded_audio_duration = recorded_audio_length * beat_duration
 
-    def to_dict(self):
-        # type: () -> Dict
-        output = collections.OrderedDict()  # type: Dict[str, Any]
+    def to_dict(self) -> Dict:
+        output: Dict[str, Any] = collections.OrderedDict()
         output["clips count"] = len(self.clips)
         output["abstract clips count"] = len(self.abstract_clips)
         output["audio clips count"] = len(self.audio_clips)

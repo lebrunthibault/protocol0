@@ -13,24 +13,21 @@ from protocol0.shared.observer.Observable import Observable
 
 
 class MatchingTrackRouter(SlotManager):
-    def __init__(self, base_track, audio_track):
-        # type: (SimpleTrack, SimpleAudioTrack) -> None
+    def __init__(self, base_track: SimpleTrack, audio_track: SimpleAudioTrack) -> None:
         super(MatchingTrackRouter, self).__init__()
         self._base_track = base_track
         self._audio_track = audio_track
         base_track.arm_state.register_observer(self)
         self._name_listener.replace_subjects([self._base_track._track, self._audio_track._track])
 
-    def update(self, observable):
-        # type: (Observable) -> None
+    def update(self, observable: Observable) -> None:
         if isinstance(observable, AbstractTrackArmState):
             if observable.is_armed:
                 self.monitor_base_track()
             else:
                 self.monitor_audio_track()
 
-    def monitor_base_track(self):
-        # type: () -> None
+    def monitor_base_track(self) -> None:
         if not liveobj_valid(self._base_track._track) or not liveobj_valid(
             self._audio_track._track
         ):
@@ -40,14 +37,12 @@ class MatchingTrackRouter(SlotManager):
         self._audio_track.input_routing.type = InputRoutingTypeEnum.NO_INPUT
         self._base_track.output_routing.track = self._audio_track
 
-    def monitor_audio_track(self):
-        # type: () -> None
+    def monitor_audio_track(self) -> None:
         """Restore the current monitoring state of the track"""
         self._audio_track.current_monitoring_state = CurrentMonitoringStateEnum.AUTO
 
     @subject_slot_group("name")
     @defer
-    def _name_listener(self, _):
-        # type: (Live.Track.Track) -> None
+    def _name_listener(self, _: Live.Track.Track) -> None:
         """on any name change, cut the link"""
         self.disconnect()

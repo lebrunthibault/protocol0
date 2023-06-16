@@ -15,27 +15,23 @@ from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 
 
 class InstrumentPresetList(object):
-    def __init__(self, preset_importer, preset_initializer, preset_changer):
-        # type: (PresetImportInterface, PresetInitializerInterface, PresetChangerInterface) -> None
+    def __init__(self, preset_importer: PresetImportInterface, preset_initializer: PresetInitializerInterface, preset_changer: PresetChangerInterface) -> None:
         self._preset_importer = preset_importer
         self._preset_initializer = preset_initializer
         self._preset_changer = preset_changer
-        self.presets = []  # type: List[InstrumentPreset]
-        self.selected_preset = None  # type: Optional[InstrumentPreset]
+        self.presets: List[InstrumentPreset] = []
+        self.selected_preset: Optional[InstrumentPreset] = None
         self.sync_presets()
 
-    def __repr__(self, **k):
-        # type: (Any) -> str
+    def __repr__(self, **k: Any) -> str:
         return "preset count: %d, selected preset: %s" % (len(self.presets), self.selected_preset)
 
-    def sync_presets(self):
-        # type: () -> None
+    def sync_presets(self) -> None:
         self.presets = self._preset_importer.import_presets()
         self.selected_preset = self._preset_initializer.get_selected_preset(self.presets)
 
     @property
-    def categories(self):
-        # type: () -> List[str]
+    def categories(self) -> List[str]:
         """overridden"""
         return sorted(
             list(
@@ -50,35 +46,30 @@ class InstrumentPresetList(object):
         )
 
     @property
-    def selected_category(self):
-        # type: () -> str
+    def selected_category(self) -> str:
         if self.selected_preset:
             return self.selected_preset.category
         else:
             return ""
 
-    def set_selected_category(self, selected_category):
-        # type: (Optional[str]) -> None
+    def set_selected_category(self, selected_category: Optional[str]) -> None:
         presets = self._category_presets(selected_category)
         if len(presets) == 0:
             raise Protocol0Warning("Cannot find presets in category '%s'" % selected_category)
 
         self.selected_preset = presets[0]
 
-    def _category_presets(self, category=None):
-        # type: (Optional[str]) -> List[InstrumentPreset]
+    def _category_presets(self, category: Optional[str] = None) -> List[InstrumentPreset]:
         return list(
             filter(lambda p: p.category == (category or self.selected_category), self.presets)
         )
 
-    def scroll(self, go_next):
-        # type: (bool) -> None
+    def scroll(self, go_next: bool) -> None:
         # presets belonging to the current category
         self.selected_preset = ValueScroller.scroll_values(
             self._category_presets(), self.selected_preset, go_next
         )
         self.load_preset(self.selected_preset)
 
-    def load_preset(self, preset):
-        # type: (InstrumentPreset) -> None
+    def load_preset(self, preset: InstrumentPreset) -> None:
         return self._preset_changer.load(preset)

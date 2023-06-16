@@ -4,6 +4,5 @@ from protocol0.shared.logging.StatusBar import StatusBar
 
 
 class ShowMessageCommandHandler(CommandHandlerInterface):
-    def handle(self, command):
-        # type: (ShowMessageCommand) -> None
+    def handle(self, command: ShowMessageCommand) -> None:
         StatusBar.show_message(command.message)

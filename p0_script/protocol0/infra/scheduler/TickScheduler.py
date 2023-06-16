@@ -13,33 +13,29 @@ from protocol0.shared.logging.Logger import Logger
 
 
 class TickScheduler(TickSchedulerInterface):
-    def __init__(self, beat_scheduler, song):
-        # type: (BeatScheduler, Live.Song.Song) -> None
+    def __init__(self, beat_scheduler: BeatScheduler, song: Live.Song.Song) -> None:
         self._beat_scheduler = beat_scheduler
         self._song = song
-        self._live_timer = None  # type: Optional[Live.Base.Timer]
+        self._live_timer: Optional[Live.Base.Timer] = None
         # noinspection PyArgumentList
-        self._scheduled_events = []  # type: List[TickSchedulerEvent]
+        self._scheduled_events: List[TickSchedulerEvent] = []
 
         self.start()
 
-    def stop(self):
-        # type: () -> None
+    def stop(self) -> None:
         if self._live_timer:
             del self._scheduled_events[:]
             # noinspection PyArgumentList
             self._live_timer.stop()
 
-    def start(self):
-        # type: () -> None
+    def start(self) -> None:
         self.stop()
         self._live_timer = Live.Base.Timer(callback=self._on_tick, interval=1, repeat=True)
         # noinspection PyArgumentList
         self._live_timer.start()
 
     @handle_error
-    def _on_tick(self):
-        # type: () -> None
+    def _on_tick(self) -> None:
         # noinspection PyBroadException
         try:
             # this throws on startup
@@ -59,8 +55,7 @@ class TickScheduler(TickSchedulerInterface):
             else:
                 scheduled_event.decrement_timeout()
 
-    def schedule(self, tick_count, callback, unique=False):
-        # type: (int, Callable, bool) -> TickSchedulerEventInterface
+    def schedule(self, tick_count: int, callback: Callable, unique: bool = False) -> TickSchedulerEventInterface:
         assert callable(callback), "callback is not callable"
         assert tick_count > 0, "ticks_count is <= 0"
 

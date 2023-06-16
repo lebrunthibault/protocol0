@@ -5,6 +5,5 @@ if TYPE_CHECKING:
 
 
 class AbletonSetChangedEvent(object):
-    def __init__(self, ableton_set):
-        # type: (AbletonSet) -> None
+    def __init__(self, ableton_set: "AbletonSet") -> None:
         self.set = ableton_set

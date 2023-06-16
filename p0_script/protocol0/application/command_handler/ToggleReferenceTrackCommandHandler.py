@@ -4,6 +4,5 @@ from protocol0.shared.Song import Song
 
 
 class ToggleReferenceTrackCommandHandler(CommandHandlerInterface):
-    def handle(self, _):
-        # type: (ToggleReferenceTrackCommand) -> None
+    def handle(self, _: ToggleReferenceTrackCommand) -> None:
         Song.reference_track().toggle()

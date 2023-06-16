@@ -12,15 +12,13 @@ from protocol0.shared.logging.Logger import Logger
 
 
 class LogService(object):
-    def __init__(self, ableton_set, track_mapper_service, matching_track_service):
-        # type: (AbletonSet, TrackMapperService, MatchingTrackService) -> None
+    def __init__(self, ableton_set: AbletonSet, track_mapper_service: TrackMapperService, matching_track_service: MatchingTrackService) -> None:
         self._ableton_set = ableton_set
         self._track_mapper_service = track_mapper_service
         self._matching_track_service = matching_track_service
 
     @tail_logs
-    def log_current(self):
-        # type: () -> None
+    def log_current(self) -> None:
         Logger.clear()
 
         current_track = Song.current_track()
@@ -127,8 +125,7 @@ class LogService(object):
             Logger.info()
 
     @tail_logs
-    def log_set(self):
-        # type: () -> None
+    def log_set(self) -> None:
         Logger.clear()
 
         Logger.info("********* GLOBAL objects *************")
@@ -188,8 +185,7 @@ class LogService(object):
         Logger.info(self._ableton_set.to_dict())
 
     @tail_logs
-    def log_missing_vsts(self):
-        # type: () -> None
+    def log_missing_vsts(self) -> None:
         for track in Song.all_simple_tracks():
             for device in track.devices.all:
                 if device.name in DeviceEnum.missing_plugin_names():

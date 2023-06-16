@@ -12,8 +12,7 @@ from protocol0.shared.logging.Logger import Logger
 class ActionGroupTest(ActionGroupInterface):
     CHANNEL = 13
 
-    def configure(self):
-        # type: () -> None
+    def configure(self) -> None:
         # TEST encoder
         self.add_encoder(
             identifier=1,
@@ -43,8 +42,7 @@ class ActionGroupTest(ActionGroupInterface):
             ),
         )
 
-    def action_log_midi(self):
-        # type: () -> None
+    def action_log_midi(self) -> None:
         clip = Song.selected_clip()
         Logger.info("previous hash: %s" % clip.previous_hash)
         Logger.info("hash: %s" % clip.get_hash(Song.selected_track().devices.parameters))
@@ -53,8 +51,7 @@ class ActionGroupTest(ActionGroupInterface):
             track = Song.selected_track(SimpleAudioTrack)
             Logger.info(track.clip_mapping._file_path_mapping)
 
-    def action_test(self):
-        # type: () -> None
+    def action_test(self) -> None:
         from protocol0.shared.logging.Logger import Logger
         clips = Song.selected_track().clips
         arr_clips = [c for c in clips if c._clip.is_arrangement_clip]

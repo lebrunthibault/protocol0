@@ -10,15 +10,13 @@ class RecordTypeEnum(AbstractEnum):
     AUDIO_MULTI_SCENE = "Audio multi scene"
 
     @property
-    def records_midi(self):
-        # type: () -> bool
+    def records_midi(self) -> bool:
         return self in (
             RecordTypeEnum.MIDI,
             RecordTypeEnum.MIDI_UNLIMITED,
         )
 
-    def get_count_in(self):
-        # type: () -> CountInInterface
+    def get_count_in(self) -> CountInInterface:
         from protocol0.domain.track_recorder.count_in.CountInOneBar import CountInOneBar
         from protocol0.domain.track_recorder.count_in.CountInShort import CountInShort
 

@@ -4,6 +4,5 @@ from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackCompo
 
 
 class ResetPlaybackCommandHandler(CommandHandlerInterface):
-    def handle(self, _):
-        # type: (ResetPlaybackCommand) -> None
+    def handle(self, _: ResetPlaybackCommand) -> None:
         self._container.get(PlaybackComponent).reset()

@@ -7,9 +7,8 @@ from protocol0.domain.lom.validation.sub_validators.CallbackValidator import Cal
 
 
 class SceneValidator(AggregateValidator):
-    def __init__(self, scene):
-        # type: (Scene) -> None
-        validators = []  # type: List[ValidatorInterface]
+    def __init__(self, scene: Scene) -> None:
+        validators: List[ValidatorInterface] = []
         if scene.bar_length != 0 and scene.bar_length <= 32:
             validators.append(
                 CallbackValidator(

@@ -22,8 +22,7 @@ if TYPE_CHECKING:
 
 
 class MatchingTrackInterface(SlotManager):
-    def __init__(self, base_track):
-        # type: (SimpleTrack) -> None
+    def __init__(self, base_track: "SimpleTrack") -> None:
         super(MatchingTrackInterface, self).__init__()
         self._base_track = base_track
         self._audio_track = cast(SimpleAudioTrack, get_matching_audio_track(base_track))
@@ -33,19 +32,15 @@ class MatchingTrackInterface(SlotManager):
         self._solo_state = MatchingTrackSoloState(base_track, self._audio_track)
         self.clip_manager = MatchingTrackClipManager(self.router, base_track, self._audio_track)
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "MatchingTrack(%s => %s)" % (self._base_track, self._audio_track)
 
     @property
-    def clip_color_manager(self):
-        # type: () -> Optional[MatchingTrackClipColorManager]
+    def clip_color_manager(self) -> Optional[MatchingTrackClipColorManager]:
         raise NotImplementedError
 
-    def init_clips(self):
-        # type: () -> None
+    def init_clips(self) -> None:
         pass
 
-    def bounce(self):
-        # type: () -> Optional[Sequence]
+    def bounce(self) -> Optional[Sequence]:
         raise NotImplementedError

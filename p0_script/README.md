@@ -43,7 +43,6 @@ Specifically the script aims to achieve :
 > - A tool to bounce session to arrangement
 > - Tools to split and crop scenes
 > - Validator code that can detect different kind of set configuration "errors" (routings, volumes, unused devices etc.)
-> - Some code to synchronize my push2 to the script (specifically the session component)
 > - A few other tools that can be found in the action_groups folder
 
 <br><br>

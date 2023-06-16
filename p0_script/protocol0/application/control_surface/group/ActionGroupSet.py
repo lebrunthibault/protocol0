@@ -9,8 +9,7 @@ from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 class ActionGroupSet(ActionGroupInterface):
     CHANNEL = 3
 
-    def configure(self):
-        # type: () -> None
+    def configure(self) -> None:
         # INIT song encoder
         self.add_encoder(
             identifier=4,

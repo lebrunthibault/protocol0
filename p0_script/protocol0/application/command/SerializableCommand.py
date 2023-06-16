@@ -7,20 +7,17 @@ from protocol0.domain.shared.utils.utils import locate
 
 
 class SerializableCommand(object):
-    def __init__(self):
-        # type: () -> None
-        self.set_id = None  # type: Optional[str]
+    def __init__(self) -> None:
+        self.set_id: Optional[str] = None
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         if len(self.__dict__) == 0:
             return self.__class__.__name__
         else:
             kwargs = ",".join(["%s=%s" % (k, v) for k, v in self.__dict__.items() if k != "set_id"])
             return "%s(%s)" % (self.__class__.__name__, kwargs)
 
-    def serialize(self):
-        # type: () -> str
+    def serialize(self) -> str:
         """Used from outside"""
         from pydoc import classname
 
@@ -31,8 +28,7 @@ class SerializableCommand(object):
         )
 
     @classmethod
-    def un_serialize(cls, json_string):
-        # type: (str) -> SerializableCommand
+    def un_serialize(cls, json_string: str) -> "SerializableCommand":
         json_dict = json.loads(json_string)
         assert "class" in json_dict, "class is missing from json serialization"
         assert "args" in json_dict, "attrs is missing from json serialization"

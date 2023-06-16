@@ -31,28 +31,26 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class TrackMapperService(SlotManager):
-    def __init__(self, live_song, track_factory):
-        # type: (Live.Song.Song, TrackFactory) -> None
+    def __init__(self, live_song: Live.Song.Song, track_factory: TrackFactory) -> None:
         super(TrackMapperService, self).__init__()
         self._live_song = live_song
         self._track_factory = track_factory
 
-        self._live_track_id_to_simple_track = (
+        self._live_track_id_to_simple_track: Dict[int, SimpleTrack] = (
             collections.OrderedDict()
-        )  # type: Dict[int, SimpleTrack]
-        self._usamo_track = None  # type: Optional[SimpleTrack]
-        self._drums_track = None  # type: Optional[DrumsTrack]
-        self._vocals_track = None  # type: Optional[VocalsTrack]
-        self._reference_track = None  # type: Optional[ReferenceTrack]
-        self._master_track = None  # type: Optional[SimpleTrack]
+        )
+        self._usamo_track: Optional[SimpleTrack] = None
+        self._drums_track: Optional[DrumsTrack] = None
+        self._vocals_track: Optional[VocalsTrack] = None
+        self._reference_track: Optional[ReferenceTrack] = None
+        self._master_track: Optional[SimpleTrack] = None
 
         self.tracks_listener.subject = self._live_song
         DomainEventBus.subscribe(SimpleTrackCreatedEvent, self._on_simple_track_created_event)
 
     @subject_slot("tracks")
     @handle_error
-    def tracks_listener(self):
-        # type: () -> None
+    def tracks_listener(self) -> None:
         self._clean_tracks()
 
         previous_simple_track_count = len(list(Song.all_simple_tracks()))
@@ -76,8 +74,7 @@ class TrackMapperService(SlotManager):
 
         self._get_special_tracks()
 
-    def _clean_tracks(self):
-        # type: () -> None
+    def _clean_tracks(self) -> None:
         existing_track_ids = [track._live_ptr for track in list(Song.live_tracks())]
         deleted_ids = []
 
@@ -89,8 +86,7 @@ class TrackMapperService(SlotManager):
         for track_id in deleted_ids:
             del self._live_track_id_to_simple_track[track_id]
 
-    def _generate_simple_tracks(self):
-        # type: () -> None
+    def _generate_simple_tracks(self) -> None:
         """instantiate SimpleTracks (including return / master, that are marked as inactive)"""
         # instantiate set tracks
         for index, track in enumerate(list(self._live_song.tracks)):
@@ -108,8 +104,7 @@ class TrackMapperService(SlotManager):
         for track in Song.simple_tracks():
             track.on_tracks_change()
 
-    def _get_special_tracks(self):
-        # type: () -> None
+    def _get_special_tracks(self) -> None:
         simple_tracks = list(Song.simple_tracks())
 
         self._usamo_track = find_if(lambda t: isinstance(t, UsamoTrack), simple_tracks)
@@ -122,8 +117,7 @@ class TrackMapperService(SlotManager):
         if self._usamo_track is None:
             Logger.warning("Usamo track is not present")
 
-    def _on_track_added(self):
-        # type: () -> Optional[Sequence]
+    def _on_track_added(self) -> Optional[Sequence]:
         if not Song.selected_track().IS_ACTIVE:
             return None
         UndoFacade.begin_undo_step()  # Live crashes on undo without this
@@ -138,8 +132,7 @@ class TrackMapperService(SlotManager):
         seq.add(UndoFacade.end_undo_step)
         return seq.done()
 
-    def _on_simple_track_created_event(self, event):
-        # type: (SimpleTrackCreatedEvent) -> None
+    def _on_simple_track_created_event(self, event: SimpleTrackCreatedEvent) -> None:
         """So as to be able to generate simple tracks with the abstract group track aggregate"""
         # handling replacement of a SimpleTrack by another
         previous_simple_track = Song.optional_simple_track_from_live_track(event.track._track)
@@ -148,8 +141,7 @@ class TrackMapperService(SlotManager):
 
         self._live_track_id_to_simple_track[event.track.live_id] = event.track
 
-    def _replace_simple_track(self, previous_simple_track, new_simple_track):
-        # type: (SimpleTrack, SimpleTrack) -> None
+    def _replace_simple_track(self, previous_simple_track: SimpleTrack, new_simple_track: SimpleTrack) -> None:
         """disconnecting and removing from SimpleTrack group track and abstract_group_track"""
         new_simple_track._index = previous_simple_track._index
         previous_simple_track.disconnect()
@@ -167,15 +159,13 @@ class TrackMapperService(SlotManager):
                 new_simple_track, previous_simple_track
             )
 
-    def _sort_simple_tracks(self):
-        # type: () -> None
+    def _sort_simple_tracks(self) -> None:
         sorted_dict = collections.OrderedDict()
         for track in Song.live_tracks():
             sorted_dict[track._live_ptr] = Song.live_track_to_simple_track(track)
         self._live_track_id_to_simple_track = sorted_dict
 
-    def _generate_abstract_group_tracks(self):
-        # type: () -> None
+    def _generate_abstract_group_tracks(self) -> None:
         # 2nd pass : instantiate AbstractGroupTracks
         for track in Song.simple_tracks():
             if not track.is_foldable:

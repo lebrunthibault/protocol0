@@ -29,8 +29,7 @@ class DeviceParameterEnum(AbstractEnum):
     UTILITY_MID_SIDE = "UTILITY MID SIDE"
 
     @property
-    def parameter_name(self):
-        # type: () -> str
+    def parameter_name(self) -> str:
         return self.get_value_from_mapping(
             {
                 DeviceParameterEnum.AUTO_FILTER_HIGH_PASS_FREQUENCY: "Frequency",
@@ -54,8 +53,7 @@ class DeviceParameterEnum(AbstractEnum):
         )
 
     @property
-    def label(self):
-        # type: () -> str
+    def label(self) -> str:
         return self.get_value_from_mapping(
             {
                 DeviceParameterEnum.AUTO_FILTER_LOW_PASS_FREQUENCY: "Low Pass Frequency",
@@ -65,8 +63,7 @@ class DeviceParameterEnum(AbstractEnum):
         )
 
     @property
-    def device_enum(self):
-        # type: () -> DeviceEnum
+    def device_enum(self) -> "DeviceEnum":
         return self.get_value_from_mapping(
             {
                 DeviceParameterEnum.AUTO_FILTER_LOW_PASS_FREQUENCY: "Low Pass Frequency",
@@ -76,8 +73,7 @@ class DeviceParameterEnum(AbstractEnum):
         )
 
     @classmethod
-    def from_name(cls, device_name, name):
-        # type: (str, str) -> Optional[DeviceParameterEnum]
+    def from_name(cls, device_name: str, name: str) -> Optional["DeviceParameterEnum"]:
         enum_name = "%s %s" % (device_name.upper(), name.upper())
         try:
             return DeviceParameterEnum.from_value(enum_name)
@@ -85,8 +81,7 @@ class DeviceParameterEnum(AbstractEnum):
             return None
 
     @property
-    def default_value(self):
-        # type: () -> Any
+    def default_value(self) -> Any:
         return self.get_value_from_mapping(
             {
                 DeviceParameterEnum.AUTO_FILTER_HIGH_PASS_FREQUENCY: 20,

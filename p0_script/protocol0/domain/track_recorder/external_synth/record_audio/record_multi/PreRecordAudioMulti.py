@@ -17,8 +17,7 @@ from protocol0.domain.track_recorder.external_synth.record_audio.PreRecordAudio 
 
 
 class PreRecordAudioMulti(RecordProcessorInterface):
-    def process(self, track, config):
-        # type: (ExternalSynthTrack, RecordConfig) -> None
+    def process(self, track: ExternalSynthTrack, config: RecordConfig) -> None:
         """
         Alerting when a midi clip does not have the same bar length as its scene (except for the last one)
         In this case the audio tail might not be recorded fully due to switching scenes
@@ -45,8 +44,7 @@ class PreRecordAudioMulti(RecordProcessorInterface):
                 "At least one midi clip has a smaller bar length than its scene. Pay attention to the tail recording"
             )
 
-    def _recording_scenes(self, track, config):
-        # type: (ExternalSynthTrack, RecordConfig) -> List[Scene]
+    def _recording_scenes(self, track: ExternalSynthTrack, config: RecordConfig) -> List[Scene]:
         """A list of scenes that are going to be recorded"""
         scenes = [config.recording_scene]
         while (

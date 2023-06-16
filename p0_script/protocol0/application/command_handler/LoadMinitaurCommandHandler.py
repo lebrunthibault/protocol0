@@ -5,6 +5,5 @@ from protocol0.domain.lom.instrument.instrument.InstrumentMinitaur import Instru
 
 
 class LoadMinitaurCommandHandler(CommandHandlerInterface):
-    def handle(self, command):
-        # type: (LoadMinitaurCommand) -> None
+    def handle(self, command: LoadMinitaurCommand) -> None:
         load_instrument_track(InstrumentMinitaur)

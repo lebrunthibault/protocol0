@@ -11,8 +11,7 @@ from protocol0.shared.Song import Song
 class ActionGroupClip(ActionGroupInterface):
     CHANNEL = 7
 
-    def configure(self):
-        # type: () -> None
+    def configure(self) -> None:
         # DUPLicate clip
         self.add_encoder(
             identifier=1,

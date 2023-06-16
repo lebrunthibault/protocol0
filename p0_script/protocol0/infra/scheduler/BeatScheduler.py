@@ -21,41 +21,36 @@ class BeatScheduler(SlotManager, BeatSchedulerInterface):
     """BeatScheduler schedules action lists to be triggered after a specified
     number of bars."""
 
-    def __init__(self, song):
-        # type: (Live.Song.Song) -> None
+    def __init__(self, song: Live.Song.Song) -> None:
         super(BeatScheduler, self).__init__()
         self._song = song
         # noinspection PyArgumentList
         self._last_beats_song_time = BeatTime.from_song_beat_time(
             song.get_current_beats_song_time()
         )
-        self._scheduled_events = []  # type: List[BeatSchedulerEvent]
+        self._scheduled_events: List[BeatSchedulerEvent] = []
         self._is_playing_listener.subject = song
 
     @subject_slot("is_playing")
-    def _is_playing_listener(self):
-        # type: () -> None
+    def _is_playing_listener(self) -> None:
         if not self._song.is_playing:
             self._execute_events()  # execute song stopped events
             self.reset()
 
-    def _on_tick(self):
-        # type: () -> None
+    def _on_tick(self) -> None:
         self._dispatch_timing_events()
         self._execute_events()
 
-    def _execute_events(self):
-        # type: () -> None
+    def _execute_events(self) -> None:
         for event in self._scheduled_events:
             if event.should_execute:
                 event.execute()
                 self._scheduled_events.remove(event)
 
-    def _dispatch_timing_events(self):
-        # type: () -> None
+    def _dispatch_timing_events(self) -> None:
         current_beats_song_time = BeatTime.from_song_beat_time(Song.current_beats_song_time())
 
-        events = []  # type: List[object]
+        events: List[object] = []
         if (
             current_beats_song_time.bars != self._last_beats_song_time.bars
             and not self._last_beats_song_time.is_start
@@ -92,8 +87,7 @@ class BeatScheduler(SlotManager, BeatSchedulerInterface):
         for event in events:
             DomainEventBus.emit(event)
 
-    def wait_beats(self, beats_offset, callback, execute_on_song_stop):
-        # type: (float, Callable, bool) -> None
+    def wait_beats(self, beats_offset: float, callback: Callable, execute_on_song_stop: bool) -> None:
         """
         NB : the system internally relies on the Live timer's tick (every 17ms)
         So we cannot have precise execution
@@ -108,12 +102,10 @@ class BeatScheduler(SlotManager, BeatSchedulerInterface):
         else:
             self._scheduled_events.append(event)
 
-    def disconnect(self):
-        # type: () -> None
+    def disconnect(self) -> None:
         super(BeatScheduler, self).disconnect()
         self.reset()
 
-    def reset(self):
-        # type: () -> None
+    def reset(self) -> None:
         self._scheduled_events[:] = []
         self._last_beats_song_time = BeatTime(1, 1, 1, 1)

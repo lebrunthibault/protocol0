@@ -15,17 +15,14 @@ class SimpleMidiTrack(SimpleTrack):
     CLIP_SLOT_CLASS = MidiClipSlot
 
     @property
-    def clip_slots(self):
-        # type: () -> List[MidiClipSlot]
+    def clip_slots(self) -> List[MidiClipSlot]:
         return cast(List[MidiClipSlot], super(SimpleMidiTrack, self).clip_slots)
 
     @property
-    def clips(self):
-        # type: () -> List[MidiClip]
+    def clips(self) -> List[MidiClip]:
         return super(SimpleMidiTrack, self).clips  # noqa
 
-    def broadcast_selected_clip(self):
-        # type: () -> Sequence
+    def broadcast_selected_clip(self) -> Sequence:
         selected_cs = Song.selected_clip_slot(MidiClipSlot)
         clip = selected_cs.clip
         if clip is None:

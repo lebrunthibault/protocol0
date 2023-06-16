@@ -4,6 +4,5 @@ from protocol0.shared.Song import Song
 
 
 class UnfoldSelectedSceneCommandHandler(CommandHandlerInterface):
-    def handle(self, _):
-        # type: (UnfoldSelectedSceneCommand) -> None
+    def handle(self, _: UnfoldSelectedSceneCommand) -> None:
         Song.selected_scene().unfold()

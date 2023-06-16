@@ -9,17 +9,15 @@ from protocol0.domain.lom.instrument.preset.preset_importer.PresetImportInterfac
 
 
 class DirectoryPresetImporter(PresetImportInterface):
-    def __init__(self, path, extension=None):
-        # type: (str, Optional[str]) -> None
+    def __init__(self, path: str, extension: Optional[str] = None) -> None:
         self._path = path
         if extension is not None:
             self._extensions = [extension]
         else:
             self._extensions = [".wav", ".aif"]
 
-    def _import_presets(self):
-        # type: () -> List[InstrumentPreset]
-        presets = []  # type: List[InstrumentPreset]
+    def _import_presets(self) -> List[InstrumentPreset]:
+        presets: List[InstrumentPreset] = []
         has_categories = False
 
         for root, dir_names, files in os.walk(self._path):
@@ -48,8 +46,7 @@ class DirectoryPresetImporter(PresetImportInterface):
 
         return presets
 
-    def _is_preset_filename(self, filename):
-        # type: (str) -> bool
+    def _is_preset_filename(self, filename: str) -> bool:
         if filename.startswith("_"):
             return False
 

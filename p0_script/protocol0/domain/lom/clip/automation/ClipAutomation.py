@@ -11,24 +11,20 @@ from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 
 
 class ClipAutomation(object):
-    def __init__(self, live_clip, loop):
-        # type: (Live.Clip.Clip, ClipLoop) -> None
+    def __init__(self, live_clip: Live.Clip.Clip, loop: ClipLoop) -> None:
         self._live_clip = live_clip
         self._loop = loop
 
-    def get_hash(self, device_parameters):
-        # type: (List[DeviceParameter]) -> int
+    def get_hash(self, device_parameters: List[DeviceParameter]) -> int:
         automated_parameters = self.get_automated_parameters(device_parameters)
         envs = [self.get_envelope(param) for param in automated_parameters]
 
         return hash(tuple([env.hash for env in envs]))
 
-    def has_automation(self, device_parameters):
-        # type: (List[DeviceParameter]) -> bool
+    def has_automation(self, device_parameters: List[DeviceParameter]) -> bool:
         return len(self.get_automated_parameters(device_parameters)) != 0
 
-    def get_automated_parameters(self, device_parameters):
-        # type: (List[DeviceParameter]) -> List[DeviceParameter]
+    def get_automated_parameters(self, device_parameters: List[DeviceParameter]) -> List[DeviceParameter]:
         automated_parameters = []
         for parameter in device_parameters:
             # ignore rev2 b layer (we edit only A)
@@ -41,16 +37,14 @@ class ClipAutomation(object):
 
         return automated_parameters
 
-    def show_parameter_envelope(self, parameter):
-        # type: (DeviceParameter) -> None
+    def show_parameter_envelope(self, parameter: DeviceParameter) -> None:
         ApplicationView.show_clip()
         self.show_envelope()
         # noinspection PyArgumentList
         self._live_clip.view.select_envelope_parameter(parameter._device_parameter)
         DomainEventBus.emit(ClipEnvelopeShowedEvent())
 
-    def get_envelope(self, parameter):
-        # type: (DeviceParameter) -> Optional[ClipAutomationEnvelope]
+    def get_envelope(self, parameter: DeviceParameter) -> Optional[ClipAutomationEnvelope]:
         if self._live_clip and parameter._device_parameter:
             env = self._live_clip.automation_envelope(parameter._device_parameter)
             if env:
@@ -58,8 +52,7 @@ class ClipAutomation(object):
 
         return None
 
-    def select_or_create_envelope(self, parameter):
-        # type: (DeviceParameter) -> None
+    def select_or_create_envelope(self, parameter: DeviceParameter) -> None:
         envelope = self.get_envelope(parameter)
         if envelope is None:
             envelope = self.create_envelope(parameter)
@@ -68,8 +61,7 @@ class ClipAutomation(object):
 
         self.show_parameter_envelope(parameter)
 
-    def create_envelope(self, parameter):
-        # type: (DeviceParameter) -> ClipAutomationEnvelope
+    def create_envelope(self, parameter: DeviceParameter) -> ClipAutomationEnvelope:
         try:
             self._live_clip.create_automation_envelope(parameter._device_parameter)
         except RuntimeError:
@@ -77,19 +69,16 @@ class ClipAutomation(object):
             pass
         return cast(ClipAutomationEnvelope, self.get_envelope(parameter))
 
-    def clear_all_envelopes(self):
-        # type: () -> None
+    def clear_all_envelopes(self) -> None:
         if self._live_clip:
             return self._live_clip.clear_all_envelopes()
 
     @handle_error
-    def show_envelope(self):
-        # type: () -> None
+    def show_envelope(self) -> None:
         self.hide_envelope()  # necessary
         self._live_clip.view.show_loop()  # this before seem to work better
         self._live_clip.view.show_envelope()
 
     @handle_error
-    def hide_envelope(self):
-        # type: () -> None
+    def hide_envelope(self) -> None:
         self._live_clip.view.hide_envelope()

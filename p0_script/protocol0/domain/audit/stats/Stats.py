@@ -3,6 +3,5 @@ from typing import Dict
 
 
 class Stats(Protocol):
-    def to_dict(self):
-        # type: () -> Dict
+    def to_dict(self) -> Dict:
         raise NotImplementedError

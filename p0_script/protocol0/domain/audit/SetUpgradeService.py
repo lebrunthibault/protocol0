@@ -15,13 +15,11 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class SetUpgradeService(object):
-    def __init__(self, validator_service, track_crud_component):
-        # type: (ValidatorService, TrackCrudComponent) -> None
+    def __init__(self, validator_service: ValidatorService, track_crud_component: TrackCrudComponent) -> None:
         self._validator_service = validator_service
         self._track_crud_component = track_crud_component
 
-    def delete_unnecessary_devices(self, full_scan=False):
-        # type: (bool) -> None
+    def delete_unnecessary_devices(self, full_scan: bool = False) -> None:
         devices_to_delete = list(self.get_deletable_devices())
         if len(devices_to_delete) == 0:
             if full_scan is False:
@@ -30,7 +28,7 @@ class SetUpgradeService(object):
                 StatusBar.show_message("No devices to delete")
             return
 
-        devices_by_name = {}  # type: Dict[str, List[Device]]
+        devices_by_name: Dict[str, List[Device]] = {}
         for track, device in devices_to_delete:
             name = device.name or device.class_name
             if name not in devices_by_name:
@@ -48,8 +46,7 @@ class SetUpgradeService(object):
         seq.add(self.delete_unnecessary_devices)  # now delete enclosing racks if empty
         seq.done()
 
-    def get_deletable_devices(self):
-        # type: () -> Iterator[Tuple[SimpleTrack, Device]]
+    def get_deletable_devices(self) -> Iterator[Tuple[SimpleTrack, Device]]:
         # devices with default values (unchanged)
         for device_enum in DeviceEnum:  # type: DeviceEnum
             try:

@@ -7,31 +7,26 @@ from protocol0.shared.logging.LoggerServiceInterface import LoggerServiceInterfa
 class Logger(object):
     """Facade for logging"""
 
-    _INSTANCE = None  # type: Optional[Logger]
+    _INSTANCE: Optional["Logger"] = None
 
-    def __init__(self, logger_service):
-        # type: (LoggerServiceInterface) -> None
+    def __init__(self, logger_service: LoggerServiceInterface) -> None:
         Logger._INSTANCE = self
         self._logger = logger_service
 
     @classmethod
-    def dev(cls, message="", debug=True):
-        # type: (Any, bool) -> None
+    def dev(cls, message: Any = "", debug: bool = True) -> None:
         cls._log(message, LogLevelEnum.DEV, debug=debug)
 
     @classmethod
-    def info(cls, message="", debug=False):
-        # type: (Any, bool) -> None
+    def info(cls, message: Any = "", debug: bool = False) -> None:
         cls._log(message, LogLevelEnum.INFO, debug=debug)
 
     @classmethod
-    def warning(cls, message, debug=False):
-        # type: (Any, bool) -> None
+    def warning(cls, message: Any, debug: bool = False) -> None:
         cls._log(message, LogLevelEnum.WARNING, debug=debug)
 
     @classmethod
-    def error(cls, message="", debug=True, show_notification=True):
-        # type: (Any, bool, bool) -> None
+    def error(cls, message: Any = "", debug: bool = True, show_notification: bool = True) -> None:
         cls._log(message, level=LogLevelEnum.ERROR, debug=debug)
 
         if not show_notification:
@@ -46,8 +41,7 @@ class Logger(object):
             StatusBar.show_message(message)
 
     @classmethod
-    def _log(cls, message="", level=LogLevelEnum.INFO, debug=False):
-        # type: (Any, LogLevelEnum, bool) -> None
+    def _log(cls, message: Any = "", level: LogLevelEnum = LogLevelEnum.INFO, debug: bool = False) -> None:
         if not message:
             debug = False
 
@@ -58,6 +52,5 @@ class Logger(object):
         )
 
     @classmethod
-    def clear(cls):
-        # type: () -> None
+    def clear(cls) -> None:
         cls.info("clear_logs")

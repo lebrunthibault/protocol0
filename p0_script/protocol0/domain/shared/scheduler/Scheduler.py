@@ -11,35 +11,30 @@ from protocol0.shared.Song import Song
 class Scheduler(object):
     """Facade for scheduling calls"""
 
-    _INSTANCE = None  # type: Optional[Scheduler]
+    _INSTANCE: Optional["Scheduler"] = None
     _TICKS_BY_SECOND = float(1000) / 17
 
-    def __init__(self, tick_scheduler, beat_scheduler):
-        # type: (TickSchedulerInterface, BeatSchedulerInterface) -> None
+    def __init__(self, tick_scheduler: TickSchedulerInterface, beat_scheduler: BeatSchedulerInterface) -> None:
         Scheduler._INSTANCE = self
         self._tick_scheduler = tick_scheduler
         self._beat_scheduler = beat_scheduler
 
     @classmethod
-    def defer(cls, callback):
-        # type: (Callable) -> None
+    def defer(cls, callback: Callable) -> None:
         cls._INSTANCE._tick_scheduler.schedule(1, callback)
 
     @classmethod
-    def wait_beats(cls, beats, callback, execute_on_song_stop=False):
-        # type: (float, Callable, bool) -> None
+    def wait_beats(cls, beats: float, callback: Callable, execute_on_song_stop: bool = False) -> None:
         cls._INSTANCE._beat_scheduler.wait_beats(beats, callback, execute_on_song_stop)
 
     @classmethod
-    def wait_bars(cls, bars, callback, execute_on_song_stop=False):
-        # type: (float, Callable, bool) -> None
+    def wait_bars(cls, bars: float, callback: Callable, execute_on_song_stop: bool = False) -> None:
         cls._INSTANCE._beat_scheduler.wait_beats(
             bars * Song.signature_numerator(), callback, execute_on_song_stop
         )
 
     @classmethod
-    def wait(cls, tick_count, callback, unique=False):
-        # type: (int, Callable, bool) -> TickSchedulerEventInterface
+    def wait(cls, tick_count: int, callback: Callable, unique: bool = False) -> TickSchedulerEventInterface:
         """
         tick_count ~= 17 ms
         unique: accept only one callback of a type. the next callback will cancel the
@@ -48,14 +43,12 @@ class Scheduler(object):
         return cls._INSTANCE._tick_scheduler.schedule(tick_count, callback, unique)
 
     @classmethod
-    def wait_ms(cls, duration, callback, unique=False):
-        # type: (int, Callable, bool) -> TickSchedulerEventInterface
+    def wait_ms(cls, duration: int, callback: Callable, unique: bool = False) -> TickSchedulerEventInterface:
         duration_second = float(duration) / 1000
         return cls.wait(int(duration_second * cls._TICKS_BY_SECOND), callback, unique)
 
     @classmethod
-    def restart(cls):
-        # type: () -> None
+    def restart(cls) -> None:
         from protocol0.shared.sequence.Sequence import Sequence
 
         Sequence.reset()
@@ -63,7 +56,6 @@ class Scheduler(object):
         cls._INSTANCE._beat_scheduler.reset()
 
     @classmethod
-    def reset(cls):
-        # type: () -> None
+    def reset(cls) -> None:
         cls._INSTANCE._tick_scheduler.stop()
         cls._INSTANCE._beat_scheduler.reset()

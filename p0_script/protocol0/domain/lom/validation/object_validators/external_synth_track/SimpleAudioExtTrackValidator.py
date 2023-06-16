@@ -14,12 +14,11 @@ from protocol0.shared.Config import Config
 
 
 class SimpleAudioExtTrackValidator(SimpleAudioTrackValidator):
-    def __init__(self, track, midi_track):
-        # type: (SimpleAudioExtTrack, SimpleMidiExtTrack) -> None
+    def __init__(self, track: SimpleAudioExtTrack, midi_track: SimpleMidiExtTrack) -> None:
         self._track = track
         self._midi_track = midi_track
 
-        validators = [
+        validators: List[ValidatorInterface] = [
             PropertyValueValidator(track, "volume", 0, name="audio track volume"),
             PropertyValueValidator(
                 track.input_routing,
@@ -33,7 +32,7 @@ class SimpleAudioExtTrackValidator(SimpleAudioTrackValidator):
                 InputRoutingChannelEnum.POST_FX,
                 name="audio track input channel",
             ),
-        ]  # type: List[ValidatorInterface]
+        ]
 
         for clip in track.clips:
             validators.append(PropertyValueValidator(clip, "warp_mode", Config.DEFAULT_WARP_MODE))

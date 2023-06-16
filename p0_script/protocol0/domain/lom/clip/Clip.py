@@ -21,8 +21,7 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class Clip(SlotManager, Observable):
-    def __init__(self, live_clip, index, config):
-        # type: (Live.Clip.Clip, int, ClipConfig) -> None
+    def __init__(self, live_clip: Live.Clip.Clip, index: int, config: ClipConfig) -> None:
         super(Clip, self).__init__()
         self._clip = live_clip
         self.index = index
@@ -31,29 +30,26 @@ class Clip(SlotManager, Observable):
         self.deleted = False
         self.selected = False
 
-        self.clip_name = ClipName(live_clip)  # type: ClipName
+        self.clip_name: ClipName = ClipName(live_clip)
         self.appearance = ClipAppearance(live_clip, self.clip_name, config.color)
-        self.loop = ClipLoop(live_clip)  # type: ClipLoop
-        self.automation = ClipAutomation(live_clip, self.loop)  # type: ClipAutomation
-        self.playing_position = ClipPlayingPosition(
+        self.loop: ClipLoop = ClipLoop(live_clip)
+        self.automation: ClipAutomation = ClipAutomation(live_clip, self.loop)
+        self.playing_position: ClipPlayingPosition = ClipPlayingPosition(
             live_clip, self.loop
-        )  # type: ClipPlayingPosition
+        )
 
         self.loop.register_observer(self)
         self._notes_shown = True
 
         self.previous_hash = 0
 
-    def __eq__(self, clip):
-        # type: (object) -> bool
+    def __eq__(self, clip: object) -> bool:
         return isinstance(clip, Clip) and self._clip == clip._clip
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "%s: %s (%s)" % (self.__class__.__name__, self.name, self.index)
 
-    def update(self, observable):
-        # type: (Observable) -> None
+    def update(self, observable: Observable) -> None:
         if isinstance(observable, ClipLoop):
             self.notify_observers()
 
@@ -63,39 +59,33 @@ class Clip(SlotManager, Observable):
     bar_length = cast(float, ForwardTo("loop", "bar_length"))
     looping = cast(bool, ForwardTo("loop", "looping"))
 
-    def get_hash(self, device_parameters):
-        # type: (List[DeviceParameter]) -> int
+    def get_hash(self, device_parameters: List[DeviceParameter]) -> int:
         raise NotImplementedError
 
-    def matches(self, other, device_parameters):
-        # type: (Clip, List[DeviceParameter]) -> bool
+    def matches(self, other: "Clip", device_parameters: List[DeviceParameter]) -> bool:
         return self.get_hash(device_parameters) == other.get_hash(
             device_parameters
         ) and self.loop.matches(other.loop)
 
     @property
-    def is_triggered(self):
-        # type: () -> bool
+    def is_triggered(self) -> bool:
         return self._clip and self._clip.is_triggered
 
     @property
-    def is_recording(self):
-        # type: () -> bool
+    def is_recording(self) -> bool:
         return self._clip and self._clip.is_recording
 
     @property
-    def muted(self):
-        # type: () -> bool
+    def muted(self) -> bool:
         return self._clip and self._clip.muted
 
     # noinspection PyPropertyAccess
     @muted.setter
-    def muted(self, muted):
-        # type: (bool) -> None
+    def muted(self, muted: bool) -> None:
         if self._clip:
             self._clip.muted = muted
 
-    _QUANTIZATION_OPTIONS = [
+    _QUANTIZATION_OPTIONS: List[int] = [
         Live.Song.RecordingQuantization.rec_q_no_q,
         Live.Song.RecordingQuantization.rec_q_quarter,
         Live.Song.RecordingQuantization.rec_q_eight,
@@ -105,33 +95,28 @@ class Clip(SlotManager, Observable):
         Live.Song.RecordingQuantization.rec_q_sixtenth_triplet,
         Live.Song.RecordingQuantization.rec_q_sixtenth_sixtenth_triplet,
         Live.Song.RecordingQuantization.rec_q_thirtysecond,
-    ]  # type: List[int]
+    ]
 
     @property
-    def is_playing(self):
-        # type: (Clip) -> bool
+    def is_playing(self: "Clip") -> bool:
         return self._clip and self._clip.is_playing
 
     @is_playing.setter
-    def is_playing(self, is_playing):
-        # type: (Clip, bool) -> None
+    def is_playing(self: "Clip", is_playing: bool) -> None:
         if self._clip:
             self._clip.is_playing = is_playing
 
-    def select(self):
-        # type: () -> None
+    def select(self) -> None:
         self.selected = True
         self.notify_observers()
         self.selected = False
 
-    def blink(self):
-        # type: () -> None
+    def blink(self) -> None:
         color = self.color
         self.color = ClipColorEnum.BLINK.value
         Scheduler.wait_ms(1500, partial(setattr, self, "color", color))
 
-    def stop(self, immediate=False, wait_until_end=False):
-        # type: (bool, bool) -> None
+    def stop(self, immediate: bool = False, wait_until_end: bool = False) -> None:
         """
         immediate: stop is quantized or not
         until_end: stops the clip when it finished playing
@@ -152,20 +137,17 @@ class Clip(SlotManager, Observable):
         if self._clip:
             self._clip.stop()
 
-    def fire(self):
-        # type: () -> Optional[Sequence]
+    def fire(self) -> Optional[Sequence]:
         if self._clip:
             self._clip.fire()
         return None
 
-    def delete(self):
-        # type: () -> Sequence
+    def delete(self) -> Sequence:
         self.deleted = True
         self.notify_observers()
         return Sequence().wait(3).done()
 
-    def quantize(self, depth=1):
-        # type: (float) -> None
+    def quantize(self, depth: float = 1) -> None:
         if self._clip:
             UndoFacade.begin_undo_step()
 
@@ -179,32 +161,26 @@ class Clip(SlotManager, Observable):
             UndoFacade.end_undo_step()
 
     @property
-    def has_tail(self):
-        # type: () -> bool
+    def has_tail(self) -> bool:
         return self.loop.end_marker > self.loop.end
 
-    def remove_tail(self):
-        # type: () -> None
+    def remove_tail(self) -> None:
         self.loop.end = self.loop.end
 
-    def crop_to_tail(self):
-        # type: () -> None
+    def crop_to_tail(self) -> None:
         loop_end = self.loop.end
         self.loop.end = self.loop.end_marker
         self.loop.start = loop_end
         self.loop.looping = False
 
-    def show_loop(self):
-        # type: () -> None
+    def show_loop(self) -> None:
         self._clip.view.show_loop()
 
-    def show_notes(self):
-        # type: () -> None
+    def show_notes(self) -> None:
         self.automation.show_envelope()
         self.automation.hide_envelope()
 
-    def toggle_notes(self):
-        # type: () -> None
+    def toggle_notes(self) -> None:
         if self._notes_shown:
             self.automation.show_envelope()
         else:
@@ -212,22 +188,18 @@ class Clip(SlotManager, Observable):
 
         self._notes_shown = not self._notes_shown
 
-    def on_added(self):
-        # type: () -> Optional[Sequence]
+    def on_added(self) -> Optional[Sequence]:
         """overridden"""
         pass
 
-    def crop(self):
-        # type: () -> Optional[Sequence]
+    def crop(self) -> Optional[Sequence]:
         """implemented in MidiClip and AudioClip"""
         raise NotImplementedError
 
-    def post_record(self, _):
-        # type: (int) -> None
+    def post_record(self, _: int) -> None:
         self.clip_name.update("")
 
-    def disconnect(self):
-        # type: () -> None
+    def disconnect(self) -> None:
         super(Clip, self).disconnect()
         self.clip_name.disconnect()
         self.loop.disconnect()

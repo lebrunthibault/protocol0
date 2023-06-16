@@ -6,15 +6,13 @@ from protocol0.shared.Song import Song
 
 
 class BeatTime(object):
-    def __init__(self, bars, beats, sixteenths, ticks):
-        # type: (int, int, int, int) -> None
+    def __init__(self, bars: int, beats: int, sixteenths: int, ticks: int) -> None:
         self.bars = bars
         self.beats = beats
         self._sixteenths = sixteenths
         self._ticks = ticks  # 1 to 60
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "bars: %s, beats: %s, sixteenths: %s, ticks: %s" % (
             self.bars,
             self.beats,
@@ -22,21 +20,17 @@ class BeatTime(object):
             self._ticks,
         )
 
-    def __eq__(self, other):
-        # type: (object) -> bool
+    def __eq__(self, other: object) -> bool:
         return isinstance(other, BeatTime) and self._to_tick_count == other._to_tick_count
 
-    def __ge__(self, other):
-        # type: (BeatTime) -> bool
+    def __ge__(self, other: "BeatTime") -> bool:
         return self._to_tick_count >= other._to_tick_count
 
-    def __gt__(self, other):
-        # type: (BeatTime) -> bool
+    def __gt__(self, other: "BeatTime") -> bool:
         return self._to_tick_count > other._to_tick_count
 
     @property
-    def _to_tick_count(self):
-        # type: () -> int
+    def _to_tick_count(self) -> int:
         sixteenths_coeff = 60
         beat_coeff = 4 * sixteenths_coeff
         bar_coeff = beat_coeff * Song.signature_numerator()
@@ -48,18 +42,15 @@ class BeatTime(object):
         )
 
     @property
-    def is_start(self):
-        # type: () -> bool
+    def is_start(self) -> bool:
         return self == BeatTime(1, 1, 1, 1)
 
     @classmethod
-    def from_song_beat_time(cls, beat_time):
-        # type: (Live.Song.BeatTime) -> BeatTime
+    def from_song_beat_time(cls, beat_time: Live.Song.BeatTime) -> "BeatTime":
         return cls(beat_time.bars, beat_time.beats, beat_time.sub_division, beat_time.ticks)
 
     @classmethod
-    def make_from_beat_offset(cls, beat_total_offset):
-        # type: (float) -> BeatTime
+    def make_from_beat_offset(cls, beat_total_offset: float) -> "BeatTime":
         if float(beat_total_offset).is_integer():
             bars_offset = int(beat_total_offset / Song.signature_numerator())
             beats_offset = int(beat_total_offset % Song.signature_numerator())
@@ -88,27 +79,22 @@ class BeatTime(object):
         )
 
     @property
-    def in_last_beat(self):
-        # type: () -> bool
+    def in_last_beat(self) -> bool:
         return self.beats == Song.signature_numerator()
 
     @property
-    def in_last_8th(self):
-        # type: () -> bool
+    def in_last_8th(self) -> bool:
         return self.in_last_beat and self._sixteenths >= 3
 
     @property
-    def in_last_16th(self):
-        # type: () -> bool
+    def in_last_16th(self) -> bool:
         return self.in_last_beat and self._sixteenths == 4
 
     @property
-    def in_last_32th(self):
-        # type: () -> bool
+    def in_last_32th(self) -> bool:
         return self.in_last_16th and self._ticks >= 30
 
     @property
-    def in_bar_ending(self):
-        # type: () -> bool
+    def in_bar_ending(self) -> bool:
         """Defined as during the last 64th"""
         return self.in_last_32th and self._ticks >= 45

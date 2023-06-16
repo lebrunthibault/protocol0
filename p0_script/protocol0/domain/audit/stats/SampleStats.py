@@ -10,13 +10,11 @@ SAMPLE_LOAD_TIME = 24  # ms
 
 
 class DrumRackStats(object):
-    def __init__(self, track_name, drum_rack):
-        # type: (str, DrumRackDevice) -> None
+    def __init__(self, track_name: str, drum_rack: DrumRackDevice) -> None:
         self.track_name = track_name
         self.sample_count = len(drum_rack.filled_drum_pads)
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "%s: %s (%sms)" % (
             self.track_name,
             self.sample_count,
@@ -25,8 +23,7 @@ class DrumRackStats(object):
 
 
 class SampleStats(object):
-    def __init__(self):
-        # type: () -> None
+    def __init__(self) -> None:
         instruments = filter(None, [track.instrument for track in Song.simple_tracks()])
         self.drum_racks = [i.device for i in instruments if isinstance(i.device, DrumRackDevice)]
         self.drum_rack_stats = [
@@ -42,9 +39,8 @@ class SampleStats(object):
         self.count = len(self.simplers) + sum(stat.sample_count for stat in self.drum_rack_stats)
         self.potential_load_time_optimization = (self.count - devices_count) * SAMPLE_LOAD_TIME
 
-    def to_dict(self):
-        # type: () -> Dict
-        output = collections.OrderedDict()  # type: Dict[str, Any]
+    def to_dict(self) -> Dict:
+        output: Dict[str, Any] = collections.OrderedDict()
         output["count"] = self.count
         output["total load time"] = "%.2fs" % (float(SAMPLE_LOAD_TIME * self.count) / 1000)
         # output["drum rack count"] = len(self.drum_racks)

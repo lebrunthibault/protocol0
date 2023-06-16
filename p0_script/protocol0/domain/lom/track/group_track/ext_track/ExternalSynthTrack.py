@@ -17,8 +17,7 @@ from protocol0.domain.shared.utils.forward_to import ForwardTo
 
 
 class ExternalSynthTrack(AbstractGroupTrack):
-    def __init__(self, base_group_track):  # noqa
-        # type: (SimpleTrack) -> None
+    def __init__(self, base_group_track: SimpleTrack) -> None:  # noqa
         super(ExternalSynthTrack, self).__init__(base_group_track)
 
         # swapping the base track
@@ -51,14 +50,12 @@ class ExternalSynthTrack(AbstractGroupTrack):
     is_armed = cast(bool, ForwardTo("arm_state", "is_armed"))
     solo = cast(bool, ForwardTo("_solo_state", "solo"))
 
-    def on_tracks_change(self):
-        # type: () -> None
+    def on_tracks_change(self) -> None:
         super(ExternalSynthTrack, self).on_tracks_change()
         self._solo_state.update()
 
     @classmethod
-    def is_group_track_valid(cls, base_group_track):
-        # type: (SimpleTrack) -> bool
+    def is_group_track_valid(cls, base_group_track: SimpleTrack) -> bool:
         if len(base_group_track.sub_tracks) < 2:
             return False
 
@@ -81,18 +78,15 @@ class ExternalSynthTrack(AbstractGroupTrack):
         return True
 
     @property
-    def instrument_track(self):
-        # type: () -> SimpleTrack
+    def instrument_track(self) -> SimpleTrack:
         return self.midi_track
 
-    def get_view_track(self, scene_index):
-        # type: (int) -> Optional[SimpleTrack]
+    def get_view_track(self, scene_index: int) -> Optional[SimpleTrack]:
         if ApplicationView.is_clip_view_visible():
             return self.midi_track
         else:
             return self.base_track
 
     @property
-    def instrument(self):
-        # type: () -> InstrumentInterface
+    def instrument(self) -> InstrumentInterface:
         return self.midi_track.instrument or InstrumentMinitaur(device=None, track_name=self.name)

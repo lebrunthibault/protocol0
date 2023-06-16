@@ -12,8 +12,7 @@ from typing import Any, Tuple
 
 
 class Protocol0Midi(ControlSurface):
-    def __init__(self, c_instance=None):
-        # type: (Any, bool) -> None
+    def __init__(self: Any, c_instance: bool = None) -> None:
         # hide initializing message
         log_message = self.log_message
         self.log_message = lambda a: True
@@ -21,9 +20,9 @@ class Protocol0Midi(ControlSurface):
         self.log_message = log_message
         # stop log duplication
         self._c_instance.log_message = MethodType(lambda s, message: None, self._c_instance)  # noqa
-        self.main_p0_script = find_if(
+        self.main_p0_script: Protocol0 = find_if(
             lambda s: isinstance(s, Protocol0), get_control_surfaces()
-        )  # type: Protocol0
+        )
 
         self._logger = LoggerService()
 
@@ -33,11 +32,9 @@ class Protocol0Midi(ControlSurface):
 
         DomainEventBus.subscribe(MidiBytesSentEvent, self._on_midi_bytes_sent_event)
 
-    def receive_midi(self, midi_bytes):
-        # type: (Tuple) -> None
+    def receive_midi(self, midi_bytes: Tuple) -> None:
         DomainEventBus.emit(MidiBytesReceivedEvent(midi_bytes))
 
-    def _on_midi_bytes_sent_event(self, event):
-        # type: (MidiBytesSentEvent) -> None
+    def _on_midi_bytes_sent_event(self, event: MidiBytesSentEvent) -> None:
         """Forward midi data to optional midi output ports (e.g. program change for Minitaur)"""
         self._send_midi(event.midi_bytes)

@@ -8,13 +8,11 @@ from typing import Any, Callable, Optional, Type
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 
 
-def is_lambda(func):
-    # type: (Callable) -> bool
+def is_lambda(func: Callable) -> bool:
     return isinstance(func, types.LambdaType) and func.__name__ == "<lambda>"
 
 
-def get_inner_func(func):
-    # type: (Any) -> Callable
+def get_inner_func(func: Any) -> Callable:
     if hasattr(func, "function"):
         return get_inner_func(func.function)
     if hasattr(func, "func"):  # partial
@@ -27,8 +25,7 @@ def get_inner_func(func):
     return func
 
 
-def get_class_from_func(func):
-    # type: (Any) -> Optional[Type]
+def get_class_from_func(func: Any) -> Optional[Type]:
     if hasattr(func, "__self__"):
         return func.__self__.__class__
     elif hasattr(func, "__class__"):
@@ -37,8 +34,7 @@ def get_class_from_func(func):
         return None
 
 
-def get_class_name_from_method(func):
-    # type: (Any) -> str
+def get_class_name_from_method(func: Any) -> str:
     class_ = get_class_from_func(func)
     if class_ is None:
         raise Protocol0Error("Cannot get class_name from func")
@@ -60,8 +56,7 @@ def get_class_name_from_method(func):
         return "unknown %s" % func
 
 
-def get_callable_repr(func):
-    # type: (Any) -> str
+def get_callable_repr(func: Any) -> str:
     assert not isinstance(func, str), "func argument invalid"
     from protocol0.shared.sequence.Sequence import Sequence
     from protocol0.shared.sequence.SequenceStep import SequenceStep
@@ -87,13 +82,11 @@ def get_callable_repr(func):
         return func_name
 
 
-def nop(*_, **__):
-    # type: (Any, Any) -> None
+def nop(*_: Any, **__: Any) -> None:
     pass
 
 
-def is_func_equal(func1, func2, compare_methods=False):
-    # type: (Callable, Callable, bool) -> bool
+def is_func_equal(func1: Callable, func2: Callable, compare_methods: bool = False) -> bool:
     """
     compare_methods == True will return True for the same method of different objects
     """

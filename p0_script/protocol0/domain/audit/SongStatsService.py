@@ -7,8 +7,7 @@ from protocol0.shared.logging.Logger import Logger
 
 class SongStatsService(object):
     @tail_logs
-    def display_song_stats(self):
-        # type: () -> None
+    def display_song_stats(self) -> None:
         stats = SongStats()
         # Logger.clear()
         Logger.info(json.dumps(stats.to_dict(), indent=4))

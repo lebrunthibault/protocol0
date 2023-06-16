@@ -8,8 +8,7 @@ from protocol0.domain.shared.utils.timing import defer
 
 
 class MatchingTrackSoloState(SlotManager):
-    def __init__(self, base_track, audio_track):
-        # type: (SimpleTrack, SimpleAudioTrack) -> None
+    def __init__(self, base_track: SimpleTrack, audio_track: SimpleAudioTrack) -> None:
         super(MatchingTrackSoloState, self).__init__()
         self._base_track = base_track
         self._audio_track = audio_track
@@ -17,7 +16,6 @@ class MatchingTrackSoloState(SlotManager):
 
     @subject_slot_group("solo")
     @defer
-    def _solo_listener(self, track):
-        # type: (Live.Track.Track) -> None
+    def _solo_listener(self, track: Live.Track.Track) -> None:
         self._base_track.solo = track.solo
         self._audio_track.solo = track.solo

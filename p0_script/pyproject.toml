@@ -70,7 +70,6 @@ exclude = [
     'build/',
     'command/',
     'command_handler/',
-    'push2/',
     'RecordingBarLengthEnum.py',
     'protocol0/domain/shared/backend/p0_backend_client'
 ]

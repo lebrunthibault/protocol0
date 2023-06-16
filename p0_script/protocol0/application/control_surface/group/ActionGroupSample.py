@@ -5,8 +5,7 @@ from protocol0.domain.lom.device.DrumRackSampleService import DrumRackSampleServ
 class ActionGroupLog(ActionGroupInterface):
     CHANNEL = 16
 
-    def configure(self):
-        # type: () -> None
+    def configure(self) -> None:
         # LOG encoder
         self.add_encoder(
             identifier=1,

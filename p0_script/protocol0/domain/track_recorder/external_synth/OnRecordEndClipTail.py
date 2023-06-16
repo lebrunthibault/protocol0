@@ -14,8 +14,7 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class OnRecordEndClipTail(RecordProcessorInterface):
-    def process(self, track, config):
-        # type: (ExternalSynthTrack, RecordConfig) -> Optional[Sequence]
+    def process(self, track: ExternalSynthTrack, config: RecordConfig) -> Optional[Sequence]:
         if self.is_audio_silent(track):
             midi_clip = track.midi_track.clip_slots[config.scene_index].clip
             if midi_clip.starts_at_1:
@@ -32,8 +31,7 @@ class OnRecordEndClipTail(RecordProcessorInterface):
 
         return self._wait_for_tail_clip_end(track, config)
 
-    def is_audio_silent(self, track):
-        # type: (ExternalSynthTrack) -> bool
+    def is_audio_silent(self, track: ExternalSynthTrack) -> bool:
         # NB : Represents the smoothed momentary peak value of left channel output meter
         # This value is not zero just after the sound is finished
         # and this thus not precise for sounds with a low release
@@ -42,8 +40,7 @@ class OnRecordEndClipTail(RecordProcessorInterface):
 
         return track.audio_track.output_meter_left < output_meter_left_threshold
 
-    def _wait_for_tail_clip_end(self, track, config):
-        # type: (ExternalSynthTrack, RecordConfig) -> Optional[Sequence]
+    def _wait_for_tail_clip_end(self, track: ExternalSynthTrack, config: RecordConfig) -> Optional[Sequence]:
         """wait for clip tail end and temporarily disable midi input"""
         audio_clip = track.audio_track.clip_slots[config.scene_index].clip
 
@@ -53,8 +50,7 @@ class OnRecordEndClipTail(RecordProcessorInterface):
         audio_clip.loop.looping = False
         track.midi_track.stop()
 
-        def on_last_32th_passed_event(_):
-            # type: (Last32thPassedEvent) -> None
+        def on_last_32th_passed_event(_: Last32thPassedEvent) -> None:
             if self.is_audio_silent(track):
                 DomainEventBus.emit(AudioClipSilentEvent())
                 DomainEventBus.un_subscribe(Last32thPassedEvent, on_last_32th_passed_event)

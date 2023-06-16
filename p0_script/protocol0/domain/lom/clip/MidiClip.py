@@ -19,28 +19,24 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class MidiClip(Clip):
-    def __init__(self, *a, **k):
-        # type: (Any, Any) -> None
+    def __init__(self, *a: Any, **k: Any) -> None:
         super(MidiClip, self).__init__(*a, **k)
-        self._cached_notes = []  # type: List[Note]
+        self._cached_notes: List[Note] = []
 
         # select when a new midi clip is recorded
         if self.is_recording:
             Scheduler.defer(self.select)
 
-    def get_hash(self, device_parameters):
-        # type: (List[DeviceParameter]) -> int
+    def get_hash(self, device_parameters: List[DeviceParameter]) -> int:
         midi_hash = hash(tuple(note.to_data() for note in self.get_notes()))
 
         return hash((midi_hash, self.automation.get_hash(device_parameters)))
 
     @property
-    def starts_at_1(self):
-        # type: () -> bool
+    def starts_at_1(self) -> bool:
         return any(note.start == 0 for note in self.get_notes())
 
-    def get_notes(self):
-        # type: () -> List[Note]
+    def get_notes(self) -> List[Note]:
         if not self._clip:
             return []
 
@@ -55,15 +51,13 @@ class MidiClip(Clip):
         notes.sort(key=lambda x: x.start)
         return notes
 
-    def _get_notes_from_cache(self, notes):
-        # type: (List[Note]) -> Iterator[Note]
+    def _get_notes_from_cache(self, notes: List[Note]) -> Iterator[Note]:
         for note in notes:
             yield next(
                 (cached_note for cached_note in self._cached_notes if cached_note == note), note
             )
 
-    def set_notes(self, notes):
-        # type: (List[Note]) -> Optional[Sequence]
+    def set_notes(self, notes: List[Note]) -> Optional[Sequence]:
         if not self._clip:
             return None
         self._cached_notes = notes
@@ -74,8 +68,7 @@ class MidiClip(Clip):
         seq.defer()
         return seq.done()
 
-    def on_added(self):
-        # type: () -> Optional[Sequence]
+    def on_added(self) -> Optional[Sequence]:
         if len(self.get_notes()) > 0 or self.is_recording:
             return None
 
@@ -93,16 +86,14 @@ class MidiClip(Clip):
 
         return seq.done()
 
-    def generate_base_notes(self):
-        # type: () -> Optional[Sequence]
+    def generate_base_notes(self) -> Optional[Sequence]:
         self.show_loop()
 
         pitch = self._config.default_note
         base_notes = [Note(pitch=pitch, velocity=127, start=0, duration=min(1, int(self.length)))]
         return self.set_notes(base_notes)
 
-    def post_record(self, bar_length):
-        # type: (int) -> None
+    def post_record(self, bar_length: int) -> None:
         super(MidiClip, self).post_record(bar_length)
 
         if bar_length == 0:  # unlimited recording
@@ -113,8 +104,7 @@ class MidiClip(Clip):
         self.scale_velocities(go_next=False, scaling_factor=2)
         self.quantize()
 
-    def scale_velocities(self, go_next, scaling_factor=4):
-        # type: (bool, int) -> None
+    def scale_velocities(self, go_next: bool, scaling_factor: int = 4) -> None:
         notes = self.get_notes()
         if len(notes) == 0:
             return
@@ -127,15 +117,13 @@ class MidiClip(Clip):
                 note.velocity -= velocity_diff / scaling_factor
         self.set_notes(notes)
 
-    def crop(self):
-        # type: () -> Optional[Sequence]
+    def crop(self) -> Optional[Sequence]:
         if self._clip:
             self._clip.crop()  # noqa
 
         return None
 
-    def to_mono(self):
-        # type: () -> None
+    def to_mono(self) -> None:
         """If notes overlap : make end of each note match the start of the next one"""
         notes = self.get_notes()
 
@@ -150,8 +138,7 @@ class MidiClip(Clip):
 
             self.set_notes(notes)
 
-    def get_linked_parameters(self, device_parameters):
-        # type: (List[DeviceParameter]) -> List[LinkedDeviceParameters]
+    def get_linked_parameters(self, device_parameters: List[DeviceParameter]) -> List[LinkedDeviceParameters]:
         """
         NB : this is only really useful for my rev2 where I want to copy and paste easily automation curves
         between the 2 layers.
@@ -171,8 +158,7 @@ class MidiClip(Clip):
 
         return parameters_couple
 
-    def synchronize_automation_layers(self, device_parameters):
-        # type: (List[DeviceParameter]) -> Sequence
+    def synchronize_automation_layers(self, device_parameters: List[DeviceParameter]) -> Sequence:
         parameters_couple = self.get_linked_parameters(device_parameters)
 
         Logger.info("parameters_couple: %s" % parameters_couple)

@@ -9,13 +9,12 @@ from protocol0.shared.Song import Song
 class RecordConfig(object):
     def __init__(
         self,
-        record_name,  # type: str
-        tracks,  # type: List[SimpleTrack]
-        scene_index,  # type: Optional[int]
-        bar_length,  # type: int
-        records_midi,  # type: bool
-    ):
-        # type: (...) -> None
+        record_name: str,
+        tracks: List[SimpleTrack],
+        scene_index: Optional[int],
+        bar_length: int,
+        records_midi: bool,
+    ) -> None:
         self.record_name = record_name
         self.tracks = tracks
         self._scene_index = scene_index
@@ -23,28 +22,23 @@ class RecordConfig(object):
         self.records_midi = records_midi
 
     @property
-    def scene_index(self):
-        # type: () -> int
+    def scene_index(self) -> int:
         assert self._scene_index is not None, "No recording scene index"
         return self._scene_index
 
     @scene_index.setter
-    def scene_index(self, scene_index):
-        # type: (int) -> None
+    def scene_index(self, scene_index: int) -> None:
         self._scene_index = scene_index
 
     @property
-    def recording_scene(self):
-        # type: () -> Scene
+    def recording_scene(self) -> Scene:
         return Song.scenes()[self.scene_index]
 
     @property
-    def clip_slots(self):
-        # type: () -> List[ClipSlot]
+    def clip_slots(self) -> List[ClipSlot]:
         return [track.clip_slots[self.scene_index] for track in self.tracks]
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         # noinspection SpellCheckingInspection
         return (
             "RecordConfig(\nrecord_name=%s,\ntracks=%s,\nscene_index=%s,\nbar_length=%s\nrecords_midi=%s,\n"

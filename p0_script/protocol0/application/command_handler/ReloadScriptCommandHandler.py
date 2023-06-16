@@ -7,8 +7,7 @@ from protocol0.shared.logging.Logger import Logger
 
 
 class ReloadScriptCommandHandler(CommandHandlerInterface):
-    def handle(self, _):
-        # type: (ReloadScriptCommand) -> None
+    def handle(self, _: ReloadScriptCommand) -> None:
         Logger.clear()
         self._container.get(TrackMapperService).tracks_listener()
         self._container.get(SceneService).scenes_listener()

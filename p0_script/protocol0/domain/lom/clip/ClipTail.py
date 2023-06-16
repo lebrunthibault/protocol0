@@ -8,14 +8,12 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class ClipTail(object):
-    def __init__(self, track_clip_slots):
-        # type: (SimpleTrackClipSlots) -> None
+    def __init__(self, track_clip_slots: SimpleTrackClipSlots) -> None:
         self.active = True
         self._track_clip_slots = track_clip_slots
         DomainEventBus.subscribe(BarChangedEvent, self._on_third_beat_passed_event)
 
-    def _on_third_beat_passed_event(self, _):
-        # type: (BarChangedEvent) -> None
+    def _on_third_beat_passed_event(self, _: BarChangedEvent) -> None:
         """
         Handling clip tail for end clips having length < scene length
         """

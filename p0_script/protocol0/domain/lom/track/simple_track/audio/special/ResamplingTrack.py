@@ -6,8 +6,7 @@ from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import Simpl
 class ResamplingTrack(SimpleAudioTrack):
     TRACK_NAME = "Resampling"
 
-    def stop(self, *a, **k):
-        # type: (Any, Any) -> None
+    def stop(self, *a: Any, **k: Any) -> None:
         if any(clip.is_recording for clip in self.clips):
             return
 

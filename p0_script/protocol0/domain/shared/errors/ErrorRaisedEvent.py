@@ -2,6 +2,5 @@ from typing import Optional
 
 
 class ErrorRaisedEvent(object):
-    def __init__(self, context=None):
-        # type: (Optional[str]) -> None
+    def __init__(self, context: Optional[str] = None) -> None:
         self.context = context
