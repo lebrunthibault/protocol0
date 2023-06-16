@@ -315,6 +315,10 @@ class SimpleTrack(AbstractTrack):
         seq.add(lambda: StatusBar.show_message("Track volume: %.1f dB" % self.volume))
         seq.done()
 
+    def clear_arrangement(self):
+        # type: () -> None
+        pass
+
     def reset_mixer(self):
         # type: () -> None
         self.volume = 0

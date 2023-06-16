@@ -55,4 +55,9 @@ class ActionGroupTest(ActionGroupInterface):
 
     def action_test(self):
         # type: () -> None
-        pass
+        from protocol0.shared.logging.Logger import Logger
+        clips = Song.selected_track().clips
+        arr_clips = [c for c in clips if c._clip.is_arrangement_clip]
+        Logger.dev(clips)
+        Logger.dev(arr_clips)
+        Logger.dev(list(Song.selected_track()._track.arrangement_clips))

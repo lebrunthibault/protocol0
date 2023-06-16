@@ -1,12 +1,10 @@
-import logging
+from typing import Type, Dict, Any
 
 import Live
 from _Framework.ControlSurface import ControlSurface
-from typing import Type, Dict, Any
 
 from protocol0.application.CommandBus import CommandBus
 from protocol0.application.ContainerInterface import ContainerInterface
-from protocol0.application.ScriptDisconnectedEvent import ScriptDisconnectedEvent
 from protocol0.application.control_surface.ActionGroupFactory import ActionGroupFactory
 from protocol0.application.error.ErrorService import ErrorService
 from protocol0.domain.audit.AudioLatencyAnalyzerService import AudioLatencyAnalyzerService
@@ -52,7 +50,6 @@ from protocol0.domain.lom.validation.ValidatorService import ValidatorService
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
-from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.track_recorder.RecordService import RecordService
 from protocol0.infra.interface.BrowserLoaderService import BrowserLoaderService
@@ -77,31 +74,20 @@ class Container(ContainerInterface):
     def __init__(self, control_surface):
         # type: (ControlSurface) -> None
         self._registry = {}  # type: Dict[Type, Any]
-        logging.info("titi")
 
         # DomainEventBus.subscribe(ScriptDisconnectedEvent, lambda _: self._disconnect())
 
         live_song = control_surface.song()  # type: Live.Song.Song
-        logging.info("titi")
 
         Logger(LoggerService())
-        logging.info("titi")
         UndoFacade(live_song.begin_undo_step, live_song.end_undo_step)
-        logging.info("titi")
         StatusBar(control_surface.show_message)
-        logging.info("titi")
         Backend(control_surface._send_midi)
-        logging.info("titi")
         ErrorService(live_song)
-        logging.info("titi")
         midi_service = MidiService(control_surface._send_midi)
-        logging.info("titi")
         beat_scheduler = BeatScheduler(live_song)
-        logging.info("titi")
         tick_scheduler = TickScheduler(beat_scheduler, live_song)
-        logging.info("titi")
         Scheduler(tick_scheduler, beat_scheduler)  # setup Scheduler facade
-        logging.info("titi")
 
         # song components
         clip_component = ClipComponent(live_song.view)
@@ -114,7 +100,6 @@ class Container(ContainerInterface):
         scene_crud_component = SceneCrudComponent(
             live_song.create_scene, live_song.duplicate_scene, live_song.delete_scene
         )
-        logging.info("titi")
 
         track_component = TrackComponent(live_song.view)
         track_crud_component = TrackCrudComponent(

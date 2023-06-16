@@ -15,7 +15,7 @@ from p0_backend.lib.mouse.mouse import move_to
 from p0_backend.lib.window.window import get_window_position
 
 settings = Settings()
-_DEBUG = True
+_DEBUG = False
 
 
 @dataclass

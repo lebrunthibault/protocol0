@@ -98,5 +98,5 @@ def start():
         port=8000,
         reload=True,
         reload_dirs=settings.project_directory,
-        workers=2
+        workers=1
     )
