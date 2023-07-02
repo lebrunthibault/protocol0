@@ -32,6 +32,7 @@ class SampleStats(object):
             if track.instrument and isinstance(track.instrument.device, DrumRackDevice)
         ]
         self.drum_rack_stats.sort(key=lambda x: x.sample_count, reverse=True)
+        self.drum_rack_stats = filter(lambda x: x.sample_count > 3, self.drum_rack_stats)
 
         self.simplers = [i.device for i in instruments if isinstance(i.device, SimplerDevice)]
 

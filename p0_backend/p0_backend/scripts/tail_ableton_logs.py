@@ -4,19 +4,15 @@ import sys
 import time
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional, List, TextIO
+from typing import Optional, List, TextIO, Iterator
 
-import win32con
-import win32gui
 from loguru import logger
 from rx import operators as op, create
 
 from p0_backend.lib.console import clear_console
 from p0_backend.lib.decorators import log_exceptions
-from p0_backend.lib.process import kill_window_by_criteria
 from p0_backend.lib.rx import rx_error, rx_nop
 from p0_backend.lib.utils import log_string
-from p0_backend.lib.window.find_window import SearchTypeEnum
 from p0_backend.settings import Settings
 
 settings = Settings()
@@ -183,9 +179,6 @@ def tail_ableton_log_file(raw=False):
         LogConfig.PROCESS_LOGS = False
         LogConfig.START_SIZE = 200
 
-    kill_window_by_criteria(name=settings.log_window_title, search_type=SearchTypeEnum.WINDOW_TITLE)
-
-    win32gui.ShowWindow(win32gui.GetForegroundWindow(), win32con.SHOW_FULLSCREEN)
     ctypes.windll.kernel32.SetConsoleTitleW(settings.log_window_title)
 
     if LogConfig.LOG_LEVEL == LogLevelEnum.INFO:
@@ -215,3 +208,43 @@ def tail_ableton_log_file(raw=False):
         log_obs = get_line_observable_from_file(file)
         log_obs.pipe(*pipes).subscribe(logger.info, rx_error)
         log_obs.pipe(*pipes).subscribe(rx_nop, logger.error)
+
+
+def follow(f, sleep_sec=1) -> Iterator[str]:
+    """Yield each line from a file as they are written.
+    `sleep_sec` is the time to sleep after empty reads."""
+    line = ""
+    while True:
+        tmp = f.readline()
+        if tmp is not None:
+            line += tmp
+            if line.endswith("\n"):
+                yield line
+                line = ""
+        elif sleep_sec:
+            time.sleep(sleep_sec)
+
+
+def tail_logs(f):
+        for line in follow(f):
+            log_line = LogLine(line=line)
+            # log_line = LogLine(line=log_line.line, is_error=_is_error(log_line))
+            # if not _filter_line(log_line):
+            #     continue
+            #
+            # log_line = LogLine(
+            #     line=log_line.line, is_error=log_line.is_error, color=_get_color(log_line)
+            # )
+            # log_line = LogLine(
+            #     line=_get_clean_line(log_line.line),
+            #     is_error=log_line.is_error,
+            #     color=log_line.color,
+            # )
+            logger.info(log_line)
+
+
+if __name__ == "__main__":
+    with open(settings.log_file, "r") as file:
+        tail_logs(file)
+
+    # tail_ableton_log_file()

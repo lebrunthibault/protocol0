@@ -107,7 +107,12 @@ class AbletonSet(object):
 
         if not self.is_unknown and not self.is_test:
             abstract_track_names = [t.name for t in Song.abstract_tracks()]
-            orphan_tracks = [t for t in self._saved_tracks if t not in abstract_track_names]
+            orphan_tracks = [
+                t
+                for t in self._saved_tracks
+                if t not in abstract_track_names
+                and t.replace(" midi", "") not in abstract_track_names
+            ]
 
             if len(orphan_tracks):
                 Backend.client().show_warning(
