@@ -24,10 +24,6 @@ install_script_p0_midi:
 	@echo "p0_midi installed"
 .PHONY: install_script_p0_midi
 
-logs:
-	@cd ../p0_backend && poetry run logs
-.PHONY: logs
-
 publish:
 	@del dist /F /Q
 	@bump2version patch --allow-dirty

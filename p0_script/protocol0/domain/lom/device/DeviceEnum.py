@@ -206,7 +206,6 @@ class DeviceEnum(AbstractEnum):
                     "Comp", [cls.COMPRESSOR, cls.SSL_COMP, cls.H_COMP, cls.C1_COMP, cls.VCOMP]
                 ),
                 DeviceEnumGroup("Sat", [cls.SATURN_2, cls.SATURATOR, cls.DECAPITATOR]),
-                # DeviceEnumGroup("Limiter", [cls.LIMITER, cls.L1_LIMITER, cls.L1_ULTRAMAXIMIZER]),
                 cls.TRACK_SPACER,
             ],
             [
