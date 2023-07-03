@@ -45,7 +45,7 @@ def start():
         _poll_midi_port(midi_port=midi_port_output)
         _poll_midi_port(midi_port=midi_port_backend_loopback)
 
-        time.sleep(0.01)  # release cpu
+        time.sleep(0.005)  # release cpu
 
 
 def system_check():
