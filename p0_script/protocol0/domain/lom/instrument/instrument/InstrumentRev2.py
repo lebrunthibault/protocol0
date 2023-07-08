@@ -57,12 +57,12 @@ class InstrumentRev2(InstrumentInterface):
         if track.instrument != self:
             return
 
-        # self.device.is_enabled = True
+        self.device.is_enabled = True
 
     def _on_audio_recording_started_event(self, event: ExtAudioRecordingStartedEvent) -> None:
         if event.track.instrument != self:
             return
-        self.device.is_enabled = False
+        # self.device.is_enabled = False
 
     def _on_audio_recording_ended_event(self, event: ExtAudioRecordingEndedEvent) -> None:
         if event.track.instrument != self:
