@@ -1,5 +1,6 @@
 import requests
 
+from p0_backend.lib.notification.toast import show_notification
 from p0_backend.settings import Settings
 from p0_backend.lib.abstract_cli import cli
 
@@ -10,7 +11,7 @@ def update_set_title():
 
 @cli.command(name="test")
 async def command_test() -> None:
-    update_set_title()
+    show_notification("test")
 
 
 if __name__ == "__main__":

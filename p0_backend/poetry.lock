@@ -3617,6 +3617,20 @@ files = [
 ]
 
 [[package]]
+name = "pypiwin32"
+version = "223"
+description = ""
+optional = false
+python-versions = "*"
+files = [
+    {file = "pypiwin32-223-py3-none-any.whl", hash = "sha256:67adf399debc1d5d14dffc1ab5acacb800da569754fafdc576b2a039485aa775"},
+    {file = "pypiwin32-223.tar.gz", hash = "sha256:71be40c1fbd28594214ecaecb58e7aa8b708eabfa0125c8a109ebd51edbd776a"},
+]
+
+[package.dependencies]
+pywin32 = ">=223"
+
+[[package]]
 name = "pyrect"
 version = "0.2.0"
 description = "PyRect is a simple module with a Rect class for Pygame-like rectangular areas."
@@ -3876,6 +3890,22 @@ files = [
     {file = "Rx-3.2.0-py3-none-any.whl", hash = "sha256:922c5f4edb3aa1beaa47bf61d65d5380011ff6adcd527f26377d05cb73ed8ec8"},
     {file = "Rx-3.2.0.tar.gz", hash = "sha256:b657ca2b45aa485da2f7dcfd09fac2e554f7ac51ff3c2f8f2ff962ecd963d91c"},
 ]
+
+[[package]]
+name = "setuptools"
+version = "68.0.0"
+description = "Easily download, build, install, upgrade, and uninstall Python packages"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "setuptools-68.0.0-py3-none-any.whl", hash = "sha256:11e52c67415a381d10d6b462ced9cfb97066179f0e871399e006c4ab101fc85f"},
+    {file = "setuptools-68.0.0.tar.gz", hash = "sha256:baf1fdb41c6da4cd2eae722e135500da913332ab3f2f5c7d33af9b492acb5235"},
+]
+
+[package.extras]
+docs = ["furo", "jaraco.packaging (>=9)", "jaraco.tidelift (>=1.4)", "pygments-github-lexers (==0.0.5)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-favicon", "sphinx-hoverxref (<2)", "sphinx-inline-tabs", "sphinx-lint", "sphinx-notfound-page (==0.8.3)", "sphinx-reredirects", "sphinxcontrib-towncrier"]
+testing = ["build[virtualenv]", "filelock (>=3.4.0)", "flake8-2020", "ini2toml[lite] (>=0.9)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "pip (>=19.1)", "pip-run (>=8.8)", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.3)", "pytest-mypy (>=0.9.1)", "pytest-perf", "pytest-ruff", "pytest-timeout", "pytest-xdist", "tomli-w (>=1.0.0)", "virtualenv (>=13.0.0)", "wheel"]
+testing-integration = ["build[virtualenv]", "filelock (>=3.4.0)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "pytest", "pytest-enabler", "pytest-xdist", "tomli", "virtualenv (>=13.0.0)", "wheel"]
 
 [[package]]
 name = "six"
@@ -4227,6 +4257,20 @@ files = [
 ]
 
 [[package]]
+name = "win10toast"
+version = "0.9"
+description = "An easy-to-use Python library for displaying Windows 10 Toast Notifications"
+optional = false
+python-versions = "*"
+files = [
+    {file = "win10toast-0.9-py2.py3-none-any.whl", hash = "sha256:44e5afa1001de88a0ee533872231521fa67c7d144f39974089af242d9c4620a4"},
+]
+
+[package.dependencies]
+pypiwin32 = "*"
+setuptools = "*"
+
+[[package]]
 name = "win32-setctime"
 version = "1.1.0"
 description = "A small Python utility to set file creation time on Windows"
@@ -4240,7 +4284,18 @@ files = [
 [package.extras]
 dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 
+[[package]]
+name = "winotify"
+version = "1.1.0"
+description = "Show notification toast on Windows 10"
+optional = false
+python-versions = "*"
+files = [
+    {file = "winotify-1.1.0-py3-none-any.whl", hash = "sha256:13aa9b1196b02ab3e699645b4407371ca73348421f8662565100d70c7cf552d9"},
+    {file = "winotify-1.1.0.tar.gz", hash = "sha256:f8a0d6ff00cb2c1b3dcdfe825431f46f6aa5dc8ce84ffc59e8fda8c7e36687fe"},
+]
+
 [metadata]
 lock-version = "2.0"
 python-versions = "3.11.3"
-content-hash = "962aafc73cd5a7ff872aea15a41fa98bda72b48891b5a9d416bf8243f5fdf8d9"
+content-hash = "266f6e7e56435e8f0cf989db7e350d8981097d67ade9458c61e9891be067f5ff"
