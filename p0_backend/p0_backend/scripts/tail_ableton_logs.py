@@ -226,21 +226,21 @@ def follow(f, sleep_sec=1) -> Iterator[str]:
 
 
 def tail_logs(f):
-        for line in follow(f):
-            log_line = LogLine(line=line)
-            # log_line = LogLine(line=log_line.line, is_error=_is_error(log_line))
-            # if not _filter_line(log_line):
-            #     continue
-            #
-            # log_line = LogLine(
-            #     line=log_line.line, is_error=log_line.is_error, color=_get_color(log_line)
-            # )
-            # log_line = LogLine(
-            #     line=_get_clean_line(log_line.line),
-            #     is_error=log_line.is_error,
-            #     color=log_line.color,
-            # )
-            logger.info(log_line)
+    for line in follow(f):
+        log_line = LogLine(line=line)
+        # log_line = LogLine(line=log_line.line, is_error=_is_error(log_line))
+        # if not _filter_line(log_line):
+        #     continue
+        #
+        # log_line = LogLine(
+        #     line=log_line.line, is_error=log_line.is_error, color=_get_color(log_line)
+        # )
+        # log_line = LogLine(
+        #     line=_get_clean_line(log_line.line),
+        #     is_error=log_line.is_error,
+        #     color=log_line.color,
+        # )
+        logger.info(log_line)
 
 
 if __name__ == "__main__":
