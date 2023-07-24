@@ -125,7 +125,13 @@ class TrackMapperService(SlotManager):
         added_track = Song.selected_track()
         if Song.selected_track() == Song.current_track().base_track:
             added_track = Song.current_track()
+
         seq.defer()
+
+        previous_abstract_track = list(Song.simple_tracks())[added_track.index - 1].abstract_track
+        if previous_abstract_track.group_track == added_track.group_track and previous_abstract_track.name == added_track.name:
+            seq.add(partial(setattr, added_track, "name", added_track.name + " - copy"))
+
         seq.add(added_track.on_added)
         seq.add(Song.current_track().arm_state.arm)
 
