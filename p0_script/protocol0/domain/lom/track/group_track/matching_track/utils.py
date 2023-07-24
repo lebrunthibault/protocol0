@@ -46,7 +46,10 @@ def is_valid_matching_track(track: "SimpleTrack", audio_track: "SimpleTrack") ->
 def get_matching_audio_track(base_track: "AbstractTrack") -> Optional["SimpleAudioTrack"]:
     from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 
-    # restrict the search
+    previous_abstract_track = list(Song.simple_tracks())[base_track.index - 1].abstract_track
+    if previous_abstract_track.group_track == base_track.group_track and previous_abstract_track.name == base_track.name:
+        return None  # ignore duplicated tracks
+
     audio_tracks = [
         t
         for t in Song.simple_tracks(SimpleAudioTrack)
