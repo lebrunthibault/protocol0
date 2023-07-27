@@ -50,6 +50,9 @@ def get_matching_audio_track(base_track: "AbstractTrack") -> Optional["SimpleAud
     if previous_abstract_track.group_track == base_track.group_track and previous_abstract_track.name == base_track.name:
         return None  # ignore duplicated tracks
 
+    if base_track.name.strip().lower() == "audio":
+        return None
+
     audio_tracks = [
         t
         for t in Song.simple_tracks(SimpleAudioTrack)
