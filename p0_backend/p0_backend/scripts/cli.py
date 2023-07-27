@@ -1,12 +1,5 @@
-import requests
-
-from p0_backend.lib.notification.toast import show_notification
-from p0_backend.settings import Settings
 from p0_backend.lib.abstract_cli import cli
-
-
-def update_set_title():
-    requests.put(f"{Settings().http_api_url}/set", params={"title": "Dark Fantasy"})
+from p0_backend.lib.notification.toast import show_notification
 
 
 @cli.command(name="test")
