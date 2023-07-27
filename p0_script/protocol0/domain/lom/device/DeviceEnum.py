@@ -50,6 +50,14 @@ class DeviceEnum(AbstractEnum):
     LIMITER = "Limiter"
     MASTERING_RACK = "Mastering Rack"
     OPUS = "Opus"
+    OPUS_VIOLINS = "Opus Violins.vstpreset"
+    OPUS_CELLO = "Opus Cello.vstpreset"
+    OPUS_CELLI = "Opus Celli.vstpreset"
+    OPUS_STRINGS = "Opus Strings.vstpreset"
+    OPUS_HORNS = "Opus Horns.vstpreset"
+    OPUS_TRUMPETS = "Opus Trumpets.vstpreset"
+    OPUS_POP_BRASS = "Opus Pop Brass.vstpreset"
+    OPUS_GLOCKENSPIEL = "Opus Glockenspiel.vstpreset"
     OZONE = "Ozone 9"
     PITCH = "Pitch"
     PLAY = "play_VST_x64"
@@ -212,8 +220,6 @@ class DeviceEnum(AbstractEnum):
                     "Delay", [cls.INSERT_DELAY, cls.SUPER_TAP_6, cls.SUPER_TAP_2, cls.DELAY]
                 ),
                 DeviceEnumGroup(
-
-
                     "Reverb", [cls.INSERT_REVERB, cls.VALHALLA_VINTAGE_VERB, cls.TRUE_VERB]
                 ),
             ],
@@ -221,13 +227,25 @@ class DeviceEnum(AbstractEnum):
                 cls.DRUM_RACK,
                 cls.SYLENTH1,
                 cls.KONTAKT,
-                cls.OPUS,
+                DeviceEnumGroup(
+                    "Opus",
+                    [
+                        cls.OPUS,
+                        cls.OPUS_VIOLINS,
+                        cls.OPUS_CELLO,
+                        cls.OPUS_CELLI,
+                        cls.OPUS_STRINGS,
+                        cls.OPUS_HORNS,
+                        cls.OPUS_TRUMPETS,
+                        cls.OPUS_POP_BRASS,
+                        cls.OPUS_GLOCKENSPIEL,
+                    ],
+                ),
             ],
         ]
 
     @property
     def load_time(self) -> int:
-
         """
         load time in ms : by how much loading a single device / plugin instance slows down the set startup
         measured by loading multiple device instances (20) in an empty set and timing multiple times the set load
