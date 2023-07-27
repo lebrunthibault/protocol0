@@ -22,7 +22,7 @@ class BrowserService(BrowserServiceInterface):
     def load_device_from_enum(self, device_enum: DeviceEnum) -> Sequence:
         seq = Sequence()
         browser_name = device_enum.browser_name
-        if browser_name.endswith(".adv") or browser_name.endswith(".adg") or browser_name.endswith("vstpreset"):
+        if browser_name.endswith(".adv") or browser_name.endswith(".adg") or browser_name.endswith(".vstpreset"):
             load_func = partial(self._browser_loader_service.load_from_user_library, browser_name)
         else:
             load_func = partial(self._browser_loader_service.load_device, browser_name)

@@ -36,13 +36,12 @@ class DeviceEnum(AbstractEnum):
     GATE = "Gate"
     GATEKEEPER = "Gatekeeper"
     GLUE_COMPRESSOR = "Glue Compressor"
-    H_COMP = "H-Comp Stereo"
+    H_COMP = "H-Comp Stereo.vstpreset"
     KONTAKT = "Kontakt 7"
-    INSERT_DELAY = "Insert Delay"
-    INSERT_DRY_WET = "Insert Dry Wet"
-    INSERT_FILTER = "Insert Filter"
-    INSERT_REVERB = "Insert Reverb"
-    INSERT_VOLUME = "Insert Volume"
+    INSERT_DELAY = "Delay"
+    INSERT_FILTER = "Filter"
+    INSERT_REVERB = "Reverb"
+    INSERT_VOLUME = "Volume"
     INSTRUMENT_RACK = "Instrument Rack"
     JJP_STRINGS = "JJP-Strings-Keys Stereo"
     LFO_TOOL = "LFOTool_x64"
@@ -97,7 +96,6 @@ class DeviceEnum(AbstractEnum):
             DeviceEnum.MASTERING_RACK,
             DeviceEnum.SAMPLE_PITCH_RACK,
             DeviceEnum.INSERT_DELAY,
-            DeviceEnum.INSERT_DRY_WET,
             DeviceEnum.INSERT_FILTER,
             DeviceEnum.INSERT_REVERB,
             DeviceEnum.INSERT_VOLUME,
@@ -214,6 +212,8 @@ class DeviceEnum(AbstractEnum):
                     "Delay", [cls.INSERT_DELAY, cls.SUPER_TAP_6, cls.SUPER_TAP_2, cls.DELAY]
                 ),
                 DeviceEnumGroup(
+
+
                     "Reverb", [cls.INSERT_REVERB, cls.VALHALLA_VINTAGE_VERB, cls.TRUE_VERB]
                 ),
             ],
@@ -227,6 +227,7 @@ class DeviceEnum(AbstractEnum):
 
     @property
     def load_time(self) -> int:
+
         """
         load time in ms : by how much loading a single device / plugin instance slows down the set startup
         measured by loading multiple device instances (20) in an empty set and timing multiple times the set load
