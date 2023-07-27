@@ -37,7 +37,7 @@ return
 return
 
 ; ableton hotkeys
-#IfWinActive, Ableton Live
+#IfWinActive, ahk_exe Ableton Live 11 Suite.exe
 ^+z::
     Send ^y  ; redo
 return
