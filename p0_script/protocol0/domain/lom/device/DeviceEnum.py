@@ -215,7 +215,7 @@ class DeviceEnum(AbstractEnum):
                 cls.TRACK_SPACER,
             ],
             [
-                DeviceEnumGroup("Volume", [cls.LFO_TOOL, cls.GATEKEEPER, cls.INSERT_VOLUME]),
+                DeviceEnumGroup("Vol", [cls.LFO_TOOL, cls.GATEKEEPER, cls.INSERT_VOLUME]),
                 DeviceEnumGroup(
                     "Delay", [cls.INSERT_DELAY, cls.SUPER_TAP_6, cls.SUPER_TAP_2, cls.DELAY]
                 ),
