@@ -151,3 +151,10 @@ return
 return
 
 #IfWinActive
+
+; minitaur editor
+#IfWinActive ahk_class JUCE_18999b05416
+^space::
+	callBackend("fire_selected_scene")
+return
+#IfWinActive
