@@ -3,6 +3,7 @@ from functools import partial
 from typing import Optional
 
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
+from protocol0.domain.audit.LogService import LogService
 from protocol0.domain.audit.SongStatsService import SongStatsService
 from protocol0.domain.lom.clip.MidiClip import MidiClip
 from protocol0.domain.lom.set.MixingService import MixingService
@@ -102,6 +103,11 @@ class ActionGroupMain(ActionGroupInterface):
             identifier=13,
             name="match clip colors between base track and matching track",
             on_press=self._container.get(MatchingTrackService).match_clip_colors,
+        )
+
+        # LOG encoder
+        self.add_encoder(
+            identifier=15, name="log current", on_press=self._container.get(LogService).log_current
         )
 
         # STATs encoder

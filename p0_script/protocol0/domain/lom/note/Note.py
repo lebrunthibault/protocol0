@@ -41,6 +41,12 @@ class Note(object):
             pitch=note.pitch, start=note.start_time, duration=note.duration, velocity=note.velocity
         )
 
+    @classmethod
+    def from_tuple(cls, note: Tuple) -> "Note":
+        return Note(
+            pitch=note[0], start=note[1], duration=note[2], velocity=note[3]
+        )
+
     def to_data(self) -> Tuple[int, float, float, int, bool]:
         return self.pitch, self.start, self.duration, int(self.velocity), self.muted
 
