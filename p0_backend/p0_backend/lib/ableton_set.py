@@ -113,7 +113,7 @@ class AbletonSetManager:
                 ableton_set.title = "Test"
             elif set_title.startswith("Default"):
                 ableton_set.path = (
-                    f"{settings.ableton_set_directory}\\{settings.ableton_default_set}"
+                    f"{settings.ableton_set_directory}\\Default.als"
                 )
                 ableton_set.title = "Default"
             else:

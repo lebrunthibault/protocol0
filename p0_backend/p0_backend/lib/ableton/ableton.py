@@ -110,7 +110,7 @@ def open_set_by_type(set_type: str):
         return
 
     sets: Dict[str, Callable] = {
-        "default": lambda: settings.ableton_default_set,
+        "default": lambda: "Default.als",
         "last": get_last_launched_track_set,
     }
 

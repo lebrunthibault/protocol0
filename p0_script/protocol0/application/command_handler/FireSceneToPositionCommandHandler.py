@@ -24,11 +24,11 @@ class FireSceneToPositionCommandHandler(CommandHandlerInterface):
             return
 
         recent_command = CommandBus.get_recent_command(
-            FireSceneToPositionCommand, 0.5, except_current=True
+            FireSceneToPositionCommand, 1, except_current=True
         )
 
-        if recent_command is not None and recent_command.bar_length == 0:
-            bar_length += 10
+        if recent_command is not None and recent_command.bar_length in (0, 1):
+            bar_length += (recent_command.bar_length + 1) * 10
 
         if bar_length == -1:
             self._container.get(ScenePlaybackService).fire_previous_scene_to_last_bar()
