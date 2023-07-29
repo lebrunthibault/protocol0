@@ -50,7 +50,6 @@ class BaseRecorder(object):
         DomainEventBus.emit(
             RecordStartedEvent(
                 self.config.scene_index,
-                full_record=self.config.bar_length == 0,
                 has_count_in=self.config.records_midi,
             )
         )
