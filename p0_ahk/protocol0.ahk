@@ -158,3 +158,10 @@ return
 	callBackend("fire_selected_scene")
 return
 #IfWinActive
+
+; splice window
+#IfWinActive ahk_exe Splice.exe
+^space::
+	callBackend("fire_selected_scene")
+return
+#IfWinActive

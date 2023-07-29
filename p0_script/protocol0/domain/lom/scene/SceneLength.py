@@ -30,6 +30,10 @@ class SceneLength(object):
         if clip_length % numerator != 0:
             return clip_length
 
+        # special case
+        if clip_length == 24 * numerator:
+            return clip_length
+
         # check for tails and floor to 2^x
         return previous_power_of_2(int(clip_length / numerator)) * numerator
 

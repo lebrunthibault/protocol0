@@ -45,10 +45,6 @@ class Settings(BaseSettings):
     ableton_set_directory: str
 
     @property
-    def ableton_default_set(self) -> str:
-        return "Default 11.als" if self.is_ableton_11 else "Default.als"
-
-    @property
     def ableton_test_set_path(self) -> str:
         return f"{self.ableton_set_directory}\\tracks\\Test\\Test.als"
 

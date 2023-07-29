@@ -394,6 +394,8 @@ async def toggle_scene_loop():
 
 @router.get("/fire_scene_to_position")
 async def fire_scene_to_position(bar_length: int = None):
+    from loguru import logger
+    logger.info(f"fire_scene_to_position: {bar_length}")
     p0_script_client().dispatch(FireSceneToPositionCommand(bar_length))
 
 
