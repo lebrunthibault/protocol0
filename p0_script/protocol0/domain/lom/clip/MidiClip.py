@@ -40,18 +40,27 @@ class MidiClip(Clip):
         if not self._clip:
             return []
 
+        live_notes = self._clip.get_selected_notes()
+        from protocol0.shared.logging.Logger import Logger
+        Logger.dev(live_notes)
+
+        if len(live_notes) != 0:
+            clip_notes = map(Note.from_tuple, live_notes)
+        else:
+            # live_notes = self._clip.get_notes(self.loop.start, 0, self.length, 128)
+            live_notes = self._clip.get_notes_extended(0, 128, self.loop.start, self.length)
+            clip_notes = map(Note.from_midi_note, live_notes)
+
         # noinspection PyArgumentList,PyUnresolvedReferences
-        clip_notes = [
-            # Note(*note) for note in self._clip.get_notes(self.loop.start, 0, self.length, 128)
-            Note.from_midi_note(note)
-            for note in self._clip.get_notes_extended(0, 128, self.loop.start, self.length)
-        ]
+        Logger.dev(live_notes)
+        Logger.dev(clip_notes)
 
         notes = list(self._get_notes_from_cache(notes=clip_notes))
         notes.sort(key=lambda x: x.start)
+
         return notes
 
-    def _get_notes_from_cache(self, notes: List[Note]) -> Iterator[Note]:
+    def _get_notes_from_cache(self, notes: Iterator[Note]) -> Iterator[Note]:
         for note in notes:
             yield next(
                 (cached_note for cached_note in self._cached_notes if cached_note == note), note
@@ -61,9 +70,10 @@ class MidiClip(Clip):
         if not self._clip:
             return None
         self._cached_notes = notes
-        self._clip.select_all_notes()  # noqa
+        # self._clip.select_all_notes()  # noqa
         seq = Sequence()
-        seq.add(partial(self._clip.replace_selected_notes, tuple(note.to_data() for note in notes)))
+        # seq.add(partial(self._clip.replace_selected_notes, tuple(note.to_data() for note in notes)))
+        seq.add(partial(self._clip.set_notes, tuple(note.to_data() for note in notes)))
         # noinspection PyUnresolvedReferences
         seq.defer()
         return seq.done()
