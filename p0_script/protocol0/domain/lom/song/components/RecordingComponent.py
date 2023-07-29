@@ -25,14 +25,12 @@ class RecordingComponent(object):
         seq = Sequence()
         if event.has_count_in:
             seq.defer()
-        seq.add(partial(self._start_session_record, event))
+        seq.add(self._start_session_record)
         seq.done()
 
-    def _start_session_record(self, event: RecordStartedEvent) -> None:
+    def _start_session_record(self) -> None:
         self.session_automation_record = True
         self.session_record = True
-        if event.full_record:
-            self.record_mode = True
 
     def _on_record_ended_event(self, _: RecordEndedEvent) -> None:
         self.session_automation_record = False

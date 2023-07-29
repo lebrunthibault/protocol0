@@ -63,3 +63,5 @@ POST_MIXER  # unused variable (domain\lom\track\routing\InputRoutingChannelEnum.
 MASTER  # unused variable (domain\lom\track\routing\OutputRoutingTypeEnum.py:5)
 _.dev  # unused attribute (protocol0\tests\domain\fixtures\p0.py:45)
 _.dev  # unused method (protocol0\shared\logging\Logger.py:17)
+_.select_all_notes  # unused method (protocol0\tests\domain\fixtures\clip.py:42)
+_.replace_selected_notes  # unused method (protocol0\tests\domain\fixtures\clip.py:45)
