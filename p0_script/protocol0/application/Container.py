@@ -10,7 +10,6 @@ from protocol0.application.error.ErrorService import ErrorService
 from protocol0.domain.audit.AudioLatencyAnalyzerService import AudioLatencyAnalyzerService
 from protocol0.domain.audit.LogService import LogService
 from protocol0.domain.audit.SetFixerService import SetFixerService
-from protocol0.domain.audit.SetUpgradeService import SetUpgradeService
 from protocol0.domain.audit.SongStatsService import SongStatsService
 from protocol0.domain.lom.device.DeviceDisplayService import DeviceDisplayService
 from protocol0.domain.lom.device.DeviceService import DeviceService
@@ -139,11 +138,7 @@ class Container(ContainerInterface):
         scene_playback_service = ScenePlaybackService(playback_component)
         PlayingSceneFacade(scene_component)
         validator_service = ValidatorService(ValidatorFactory(browser_service), drum_rack_service)
-        set_upgrade_service = SetUpgradeService(validator_service, track_crud_component)
-        set_fixer_service = SetFixerService(
-            validator_service=validator_service,
-            set_upgrade_service=set_upgrade_service,
-        )
+        set_fixer_service = SetFixerService(validator_service)
         session_to_arrangement_service = SessionToArrangementService(
             playback_component,
             recording_component,
@@ -222,7 +217,6 @@ class Container(ContainerInterface):
         # audit
         self._register(audio_latency_service)
         self._register(log_service)
-        self._register(set_upgrade_service)
         self._register(set_fixer_service)
         self._register(song_stats_service)
 

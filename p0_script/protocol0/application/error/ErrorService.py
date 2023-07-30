@@ -1,17 +1,13 @@
 import sys
-from functools import partial
 from traceback import extract_tb
 from types import TracebackType
-
-import Live
 from typing import Any
 from typing import Optional, List, Type
 
-from protocol0.application.CommandBus import CommandBus
-from protocol0.application.command.ReloadScriptCommand import ReloadScriptCommand
+import Live
+
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.backend.BackendEvent import BackendEvent
-from protocol0.domain.shared.backend.NotificationColorEnum import NotificationColorEnum
 from protocol0.domain.shared.errors.ErrorRaisedEvent import ErrorRaisedEvent
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.errors.error_handler import handle_error
@@ -129,12 +125,3 @@ class ErrorService(object):
 
     def _log_error(self, message: str) -> None:
         Logger.error(message, show_notification=False, debug=False)
-
-        seq = Sequence()
-        seq.prompt(
-            "%s\n\nReload script ?" % message,
-            color=NotificationColorEnum.ERROR,
-            default=False,
-        )
-        seq.add(partial(CommandBus.dispatch, ReloadScriptCommand()))
-        seq.done()

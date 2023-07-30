@@ -1,11 +1,6 @@
-from protocol0.application.CommandBus import CommandBus
-from protocol0.application.command.EmitBackendEventCommand import (
-    EmitBackendEventCommand,
-)
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.BarEndingEvent import BarEndingEvent
 from protocol0.shared.sequence.Sequence import Sequence
-from protocol0.tests.domain.fixtures.p0 import make_protocol0
 
 
 def test_sanity_checks() -> None:
@@ -66,60 +61,6 @@ def test_wait_for_event_match():
     assert test_res == []
     DomainEventBus.emit(TestEvent(2))
     assert test_res == [True]
-    seq._cancel()
-
-
-def test_prompt():
-    make_protocol0()
-
-    # noinspection PyShadowingNames
-    def create_seq():
-        seq = Sequence()
-        seq.prompt("question ?")
-        seq.add(lambda: test_res.append(True))
-        return seq.done()
-
-    test_res = []
-    seq = create_seq()
-    assert seq.state.started
-    assert test_res == []
-    seq._cancel()
-
-    test_res = []
-    seq = create_seq()
-    CommandBus.dispatch(EmitBackendEventCommand("option_selected", data="Yes"))
-    assert test_res == [True]
-    seq._cancel()
-
-    test_res = []
-    seq = create_seq()
-    CommandBus.dispatch(EmitBackendEventCommand("option_selected", data="No"))
-    assert seq.state.cancelled
-    assert test_res == []
-
-    assert test_res == []
-
-
-def test_select():
-    make_protocol0()
-
-    # noinspection PyShadowingNames
-    def create_seq():
-        seq = Sequence()
-        seq.select("question ?", [1, 2, 3])
-        seq.add(lambda: test_res.append(seq.res))
-        return seq.done()
-
-    test_res = []
-    seq = create_seq()
-    assert seq.state.started
-    assert test_res == []
-    seq._cancel()
-
-    test_res = []
-    seq = create_seq()
-    CommandBus.dispatch(EmitBackendEventCommand("option_selected", 2))
-    assert test_res == [2]
     seq._cancel()
 
 

@@ -1,13 +1,10 @@
 from collections import deque
 from functools import partial
-
 from typing import Deque, Iterable, Union, Any, Optional, List, Type, Callable, cast
 
 from protocol0.domain.lom.song.SongStartedEvent import SongStartedEvent
 from protocol0.domain.lom.song.SongStoppedEvent import SongStoppedEvent
-from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.backend.BackendEvent import BackendEvent
-from protocol0.domain.shared.backend.NotificationColorEnum import NotificationColorEnum
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.event.HasEmitter import HasEmitter
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
@@ -253,48 +250,6 @@ class Sequence(Observable):
             func()
 
         return self.add(execute, notify_terminated=False)
-
-    def prompt(self, question: str, vertical: bool = False, color: NotificationColorEnum = NotificationColorEnum.INFO, default: bool = True) -> None:
-        """helper method for prompts"""
-        if default:
-            options = ["Yes", "No"]
-        else:
-            options = ["No", "Yes"]
-
-        def on_response() -> None:
-            if self.res == "Yes":
-                self._execute_next_step()
-            else:
-                self._cancel()
-
-        self.add(
-            partial(
-                Backend.client().select,
-                {
-                    "question": question,
-                    "options": options,
-                    "vertical": vertical,
-                    "color": color.value,
-                },
-            )
-        )
-        self.wait_for_backend_event("option_selected")
-        self.add(on_response)
-
-    def select(self, question: str, options: List, vertical: bool = True, color: NotificationColorEnum = NotificationColorEnum.INFO) -> None:
-        """helper method for selects"""
-        self.add(
-            partial(
-                Backend.client().select,
-                {
-                    "question": question,
-                    "options": options,
-                    "vertical": vertical,
-                    "color": color.value,
-                }
-            )
-        )
-        self.wait_for_backend_event("option_selected")
 
     def disconnect(self) -> None:
         self._current_step = None

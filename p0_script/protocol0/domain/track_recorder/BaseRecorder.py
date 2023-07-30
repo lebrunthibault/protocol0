@@ -33,13 +33,7 @@ class BaseRecorder(object):
     def _arm_track(self) -> Sequence:
         seq = Sequence()
         if not Song.current_track().arm_state.is_armed and len(list(Song.armed_tracks())) != 0:
-            options = ["Arm current track", "Record on armed track"]
-            seq.select("The current track is not armed", options=options)
-            seq.add(
-                lambda: self._track.arm_state.arm()
-                if seq.res == options[0]
-                else setattr(self, "_track", list(Song.armed_tracks())[0])
-            )
+            seq.add(lambda: self._track.arm_state.arm())
         else:
             seq.add(self._track.arm_state.arm)
 
