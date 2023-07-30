@@ -105,18 +105,11 @@ def _execute_midi_message(message: Message):
         return
 
     # or it can exploit the routes public API by passing an operation name
-
     method_name = payload["method"]
     args = payload["args"]
 
     if method_name == "post_set":
         requests.post(f"{settings.http_api_url}/set", json=args["ableton_set"])
         return
-    elif method_name == "select":
-        requests.post(f"{settings.http_api_url}/select", json=args)
-        return
-
-    from loguru import logger
-    logger.warning(f"{settings.http_api_url}/{method_name}")
 
     requests.get(f"{settings.http_api_url}/{method_name}", params=args)
