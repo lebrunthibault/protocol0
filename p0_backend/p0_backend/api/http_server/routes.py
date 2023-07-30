@@ -1,12 +1,11 @@
 from time import sleep
-from typing import List
 from typing import Optional
 
-from fastapi import APIRouter, Body
+from fastapi import APIRouter
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.api.http_server.ws import ws_manager
-from p0_backend.celery.celery import select_window, notification_window, create_app
+from p0_backend.celery.celery import notification_window, create_app
 from p0_backend.lib.ableton.ableton import (
     reload_ableton,
     clear_arrangement,
@@ -248,17 +247,6 @@ def show_warning(message: str, centered: Optional[bool] = False):
 def show_error(message: str):
     create_app()
     notification_window.delay(message, NotificationEnum.ERROR.value, centered=True)
-
-
-@router.post("/select")
-def select(
-    question: str = Body(...),
-    options: List[str] = Body(...),
-    vertical: bool = Body(True),
-    color: str = Body(NotificationEnum.INFO.value),
-):
-    create_app()
-    select_window.delay(question, options, vertical, color)
 
 
 @router.get("/reload_script")
