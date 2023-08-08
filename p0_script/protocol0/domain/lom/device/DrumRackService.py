@@ -34,7 +34,7 @@ class DrumRackService(object):
 
         except Protocol0Error:
             Backend.client().show_warning(
-                "'%s' does not exist. Creating rack" % sample_category.drum_rack_name, True
+                "'%s' does not exist. Creating rack" % sample_category.drum_rack_name
             )
             seq.add(partial(self._browser_service.load_device_from_enum, DeviceEnum.DRUM_RACK))
             seq.add(partial(self._populate_drum_rack, sample_category))

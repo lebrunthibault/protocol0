@@ -59,11 +59,11 @@ async def _catch_protocol0_errors(request: Request, call_next):
         logger.error(e)
         traceback.print_tb(e.__traceback__)
 
-        notification_level = NotificationEnum.ERROR.value
+        notification_level = NotificationEnum.ERROR
         if isinstance(e, (Protocol0Error, AssertionError)):
-            notification_level = NotificationEnum.WARNING.value
+            notification_level = NotificationEnum.WARNING
 
-        notification_window.delay(str(e), notification_enum=notification_level, centered=True)
+        notification_window.delay(str(e), notification_level)
 
         # p0_script_client().dispatch(EmitBackendEventCommand("error"))
         return PlainTextResponse(str(e), status_code=500)

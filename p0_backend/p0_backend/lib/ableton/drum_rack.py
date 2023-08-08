@@ -7,7 +7,7 @@ from p0_backend.lib.mouse.mouse import click
 
 
 def save_drum_rack(drum_rack_name: str):
-    notification_window.delay("Saving the drum rack", NotificationEnum.WARNING.value)
+    notification_window.delay("Saving the drum rack", NotificationEnum.WARNING)
     click((351, 803))
     sleep(0.5)
     send_keys(drum_rack_name)

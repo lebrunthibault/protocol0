@@ -21,3 +21,12 @@ class NotificationEnum(AbstractEnum):
                 NotificationEnum.ERROR: ColorEnum.ERROR,
             }.get(self),
         )
+
+    @property
+    def icon(self) -> str:
+        return {
+            self.INFO: "info.ico",
+            self.SUCCESS: "success.ico",
+            self.WARNING: "warning.ico",
+            self.ERROR: "error.ico",
+        }[self]  # type: ignore[index]

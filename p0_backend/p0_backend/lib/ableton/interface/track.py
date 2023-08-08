@@ -55,10 +55,9 @@ def click_context_menu(track_coords: Coords, y_offsets: Union[int, List[int]]) -
     if separator_coords is None:
         notification_window.delay(
             "context menu not detected (separator)",
-            NotificationEnum.WARNING.value,
-            auto_close_duration=0.5,
+            NotificationEnum.WARNING
         )
-        return (0, 0)
+        return 0, 0
 
     x_separator, y_separator = separator_coords
     menu_coords = (x_separator, y_separator + 10)
@@ -66,10 +65,9 @@ def click_context_menu(track_coords: Coords, y_offsets: Union[int, List[int]]) -
     if get_pixel_color_at(menu_coords) != PixelColorEnum.context_menu_background():
         notification_window.delay(
             "context menu not detected (background)",
-            NotificationEnum.WARNING.value,
-            auto_close_duration=0.5,
+            NotificationEnum.WARNING,
         )
-        return (0, 0)
+        return 0, 0
 
     click(menu_coords)
 

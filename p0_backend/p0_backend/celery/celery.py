@@ -1,21 +1,13 @@
-from loguru import logger
-
+from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.notification.toast import show_notification
 
 
-class CeleryTaskStub:
-    def __init__(self, name: str):
-        self._name = name
-
-    def delay(self, *a, **k):
-        logger.info("{} called with args: {}, kwargs: {}".format(self._name, a, k))
-
-        if self._name == "notification_window":
-            show_notification(a[0])
+class NotificationWindowTask:
+    def delay(self, title: str, level: NotificationEnum = NotificationEnum.INFO, body: str = ""):
+        show_notification(title, body, level)
 
 
-notification_window = CeleryTaskStub("notification_window")
-select_window = CeleryTaskStub("select_window")
+notification_window = NotificationWindowTask()
 
 
 def create_app():

@@ -38,7 +38,7 @@ class SongInitService(object):
         sound_id_device = Song.master_track().devices.get_one_from_enum(DeviceEnum.SOUNDID_REFERENCE_PLUGIN)  # type: ignore
 
         if sound_id_device is None:
-            Backend.client().show_warning("The SoundID Reference plugin is missing", centered=True)
+            Backend.client().show_warning("The SoundID Reference plugin is missing")
         elif sound_id_device.is_enabled:
             Logger.warning("Activating SoundID Reference plugin")
             sound_id_device.is_enabled = True

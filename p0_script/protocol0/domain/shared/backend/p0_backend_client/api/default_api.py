@@ -784,21 +784,6 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
-    def select(self, body_select_select_post, ):  # noqa: E501
-        # type: (BodySelectSelectPost, ) -> None
-        """
-            Select  # noqa: E501
-        """
-
-        dict = {
-            "method": "select",
-            "args": {
-                "body_select_select_post": body_select_select_post, 
-            }
-        }
-
-        self._send_dict_as_midi(dict)
-
     def select_and_copy(self, ):  # noqa: E501
         # type: () -> None
         """
@@ -934,8 +919,8 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
-    def show_info(self, message, centered=False):  # noqa: E501
-        # type: (str, bool, ) -> None
+    def show_info(self, message, body=''):  # noqa: E501
+        # type: (str, str, ) -> None
         """
             Show Info  # noqa: E501
         """
@@ -943,7 +928,7 @@ class P0BackendClient(object):
         dict = {
             "method": "show_info",
             "args": {
-                "message": message, "centered": centered, 
+                "message": message, "body": body, 
             }
         }
 
@@ -1009,8 +994,8 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
-    def show_success(self, message, centered=False):  # noqa: E501
-        # type: (str, bool, ) -> None
+    def show_success(self, message, ):  # noqa: E501
+        # type: (str, ) -> None
         """
             Show Success  # noqa: E501
         """
@@ -1018,14 +1003,14 @@ class P0BackendClient(object):
         dict = {
             "method": "show_success",
             "args": {
-                "message": message, "centered": centered, 
+                "message": message, 
             }
         }
 
         self._send_dict_as_midi(dict)
 
-    def show_warning(self, message, centered=False):  # noqa: E501
-        # type: (str, bool, ) -> None
+    def show_warning(self, message, ):  # noqa: E501
+        # type: (str, ) -> None
         """
             Show Warning  # noqa: E501
         """
@@ -1033,7 +1018,7 @@ class P0BackendClient(object):
         dict = {
             "method": "show_warning",
             "args": {
-                "message": message, "centered": centered, 
+                "message": message, 
             }
         }
 
