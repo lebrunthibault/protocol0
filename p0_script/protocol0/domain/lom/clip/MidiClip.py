@@ -41,8 +41,6 @@ class MidiClip(Clip):
             return []
 
         live_notes = self._clip.get_selected_notes()
-        from protocol0.shared.logging.Logger import Logger
-        Logger.dev(live_notes)
 
         if len(live_notes) != 0:
             clip_notes = map(Note.from_tuple, live_notes)
@@ -52,9 +50,6 @@ class MidiClip(Clip):
             clip_notes = map(Note.from_midi_note, live_notes)
 
         # noinspection PyArgumentList,PyUnresolvedReferences
-        Logger.dev(live_notes)
-        Logger.dev(clip_notes)
-
         notes = list(self._get_notes_from_cache(notes=clip_notes))
         notes.sort(key=lambda x: x.start)
 
