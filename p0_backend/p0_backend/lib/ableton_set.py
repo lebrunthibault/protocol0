@@ -192,7 +192,7 @@ def _check_track_name_change(existing_set: AbletonSet, new_set: AbletonSet):
         and existing_set.current_track.type == "SimpleAudioTrack"
         and existing_set.current_track.name in existing_set.saved_track_names
     ):
-        notification_window.delay("You updated a saved track", NotificationEnum.WARNING.value, True)
+        notification_window.delay("You updated a saved track", NotificationEnum.WARNING)
         show_saved_tracks()
 
 

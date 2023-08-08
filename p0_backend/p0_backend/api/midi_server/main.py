@@ -88,7 +88,7 @@ def _poll_midi_port(midi_port):
                 message += traceback.format_exc()
                 logger.error(log_string(message))
                 logger.error(log_string(traceback.format_exc()))
-                notification_window.delay(message, NotificationEnum.ERROR.value)
+                notification_window.delay(message, NotificationEnum.ERROR)
         else:
             break
 

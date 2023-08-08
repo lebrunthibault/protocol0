@@ -56,4 +56,4 @@ def _process_results(beat_offsets: List[float], notes_count: int):
         # average_latency < 0 because we cannot have transients clipped
         notification_type = NotificationEnum.WARNING
 
-    notification_window.delay(message, notification_type.value)
+    notification_window.delay(message, notification_type)

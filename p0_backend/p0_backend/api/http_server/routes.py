@@ -35,7 +35,6 @@ from p0_backend.lib.ableton.matching_track.save_track import save_track_to_sub_t
 from p0_backend.lib.ableton.set_profiling.ableton_set_profiler import AbletonSetProfiler
 from p0_backend.lib.ableton_set import AbletonSet
 from p0_backend.lib.ableton_set import AbletonSetManager, show_saved_tracks, delete_saved_track
-from p0_backend.lib.decorators import throttle
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.explorer import close_samples_windows, close_explorer_window
@@ -225,28 +224,27 @@ def _close_explorer_window(title: str):
 
 
 @router.get("/show_info")
-def show_info(message: str, centered: bool = False):
+def show_info(message: str, body: str = ""):
     create_app()
-    notification_window.delay(message, NotificationEnum.INFO.value, centered)
+    notification_window.delay(message, NotificationEnum.INFO, body=body)
 
 
 @router.get("/show_success")
-def show_success(message: str, centered: bool = False):
+def show_success(message: str):
     create_app()
-    notification_window.delay(message, NotificationEnum.SUCCESS.value, centered)
+    notification_window.delay(message, NotificationEnum.SUCCESS)
 
 
 @router.get("/show_warning")
-def show_warning(message: str, centered: Optional[bool] = False):
+def show_warning(message: str):
     create_app()
-    notification_window.delay(message, NotificationEnum.WARNING.value, centered)
+    notification_window.delay(message, NotificationEnum.WARNING)
 
 
-@router.get("/show_errors/message")
-@throttle(milliseconds=5000)
+@router.get("/show_error")
 def show_error(message: str):
     create_app()
-    notification_window.delay(message, NotificationEnum.ERROR.value, centered=True)
+    notification_window.delay(message, NotificationEnum.ERROR)
 
 
 @router.get("/reload_script")
@@ -381,8 +379,9 @@ async def toggle_scene_loop():
 
 
 @router.get("/fire_scene_to_position")
-async def fire_scene_to_position(bar_length: int = None):
+async def fire_scene_to_position(bar_length: int = 1):
     from loguru import logger
+
     logger.info(f"fire_scene_to_position: {bar_length}")
     p0_script_client().dispatch(FireSceneToPositionCommand(bar_length))
 

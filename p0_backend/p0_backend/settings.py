@@ -48,6 +48,8 @@ class Settings(BaseSettings):
     def ableton_test_set_path(self) -> str:
         return f"{self.ableton_set_directory}\\tracks\\Test\\Test.als"
 
+    icons_directory = "C:\\Users\\thiba\\OneDrive\\Images\\icons"
+
     http_api_url = "http://127.0.0.1:8000"
 
     rev2_editor_window_title = "REV2Editor/m"

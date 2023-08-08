@@ -41,7 +41,7 @@ class MatchingTrackClipManager(object):
                 Backend.client().show_warning("No clip replaced")
             else:
                 message = "%s / %s clips replaced" % (len(replaced_cs), len(audio_track.clips))
-                Backend.client().show_success(message, centered=True)
+                Backend.client().show_success(message)
 
             self._router.monitor_audio_track()
             # in case the base track is not already removed

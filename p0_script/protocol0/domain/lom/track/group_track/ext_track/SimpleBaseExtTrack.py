@@ -16,5 +16,5 @@ class SimpleBaseExtTrack(SimpleAudioTrack):
 
             if devices_count == 1:
                 Backend.client().show_warning(
-                    "Please add this device to the audio sub track", centered=True
+                    "Please add this device to the audio sub track"
                 )

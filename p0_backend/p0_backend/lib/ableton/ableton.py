@@ -124,7 +124,7 @@ def _open_set(set_path: str):
         set_path = f"{settings.ableton_set_directory}\\{set_path}"
 
     if not os.path.exists(set_path):
-        notification_window.delay(f"fichier introuvable : {set_path}", NotificationEnum.ERROR.value)
+        notification_window.delay(f"fichier introuvable : {set_path}", NotificationEnum.ERROR)
         return
 
     relative_path = set_path.replace(f"{settings.ableton_set_directory}\\", "").replace("//", "\\")
@@ -150,7 +150,7 @@ def save_set():
 @keep_mouse_position
 def save_set_as_template():
     if settings.is_ableton_11:
-        notification_window.delay("Not available in live 11", NotificationEnum.WARNING.value, True)
+        notification_window.delay("Not available in live 11", NotificationEnum.WARNING)
         return
 
     p0_script_client().dispatch(ResetPlaybackCommand())

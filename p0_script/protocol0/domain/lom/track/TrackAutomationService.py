@@ -142,5 +142,5 @@ class TrackAutomationService(object):
             parameters_name = ["%s: %s" % (d.name, p.name) for d, p in set(device_parameters)]
 
             Backend.client().show_info(
-                "Automated parameters: \n\n  - {}".format("\n  - ".join(parameters_name))
+                "- {}".format("\n  - ".join(parameters_name))
             )
