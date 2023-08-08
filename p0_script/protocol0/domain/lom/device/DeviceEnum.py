@@ -17,7 +17,6 @@ class DeviceEnum(AbstractEnum):
     AUTO_FILTER_LOW_PASS = "Auto Filter Low Pass"
     AUTO_PAN = "AutoPan"
     BEAT_REPEAT = "Beat Repeat"
-    C1_COMP = "C1 comp Stereo"
     COMPRESSOR = "Compressor"
     DECAPITATOR = "Decapitator"
     DE_ESSER = "DeEsser Stereo"
@@ -37,9 +36,9 @@ class DeviceEnum(AbstractEnum):
     GATEKEEPER = "Gatekeeper"
     GLUE_COMPRESSOR = "Glue Compressor"
     H_COMP = "H-Comp Stereo.vstpreset"
-    KONTAKT = "Kontakt 7"
+    KONTAKT = "Kontakt 7.vstpreset"
     INSERT_DELAY = "Delay"
-    INSERT_FILTER = "Filter"
+    INSERT_FILTER = "Auto Filter"
     INSERT_REVERB = "Reverb"
     INSERT_VOLUME = "Volume"
     INSTRUMENT_RACK = "Instrument Rack"
@@ -209,7 +208,7 @@ class DeviceEnum(AbstractEnum):
             ],
             [
                 DeviceEnumGroup(
-                    "Comp", [cls.COMPRESSOR, cls.SSL_COMP, cls.H_COMP, cls.C1_COMP, cls.VCOMP]
+                    "Comp", [cls.COMPRESSOR, cls.SSL_COMP, cls.H_COMP, cls.VCOMP]
                 ),
                 DeviceEnumGroup("Sat", [cls.SATURN_2, cls.SATURATOR, cls.DECAPITATOR]),
                 cls.TRACK_SPACER,
@@ -226,6 +225,7 @@ class DeviceEnum(AbstractEnum):
             [
                 cls.DRUM_RACK,
                 cls.SYLENTH1,
+                cls.SERUM,
                 cls.KONTAKT,
                 DeviceEnumGroup(
                     "Opus",

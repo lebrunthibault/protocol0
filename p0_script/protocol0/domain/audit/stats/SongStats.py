@@ -12,11 +12,11 @@ from protocol0.domain.audit.stats.TrackStats import TrackStats
 class SongStats(object):
     def __init__(self) -> None:
         self._stats: List[Stats] = [
-            SceneStats(),
-            TrackStats(),
             # ClipStats(),
             SampleStats(),
+            TrackStats(),
             DevicesStats(),
+            SceneStats(),
         ]
 
     def to_dict(self) -> Dict:
