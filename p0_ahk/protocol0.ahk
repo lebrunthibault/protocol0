@@ -58,7 +58,7 @@ return
 	callBackend("fire_selected_scene")
 return
 +space::
-	callBackend("fire_scene_to_position")
+	callBackend("fire_scene_to_last_position")
 return
 ^NumPad0::
 	callBackend("fire_scene_to_position?bar_length=-1")

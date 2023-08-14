@@ -20,7 +20,7 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class ScenePlaybackService(SlotManager):
-    _DEBUG = False
+    _DEBUG = True
 
     def __init__(self, playback_component: PlaybackComponent) -> None:
         super(ScenePlaybackService, self).__init__()
@@ -52,6 +52,7 @@ class ScenePlaybackService(SlotManager):
         # stop to start the scene right again
         # also it will stop the tails
         seq.add(self._playback_component.stop)
+        seq.defer()
         seq.add(scene.fire)
 
         return seq.done()
@@ -66,24 +67,16 @@ class ScenePlaybackService(SlotManager):
         if self._DEBUG:
             Logger.info("Firing %s to bar_length %s" % (scene, bar_length))
 
-        if bar_length != 0:
+        # if bar_length != 0:
             # removing click when changing position
             # (created by playing shortly the scene beginning)
-            Song.master_track().mute_for(150)
+            # Song.master_track().mute_for(150)
 
         seq = Sequence()
         seq.add(self._playback_component.stop)
         seq.defer()  # removes an artefact by changing too fast the playback state
         seq.add(partial(scene.fire_to_position, bar_length))
         return seq.done()
-
-    def fire_previous_scene_to_last_bar(self) -> None:
-        previous_scene = Song.selected_scene().previous_scene
-        if previous_scene == Song.selected_scene():
-            self.fire_scene(previous_scene)
-            return None
-
-        self.fire_scene_to_position(previous_scene, previous_scene.bar_length - 1)
 
     def _get_position_bar_length(self, scene: Scene, bar_length: Optional[int]) -> int:
         # as we use single digits

@@ -30,14 +30,4 @@ class FireSceneToPositionCommandHandler(CommandHandlerInterface):
         if recent_command is not None and recent_command.bar_length in (0, 1):
             bar_length += (recent_command.bar_length + 1) * 10
 
-        if bar_length == -1:
-            self._container.get(ScenePlaybackService).fire_previous_scene_to_last_bar()
-        else:
-            # Launching the last bar almost always means we don't want to loop
-            if (
-                bar_length == selected_scene.bar_length - 1
-                and selected_scene == Song.looping_scene()
-            ):
-                self._container.get(SceneComponent).looping_scene_toggler.reset()
-
-            fire_to_position(selected_scene, bar_length)
+        fire_to_position(selected_scene, bar_length)
