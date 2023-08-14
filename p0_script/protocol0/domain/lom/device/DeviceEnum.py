@@ -203,7 +203,7 @@ class DeviceEnum(AbstractEnum):
                     "Filter",
                     [cls.INSERT_FILTER, cls.AUTO_FILTER_HIGH_PASS, cls.AUTO_FILTER_LOW_PASS],
                 ),
-                DeviceEnumGroup("EQ", [cls.PRO_Q_3, cls.EQ_EIGHT, cls.VEQ]),
+                DeviceEnumGroup("EQ", [cls.EQ_EIGHT, cls.PRO_Q_3, cls.VEQ]),
                 cls.UTILITY,
             ],
             [

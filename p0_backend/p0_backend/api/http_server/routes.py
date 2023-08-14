@@ -378,8 +378,13 @@ async def toggle_scene_loop():
     p0_script_client().dispatch(ToggleSceneLoopCommand())
 
 
+@router.get("/fire_scene_to_last_position")
+async def fire_scene_to_last_position():
+    p0_script_client().dispatch(FireSceneToPositionCommand(None))
+
+
 @router.get("/fire_scene_to_position")
-async def fire_scene_to_position(bar_length: int = 1):
+async def fire_scene_to_position(bar_length: int = 0):
     from loguru import logger
 
     logger.info(f"fire_scene_to_position: {bar_length}")

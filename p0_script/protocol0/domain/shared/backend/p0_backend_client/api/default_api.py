@@ -319,7 +319,22 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
-    def fire_scene_to_position(self, bar_length=1):  # noqa: E501
+    def fire_scene_to_last_position(self, ):  # noqa: E501
+        # type: () -> None
+        """
+            Fire Scene To Last Position  # noqa: E501
+        """
+
+        dict = {
+            "method": "fire_scene_to_last_position",
+            "args": {
+                
+            }
+        }
+
+        self._send_dict_as_midi(dict)
+
+    def fire_scene_to_position(self, bar_length=0):  # noqa: E501
         # type: (int, ) -> None
         """
             Fire Scene To Position  # noqa: E501
