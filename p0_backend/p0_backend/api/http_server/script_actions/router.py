@@ -39,7 +39,7 @@ class ActionGroup(BaseModel):
 
 @router.get("", response_model=List[ActionGroup])
 async def actions() -> List[ActionGroup]:
-    sys.path.insert(0, f"{settings.project_directory}/protocol0_stub")
+    sys.path.insert(0, f"{settings.project_directory}\\p0_backend\\protocol0_stub")
 
     from protocol0.application.control_surface import group
     from protocol0.domain.shared.utils.utils import import_package
