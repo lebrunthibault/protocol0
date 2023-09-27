@@ -13,13 +13,14 @@ import AbletonSet from "@/components/ableton_sets/AbletonSet.vue";
 import {apiService} from "@/utils/apiService";
 
 export default defineComponent({
-  name: 'AbletonSet',
+  name: 'AbletonSetView',
   components: {AbletonSet},
   data: () => ({
     abletonSet: null as AbletonSet | null,
   }),
   async mounted() {
     this.abletonSet = await apiService.fetch(`/set?path=${this.$route.query.path}`)
+    console.log(this.abletonSet)
     if (this.abletonSet?.metadata) {
       for (const i in this.abletonSet.metadata.scenes) {
         this.abletonSet.metadata.scenes[i].index = parseInt(i)

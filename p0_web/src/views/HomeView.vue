@@ -21,7 +21,7 @@ import {defineComponent} from 'vue'
 import AbletonSets from "@/components/ableton_sets/AbletonSets.vue";
 
 export default defineComponent({
-  name: 'HomePage',
+  name: 'HomeView',
   components: {AbletonSets},
   data: () => ({}),
 })

@@ -60,13 +60,13 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">{{ currentScene.name }}</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
               <i class="fa-solid fa-xmark"></i>
             </button>
           </div>
           <div class="modal-body">
             <ul>
-              <li v-for="(trackName, i) in currentScene.track_names" :key="i">{{ trackName }}</li>
+              <li v-for="(trackName, i) in currentScene.track_names" :key="i"> {{ trackName }}</li>
             </ul>
           </div>
         </div>
@@ -198,7 +198,9 @@ export default defineComponent({
     }, {passive: false})
 
     onKeyStroke('ArrowLeft', (e: any) => {
-      e.preventDefault()
+      if (e.altKey) {
+        return // don't catch back navigation
+      }
       this.wavesurfer?.skip(-5)
     })
 
