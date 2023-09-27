@@ -604,6 +604,21 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
+    def post_scene_stats(self, scene_stats, ):  # noqa: E501
+        # type: (SceneStats, ) -> None
+        """
+            Post Scene Stats  # noqa: E501
+        """
+
+        dict = {
+            "method": "post_scene_stats",
+            "args": {
+                "scene_stats": scene_stats, 
+            }
+        }
+
+        self._send_dict_as_midi(dict)
+
     def post_set(self, ableton_set, ):  # noqa: E501
         # type: (AbletonSet, ) -> None
         """

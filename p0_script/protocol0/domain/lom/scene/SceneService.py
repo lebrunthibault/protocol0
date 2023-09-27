@@ -44,6 +44,18 @@ class SceneService(SlotManager):
         return list(self._live_scene_id_to_scene.values())
 
     @property
+    def active_scenes(self) -> List[Scene]:
+        active_scenes = [self.scenes[0]]
+        current_scene = self.scenes[0]
+
+        while current_scene.next_scene and current_scene.next_scene != current_scene:
+            current_scene = current_scene.next_scene
+            active_scenes.append(current_scene)
+
+
+        return active_scenes
+
+    @property
     def last_scene(self) -> Scene:
         current_scene = self.scenes[0]
         while current_scene.next_scene and current_scene.next_scene != current_scene:

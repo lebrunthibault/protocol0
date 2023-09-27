@@ -32,6 +32,10 @@ class SimpleTrackClipColorManager(object):
 
         for clip_info in clip_infos:
             clips = clip_info.get_clips(list(self._clips))
+
+            if color_index == self._track_color:
+                color_index += 1
+
             for clip in clips:
                 clip.color = color_index
 

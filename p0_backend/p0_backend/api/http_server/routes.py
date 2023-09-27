@@ -1,5 +1,6 @@
+from itertools import chain
 from time import sleep
-from typing import Optional
+from typing import Optional, List, Dict
 
 from fastapi import APIRouter
 
@@ -12,6 +13,7 @@ from p0_backend.lib.ableton.ableton import (
     save_set,
     hide_plugins,
     show_plugins,
+    open_set,
 )
 from p0_backend.lib.ableton.ableton import (
     save_set_as_template,
@@ -33,15 +35,16 @@ from p0_backend.lib.ableton.interface.track import flatten_track, load_instrumen
 from p0_backend.lib.ableton.matching_track.load_matching_track import drag_matching_track
 from p0_backend.lib.ableton.matching_track.save_track import save_track_to_sub_tracks
 from p0_backend.lib.ableton.set_profiling.ableton_set_profiler import AbletonSetProfiler
-from p0_backend.lib.ableton_set import AbletonSet
+from p0_backend.lib.ableton_set import AbletonSet, AbletonSetLight
 from p0_backend.lib.ableton_set import AbletonSetManager, show_saved_tracks, delete_saved_track
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
-from p0_backend.lib.explorer import close_samples_windows, close_explorer_window
+from p0_backend.lib.explorer import close_samples_windows, close_explorer_window, open_explorer
 from p0_backend.lib.keys import send_keys
 from p0_backend.lib.mouse.mouse import click, click_vertical_zone, move_to
 from p0_backend.lib.process import execute_powershell_command
-from p0_backend.lib.server_state import ServerState
+from p0_backend.lib.scene_stats import SceneStats
+from p0_backend.lib.server_state import ServerState, list_sets
 from p0_backend.lib.window.find_window import find_window_handle_by_enum
 from p0_backend.lib.window.window import focus_window
 from p0_backend.settings import Settings
@@ -77,6 +80,11 @@ router = APIRouter()
 settings = Settings()
 
 router.include_router(script_actions_router, prefix="/actions")
+
+
+@router.get("/")
+def home() -> str:
+    return "ok"
 
 
 @router.get("/ping")
@@ -257,9 +265,26 @@ async def server_state() -> ServerState:
     return ServerState.create()
 
 
+@router.get("/sets")
+async def sets() -> Dict[str, List[AbletonSetLight]]:
+    return list_sets()
+
+
+@router.get("/set")
+async def get_set(path: str) -> AbletonSetLight:
+    path = path.replace("\\\\", "\\")
+
+    ableton_sets = list(chain.from_iterable(list_sets().values()))
+
+    return next(s for s in ableton_sets if s.path == path)
+
+
 @router.post("/set")
 async def post_set(ableton_set: AbletonSet):
     """Forwarded from midi server"""
+    from loguru import logger
+
+    logger.success(ableton_set)
     await AbletonSetManager.register(ableton_set)
 
 
@@ -272,6 +297,16 @@ async def update_set(title: str, path: Optional[str] = None):
 async def close_set(set_id: str):
     await AbletonSetManager.remove(set_id)
     await ws_manager.broadcast_server_state()
+
+
+@router.post("/scene_stats")
+async def post_scene_stats(scene_stats: SceneStats):
+    from loguru import logger
+
+    logger.success(scene_stats.dict())
+
+    with open(AbletonSetManager.active().metadata_path, "w") as f:
+        f.write(scene_stats.json())
 
 
 @router.get("/save_set_as_template")
@@ -293,8 +328,18 @@ async def tail_logs_raw():
     execute_powershell_command("poetry run logs-raw")
 
 
+@router.get("/open_in_explorer")
+async def open_in_explorer(path: str):
+    open_explorer(path)
+
+
 @router.get("/set/open")
-async def _open_set(name: str):
+async def _open_set(path: str):
+    open_set(path)
+
+
+@router.get("/set/open_by_type")
+async def _open_set_by_type(name: str):
     open_set_by_type(name)
 
 

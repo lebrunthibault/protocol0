@@ -233,6 +233,10 @@ class Song(object):
         return cls._INSTANCE._scene_service.scenes
 
     @classmethod
+    def active_scenes(cls) -> List["Scene"]:
+        return cls._INSTANCE._scene_service.active_scenes
+
+    @classmethod
     def last_scene(cls) -> "Scene":
         return cls._INSTANCE._scene_service.last_scene
 

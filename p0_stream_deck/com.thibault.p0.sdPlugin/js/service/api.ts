@@ -14,7 +14,7 @@ const API = {
         fetch(`${Config.P0_API_URL}/load_drum_rack/?category=vocals&subcategory=${category}`).then(() => null)
     },
     openSet (shortcutName: string) {
-        fetch(`${Config.P0_API_URL}/set/open?name=${shortcutName}`).then(() => null)
+        fetch(`${Config.P0_API_URL}/set/open_by_type?name=${shortcutName}`).then(() => null)
     },
     selectOrLoadDevice (name: string) {
         fetch(`${Config.P0_API_URL}/select_or_load_device?name=${name}`).then(() => null)

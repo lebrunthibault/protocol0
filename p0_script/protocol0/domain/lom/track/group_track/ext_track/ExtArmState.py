@@ -43,6 +43,7 @@ class ExtArmState(AbstractTrackArmState):
 
     def unarm(self) -> None:
         self.is_armed = False
+        self._midi_track.external_device.is_enabled = False
 
         DomainEventBus.emit(ExtArmedEvent(self._base_track, arm=False))
         self.notify_observers()

@@ -54,3 +54,5 @@ save_track_to_sub_tracks  # unused function (p0_backend\lib\ableton\matching_tra
 _.get_time_map  # unused method (p0_backend\lib\ableton\clip_parsing.py:126)
 AbletonSetProfiler  # unused class (p0_backend\lib\ableton\set_profiling\ableton_set_profiler.py:13)
 _.register  # unused method (p0_backend\lib\ableton_set.py:101)
+_.metadata_path  # unused property (p0_backend\lib\ableton_set.py:109)
+list_sets  # unused function (p0_backend\lib\server_state.py:18)

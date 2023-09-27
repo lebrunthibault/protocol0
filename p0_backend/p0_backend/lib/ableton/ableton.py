@@ -116,10 +116,10 @@ def open_set_by_type(set_type: str):
 
     set_filename = sets[set_type]()
     if set_filename is not None:
-        _open_set(set_filename)
+        open_set(set_filename)
 
 
-def _open_set(set_path: str):
+def open_set(set_path: str):
     if not isabs(set_path):
         set_path = f"{settings.ableton_set_directory}\\{set_path}"
 

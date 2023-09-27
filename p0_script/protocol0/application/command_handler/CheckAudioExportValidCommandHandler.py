@@ -1,5 +1,6 @@
 from protocol0.application.command.CheckAudioExportValidCommand import CheckAudioExportValidCommand
 from protocol0.application.command_handler.CommandHandlerInterface import CommandHandlerInterface
+from protocol0.domain.audit.SongStatsService import SongStatsService
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
@@ -13,3 +14,5 @@ class CheckAudioExportValidCommandHandler(CommandHandlerInterface):
         if sound_id_device is not None and sound_id_device.is_enabled:
             sound_id_device.is_enabled = False
             Logger.warning("Deactivating SoundID Reference plugin for export")
+
+        self._container.get(SongStatsService).export_song_structure()
