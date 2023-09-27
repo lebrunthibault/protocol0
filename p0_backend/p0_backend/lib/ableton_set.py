@@ -1,11 +1,15 @@
 import glob
+import json
 import os.path
 import re
 import time
 from os.path import basename, dirname
-from typing import List, Optional
+from pathlib import Path
+from typing import List, Optional, Dict
 
 from loguru import logger
+
+from p0_backend.lib.scene_stats import SceneStats
 from protocol0.application.command.EmitBackendEventCommand import (
     EmitBackendEventCommand,
 )
@@ -32,6 +36,37 @@ class AbletonTrack(BaseModel):
     name: str
     type: str
     index: int
+
+
+class AbletonSetLight(BaseModel):
+    path: str
+
+    def dict(self, *a, **k):
+        output = super(AbletonSetLight, self).dict(*a, **k)
+        from loguru import logger
+        logger.success(self.path)
+        output["name"] = Path(self.path).stem
+        output["metadata"] = self.metadata
+        output["audio_url"] = self.audio_url
+
+        return output
+
+    @property
+    def metadata(self) -> Optional[Dict]:
+        path = f"{dirname(self.path)}\\{Path(self.path).stem}.json"
+        if not os.path.exists(path):
+            return None
+
+        with open(path, "r") as f:
+            return SceneStats(**json.loads(f.read())).dict()
+
+    @property
+    def audio_url(self) -> Optional[str]:
+        path = f"{dirname(self.path)}\\{Path(self.path).stem}.wav"
+        if not os.path.exists(path):
+            return None
+
+        return f"http://localhost:8000/static/{os.path.relpath(path, settings.ableton_set_directory)}"
 
 
 class AbletonSet(BaseModel):
@@ -70,6 +105,10 @@ class AbletonSet(BaseModel):
     @property
     def saved_temp_track(self) -> Optional[str]:
         return next(iter(glob.glob(f"{self.temp_track_folder}\\*.als")), None)
+
+    @property
+    def metadata_path(self) -> str:
+        return f"{dirname(self.path)}\\{self.title}.json"   # type: ignore[type-var]
 
     @property
     def saved_tracks(self) -> List[str]:
@@ -112,9 +151,7 @@ class AbletonSetManager:
                 ableton_set.path = settings.ableton_test_set_path
                 ableton_set.title = "Test"
             elif set_title.startswith("Default"):
-                ableton_set.path = (
-                    f"{settings.ableton_set_directory}\\Default.als"
-                )
+                ableton_set.path = f"{settings.ableton_set_directory}\\Default.als"
                 ableton_set.title = "Default"
             else:
                 ableton_set.title = set_title
@@ -138,6 +175,8 @@ class AbletonSetManager:
             _check_track_name_change(existing_set, ableton_set)
 
         cls._ACTIVE_SET = ableton_set
+        logger.success(cls._ACTIVE_SET)
+        logger.success(os.getpid())
 
         from p0_backend.api.http_server.ws import ws_manager
 

@@ -11,6 +11,7 @@ from loguru import logger
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse
+from starlette.staticfiles import StaticFiles
 
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
@@ -89,6 +90,8 @@ Should be called only after all routes have been added.
 for route in app.routes:
     if isinstance(route, APIRoute):
         route.operation_id = route.name
+
+app.mount("/static", StaticFiles(directory=settings.ableton_set_directory), name="static")
 
 
 def start():

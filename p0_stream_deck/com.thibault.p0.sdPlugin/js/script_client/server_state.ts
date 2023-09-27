@@ -14,7 +14,7 @@ const DeviceGroupSchema = z.object({
 })
 
 const ServerStateSchema = z.object({
-    set: z.nullable(AbletonSetSchema),
+    active_set: z.nullable(AbletonSetSchema),
     set_shortcuts: z.array(z.string()),
     sample_categories: SampleCategoriesSchema,
     favorite_device_names: z.array(z.array(z.union([z.string(), DeviceGroupSchema])))

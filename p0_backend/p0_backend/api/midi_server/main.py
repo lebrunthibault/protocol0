@@ -55,7 +55,7 @@ def system_check():
     try:
         requests.get(f"{settings.http_api_url}/")
     except requests.exceptions.ConnectionError:
-        NotificationFactory.show_error("HTTP server is not up")
+        # NotificationFactory.show_error("HTTP server is not up")
         system_up = False
 
     if system_up:
@@ -110,6 +110,9 @@ def _execute_midi_message(message: Message):
 
     if method_name == "post_set":
         requests.post(f"{settings.http_api_url}/set", json=args["ableton_set"])
+        return
+    if method_name == "post_scene_stats":
+        requests.post(f"{settings.http_api_url}/scene_stats", json=args["scene_stats"])
         return
 
     requests.get(f"{settings.http_api_url}/{method_name}", params=args)

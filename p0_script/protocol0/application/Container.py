@@ -175,7 +175,7 @@ class Container(ContainerInterface):
         )
         log_service = LogService(ableton_set, track_mapper_service, matching_track_service)
 
-        song_stats_service = SongStatsService()
+        song_stats_service = SongStatsService(ableton_set)
 
         self._register(midi_service)
         self._register(browser_service)

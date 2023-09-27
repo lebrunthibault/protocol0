@@ -1,6 +1,6 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4 px-3">
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" href="/">
       <img src="@/assets/protocol0_icon.png" width="30" height="30" alt="" />
     </a>
     <div class="collapse navbar-collapse" id="navbarNav">

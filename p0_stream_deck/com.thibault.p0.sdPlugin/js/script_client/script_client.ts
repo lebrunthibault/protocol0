@@ -63,8 +63,8 @@ class ScriptClient {
         EventBus.emit(new VocalCategoriesUpdatedEvent(serverState.sample_categories.vocals))
         EventBus.emit(new FavoriteDeviceNamesUpdatedEvent(serverState.favorite_device_names))
 
-        if (serverState.set) {
-            ScriptClient.emitSet(serverState.set)
+        if (serverState.active_set) {
+            ScriptClient.emitSet(serverState.active_set)
         } else {
             console.warn('No active set')
         }

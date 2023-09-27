@@ -17,6 +17,7 @@ class DeviceEnum(AbstractEnum):
     AUTO_FILTER_LOW_PASS = "Auto Filter Low Pass"
     AUTO_PAN = "AutoPan"
     BEAT_REPEAT = "Beat Repeat"
+    BLACK_BOX = "Black Box Analog Design HG-2MS"
     COMPRESSOR = "Compressor"
     DECAPITATOR = "Decapitator"
     DE_ESSER = "DeEsser Stereo"
@@ -69,6 +70,7 @@ class DeviceEnum(AbstractEnum):
     SATURATOR = "Saturator"
     SATURN_2 = "Saturn 2"
     SERUM = "Serum_x64"
+    SYNTHMASTER = "SynthMaster 2.vstpreset"
     SIMPLER = "Simpler"
     SOOTHE2 = "soothe2"
     SOUNDID_REFERENCE_PLUGIN = "SoundID Reference Plugin"
@@ -201,7 +203,7 @@ class DeviceEnum(AbstractEnum):
             [
                 DeviceEnumGroup(
                     "Filter",
-                    [cls.INSERT_FILTER, cls.AUTO_FILTER_HIGH_PASS, cls.AUTO_FILTER_LOW_PASS],
+                    [cls.AUTO_FILTER_LOW_PASS, cls.AUTO_FILTER_HIGH_PASS],
                 ),
                 DeviceEnumGroup("EQ", [cls.EQ_EIGHT, cls.PRO_Q_3, cls.VEQ]),
                 cls.UTILITY,
@@ -210,7 +212,7 @@ class DeviceEnum(AbstractEnum):
                 DeviceEnumGroup(
                     "Comp", [cls.COMPRESSOR, cls.SSL_COMP, cls.H_COMP, cls.VCOMP]
                 ),
-                DeviceEnumGroup("Sat", [cls.SATURN_2, cls.SATURATOR, cls.DECAPITATOR]),
+                DeviceEnumGroup("Sat", [cls.BLACK_BOX, cls.SATURN_2, cls.SATURATOR, cls.DECAPITATOR]),
                 cls.TRACK_SPACER,
             ],
             [
@@ -226,6 +228,7 @@ class DeviceEnum(AbstractEnum):
                 cls.DRUM_RACK,
                 cls.SYLENTH1,
                 cls.SERUM,
+                cls.SYNTHMASTER,
                 cls.KONTAKT,
                 DeviceEnumGroup(
                     "Opus",
