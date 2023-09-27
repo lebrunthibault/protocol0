@@ -98,6 +98,10 @@ class AbstractTrack(SlotManager):
     name = cast(str, ForwardTo("appearance", "name"))
 
     @property
+    def full_name(self) -> str:
+        return " - ".join([t.name for t in self.group_tracks + [self]])
+
+    @property
     def color(self) -> int:
         raise NotImplementedError
 

@@ -32,6 +32,9 @@ def get_set_from_title(title: str) -> str:
     file_paths = []
 
     filename = f"{title}.als"
+    from loguru import logger
+    logger.success(title)
+    logger.success(filename)
 
     for root, _, files in os.walk(settings.ableton_set_directory):
         for file in files:
@@ -42,6 +45,8 @@ def get_set_from_title(title: str) -> str:
     assert (
         len(file_paths) <= 1
     ), f"Duplicate sets found : '{filename}' in {settings.ableton_set_directory}"
+    from loguru import logger
+    logger.success(file_paths)
     assert len(file_paths) == 1, f"Couldn't find '{filename}' in {settings.ableton_set_directory}"
 
     return file_paths[0]

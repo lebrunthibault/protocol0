@@ -143,7 +143,8 @@ class AbletonSetManager:
             logger.info(f"registering set {ableton_set}")
 
         launched_sets = get_ableton_windows()
-        set_title = re.match(r"([^*]*)", launched_sets[0]).group(1).strip()
+        logger.success(launched_sets)
+        set_title = re.match(r"([^*]*)", launched_sets[0]).group(1).split(" [")[0].strip()
         assert set_title, "set title is empty"
 
         if ableton_set.is_untitled:

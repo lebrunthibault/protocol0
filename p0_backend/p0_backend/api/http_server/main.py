@@ -13,13 +13,11 @@ from starlette.requests import Request
 from starlette.responses import PlainTextResponse
 from starlette.staticfiles import StaticFiles
 
-from p0_backend.lib.enum.notification_enum import NotificationEnum
-from p0_backend.lib.errors.Protocol0Error import Protocol0Error
+from p0_backend.lib.notification.notification.notification_factory import NotificationFactory
 from p0_backend.settings import Settings
 
 load_dotenv()
 
-from p0_backend.celery.celery import notification_window
 from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.api.http_server.routes import router  # noqa
 from p0_backend.api.http_server.ws import ws_router  # noqa
@@ -60,11 +58,11 @@ async def _catch_protocol0_errors(request: Request, call_next):
         logger.error(e)
         traceback.print_tb(e.__traceback__)
 
-        notification_level = NotificationEnum.ERROR
-        if isinstance(e, (Protocol0Error, AssertionError)):
-            notification_level = NotificationEnum.WARNING
+        # if isinstance(e, (Protocol0Error, AssertionError)):
+        #     notification_level = NotificationEnum.WARNING
 
-        notification_window.delay(str(e), notification_level)
+        NotificationFactory.show_error(str(e))
+        # notification_window.delay(str(e), notification_level)
 
         # p0_script_client().dispatch(EmitBackendEventCommand("error"))
         return PlainTextResponse(str(e), status_code=500)

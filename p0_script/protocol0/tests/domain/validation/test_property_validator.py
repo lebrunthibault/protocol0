@@ -24,7 +24,7 @@ def test_property_validator():
     assert validator.is_valid()
     assert validator.get_error_message() is None
 
-    validator = PropertyValueValidator(obj, "test", "toto")
+    validator = PropertyValueValidator(obj, "test", "error")
     assert not validator.is_valid()
     assert validator.get_error_message() is not None
     validator.fix()

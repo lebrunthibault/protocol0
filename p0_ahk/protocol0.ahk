@@ -134,7 +134,6 @@ return
     Send {Right}
 return
 ^+#r::
-    msgbox, "toto"
 	callBackend("check_audio_export_valid")
 return
 ^!q::

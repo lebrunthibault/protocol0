@@ -17,7 +17,7 @@
         <button @click="goToScene" type="button" class="btn btn-lg btn-light">
           {{ this.currentScene?.name }} <i class="fa-solid fa-arrow-down-long" data-toggle="tooltip" data-placement="top" title="Go to Scene"></i>
         </button>
-        <button @click="showScene(this.currentScene)" type="button" class="btn btn-lg btn-light" data-bs-toggle="modal" data-bs-target="#sceneModal">
+        <button @click="showScene(this.currentScene)" type="button" class="btn btn-lg btn-light">
           <i class="fa-solid fa-bars" data-toggle="tooltip" data-placement="top" title="Show scene details"></i>
         </button>
       </div>
@@ -38,9 +38,7 @@
       <tbody>
         <tr v-for="(sceneData, i) in abletonSet.metadata.scenes" ref="scenes" :key="i" :class="{'table-warning': sceneData.index === currentScene?.index}">
           <td>
-            <button type="button" @click="showScene(sceneData)" class="btn btn-default"
-               data-bs-toggle="modal" data-bs-target="#sceneModal"
-            >
+            <button type="button" @click="showScene(sceneData)" class="btn btn-default">
               {{ sceneData.name }}
             </button>
           </td>
@@ -59,7 +57,7 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">{{ currentScene.name }}</h5>
+            <h5 class="modal-title">{{ currentScene.name }} tracks</h5>
             <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
               <i class="fa-solid fa-xmark"></i>
             </button>
@@ -143,6 +141,7 @@ export default defineComponent({
     },
     showScene(sceneData: SceneData) {
       this.currentScene = sceneData
+      $('#sceneModal').modal('show')
     },
     playScene(sceneData: SceneData) {
       if (!this.wavesurfer) {
@@ -210,13 +209,30 @@ export default defineComponent({
     })
 
     if (this.abletonSet.metadata) {
-      /** On audio position change, fires continuously during playback */
         this.currentScene = this.scenes[0]
         this.wavesurfer.on('timeupdate', () => {
           this.currentScene  = this.getCurrentScene()
         })
 
         for (const sceneData of this.scenes) {
+          const wsRegions = this.wavesurfer.registerPlugin(WaveSurferRegions.create())
+
+          this.wavesurfer.on('ready', () => {
+            const title = sceneData.name.split("(")[0].trim();
+            const shortenedTitle = title.length > 10 ? title.slice(0, 8) + ".." : title;
+
+            wsRegions.addRegion({
+                content: shortenedTitle,
+                start: sceneData.start_time,
+                color: 'rgba(199,49,49,0.18)',
+              })
+            })
+
+            wsRegions.on('region-clicked', (region: any, e: any) => {
+              e.stopPropagation() // prevent triggering a click on the waveform
+              region.play()
+            })
+
           const wavesurfer = WaveSurfer.create({
             container: `#waveform-${sceneData.index}`,
             url: this.abletonSet?.audio_url,
@@ -228,15 +244,15 @@ export default defineComponent({
             dragToSeek: true,
           })
 
-          const wsRegions = wavesurfer.registerPlugin(WaveSurferRegions.create())
+          const sceneRegions = wavesurfer.registerPlugin(WaveSurferRegions.create())
 
           wavesurfer.on('ready', () => {
-            wsRegions.addRegion({
+            sceneRegions.addRegion({
               content: 'Start',
               start: sceneData.start_time,
               color: 'rgba(199,49,49,0.18)',
             })
-            wsRegions.addRegion({
+            sceneRegions.addRegion({
               content: 'End',
               start: sceneData.end_time,
               color: 'rgba(199,49,49,0.18)',
