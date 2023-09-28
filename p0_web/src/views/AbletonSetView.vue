@@ -20,7 +20,7 @@ export default defineComponent({
   }),
   async mounted() {
     this.abletonSet = await apiService.fetch(`/set?path=${this.$route.query.path}`)
-    console.log(this.abletonSet)
+
     if (this.abletonSet?.metadata) {
       for (const i in this.abletonSet.metadata.scenes) {
         this.abletonSet.metadata.scenes[i].index = parseInt(i)

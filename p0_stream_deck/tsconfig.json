@@ -1,9 +1,4 @@
 {
-  "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/eslint-recommended",
-        "plugin:@typescript-eslint/recommended"
-    ],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig.json to read more about this file */
     /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */

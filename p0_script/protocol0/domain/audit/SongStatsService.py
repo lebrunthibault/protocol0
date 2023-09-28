@@ -20,7 +20,4 @@ class SongStatsService(object):
 
     def export_song_structure(self) -> None:
         scene_stats = SceneStats()
-        from protocol0.shared.logging.Logger import Logger
-        Logger.dev(scene_stats.to_dict())
-        Logger.dev(scene_stats.to_full_dict())
         Backend.client().post_scene_stats(scene_stats.to_full_dict())

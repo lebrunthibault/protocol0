@@ -19,3 +19,7 @@ class SimpleTrackService(object):
             clip.loop.end = clip.loop.end / 2
 
         flattened_track._needs_flattening = False
+
+
+    def select_tracks_to_freeze(self) -> None:
+        pass

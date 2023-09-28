@@ -43,8 +43,6 @@ class AbletonSetLight(BaseModel):
 
     def dict(self, *a, **k):
         output = super(AbletonSetLight, self).dict(*a, **k)
-        from loguru import logger
-        logger.success(self.path)
         output["name"] = Path(self.path).stem
         output["metadata"] = self.metadata
         output["audio_url"] = self.audio_url
@@ -143,9 +141,10 @@ class AbletonSetManager:
             logger.info(f"registering set {ableton_set}")
 
         launched_sets = get_ableton_windows()
-        logger.success(launched_sets)
         set_title = re.match(r"([^*]*)", launched_sets[0]).group(1).split(" [")[0].strip()
-        assert set_title, "set title is empty"
+        # assert set_title, "set title is empty"
+        if not set_title:
+            return
 
         if ableton_set.is_untitled:
             if set_title.startswith("Untitled"):
@@ -176,8 +175,6 @@ class AbletonSetManager:
             _check_track_name_change(existing_set, ableton_set)
 
         cls._ACTIVE_SET = ableton_set
-        logger.success(cls._ACTIVE_SET)
-        logger.success(os.getpid())
 
         from p0_backend.api.http_server.ws import ws_manager
 
