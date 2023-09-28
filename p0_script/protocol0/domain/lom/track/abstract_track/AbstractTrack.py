@@ -72,7 +72,7 @@ class AbstractTrack(SlotManager):
     def group_tracks(self) -> List["AbstractTrack"]:
         if not self.group_track:
             return []
-        return [self.group_track.abstract_track] + self.group_track.group_tracks
+        return self.group_track.group_tracks + [self.group_track.abstract_track]
 
     def add_or_replace_sub_track(self, sub_track: "AbstractTrack", previous_sub_track: Optional["AbstractTrack"] = None) -> None:
         if sub_track in self.sub_tracks:

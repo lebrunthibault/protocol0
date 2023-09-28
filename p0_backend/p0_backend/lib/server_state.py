@@ -17,7 +17,7 @@ settings = Settings()
 
 def list_sets() -> Dict[str, List[AbletonSetLight]]:
     top_folders = ["tracks", "paused", "palettes"]
-    excluded_sets = ["Dancing Feet", "Backup", "_released"]
+    excluded_sets = ["Dancing Feet", "Backup"]
     ableton_sets = {}
 
     for top_folder in top_folders:

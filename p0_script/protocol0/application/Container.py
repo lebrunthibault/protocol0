@@ -130,7 +130,7 @@ class Container(ContainerInterface):
             scene_crud_component,
             quantization_component,
         )
-        SimpleTrackService()
+        simple_track_service = SimpleTrackService()
         matching_track_service = MatchingTrackService(track_crud_component)
         scene_service = SceneService(live_song, scene_crud_component)
         scene_playback_service = ScenePlaybackService(playback_component)
@@ -195,6 +195,7 @@ class Container(ContainerInterface):
         self._register(track_factory)
         self._register(track_automation_service)
         self._register(track_mapper_service)
+        self._register(simple_track_service)
         self._register(matching_track_service)
 
         self._register(scene_service)
