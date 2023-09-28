@@ -29,6 +29,14 @@ class AudioClip(Clip):
         return hash((self.file_path, self.automation.get_hash(device_parameters)))
 
     @property
+    def warping(self) -> bool:
+        return self._clip.warping
+
+    @warping.setter
+    def warping(self, warping: bool) -> None:
+        self._clip.warping = warping
+
+    @property
     def warp_mode(self) -> Live.Clip.WarpMode:
         return self._clip.warp_mode
 

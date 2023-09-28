@@ -8,10 +8,12 @@ from typing import List, cast, Any, Optional
 from protocol0.domain.lom.clip.AudioClip import AudioClip
 from protocol0.domain.lom.clip_slot.AudioClipSlot import AudioClipSlot
 from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
+from protocol0.domain.lom.track.group_track.DrumsTrack import DrumsTrack
 from protocol0.domain.lom.track.simple_track.AudioToMidiClipMapping import AudioToMidiClipMapping
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
+from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.infra.persistence.TrackData import TrackData
 from protocol0.shared.Song import Song
@@ -42,8 +44,23 @@ class SimpleAudioTrack(SimpleTrack):
         return super(SimpleAudioTrack, self).clips  # noqa
 
     @subject_slot_group("has_clip")
-    def _has_clip_listener(self, _: Live.ClipSlot.ClipSlot) -> None:
+    def _has_clip_listener(self, clip_slot: Live.ClipSlot.ClipSlot) -> None:
         self._needs_flattening = True
+
+        clip = self.clip_slots[list(self._track.clip_slots).index(clip_slot)].clip
+
+        if (
+            any(isinstance(track, DrumsTrack) for track in self.group_tracks) and not clip.warping
+        ):
+            def make_clip_loop() -> None:
+                clip.warping = True
+                clip.loop.start = - Song.scenes()[clip.index].length
+                clip.loop.end = 0
+                clip.looping = True
+                clip.show_loop()
+
+            Scheduler.defer(make_clip_loop)
+
 
     def load_full_track(self) -> Sequence:
         assert isinstance(Song.current_track(), SimpleAudioTrack), "Track already loaded"
@@ -70,7 +87,9 @@ class SimpleAudioTrack(SimpleTrack):
     def flatten(self, flatten_track: bool = True) -> Sequence:
         return super(SimpleAudioTrack, self).flatten(self._needs_flattening)
 
-    def replace_clip_sample(self, dest_cs: AudioClipSlot, source_cs: AudioClipSlot = None, file_path: str = None) -> Optional[Sequence]:
+    def replace_clip_sample(
+        self, dest_cs: AudioClipSlot, source_cs: AudioClipSlot = None, file_path: str = None
+    ) -> Optional[Sequence]:
         assert source_cs is not None or file_path is not None, "provide clip_slot or file path"
 
         Logger.info(
