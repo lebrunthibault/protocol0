@@ -1,9 +1,12 @@
+from os.path import basename
+
 import Live
 from _Framework.SubjectSlot import SlotManager
 from typing import Optional, List, cast, TYPE_CHECKING, Dict
 
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
 from protocol0.domain.lom.instrument.InstrumentInterface import InstrumentInterface
+from protocol0.domain.lom.instrument.instrument.InstrumentDrumRack import InstrumentDrumRack
 from protocol0.domain.lom.track.TrackDisconnectedEvent import TrackDisconnectedEvent
 from protocol0.domain.lom.track.abstract_track.AbstrackTrackArmState import AbstractTrackArmState
 from protocol0.domain.lom.track.abstract_track.AbstractTrackAppearance import (
@@ -74,7 +77,9 @@ class AbstractTrack(SlotManager):
             return []
         return self.group_track.group_tracks + [self.group_track.abstract_track]
 
-    def add_or_replace_sub_track(self, sub_track: "AbstractTrack", previous_sub_track: Optional["AbstractTrack"] = None) -> None:
+    def add_or_replace_sub_track(
+        self, sub_track: "AbstractTrack", previous_sub_track: Optional["AbstractTrack"] = None
+    ) -> None:
         if sub_track in self.sub_tracks:
             return
 
@@ -97,9 +102,22 @@ class AbstractTrack(SlotManager):
 
     name = cast(str, ForwardTo("appearance", "name"))
 
-    @property
-    def full_name(self) -> str:
-        return " - ".join([t.name for t in self.group_tracks + [self]])
+    def get_full_name(self, scene_index: int) -> str:
+        full_name = " - ".join([t.name for t in self.group_tracks + [self]])
+
+        if self.instrument and not isinstance(self.instrument, InstrumentDrumRack):
+            full_name += f" ({self.instrument.full_name})"  # type: ignore[unreachable]
+
+        from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
+
+        if isinstance(self, SimpleAudioTrack):
+            clip = self.clip_slots[scene_index].clip
+            assert clip is not None, f"no clip at index {scene_index} for {self}"
+
+            if "\\Processed" not in clip.file_path:
+                full_name += f" ('{basename(clip.file_path)}')"
+
+        return full_name
 
     @property
     def color(self) -> int:
@@ -137,7 +155,12 @@ class AbstractTrack(SlotManager):
     def fire(self, scene_index: int) -> None:
         raise NotImplementedError
 
-    def stop(self, scene_index: Optional[int] = None, next_scene_index: Optional[int] = None, immediate: bool = False) -> None:
+    def stop(
+        self,
+        scene_index: Optional[int] = None,
+        next_scene_index: Optional[int] = None,
+        immediate: bool = False,
+    ) -> None:
         raise NotImplementedError
 
     def get_automated_parameters(self, scene_index: int) -> Dict[DeviceParameter, "SimpleTrack"]:

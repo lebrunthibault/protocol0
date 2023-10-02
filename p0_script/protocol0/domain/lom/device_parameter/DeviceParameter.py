@@ -1,5 +1,5 @@
 import Live
-from typing import Any, Optional
+from typing import Any, Optional, List
 
 from protocol0.domain.lom.device_parameter.DeviceParameterEnum import DeviceParameterEnum
 from protocol0.domain.shared.utils.timing import accelerate
@@ -43,6 +43,13 @@ class DeviceParameter(object):
             return self._device_parameter.original_name
         else:
             return ""
+
+    @property
+    def value_items(self) -> List[float]:
+        if self._device_parameter:
+            return self._device_parameter.value_items
+        else:
+            return []
 
     @property
     def value(self) -> float:

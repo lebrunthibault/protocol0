@@ -5,6 +5,7 @@ from typing import Optional, Type
 
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
+from protocol0.domain.lom.device.PluginDevice import PluginDevice
 from protocol0.domain.lom.instrument.InstrumentColorEnum import InstrumentColorEnum
 from protocol0.domain.lom.instrument.preset.InstrumentPreset import InstrumentPreset
 from protocol0.domain.lom.instrument.preset.InstrumentPresetList import InstrumentPresetList
@@ -90,6 +91,17 @@ class InstrumentInterface(SlotManager):
             return self.NAME
         else:
             return self.device.name
+
+    @property
+    def full_name(self) -> str:
+        full_name = self.device.name
+
+        if self.selected_preset:
+            full_name += f": {self.selected_preset.name}"
+        elif isinstance(self.device, PluginDevice) and self.device.selected_preset and self.device.selected_preset != "Default":
+            full_name += f": {self.device.selected_preset}"
+
+        return full_name
 
     @property
     def needs_exclusive_activation(self) -> bool:

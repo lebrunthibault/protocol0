@@ -59,6 +59,9 @@ from protocol0.application.command.LoadDrumRackCommand import LoadDrumRackComman
 from protocol0.application.command.LoadMatchingTrackCommand import LoadMatchingTrackCommand
 from protocol0.application.command.LoadMinitaurCommand import LoadMinitaurCommand
 from protocol0.application.command.LoadRev2Command import LoadRev2Command
+from protocol0.application.command.LogSelectedCommand import LogSelectedCommand
+from protocol0.application.command.LogSongStatsCommand import LogSongStatsCommand
+from protocol0.application.command.MatchClipColorCommand import MatchClipColorCommand
 from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongCommand
 from protocol0.application.command.RecordUnlimitedCommand import RecordUnlimitedCommand
 from protocol0.application.command.ReloadScriptCommand import ReloadScriptCommand
@@ -389,6 +392,21 @@ async def load_matching_track():
 @router.get("/drag_matching_track")
 async def _drag_matching_track():
     drag_matching_track(AbletonSetManager.active())
+
+
+@router.get("/match_clip_colors")
+async def _match_clip_colors():
+    p0_script_client().dispatch(MatchClipColorCommand())
+
+
+@router.get("/log_selected")
+async def _log_selected():
+    p0_script_client().dispatch(LogSelectedCommand())
+
+
+@router.get("/log_song_stats")
+async def _log_song_stats():
+    p0_script_client().dispatch(LogSongStatsCommand())
 
 
 @router.get("/show_saved_tracks")
