@@ -5,6 +5,16 @@ from protocol0.shared.Song import Song
 
 
 class InstrumentService(object):
+    def toggle_macro_control(self, index: int) -> None:
+        device = Song.selected_device()
+        assert isinstance(device, RackDevice), "Selected device is not a rack device"
+
+        param = Song.selected_device().parameters[index]
+        if param.value == param.min:
+            param.value = param.max
+        else:
+            param.value = param.min
+
     def scroll_macro_control(self, index: int, go_next: bool) -> None:
         device = Song.selected_device()
         assert isinstance(device, RackDevice), "Selected device is not a rack device"
