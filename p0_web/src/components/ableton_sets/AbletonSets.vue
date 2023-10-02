@@ -18,7 +18,7 @@
       <AbletonSetPlayer :ableton-set="selectedSet" @sceneChange="onSceneChange" :time="playerTime"></AbletonSetPlayer>
   </div>
   <div class="row">
-    <div v-for="(category, i) in ['palettes', 'paused', 'tracks']" :key="i" class="col-sm px-5">
+    <div v-for="(category, i) in ['palettes', 'splurges', 'tracks', 'paused']" :key="i" class="col-sm px-5">
       <h2 class="text-center mb-4">{{ category }}</h2>
       <div class="list-group list-group-flush">
         <div  v-for="(abletonSet, j) in abletonSets[category]" :key="j"

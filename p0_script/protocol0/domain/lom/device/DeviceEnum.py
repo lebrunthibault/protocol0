@@ -80,7 +80,7 @@ class DeviceEnum(AbstractEnum):
     SUPER_TAP_2 = "SuperTap 2-Taps Stereo"
     SUPER_TAP_6 = "SuperTap 6-Taps Stereo"
     SURFEREQ = "SurferEQ"
-    SYLENTH1 = "Sylenth1 Rack.vstpreset"
+    SYLENTH1 = "Sylenth1 Rack.adg"
     SYNTH_MASTER_2 = "SynthMaster 2.vstpreset"
     TRACK_SPACER = "Trackspacer 2.5"
     TRUE_VERB = "TrueVerb Stereo"

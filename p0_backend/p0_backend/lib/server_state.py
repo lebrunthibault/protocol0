@@ -16,7 +16,7 @@ settings = Settings()
 
 
 def list_sets() -> Dict[str, List[AbletonSetLight]]:
-    top_folders = ["tracks", "paused", "palettes"]
+    top_folders = ["palettes" , "paused", "splurges", "tracks"]
     excluded_sets = ["Dancing Feet", "Backup"]
     ableton_sets = {}
 
@@ -33,7 +33,7 @@ def list_sets() -> Dict[str, List[AbletonSetLight]]:
             if any(word in als_file for word in excluded_sets):
                 continue
 
-            if top_folder != "palettes" and Path(als_file).stem != basename(dirname(als_file)):
+            if top_folder not in ("palettes", "splurges") and Path(als_file).stem != basename(dirname(als_file)):
                 continue
 
             ableton_sets[top_folder].append(AbletonSetLight(path=als_file))
