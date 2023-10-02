@@ -2,7 +2,6 @@ from functools import partial
 
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
 from protocol0.domain.audit.AudioLatencyAnalyzerService import AudioLatencyAnalyzerService
-from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
@@ -41,13 +40,7 @@ class ActionGroupTest(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        from protocol0.shared.logging.Logger import Logger
-        device = Song.selected_device()
-        Logger.dev(device)
-
-        if isinstance(device, RackDevice):
-            from protocol0.shared.logging.Logger import Logger
-            Logger.dev(device.parameters)
+        pass
 
     def action_test_scroll(self, go_next: bool) -> None:
         pass

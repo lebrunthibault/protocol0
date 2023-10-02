@@ -1,14 +1,15 @@
 from functools import partial
+from typing import cast, List, Optional, Dict
 
 import Live
 from _Framework.SubjectSlot import subject_slot
-from typing import cast, List, Optional, Dict
 
 from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.clip.ClipConfig import ClipConfig
 from protocol0.domain.lom.clip.ClipInfo import ClipInfo
 from protocol0.domain.lom.clip.ClipTail import ClipTail
 from protocol0.domain.lom.clip_slot.ClipSlot import ClipSlot
+from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.device.SimpleTrackDevices import SimpleTrackDevices
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
 from protocol0.domain.lom.instrument.InstrumentFactory import InstrumentFactory
@@ -187,6 +188,19 @@ class SimpleTrack(AbstractTrack):
     def instrument_track(self) -> "SimpleTrack":
         assert self.instrument, "track has not instrument"
         return self.base_track
+
+    @property
+    def instrument_rack_device(self) -> Optional[RackDevice]:
+        for device in self.devices:
+            if not isinstance(device, RackDevice):
+                continue
+
+            devices = device.chains[0].devices
+
+            if len(devices) and any(d == self.instrument.device for d in devices):
+                return device
+
+        return None
 
     @property
     def is_foldable(self) -> bool:

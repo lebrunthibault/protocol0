@@ -1,27 +1,29 @@
-from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.shared.ValueScroller import ValueScroller
 from protocol0.domain.shared.utils.utils import clamp
 from protocol0.shared.Song import Song
+from protocol0.shared.logging.Logger import Logger
 
 
 class InstrumentService(object):
-    def toggle_macro_control(self, index: int) -> None:
-        device = Song.selected_device()
-        assert isinstance(device, RackDevice), "Selected device is not a rack device"
+    _DEBUG = False
 
-        param = Song.selected_device().parameters[index]
+    def toggle_macro_control(self, index: int) -> None:
+        rack_device = Song.selected_track().instrument_rack_device
+        assert rack_device is not None, "No instrument rack device"
+
+        param = rack_device.parameters[index]
         if param.value == param.min:
             param.value = param.max
         else:
             param.value = param.min
 
     def scroll_macro_control(self, index: int, go_next: bool) -> None:
-        device = Song.selected_device()
-        assert isinstance(device, RackDevice), "Selected device is not a rack device"
+        rack_device = Song.selected_track().instrument_rack_device
+        assert rack_device is not None, "No instrument rack device"
 
-        param = Song.selected_device().parameters[index]
-        from protocol0.shared.logging.Logger import Logger
-        Logger.dev((param.min, param.max, param.value, param.is_quantized))
+        param = rack_device.parameters[index]
+        if self._DEBUG:
+            Logger.info((param.min, param.max, param.value, param.is_quantized))
 
         if param.is_quantized:
             param.value = ValueScroller.scroll_values(list(param.value_items), param.value, go_next)
