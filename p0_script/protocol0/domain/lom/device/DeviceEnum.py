@@ -1,4 +1,5 @@
-from typing import List, Optional, Union
+from pathlib import Path
+from typing import List, Optional, Union, Any
 
 from protocol0.domain.lom.device.DeviceEnumGroup import DeviceEnumGroup
 from protocol0.domain.lom.device_parameter.DeviceParameterEnum import DeviceParameterEnum
@@ -70,7 +71,6 @@ class DeviceEnum(AbstractEnum):
     SATURATOR = "Saturator"
     SATURN_2 = "Saturn 2"
     SERUM = "Serum_x64"
-    SYNTHMASTER = "SynthMaster 2.vstpreset"
     SIMPLER = "Simpler"
     SOOTHE2 = "soothe2"
     SOUNDID_REFERENCE_PLUGIN = "SoundID Reference Plugin"
@@ -81,6 +81,7 @@ class DeviceEnum(AbstractEnum):
     SUPER_TAP_6 = "SuperTap 6-Taps Stereo"
     SURFEREQ = "SurferEQ"
     SYLENTH1 = "Sylenth1.vstpreset"
+    SYNTH_MASTER_2 = "SynthMaster 2.vstpreset"
     TRACK_SPACER = "Trackspacer 2.5"
     TRUE_VERB = "TrueVerb Stereo"
     TUNER = "Tuner"
@@ -90,6 +91,15 @@ class DeviceEnum(AbstractEnum):
     VCOMP = "VComp Stereo"
     VEQ = "VEQ3 Stereo"
     YOULEAN = "Youlean Loudness Meter 2"
+
+    @classmethod
+    def from_value(cls, value: Any) -> 'DeviceEnum':  # type: ignore[override]
+        for _, enum in cls.__members__.items():
+            if value == Path(enum.value).stem:  # removes the extension
+                return enum
+
+        raise Protocol0Error("Couldn't find matching enum for value %s" % value)
+
 
     @property
     def is_device_preset(self) -> bool:
@@ -210,7 +220,7 @@ class DeviceEnum(AbstractEnum):
             ],
             [
                 DeviceEnumGroup(
-                    "Comp", [cls.COMPRESSOR, cls.SSL_COMP, cls.H_COMP, cls.VCOMP]
+                    "Comp", [cls.H_COMP, cls.COMPRESSOR, cls.SSL_COMP, cls.VCOMP]
                 ),
                 DeviceEnumGroup("Sat", [cls.BLACK_BOX, cls.SATURN_2, cls.SATURATOR, cls.DECAPITATOR]),
                 cls.TRACK_SPACER,
@@ -228,7 +238,7 @@ class DeviceEnum(AbstractEnum):
                 cls.DRUM_RACK,
                 cls.SYLENTH1,
                 cls.SERUM,
-                cls.SYNTHMASTER,
+                cls.SYNTH_MASTER_2,
                 cls.KONTAKT,
                 DeviceEnumGroup(
                     "Opus",

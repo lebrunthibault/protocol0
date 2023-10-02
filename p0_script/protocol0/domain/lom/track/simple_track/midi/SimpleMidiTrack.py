@@ -29,7 +29,7 @@ class SimpleMidiTrack(SimpleTrack):
     def on_added(self) -> Optional[Sequence]:
         super(SimpleMidiTrack, self).on_added()
 
-        if any(isinstance(track, DrumsTrack) for track in self.group_tracks):
+        if any(isinstance(track, DrumsTrack) for track in self.group_tracks) and len(list(self.devices)) == 0:
             CommandBus.dispatch(LoadDeviceCommand(DeviceEnum.DRUM_RACK.name))
 
         return None

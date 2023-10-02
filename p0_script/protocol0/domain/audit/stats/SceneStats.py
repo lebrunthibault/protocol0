@@ -17,13 +17,16 @@ class SceneStat(object):
             (start_bar_length + scene.bar_length) * Song.signature_numerator() * beat_duration
         )
 
+        self._track_names = []
+
         excluded_track_names = ("usamo", "auto")
-        self._track_names = [
-            track.full_name
-            for track in scene.abstract_tracks
-            if track.name.lower() not in excluded_track_names
-            and not track.full_name.startswith("*")
-        ]
+        for track in scene.abstract_tracks:
+            full_name = track.get_full_name(scene.index)
+
+            if track.name.lower() in excluded_track_names or full_name.startswith("*"):
+                continue
+
+            self._track_names.append(full_name)
 
     def to_dict(self) -> Dict:
         output: Dict[str, Any] = collections.OrderedDict()

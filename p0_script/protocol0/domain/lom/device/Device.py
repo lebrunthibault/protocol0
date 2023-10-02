@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import Live
 from _Framework.SubjectSlot import SlotManager, subject_slot
 from typing import List, Any, Type, Optional, Union
