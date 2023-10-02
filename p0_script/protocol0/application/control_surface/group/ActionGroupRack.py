@@ -9,9 +9,11 @@ class ActionGroupRack(ActionGroupInterface):
 
     def configure(self) -> None:
         # RACK macro control encoders
-        scroll_macro_control = self._container.get(InstrumentService).scroll_macro_control
+        instrument_service = self._container.get(InstrumentService)
 
         for i in range(1, 9):
             self.add_encoder(
-                identifier=i, name=f"scroll macro {i}", on_scroll=partial(scroll_macro_control, i)
+                identifier=i, name=f"edit macro control {i}",
+                on_press=partial(instrument_service.toggle_macro_control, i),
+                on_scroll=partial(instrument_service.scroll_macro_control, i)
             )
