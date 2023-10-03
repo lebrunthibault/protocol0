@@ -70,7 +70,7 @@ class DeviceEnum(AbstractEnum):
     SAMPLE_PITCH_RACK = "Sample Pitch Rack"
     SATURATOR = "Saturator"
     SATURN_2 = "Saturn 2"
-    SERUM = "Serum_x64"
+    SERUM = "Serum Rack.adg"
     SIMPLER = "Simpler"
     SOOTHE2 = "soothe2"
     SOUNDID_REFERENCE_PLUGIN = "SoundID Reference Plugin"
@@ -223,7 +223,6 @@ class DeviceEnum(AbstractEnum):
                     "Comp", [cls.H_COMP, cls.COMPRESSOR, cls.SSL_COMP, cls.VCOMP]
                 ),
                 DeviceEnumGroup("Sat", [cls.BLACK_BOX, cls.SATURN_2, cls.SATURATOR, cls.DECAPITATOR]),
-                cls.TRACK_SPACER,
             ],
             [
                 DeviceEnumGroup("Vol", [cls.LFO_TOOL, cls.GATEKEEPER, cls.INSERT_VOLUME]),

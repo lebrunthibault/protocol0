@@ -73,3 +73,5 @@ _.fire_scene_to_position  # unused method (protocol0\domain\lom\scene\ScenePlayb
 _.export_song_structure  # unused method (protocol0\domain\audit\SongStatsService.py:20)
 OFF  # unused variable (protocol0\domain\lom\track\CurrentMonitoringStateEnum.py:7)
 _.match_clip_colors  # unused method (protocol0\domain\lom\track\group_track\matching_track\MatchingTrackService.py:144)
+_.select_or_sync_automation  # unused method (protocol0\domain\lom\track\TrackAutomationService.py:81)
+_.color_clip_with_automation  # unused method (protocol0\domain\lom\track\TrackAutomationService.py:119)

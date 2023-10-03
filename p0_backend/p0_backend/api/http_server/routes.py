@@ -48,8 +48,12 @@ from p0_backend.lib.server_state import ServerState, list_sets
 from p0_backend.lib.window.find_window import find_window_handle_by_enum
 from p0_backend.lib.window.window import focus_window
 from p0_backend.settings import Settings
+from protocol0.application.command.BounceSessionToArrangementCommand import \
+    BounceSessionToArrangementCommand
 from protocol0.application.command.BounceTrackToAudioCommand import BounceTrackToAudioCommand
 from protocol0.application.command.CheckAudioExportValidCommand import CheckAudioExportValidCommand
+from protocol0.application.command.ColorClipWithAutomationCommand import \
+    ColorClipWithAutomationCommand
 from protocol0.application.command.DrumRackToSimplerCommand import DrumRackToSimplerCommand
 from protocol0.application.command.FireSceneToPositionCommand import FireSceneToPositionCommand
 from protocol0.application.command.FireSelectedSceneCommand import FireSelectedSceneCommand
@@ -374,6 +378,11 @@ async def _bounce_track_to_audio():
     p0_script_client().dispatch(BounceTrackToAudioCommand())
 
 
+@router.get("/bounce_session_to_arrangement")
+async def _bounce_session_to_arrangement():
+    p0_script_client().dispatch(BounceSessionToArrangementCommand())
+
+
 @router.get("/click_focused_track")
 async def _click_focused_track():
     click_focused_track()
@@ -397,6 +406,11 @@ async def _drag_matching_track():
 @router.get("/match_clip_colors")
 async def _match_clip_colors():
     p0_script_client().dispatch(MatchClipColorCommand())
+
+
+@router.get("/color_clip_with_automation")
+async def _color_clip_with_automation():
+    p0_script_client().dispatch(ColorClipWithAutomationCommand())
 
 
 @router.get("/log_selected")
