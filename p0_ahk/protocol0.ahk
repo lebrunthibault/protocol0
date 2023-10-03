@@ -133,7 +133,7 @@ return
 ^+*::
     Send {Right}
 return
-^+r::
+~^+r::
 	callBackend("check_audio_export_valid")
 return
 ^!q::
