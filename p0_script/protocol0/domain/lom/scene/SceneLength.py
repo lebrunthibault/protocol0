@@ -2,6 +2,7 @@ from typing import Optional
 
 from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.scene.SceneClips import SceneClips
+from protocol0.domain.lom.track.group_track.MixBusTrack import MixBusTrack
 from protocol0.domain.shared.utils.utils import previous_power_of_2
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
@@ -47,6 +48,7 @@ class SceneLength(object):
     def get_longest_clip(self, is_playing: bool = False) -> Optional[Clip]:
         """
             We take any clip except
+            - mix bus dummy clips
             - recording clips that have a non integer length
             - muted clips
 
@@ -54,14 +56,29 @@ class SceneLength(object):
         and we are recording audio
         """
 
-        clips = [
-            clip
-            for clip in self._clips
-            if (not clip.is_recording or float(clip.length).is_integer())
-            and not is_playing
-            or clip.is_playing
-            and not clip.muted
-        ]
+        clips = []
+
+        for scene_cs in self._clips._clip_slot_tracks:
+            if scene_cs.clip is None or not scene_cs.is_main_clip:
+                continue
+
+            clip = scene_cs.clip
+
+
+            if isinstance(scene_cs.track, MixBusTrack):
+                continue
+
+            if clip.is_recording and not (float(clip.length).is_integer()):
+                continue
+
+            if is_playing and not clip.is_playing:
+                continue
+
+            if clip.muted:
+                continue
+
+            clips.append(clip)
+
         if len(clips) == 0:
             return None
         else:
