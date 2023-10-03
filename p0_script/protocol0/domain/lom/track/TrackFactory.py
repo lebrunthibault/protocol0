@@ -8,6 +8,7 @@ from protocol0.domain.lom.sample.SampleCategory import SampleCategory
 from protocol0.domain.lom.sample.SampleCategoryEnum import SampleCategoryEnum
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
 from protocol0.domain.lom.track.group_track.AbstractGroupTrack import AbstractGroupTrack
+from protocol0.domain.lom.track.group_track.MixBusTrack import MixBusTrack
 from protocol0.domain.lom.track.group_track.NormalGroupTrack import NormalGroupTrack
 from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import (
     ExternalSynthTrack,
@@ -38,7 +39,7 @@ class TrackFactory(object):
             existing_simple_track._index = index
             return existing_simple_track
 
-        special_tracks = (UsamoTrack, ResamplingTrack)
+        special_tracks = (UsamoTrack, MixBusTrack, ResamplingTrack)
 
         if cls is None:
             if track.has_midi_input:
