@@ -237,8 +237,7 @@ class DeviceEnum(AbstractEnum):
                 cls.DRUM_RACK,
                 cls.SYLENTH1,
                 cls.SERUM,
-                cls.SYNTH_MASTER_2,
-                cls.KONTAKT,
+                # cls.SYNTH_MASTER_2,
                 DeviceEnumGroup(
                     "Opus",
                     [
