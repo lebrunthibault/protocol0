@@ -225,7 +225,7 @@ class DeviceEnum(AbstractEnum):
                 DeviceEnumGroup("Sat", [cls.BLACK_BOX, cls.SATURN_2, cls.SATURATOR, cls.DECAPITATOR]),
             ],
             [
-                DeviceEnumGroup("Vol", [cls.LFO_TOOL, cls.GATEKEEPER, cls.INSERT_VOLUME]),
+                cls.LFO_TOOL,
                 DeviceEnumGroup(
                     "Delay", [cls.INSERT_DELAY, cls.SUPER_TAP_6, cls.SUPER_TAP_2, cls.DELAY]
                 ),
