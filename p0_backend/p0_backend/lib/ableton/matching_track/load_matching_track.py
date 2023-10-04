@@ -10,8 +10,8 @@ from protocol0.application.command.EmitBackendEventCommand import (
 
 
 @keep_mouse_position
-def drag_matching_track(set: AbletonSet):
-    track_path = f"{set.tracks_folder}\\{set.current_track.name}.als"
+def drag_matching_track(ableton_set: AbletonSet):
+    track_path = f"{ableton_set.path.tracks_path}\\{ableton_set.current_track.name}.als"
     drag_file_to(
         track_path,
         get_focused_track_coords(),
