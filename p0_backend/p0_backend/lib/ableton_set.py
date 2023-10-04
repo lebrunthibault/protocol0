@@ -3,7 +3,6 @@ import json
 import os.path
 import re
 import time
-from dataclasses import dataclass
 from os.path import basename, dirname
 from pathlib import Path
 from typing import List, Optional, Dict
@@ -67,8 +66,7 @@ class AbletonSetLight(BaseModel):
         return f"http://localhost:8000/static/{os.path.relpath(path, settings.ableton_set_directory)}"
 
 
-@dataclass()
-class AbletonSetPath:
+class AbletonSetPath(BaseModel):
     set_path: str
 
     @property
@@ -149,15 +147,15 @@ class AbletonSetManager:
 
         if ableton_set.is_untitled:
             if set_title.startswith("Untitled"):
-                ableton_set.path = AbletonSetPath(settings.ableton_test_set_path)
+                ableton_set.path = AbletonSetPath(set_path=settings.ableton_test_set_path)
                 ableton_set.title = "Test"
             elif set_title.startswith("Default"):
-                ableton_set.path = AbletonSetPath(f"{settings.ableton_set_directory}\\Default.als")
+                ableton_set.path = AbletonSetPath(set_path=f"{settings.ableton_set_directory}\\Default.als")
                 ableton_set.title = "Default"
             else:
                 title, path = get_launched_set_path()
                 ableton_set.title = set_title
-                ableton_set.path = AbletonSetPath(path)
+                ableton_set.path = AbletonSetPath(set_path=path)
 
         if cls.LAST_SET_OPENED_AT is not None:
             startup_duration = time.time() - cls.LAST_SET_OPENED_AT
@@ -205,7 +203,7 @@ class AbletonSetManager:
         if path is None:
             path = f"{settings.ableton_set_directory}\\tracks\\{title}\\{title}.als"
 
-        ableton_set.path = AbletonSetPath(path)
+        ableton_set.path = AbletonSetPath(set_path=path)
 
         command = EmitBackendEventCommand("set_updated", data=ableton_set.dict())
         command.set_id = ableton_set.id
@@ -224,7 +222,7 @@ class AbletonSetManager:
 
     @classmethod
     def write_scene_stats(cls, scene_stats: SceneStats):
-        set_path = AbletonSetPath(get_launched_set_path()[1])
+        set_path = AbletonSetPath(set_path=get_launched_set_path()[1])
 
         with open(set_path.metadata_path, "w") as f:
             f.write(scene_stats.json())

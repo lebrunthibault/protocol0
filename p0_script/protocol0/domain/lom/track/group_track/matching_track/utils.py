@@ -18,9 +18,9 @@ def assert_valid_track_name(track_name: str) -> None:
     from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 
     excluded_names = [d.value.lower() for d in DeviceEnum if d.is_instrument]
-    excluded_names += ["synth"]
+    excluded_names += ["synth", "midi", "audio"]
 
-    assert track_name.lower() not in excluded_names, "Track name should be specific"
+    assert track_name.lower() not in excluded_names, f"Track name should be specific : '{track_name}'"
 
 
 def ensure_clips_looped(clips: List[Clip]) -> None:

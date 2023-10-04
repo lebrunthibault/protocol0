@@ -4,6 +4,7 @@ from typing import Optional
 
 import Live
 from protocol0.domain.lom.clip.Clip import Clip
+from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device.DeviceLoadedEvent import DeviceLoadedEvent
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
@@ -29,8 +30,16 @@ class DeviceService(object):
     def load_device(self, enum_name: str) -> Sequence:
         device_enum = DeviceEnum[enum_name]
         track = self._track_to_select(device_enum)
-
-        track.device_insert_mode = Live.Track.DeviceInsertMode.selected_right
+        device_to_select = self._get_device_to_select_for_insertion(track, device_enum)
+        from protocol0.shared.logging.Logger import Logger
+        Logger.dev(f"device_to_select: {device_to_select}")
+        if device_to_select:
+            track.device_insert_mode = Live.Track.DeviceInsertMode.selected_left
+            self._device_component.select_device(track, device_to_select)
+        else:
+            track.device_insert_mode = Live.Track.DeviceInsertMode.selected_right
+            if len(list(track.devices)) > 0:
+                self._device_component.select_device(track, list(track.devices)[-1])
 
         seq = Sequence()
         seq.add(track.select)
@@ -91,3 +100,19 @@ class DeviceService(object):
         parameter = device.get_parameter_by_name(device.enum.default_parameter)
         assert parameter is not None, "parameter not found"
         clip.automation.show_parameter_envelope(parameter)
+
+    def _get_device_to_select_for_insertion(self, track: SimpleTrack, device_enum: DeviceEnum) -> Optional[Device]:
+        if len(list(track.devices)) == 0:
+            return None
+
+        from protocol0.shared.logging.Logger import Logger
+        Logger.dev(device_enum.device_group_position)
+
+        for device in track.devices:
+            if device == track.instrument_rack_device:
+                continue
+
+            if device.enum.device_group_position > device_enum.device_group_position:
+                return device
+
+        return None

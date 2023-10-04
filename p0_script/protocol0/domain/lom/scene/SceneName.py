@@ -38,7 +38,7 @@ class SceneName(SlotManager):
         if time.time() >= self._last_updated_at + 0.1:
             Scheduler.defer(self.update)
 
-    def _get_base_name(self) -> str:
+    def get_base_name(self) -> str:
         if not self._scene:
             raise Protocol0Error("invalid scene object")
 
@@ -55,7 +55,7 @@ class SceneName(SlotManager):
     def update(self, base_name: str = None, bar_position: Optional[int] = None) -> None:
         """throttling to avoid multiple calls due to name listener"""
         try:
-            base_name = base_name if base_name else self._get_base_name()
+            base_name = base_name if base_name else self.get_base_name()
         except Protocol0Error as e:
             Logger.warning(str(e))
             self.disconnect()

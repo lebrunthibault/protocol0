@@ -38,6 +38,7 @@ class DeviceEnum(AbstractEnum):
     GATEKEEPER = "Gatekeeper"
     GLUE_COMPRESSOR = "Glue Compressor"
     H_COMP = "H-Comp Stereo.vstpreset"
+    H_DELAY = "H-Delay Stereo"
     KONTAKT = "Kontakt 7.vstpreset"
     INSERT_DELAY = "Delay"
     INSERT_FILTER = "Auto Filter"
@@ -328,14 +329,122 @@ class DeviceEnum(AbstractEnum):
             return 0
 
     @property
+    def device_group_position(self) -> int:
+        predicates = [
+            lambda d: d.is_instrument,
+            lambda d: d.is_eq,
+            lambda d: d.is_compressor,
+            lambda d: d.is_saturator,
+            lambda d: d.is_filter,
+            lambda d: d.is_volume,
+            lambda d: d.is_delay,
+            lambda d: d.is_reverb,
+            lambda d: d.is_fx,
+        ]
+
+        index = 0
+        for index, predicate in enumerate(predicates):
+            if predicate(self):  # type: ignore[no-untyped-call]
+                return index
+
+        return index  # last by default
+
+    @property
     def is_instrument(self) -> bool:
         return self in [
-            DeviceEnum.REV2_EDITOR,
+            DeviceEnum.ADDICTIVE_KEYS,
+            DeviceEnum.DRUM_RACK,
             DeviceEnum.KONTAKT,
             DeviceEnum.OPUS,
             DeviceEnum.PLAY,
-            DeviceEnum.DRUM_RACK,
+            DeviceEnum.REV2_EDITOR,
+            DeviceEnum.SERUM,
             DeviceEnum.SPLICE,
+            DeviceEnum.SYLENTH1,
+            DeviceEnum.SYNTH_MASTER_2,
+        ]
+
+    @property
+    def is_eq(self) -> bool:
+        return self in [
+            DeviceEnum.EQ_EIGHT,
+            DeviceEnum.DE_ESSER,
+            DeviceEnum.PRO_Q_3,
+            DeviceEnum.PRO_Q_3_VST3,
+            DeviceEnum.SOOTHE2,
+            DeviceEnum.SURFEREQ,
+            DeviceEnum.VEQ,
+        ]
+
+    @property
+    def is_compressor(self) -> bool:
+        return self in [
+            DeviceEnum.API_2500,
+            DeviceEnum.COMPRESSOR,
+            DeviceEnum.GLUE_COMPRESSOR,
+            DeviceEnum.H_COMP,
+            DeviceEnum.L1_LIMITER,
+            DeviceEnum.SSL_COMP,
+            DeviceEnum.VCOMP,
+        ]
+
+    @property
+    def is_saturator(self) -> bool:
+        return self in [
+            DeviceEnum.BLACK_BOX,
+            DeviceEnum.DECAPITATOR,
+            DeviceEnum.DRUM_BUSS,
+            DeviceEnum.JJP_STRINGS,
+            DeviceEnum.SATURATOR,
+            DeviceEnum.SATURN_2,
+        ]
+
+    @property
+    def is_filter(self) -> bool:
+        return self in [
+            DeviceEnum.AUTO_FILTER,
+            DeviceEnum.AUTO_FILTER_HIGH_PASS,
+            DeviceEnum.AUTO_FILTER_LOW_PASS,
+            DeviceEnum.INSERT_FILTER,
+        ]
+
+    @property
+    def is_volume(self) -> bool:
+        return self in [
+            DeviceEnum.GATEKEEPER,
+            DeviceEnum.INSERT_VOLUME,
+            DeviceEnum.LFO_TOOL,
+            DeviceEnum.TRACK_SPACER,
+        ]
+
+    @property
+    def is_delay(self) -> bool:
+        return self in [
+            DeviceEnum.DELAY,
+            DeviceEnum.ENIGMA,
+            DeviceEnum.H_DELAY,
+            DeviceEnum.INSERT_DELAY,
+            DeviceEnum.SUPER_TAP_2,
+            DeviceEnum.SUPER_TAP_6,
+        ]
+
+    @property
+    def is_reverb(self) -> bool:
+        return self in [
+            DeviceEnum.INSERT_REVERB,
+            DeviceEnum.REVERB,
+            DeviceEnum.R_VERB,
+            DeviceEnum.TRUE_VERB,
+            DeviceEnum.VALHALLA_VINTAGE_VERB,
+        ]
+
+    @property
+    def is_fx(self) -> bool:
+        return self in [
+            DeviceEnum.AUTO_PAN,
+            DeviceEnum.DOUBLER2,
+            DeviceEnum.DOUBLER4,
+            DeviceEnum.EFFECTRIX,
         ]
 
     @classmethod
