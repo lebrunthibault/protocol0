@@ -3,31 +3,31 @@ import json
 import os.path
 import re
 import time
+from dataclasses import dataclass
 from os.path import basename, dirname
 from pathlib import Path
 from typing import List, Optional, Dict
 
 from loguru import logger
-
-from p0_backend.lib.scene_stats import SceneStats
-from protocol0.application.command.EmitBackendEventCommand import (
-    EmitBackendEventCommand,
-)
-from protocol0.application.command.ShowMessageCommand import ShowMessageCommand
 from pydantic import BaseModel
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.settings import Settings
 from p0_backend.celery.celery import notification_window
 from p0_backend.lib.ableton.ableton import is_ableton_focused
 from p0_backend.lib.ableton.get_set import (
     get_ableton_windows,
-    get_set_from_title,
+    get_launched_set_path,
 )
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
+from p0_backend.lib.scene_stats import SceneStats
 from p0_backend.lib.timer import start_timer
 from p0_backend.lib.window.window import get_focused_window_title
+from p0_backend.settings import Settings
+from protocol0.application.command.EmitBackendEventCommand import (
+    EmitBackendEventCommand,
+)
+from protocol0.application.command.ShowMessageCommand import ShowMessageCommand
 
 settings = Settings()
 
@@ -67,6 +67,20 @@ class AbletonSetLight(BaseModel):
         return f"http://localhost:8000/static/{os.path.relpath(path, settings.ableton_set_directory)}"
 
 
+@dataclass()
+class AbletonSetPath:
+    set_path: str
+
+    @property
+    def tracks_path(self):
+        assert self.set_path is not None, "current set is Untitled"
+        return f"{dirname(self.set_path)}\\tracks"
+
+    @property
+    def metadata_path(self) -> str:
+        return self.set_path.replace(".als", ".json")
+
+
 class AbletonSet(BaseModel):
     def __repr__(self):
         return f"AbletonSet('{self.title}')"
@@ -75,7 +89,7 @@ class AbletonSet(BaseModel):
         return self.__repr__()
 
     id: str
-    path: Optional[str]  # computed only by the backend
+    path: Optional[AbletonSetPath]
     title: Optional[str]  # computed only by the backend
     muted: bool
     current_track: AbletonTrack
@@ -87,30 +101,18 @@ class AbletonSet(BaseModel):
     def is_untitled(self):
         return self.title is None or self.title == "None"
 
-    @property
-    def tracks_folder(self):
-        assert self.path is not None, "current set is Untitled"
-        return f"{dirname(self.path)}\\tracks"
-
     @classmethod
     def all_tracks_folder(cls) -> List[str]:
         return next(os.walk(f"{settings.ableton_set_directory}\\tracks"))[1]
 
     @property
-    def temp_track_folder(self) -> str:
-        return f"{settings.ableton_set_directory}\\tracks"
-
-    @property
     def saved_temp_track(self) -> Optional[str]:
-        return next(iter(glob.glob(f"{self.temp_track_folder}\\*.als")), None)
-
-    @property
-    def metadata_path(self) -> str:
-        return f"{dirname(self.path)}\\{self.title}.json"   # type: ignore[type-var]
+        temp_track_folder = f"{settings.ableton_set_directory}\\tracks"
+        return next(iter(glob.glob(f"{temp_track_folder}\\*.als")), None)
 
     @property
     def saved_tracks(self) -> List[str]:
-        return glob.glob(f"{self.tracks_folder}\\*.als")
+        return glob.glob(f"{self.path.tracks_path}\\*.als")
 
     @property
     def saved_track_names(self) -> List[str]:
@@ -142,20 +144,20 @@ class AbletonSetManager:
 
         launched_sets = get_ableton_windows()
         set_title = re.match(r"([^*]*)", launched_sets[0]).group(1).split(" [")[0].strip()
-        # assert set_title, "set title is empty"
         if not set_title:
             return
 
         if ableton_set.is_untitled:
             if set_title.startswith("Untitled"):
-                ableton_set.path = settings.ableton_test_set_path
+                ableton_set.path = AbletonSetPath(settings.ableton_test_set_path)
                 ableton_set.title = "Test"
             elif set_title.startswith("Default"):
-                ableton_set.path = f"{settings.ableton_set_directory}\\Default.als"
+                ableton_set.path = AbletonSetPath(f"{settings.ableton_set_directory}\\Default.als")
                 ableton_set.title = "Default"
             else:
+                title, path = get_launched_set_path()
                 ableton_set.title = set_title
-                ableton_set.path = get_set_from_title(set_title)
+                ableton_set.path = AbletonSetPath(path)
 
         if cls.LAST_SET_OPENED_AT is not None:
             startup_duration = time.time() - cls.LAST_SET_OPENED_AT
@@ -203,7 +205,7 @@ class AbletonSetManager:
         if path is None:
             path = f"{settings.ableton_set_directory}\\tracks\\{title}\\{title}.als"
 
-        ableton_set.path = path
+        ableton_set.path = AbletonSetPath(path)
 
         command = EmitBackendEventCommand("set_updated", data=ableton_set.dict())
         command.set_id = ableton_set.id
@@ -219,6 +221,13 @@ class AbletonSetManager:
     @classmethod
     def has_active_set(cls) -> bool:
         return cls._ACTIVE_SET is not None
+
+    @classmethod
+    def write_scene_stats(cls, scene_stats: SceneStats):
+        set_path = AbletonSetPath(get_launched_set_path()[1])
+
+        with open(set_path.metadata_path, "w") as f:
+            f.write(scene_stats.json())
 
 
 def _check_track_name_change(existing_set: AbletonSet, new_set: AbletonSet):
@@ -261,13 +270,13 @@ def get_focused_set() -> Optional[AbletonSet]:
 
 
 def show_saved_tracks():
-    os.startfile(AbletonSetManager.active().tracks_folder)
+    os.startfile(AbletonSetManager.active().path.tracks_path)
 
 
 def delete_saved_track(track_name: str):
     active_set = AbletonSetManager.active()
     assert track_name in active_set.saved_track_names
 
-    track_path = f"{active_set.tracks_folder}\\{track_name}.als"
+    track_path = f"{active_set.path.tracks_path}\\{track_name}.als"
 
     os.unlink(track_path)

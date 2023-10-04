@@ -303,12 +303,6 @@ async def close_set(set_id: str):
     await ws_manager.broadcast_server_state()
 
 
-@router.post("/scene_stats")
-async def post_scene_stats(scene_stats: SceneStats):
-    with open(AbletonSetManager.active().metadata_path, "w") as f:
-        f.write(scene_stats.json())
-
-
 @router.get("/save_set_as_template")
 async def _save_set_as_template():
     save_set_as_template()
@@ -544,3 +538,8 @@ async def _go_to_group_track():
 @router.get("/check_audio_export_valid")
 async def check_audio_export_valid():
     p0_script_client().dispatch(CheckAudioExportValidCommand())
+
+
+@router.post("/scene_stats")
+async def post_scene_stats(scene_stats: SceneStats):
+    AbletonSetManager.write_scene_stats(scene_stats)
