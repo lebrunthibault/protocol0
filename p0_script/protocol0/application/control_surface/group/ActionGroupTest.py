@@ -44,7 +44,7 @@ class ActionGroupTest(ActionGroupInterface):
         Logger.dev(Song.selected_parameter())
         Logger.dev(Song.selected_parameter().is_quantized)
         Logger.dev(Song.selected_parameter().value)
-        Logger.dev(Song.selected_parameter().value_items)
+        Logger.dev(list(Song.selected_parameter().value_items))
 
     def action_test_scroll(self, go_next: bool) -> None:
         Song.selected_track().instrument.preset_list.scroll(go_next)

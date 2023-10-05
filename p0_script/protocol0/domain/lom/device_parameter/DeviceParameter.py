@@ -1,15 +1,20 @@
-import Live
 from typing import Any, Optional, List
+
+import Live
 
 from protocol0.domain.lom.device_parameter.DeviceParameterEnum import DeviceParameterEnum
 from protocol0.domain.shared.ValueScroller import ValueScroller
-from protocol0.domain.shared.utils.timing import accelerate
+from protocol0.domain.shared.utils.timing import accelerate, slow_down
 from protocol0.domain.shared.utils.utils import clamp
 from protocol0.shared.logging.Logger import Logger
 
 
 class DeviceParameter(object):
-    def __init__(self, device_parameter: Live.DeviceParameter.DeviceParameter, enum: Optional[DeviceParameterEnum] = None) -> None:
+    def __init__(
+        self,
+        device_parameter: Live.DeviceParameter.DeviceParameter,
+        enum: Optional[DeviceParameterEnum] = None,
+    ) -> None:
         self._device_parameter: Live.DeviceParameter.DeviceParameter = device_parameter
         self.device_name = ""
 
@@ -25,7 +30,9 @@ class DeviceParameter(object):
         return "%s: %s" % (self.name, self.value)
 
     @classmethod
-    def create_from_name(cls, device_name: str, device_parameter: Live.DeviceParameter.DeviceParameter) -> "DeviceParameter":
+    def create_from_name(
+        cls, device_name: str, device_parameter: Live.DeviceParameter.DeviceParameter
+    ) -> "DeviceParameter":
         enum = DeviceParameterEnum.from_name(device_name, device_parameter.name)
         param = cls(device_parameter, enum=enum)
         param.device_name = device_name
@@ -46,7 +53,7 @@ class DeviceParameter(object):
             return ""
 
     @property
-    def value_items(self) -> List[float]:
+    def value_items(self) -> List:
         if self._device_parameter:
             return self._device_parameter.value_items
         else:
@@ -107,7 +114,9 @@ class DeviceParameter(object):
             return False
 
     @classmethod
-    def set_live_device_parameter(cls, param: Live.DeviceParameter.DeviceParameter, value: float) -> None:
+    def set_live_device_parameter(
+        cls, param: Live.DeviceParameter.DeviceParameter, value: float
+    ) -> None:
         if not param or not param.is_enabled:
             return None
         value = max(param.min, value)
@@ -115,16 +124,24 @@ class DeviceParameter(object):
         # noinspection PyPropertyAccess
         param.value = value
 
+
+    @slow_down(factor=3)
+    def scroll_slowed(self, go_next: bool, value_items: List = None) -> None:
+        self.scroll(go_next, value_items)
+
     @accelerate
-    def scroll(self, go_next: bool, factor: int = 1) -> None:
+    def scroll(self, go_next: bool, value_items: List = None, factor: int = 1) -> None:
         if self.is_quantized:
-            self.value = ValueScroller.scroll_values(list(self.value_items), self.value, go_next)
+            if value_items is None:
+                value_items = list(self.value_items)
+
+            self.value = ValueScroller.scroll_values(value_items, self.value, go_next, rotate=False)
             return
 
         # using factor acceleration
         value_range = self.max - self.min
         step = value_range / 1000
-        step *= factor
+        step *= factor  # used by accelerate decorator
         value = self.value + step if go_next else self.value - step
         self.value = clamp(value, self.min, self.max)
 

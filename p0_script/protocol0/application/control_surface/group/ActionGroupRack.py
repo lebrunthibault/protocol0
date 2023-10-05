@@ -24,6 +24,14 @@ class ActionGroupRack(ActionGroupInterface):
                 )
                 continue
 
+            if i == 12:
+                self.add_encoder(
+                    identifier=12,
+                    name="edit arp style",
+                    on_scroll=instrument_service.scroll_arp_style,
+                )
+                continue
+
             self.add_encoder(
                 identifier=i,
                 name=f"edit macro control {i}",

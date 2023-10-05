@@ -66,8 +66,6 @@ class MidiService(object):
         self._send_program_change(event.preset_index)
 
     def _on_preset_program_scrolled_event(self, event: PresetProgramScrolledEvent) -> None:
-        from protocol0.shared.logging.Logger import Logger
-        Logger.dev(f"sending cc : {event.cc_value}")
         self._send_cc(event.cc_value)
 
     def _on_song_initialized_event(self, _: SongInitializedEvent) -> None:
