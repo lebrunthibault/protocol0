@@ -3,6 +3,8 @@ from typing import Optional, Tuple, Callable
 
 from protocol0.application.CommandBus import CommandBus
 from protocol0.application.command.SerializableCommand import SerializableCommand
+from protocol0.domain.lom.instrument.preset.PresetProgramScrolledEvent import \
+    PresetProgramScrolledEvent
 from protocol0.domain.lom.instrument.preset.PresetProgramSelectedEvent import (
     PresetProgramSelectedEvent,
 )
@@ -25,6 +27,7 @@ class MidiService(object):
 
         DomainEventBus.subscribe(MidiBytesReceivedEvent, self._on_midi_bytes_received_event)
         DomainEventBus.subscribe(PresetProgramSelectedEvent, self._on_preset_program_selected_event)
+        DomainEventBus.subscribe(PresetProgramScrolledEvent, self._on_preset_program_scrolled_event)
         DomainEventBus.once(SongInitializedEvent, self._on_song_initialized_event)
 
     def _sysex_to_string(self, sysex: Tuple) -> str:
@@ -32,6 +35,14 @@ class MidiService(object):
 
     def _send_program_change(self, value: int, channel: int = 0) -> None:
         self._send_formatted_midi_message("pc", channel, value)
+
+    def _send_cc(self, value: int, channel: int = 0) -> None:
+        self._send_formatted_midi_message("cc", channel, value, 1)
+
+        def send_127() -> None:
+            self._send_formatted_midi_message("cc", channel, value, 127)
+
+        Scheduler.defer(send_127)
 
     def _send_formatted_midi_message(self, message_type: str, channel: int, value: int, value2: Optional[int] = None) -> None:
         status = self._MIDI_STATUS_BYTES[message_type]
@@ -53,6 +64,11 @@ class MidiService(object):
 
     def _on_preset_program_selected_event(self, event: PresetProgramSelectedEvent) -> None:
         self._send_program_change(event.preset_index)
+
+    def _on_preset_program_scrolled_event(self, event: PresetProgramScrolledEvent) -> None:
+        from protocol0.shared.logging.Logger import Logger
+        Logger.dev(f"sending cc : {event.cc_value}")
+        self._send_cc(event.cc_value)
 
     def _on_song_initialized_event(self, _: SongInitializedEvent) -> None:
         Backend.client().ping()
