@@ -5,7 +5,7 @@ import re
 import time
 from os.path import basename, dirname
 from pathlib import Path
-from typing import List, Optional, Dict
+from typing import List, Optional
 
 from loguru import logger
 from pydantic import BaseModel
@@ -37,33 +37,55 @@ class AbletonTrack(BaseModel):
     index: int
 
 
+class AudioFileInfo(BaseModel):
+    filename: str
+    url: str
+    saved_at: float
+    outdated: bool
+
+
 class AbletonSetLight(BaseModel):
-    path: str
+    filename: str
+    saved_at: float
 
     def dict(self, *a, **k):
         output = super(AbletonSetLight, self).dict(*a, **k)
-        output["name"] = Path(self.path).stem
+        output["name"] = Path(self.filename).stem
         output["metadata"] = self.metadata
-        output["audio_url"] = self.audio_url
+        output["audio"] = self.audio_info
 
         return output
 
     @property
-    def metadata(self) -> Optional[Dict]:
-        path = f"{dirname(self.path)}\\{Path(self.path).stem}.json"
+    def metadata(self) -> Optional[SceneStats]:
+        path = f"{dirname(self.filename)}\\{Path(self.filename).stem}.json"
         if not os.path.exists(path):
             return None
 
         with open(path, "r") as f:
-            return SceneStats(**json.loads(f.read())).dict()
+            args = json.loads(f.read())
+            args["filename"] = path
+            args["saved_at"] = os.path.getmtime(path)
+            return SceneStats(**args)
 
     @property
-    def audio_url(self) -> Optional[str]:
-        path = f"{dirname(self.path)}\\{Path(self.path).stem}.wav"
+    def audio_info(self) -> Optional[AudioFileInfo]:
+        audio_filename = f"{Path(self.filename).stem}.wav"
+        path = f"{dirname(self.filename)}\\{audio_filename}"
         if not os.path.exists(path):
             return None
 
-        return f"http://localhost:8000/static/{os.path.relpath(path, settings.ableton_set_directory)}"
+        audio_url = (
+            f"http://localhost:8000/static/{os.path.relpath(path, settings.ableton_set_directory)}"
+        )
+
+        saved_at = os.path.getmtime(path)
+        return AudioFileInfo(
+            filename=audio_filename,
+            url=audio_url,
+            saved_at=saved_at,
+            outdated=self.saved_at - saved_at > 30 * 60,  # 30 min
+        )
 
 
 class AbletonSetPath(BaseModel):
@@ -150,7 +172,9 @@ class AbletonSetManager:
                 ableton_set.path = AbletonSetPath(set_path=settings.ableton_test_set_path)
                 ableton_set.title = "Test"
             elif set_title.startswith("Default"):
-                ableton_set.path = AbletonSetPath(set_path=f"{settings.ableton_set_directory}\\Default.als")
+                ableton_set.path = AbletonSetPath(
+                    set_path=f"{settings.ableton_set_directory}\\Default.als"
+                )
                 ableton_set.title = "Default"
             else:
                 title, path = get_launched_set_path()

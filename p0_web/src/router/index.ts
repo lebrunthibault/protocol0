@@ -1,5 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import AbletonSetView from '../views/AbletonSetView.vue'
+import {createRouter, createWebHistory} from 'vue-router'
 import ActionView from '../views/ScriptActionsView.vue'
 import HomeView from '../views/HomeView.vue'
 
@@ -10,11 +9,6 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView
-    },
-    {
-      path: '/set',
-      name: 'abletonSet',
-      component: AbletonSetView
     },
     {
       path: '/actions',

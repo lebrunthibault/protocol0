@@ -6,13 +6,11 @@
         {{ selectedSet.name }}
       </h3>
       <div class="btn-group" role="group">
-        <AbletonSetDetails
+        <AbletonSetSceneData
             :ableton-set="selectedSet"  :scene-data="currentScene" v-if="currentScene"
             @scene-skip="onSceneSkip"
-        ></AbletonSetDetails>
-        <button @click="openInExplorer" type="button" class="btn btn-light">
-          <i class="fa-solid fa-folder" data-toggle="tooltip" data-placement="top" title="Open in Explorer"></i>
-        </button>
+        ></AbletonSetSceneData>
+        <AbletonSetInfo :ableton-set="selectedSet"></AbletonSetInfo>
       </div>
     </div>
       <AbletonSetPlayer :ableton-set="selectedSet" @sceneChange="onSceneChange" :time="playerTime"></AbletonSetPlayer>
@@ -28,8 +26,9 @@
             {{ abletonSet.name }}
           </div>
           <div>
-            <span @click="selectSet(abletonSet)" class="badge rounded-pill bg-success mx-1">
-              <i class="fa-solid fa-volume-high" v-if="abletonSet.audio_url"></i>
+            <span  @click="selectSet(abletonSet)" class="badge rounded-pill mx-1"
+                  :class="{'bg-success': !abletonSet.audio?.outdated, 'bg-warning': abletonSet.audio?.outdated}">
+              <i class="fa-solid fa-volume-high"></i>
             </span>
             <span @click="selectSet(abletonSet)" class="badge rounded-pill bg-secondary">
               <i class="fa-solid fa-bars" v-if="abletonSet.metadata"></i>
@@ -46,12 +45,13 @@
 import { defineComponent } from 'vue'
 import { apiService } from '@/utils/apiService'
 import AbletonSetPlayer from "@/components/ableton_sets/AbletonSetPlayer.vue";
-import AbletonSetDetails from "@/components/ableton_sets/AbletonSetDetails.vue";
+import AbletonSetSceneData from "@/components/ableton_sets/AbletonSetSceneData.vue";
+import AbletonSetInfo from "@/components/ableton_sets/AbletonSetInfo.vue";
 
 
 export default defineComponent({
   name: 'AbletonSets',
-  components: {AbletonSetPlayer, AbletonSetDetails},
+  components: {AbletonSetInfo, AbletonSetPlayer, AbletonSetSceneData},
   data: () => ({
     abletonSets: {},
     selectedSet: null as AbletonSet | null,
@@ -64,7 +64,7 @@ export default defineComponent({
       this.currentScene = this.selectedSet.metadata ? this.selectedSet.metadata.scenes[0] : null
     },
     async openInExplorer() {
-      await apiService.fetch(`/open_in_explorer?path=${this.selectedSet?.path}`)
+      await apiService.fetch(`/open_in_explorer?path=${this.selectedSet?.filename}`)
     },
     onSceneChange(sceneData: SceneData) {
       this.currentScene = sceneData

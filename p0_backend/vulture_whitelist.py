@@ -56,3 +56,7 @@ AbletonSetProfiler  # unused class (p0_backend\lib\ableton\set_profiling\ableton
 _.register  # unused method (p0_backend\lib\ableton_set.py:101)
 list_sets  # unused function (p0_backend\lib\server_state.py:18)
 _.write_scene_stats  # unused method (p0_backend\lib\ableton_set.py:232)
+url  # unused variable (p0_backend\lib\ableton_set.py:42)
+saved_at  # unused variable (p0_backend\lib\ableton_set.py:43)
+saved_at  # unused variable (p0_backend\lib\ableton_set.py:48)
+outdated  # unused variable (p0_backend\lib\ableton_set.py:44)
