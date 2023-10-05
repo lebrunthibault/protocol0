@@ -124,13 +124,14 @@ class DeviceParameter(object):
         # noinspection PyPropertyAccess
         param.value = value
 
-
     @slow_down(factor=3)
     def scroll_slowed(self, go_next: bool, value_items: List = None) -> None:
         self.scroll(go_next, value_items)
 
     @accelerate
-    def scroll(self, go_next: bool, value_items: List = None, factor: int = 1) -> None:
+    def scroll(
+        self, go_next: bool, value_items: List = None, factor: int = 1, steps: int = 1000
+    ) -> None:
         if self.is_quantized:
             if value_items is None:
                 value_items = list(self.value_items)
@@ -140,7 +141,7 @@ class DeviceParameter(object):
 
         # using factor acceleration
         value_range = self.max - self.min
-        step = value_range / 1000
+        step = value_range / steps
         step *= factor  # used by accelerate decorator
         value = self.value + step if go_next else self.value - step
         self.value = clamp(value, self.min, self.max)

@@ -16,7 +16,7 @@ class InstrumentService(object):
         else:
             param.value = param.min
 
-    def scroll_macro_control(self, index: int, go_next: bool) -> None:
+    def scroll_macro_control(self, index: int, go_next: bool, steps: int = 1000) -> None:
         rack_device = Song.selected_track().instrument_rack_device
         assert rack_device is not None, "No instrument rack device"
 
@@ -24,7 +24,7 @@ class InstrumentService(object):
         if self._DEBUG:
             Logger.info((param.min, param.max, param.value, param.is_quantized))
 
-        param.scroll(go_next)
+        param.scroll(go_next, steps=steps)
 
     def scroll_arp_style(self, go_next: bool) -> None:
         rack_device = Song.selected_track().instrument_rack_device
