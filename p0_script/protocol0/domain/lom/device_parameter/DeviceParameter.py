@@ -2,6 +2,7 @@ import Live
 from typing import Any, Optional, List
 
 from protocol0.domain.lom.device_parameter.DeviceParameterEnum import DeviceParameterEnum
+from protocol0.domain.shared.ValueScroller import ValueScroller
 from protocol0.domain.shared.utils.timing import accelerate
 from protocol0.domain.shared.utils.utils import clamp
 from protocol0.shared.logging.Logger import Logger
@@ -116,6 +117,10 @@ class DeviceParameter(object):
 
     @accelerate
     def scroll(self, go_next: bool, factor: int = 1) -> None:
+        if self.is_quantized:
+            self.value = ValueScroller.scroll_values(list(self.value_items), self.value, go_next)
+            return
+
         # using factor acceleration
         value_range = self.max - self.min
         step = value_range / 1000

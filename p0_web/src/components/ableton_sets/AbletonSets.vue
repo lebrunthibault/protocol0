@@ -16,11 +16,11 @@
       <AbletonSetPlayer :ableton-set="selectedSet" @sceneChange="onSceneChange" :time="playerTime"></AbletonSetPlayer>
   </div>
   <div class="row">
-    <div v-for="(category, i) in ['palettes', 'splurges', 'tracks', 'paused']" :key="i" class="col-sm px-5">
-      <h2 class="text-center mb-4">{{ category }}</h2>
+    <div v-for="(setFolder, i) in setFolders" :key="i" class="col-sm px-5">
+      <h2 class="text-center mb-4">{{ setFolder }}</h2>
       <div class="list-group list-group-flush">
-        <div  v-for="(abletonSet, j) in abletonSets[category]" :key="j"
-           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+        <div v-for="(abletonSet, j) in getSetsFromFolder(setFolder)" :key="j"
+             class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
         >
           <div @click="selectSet(abletonSet)" class="flex-grow-1 btn" style="text-align: left">
             {{ abletonSet.name }}
@@ -58,7 +58,28 @@ export default defineComponent({
     currentScene: null as SceneData | null,
     playerTime: 0,
   }),
+  computed: {
+    setFolders() {
+        if (this.showArchives) {
+          return ['_released', 'paused']
+        } else {
+          return ['drafts', 'tracks']
+        }
+    },
+    showArchives(): boolean {
+      return Boolean(this.$route.query.archive)
+    }
+  },
   methods: {
+    getSetsFromFolder(category: string): AbletonSet[] {
+      const isSetValid = (abletonSet: AbletonSet) => {
+        return !["test", "tests"].includes(abletonSet?.name.toLowerCase().trim())
+      }
+
+      const sets = this.abletonSets[category]
+      
+      return sets ? this.abletonSets[category].filter(isSetValid) : []
+    },
     selectSet(abletonSet: AbletonSet) {
       this.selectedSet = abletonSet
       this.currentScene = this.selectedSet.metadata ? this.selectedSet.metadata.scenes[0] : null

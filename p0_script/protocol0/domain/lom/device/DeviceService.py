@@ -16,12 +16,18 @@ from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.BrowserServiceInterface import BrowserServiceInterface
 from protocol0.domain.shared.ValueScroller import ValueScroller
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
+from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.Song import Song
 from protocol0.shared.sequence.Sequence import Sequence
 
 
 class DeviceService(object):
-    def __init__(self, track_crud_component: TrackCrudComponent, device_component: DeviceComponent, browser_service: BrowserServiceInterface) -> None:
+    def __init__(
+        self,
+        track_crud_component: TrackCrudComponent,
+        device_component: DeviceComponent,
+        browser_service: BrowserServiceInterface,
+    ) -> None:
         self._track_crud_component = track_crud_component
         self._device_component = device_component
         self._browser_service = browser_service
@@ -32,6 +38,7 @@ class DeviceService(object):
         track = self._track_to_select(device_enum)
         device_to_select = self._get_device_to_select_for_insertion(track, device_enum)
         from protocol0.shared.logging.Logger import Logger
+
         Logger.dev(f"device_to_select: {device_to_select}")
         if device_to_select:
             track.device_insert_mode = Live.Track.DeviceInsertMode.selected_left
@@ -101,11 +108,14 @@ class DeviceService(object):
         assert parameter is not None, "parameter not found"
         clip.automation.show_parameter_envelope(parameter)
 
-    def _get_device_to_select_for_insertion(self, track: SimpleTrack, device_enum: DeviceEnum) -> Optional[Device]:
+    def _get_device_to_select_for_insertion(
+        self, track: SimpleTrack, device_enum: DeviceEnum
+    ) -> Optional[Device]:
         if len(list(track.devices)) == 0:
             return None
 
         from protocol0.shared.logging.Logger import Logger
+
         Logger.dev(device_enum.device_group_position)
 
         for device in track.devices:
@@ -116,3 +126,14 @@ class DeviceService(object):
                 return device
 
         return None
+
+    def scroll_high_pass_filter(self, go_next: bool) -> None:
+        eq_eight: Optional[Device] = find_if(
+            lambda d: d.enum == DeviceEnum.EQ_EIGHT, Song.selected_track().devices
+        )
+
+        if not eq_eight:
+            self.load_device(DeviceEnum.EQ_EIGHT.name)
+            return
+
+        eq_eight.parameters[0].scroll(go_next)

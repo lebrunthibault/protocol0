@@ -1,9 +1,6 @@
-import glob
 from functools import partial
-from os.path import dirname, basename
+from typing import Dict, Any, Optional
 from uuid import uuid4
-
-from typing import Dict, Any, Optional, List
 
 from protocol0.application.ScriptDisconnectedEvent import ScriptDisconnectedEvent
 from protocol0.domain.lom.device.DrumRackLoadedEvent import DrumRackLoadedEvent
@@ -56,14 +53,14 @@ class AbletonSet(object):
     def is_test(self) -> bool:
         return self._title in ("Toto", "Default")
 
-    @property
-    def _saved_tracks(self) -> List[str]:
-        assert self._path, "set path not set"
-        tracks_folder = "%s\\tracks" % dirname(self._path)
-
-        filenames = glob.glob("%s\\*.als" % tracks_folder)
-
-        return [basename(t).replace(".als", "") for t in filenames]
+    # @property
+    # def _saved_tracks(self) -> List[str]:
+    #     assert self._path, "set path not set"
+    #     tracks_folder = "%s\\tracks" % dirname(self._path)
+    #
+    #     filenames = glob.glob("%s\\*.als" % tracks_folder)
+    #
+    #     return [basename(t).replace(".als", "") for t in filenames]
 
     def get_id(self) -> str:
         return self._id
@@ -105,20 +102,20 @@ class AbletonSet(object):
         self._title = res["title"]
         self._path = res["path"]
 
-        if not self.is_unknown and not self.is_test:
-            abstract_track_names = [t.name for t in Song.abstract_tracks()]
-            orphan_tracks = [
-                t
-                for t in self._saved_tracks
-                if t not in abstract_track_names
-                and t.replace(" midi", "") not in abstract_track_names
-            ]
-
-            if len(orphan_tracks):
-                Backend.client().show_warning(
-                    "Found orphan saved tracks: \n\n%s" % "\n".join(orphan_tracks)
-                )
-                Backend.client().show_saved_tracks()
+        # if not self.is_unknown and not self.is_test:
+        #     abstract_track_names = [t.name for t in Song.abstract_tracks()]
+        #     orphan_tracks = [
+        #         t
+        #         for t in self._saved_tracks
+        #         if t not in abstract_track_names
+        #         and t.replace(" midi", "") not in abstract_track_names
+        #     ]
+        #
+        #     if len(orphan_tracks):
+        #         Backend.client().show_warning(
+        #             "Found orphan saved tracks: \n\n%s" % "\n".join(orphan_tracks)
+        #         )
+        #         Backend.client().show_saved_tracks()
 
     def _disconnect(self) -> None:
         Backend.client().close_set(self._id)
