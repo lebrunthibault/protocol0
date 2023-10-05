@@ -283,7 +283,7 @@ async def get_set(path: str) -> AbletonSetLight:
 
     ableton_sets = list(chain.from_iterable(list_sets().values()))
 
-    return next(s for s in ableton_sets if s.path == path)
+    return next(s for s in ableton_sets if s.filename == path)
 
 
 @router.post("/set")

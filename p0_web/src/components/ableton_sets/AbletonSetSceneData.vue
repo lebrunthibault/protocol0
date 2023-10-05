@@ -1,8 +1,8 @@
 <template>
-  <button @click="showScene" type="button" class="btn btn-lg btn-light">
+  <button @click="showSceneData" type="button" class="btn btn-lg btn-light">
     <i class="fa-solid fa-bars" data-toggle="tooltip" data-placement="top" title="Show scene details"></i>
   </button>
-  <div class="modal" id="sceneModal" tabindex="-1" role="dialog" v-if="sceneData">
+  <div class="modal" id="setSceneModal" tabindex="-1" role="dialog" v-if="sceneData">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -38,10 +38,9 @@
 <script lang="ts">
 
 import {defineComponent, PropType} from "vue";
-import AbletonSet from "@/components/ableton_sets/AbletonSet.vue";
 
 export default defineComponent({
-  name: 'AbletonSetDetails',
+  name: 'AbletonSetSceneData',
   props: {
     abletonSet: Object as PropType<AbletonSet>,
     sceneData: Object as PropType<SceneData>,
@@ -75,8 +74,8 @@ export default defineComponent({
     }
   },
   methods: {
-    showScene() {
-      $('#sceneModal').modal('show')
+    showSceneData() {
+      $('#setSceneModal').modal('show')
     },
     sceneSkip() {
       this.$emit('sceneSkip', 1)

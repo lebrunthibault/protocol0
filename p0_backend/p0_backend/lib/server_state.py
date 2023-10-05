@@ -36,7 +36,7 @@ def list_sets() -> Dict[str, List[AbletonSetLight]]:
             if top_folder not in ("palettes", "splurges") and Path(als_file).stem != basename(dirname(als_file)):
                 continue
 
-            ableton_sets[top_folder].append(AbletonSetLight(path=als_file))
+            ableton_sets[top_folder].append(AbletonSetLight(filename=als_file, saved_at=Path(als_file).stat().st_mtime))
 
     return ableton_sets
 

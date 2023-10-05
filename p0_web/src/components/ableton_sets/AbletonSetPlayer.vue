@@ -49,7 +49,7 @@ export default defineComponent({
       return null
     },
     loadWaveform() {
-      if (!this.abletonSet?.audio_url) {
+      if (!this.abletonSet?.audio?.url) {
         return
       }
 
@@ -57,7 +57,7 @@ export default defineComponent({
 
       this.wavesurfer = WaveSurfer.create({
         container: '#waveform',
-        url: this.abletonSet?.audio_url,
+        url: this.abletonSet?.audio?.url,
         waveColor: '#227DD8',
         progressColor: '#0B2E50',
         barHeight: 1,
