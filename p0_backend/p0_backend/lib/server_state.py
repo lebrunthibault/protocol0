@@ -16,7 +16,7 @@ settings = Settings()
 
 
 def list_sets() -> Dict[str, List[AbletonSetLight]]:
-    top_folders = ["palettes" , "paused", "splurges", "tracks"]
+    top_folders = ["_released", "paused", "drafts", "tracks"]
     excluded_sets = ["Dancing Feet", "Backup"]
     ableton_sets = {}
 
@@ -33,7 +33,7 @@ def list_sets() -> Dict[str, List[AbletonSetLight]]:
             if any(word in als_file for word in excluded_sets):
                 continue
 
-            if top_folder not in ("palettes", "splurges") and Path(als_file).stem != basename(dirname(als_file)):
+            if top_folder not in ("drafts",) and Path(als_file).stem != basename(dirname(als_file)):
                 continue
 
             ableton_sets[top_folder].append(AbletonSetLight(filename=als_file, saved_at=Path(als_file).stat().st_mtime))
@@ -57,7 +57,7 @@ class ServerState(BaseModel):
 
         return ServerState(
             active_set=AbletonSetManager.active().dict() if AbletonSetManager.has_active_set() else None,
-            set_shortcuts=["last", "default", "new"],
+            set_shortcuts=["default", "new"],
             sample_categories={
                 category.name.lower(): category.subcategories
                 for category in list(SampleCategoryEnum)

@@ -1,12 +1,15 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4 px-3">
-    <a class="navbar-brand" href="#">
-      <img src="@/assets/protocol0_icon.png" width="30" height="30" alt="" />
-    </a>
+      <router-link to="/" class="nav-item nav-link m-3">
+        <img src="@/assets/protocol0_icon.png" width="30" height="30" alt="" />
+      </router-link>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
         <li>
           <router-link to="/actions" class="nav-item nav-link m-3">Actions</router-link>
+        </li>
+        <li>
+          <router-link to="/?archive=true" class="nav-item nav-link m-3">Archive</router-link>
         </li>
       </ul>
     </div>
