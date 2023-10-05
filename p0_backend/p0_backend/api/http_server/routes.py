@@ -311,6 +311,12 @@ async def post_scene_stats(scene_stats: SceneStats):
     write_scene_stats(scene_stats)
 
 
+# @router.post("/set/stars")
+# async def post_set_stars(stars: int):
+#     from loguru import logger
+#     logger.success(stars)
+
+
 @router.get("/save_set_as_template")
 async def _save_set_as_template():
     save_set_as_template()
