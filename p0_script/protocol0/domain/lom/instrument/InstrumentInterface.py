@@ -1,7 +1,7 @@
 from functools import partial
+from typing import Optional, Type
 
 from _Framework.SubjectSlot import SlotManager
-from typing import Optional, Type
 
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
@@ -55,7 +55,6 @@ class InstrumentInterface(SlotManager):
     PRESET_EXTENSION = ""
     PRESET_DISPLAY_OPTION = PresetDisplayOptionEnum.NAME
     DEFAULT_NOTE = 60
-    PRESET_OFFSET = 0  # if we store presets not at the beginning of the list
     PRESET_CHANGER: Type[PresetChangerInterface] = ProgramChangePresetChanger
     PRESET_INITIALIZER: Type[PresetInitializerInterface] = PresetInitializerDevicePresetName
     INSTRUMENT_TRACK_NAME = ""
@@ -71,7 +70,7 @@ class InstrumentInterface(SlotManager):
             device, self.PRESETS_PATH, self.PRESET_EXTENSION
         )
         preset_initializer = self.PRESET_INITIALIZER(device, track_name)
-        preset_changer = self.PRESET_CHANGER(device, self.PRESET_OFFSET)
+        preset_changer = self.PRESET_CHANGER(device)
 
         self.preset_list = InstrumentPresetList(preset_importer, preset_initializer, preset_changer)
 

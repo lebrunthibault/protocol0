@@ -14,5 +14,4 @@ class InstrumentMinitaur(InstrumentInterface):
     PRESETS_PATH = (
         "C:\\Users\\thiba\\AppData\\Roaming\\Moog Music Inc\\Minitaur\\Presets Library\\User"
     )
-    PRESET_OFFSET = 1
     PRESET_INITIALIZER = PresetInitializerGroupTrackName

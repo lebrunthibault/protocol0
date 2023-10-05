@@ -69,6 +69,7 @@ from protocol0.application.command.MatchClipColorCommand import MatchClipColorCo
 from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongCommand
 from protocol0.application.command.RecordUnlimitedCommand import RecordUnlimitedCommand
 from protocol0.application.command.ReloadScriptCommand import ReloadScriptCommand
+from protocol0.application.command.ScrollPresetsCommand import ScrollPresetsCommand
 from protocol0.application.command.ScrollScenePositionCommand import ScrollScenePositionCommand
 from protocol0.application.command.ScrollSceneTracksCommand import ScrollSceneTracksCommand
 from protocol0.application.command.ScrollScenesCommand import ScrollScenesCommand
@@ -490,6 +491,11 @@ async def scroll_scene_tracks(direction: str):
 @router.get("/scroll_track_volume")
 async def scroll_track_volume(direction: str):
     p0_script_client().dispatch(ScrollTrackVolumeCommand(go_next=direction == "next"))
+
+
+@router.get("/scroll_presets")
+async def scroll_presets(direction: str):
+    p0_script_client().dispatch(ScrollPresetsCommand(go_next=direction == "next"))
 
 
 @router.get("/toggle_reference")

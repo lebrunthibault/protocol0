@@ -10,7 +10,6 @@ from protocol0.shared.Config import Config
 
 
 class DeviceEnum(AbstractEnum):
-    ADDICTIVE_KEYS = "Addictive Keys"
     API_2500 = "API-2500 Stereo"
     AUDIO_EFFECT_RACK = "Audio Effect Rack"
     AUTO_FILTER = "Auto Filter"
@@ -268,7 +267,6 @@ class DeviceEnum(AbstractEnum):
         try:
             return self.get_value_from_mapping(
                 {
-                    DeviceEnum.ADDICTIVE_KEYS: 1263,
                     DeviceEnum.API_2500: 95,
                     DeviceEnum.AUDIO_EFFECT_RACK: 8,
                     DeviceEnum.AUTO_FILTER: 7,
@@ -354,7 +352,6 @@ class DeviceEnum(AbstractEnum):
     @property
     def is_instrument(self) -> bool:
         return self in [
-            DeviceEnum.ADDICTIVE_KEYS,
             DeviceEnum.DRUM_RACK,
             DeviceEnum.KONTAKT,
             DeviceEnum.OPUS,
