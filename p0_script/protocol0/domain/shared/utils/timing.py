@@ -104,8 +104,8 @@ def accelerate(func: Func) -> Func:
     """
     # in ms : the duration considered for increasing the acceleration factor
     ACCELERATION_ACTIVATION_DURATION = 700
-    # above this is too fast
-    MAX_ACCELERATION = 25
+    # between 20 and 25 is fine
+    MAX_ACCELERATION = 23
     # number of calls allowed before acceleration starts
     FINE_TUNING_RANGE = 2
 
