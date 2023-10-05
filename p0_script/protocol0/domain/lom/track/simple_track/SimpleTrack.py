@@ -195,10 +195,10 @@ class SimpleTrack(AbstractTrack):
             if not isinstance(device, RackDevice):
                 continue
 
-            devices = device.chains[0].devices
-
-            if len(devices) and any(d == self.instrument.device for d in devices):
-                return device
+            for chain in device.chains:
+                for chain_device in chain.devices:
+                    if chain_device == self.instrument.device:
+                        return device
 
         return None
 

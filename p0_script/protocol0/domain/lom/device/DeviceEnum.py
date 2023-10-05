@@ -71,7 +71,8 @@ class DeviceEnum(AbstractEnum):
     SAMPLE_PITCH_RACK = "Sample Pitch Rack"
     SATURATOR = "Saturator"
     SATURN_2 = "Saturn 2"
-    SERUM = "Serum Rack.adg"
+    SERUM = "Serum_x64"
+    SERUM_RACK = "Serum Rack.adg"
     SIMPLER = "Simpler"
     SOOTHE2 = "soothe2"
     SOUNDID_REFERENCE_PLUGIN = "SoundID Reference Plugin"
@@ -81,7 +82,8 @@ class DeviceEnum(AbstractEnum):
     SUPER_TAP_2 = "SuperTap 2-Taps Stereo"
     SUPER_TAP_6 = "SuperTap 6-Taps Stereo"
     SURFEREQ = "SurferEQ"
-    SYLENTH1 = "Sylenth1 Rack.adg"
+    SYLENTH1 = "Sylenth1"
+    SYLENTH1_RACK = "Sylenth1 Rack.adg"
     SYNTH_MASTER_2 = "SynthMaster 2.vstpreset"
     TRACK_SPACER = "Trackspacer 2.5"
     TRUE_VERB = "TrueVerb Stereo"
@@ -236,8 +238,8 @@ class DeviceEnum(AbstractEnum):
             ],
             [
                 cls.DRUM_RACK,
-                cls.SYLENTH1,
-                cls.SERUM,
+                cls.SYLENTH1_RACK,
+                cls.SERUM_RACK,
                 # cls.SYNTH_MASTER_2,
                 DeviceEnumGroup(
                     "Opus",
@@ -359,8 +361,10 @@ class DeviceEnum(AbstractEnum):
             DeviceEnum.PLAY,
             DeviceEnum.REV2_EDITOR,
             DeviceEnum.SERUM,
+            DeviceEnum.SERUM_RACK,
             DeviceEnum.SPLICE,
             DeviceEnum.SYLENTH1,
+            DeviceEnum.SYLENTH1_RACK,
             DeviceEnum.SYNTH_MASTER_2,
         ]
 
