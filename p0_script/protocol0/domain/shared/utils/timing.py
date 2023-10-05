@@ -49,6 +49,27 @@ def debounce(duration: int = 100) -> Func:
 
     return wrap
 
+def slow_down(factor: int = 2) -> Func:
+    """Make the function be called factor times less"""
+
+    def wrap(func: Func) -> Func:
+        @wraps(func)
+        def decorate(*a: Any, **k: Any) -> None:
+            object_source = a[0] if inspect.ismethod(func) else decorate
+
+            decorate.count[object_source] += 1  # type: ignore[attr-defined]
+
+            if decorate.count[object_source] == factor:  # type: ignore[attr-defined]
+                decorate.count[object_source] = 0  # type: ignore[attr-defined]
+                func(*a, **k)
+                return
+
+        decorate.count = defaultdict(int)  # type: ignore[attr-defined]
+
+        return decorate
+
+    return wrap
+
 
 class Throttler(object):
     def __init__(self, func: Callable, duration: int) -> None:
