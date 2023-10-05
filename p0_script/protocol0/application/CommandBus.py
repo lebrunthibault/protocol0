@@ -82,7 +82,7 @@ class CommandBus(object):
         if (
             type(command) not in broadcast_commands
             and command.set_id is not None
-            and command.set_id != self._ableton_set.get_id()
+            and command.set_id != self._ableton_set.path
         ):
             pass
 

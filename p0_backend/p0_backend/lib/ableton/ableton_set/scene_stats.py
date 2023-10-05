@@ -11,6 +11,4 @@ class SceneStat(BaseModel):
 
 
 class SceneStats(BaseModel):
-    filename: str
-    saved_at: float
     scenes: List[SceneStat]

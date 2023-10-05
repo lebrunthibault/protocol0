@@ -21,11 +21,11 @@ class P0ScriptClient(object):
 
     def dispatch(self, command: SerializableCommand, log=True) -> None:
         # Pass the focused set info to the script in case of multiple sets
-        from p0_backend.lib.ableton_set import get_focused_set
+        from p0_backend.lib.ableton.ableton_set.ableton_set_manager import get_focused_set
 
         focused_set = get_focused_set()
         if focused_set is not None and command.set_id is None:
-            command.set_id = focused_set.id
+            command.set_id = focused_set.path_info.filename
 
         msg = make_sysex_message_from_command(command=command)
         self._midi_port.send(msg)

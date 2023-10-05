@@ -119,22 +119,19 @@ def open_set_by_type(set_type: str):
         open_set(set_filename)
 
 
-def open_set(set_path: str):
-    if not isabs(set_path):
-        set_path = f"{settings.ableton_set_directory}\\{set_path}"
+def open_set(filename: str):
+    if not isabs(filename):
+        filename = f"{settings.ableton_set_directory}\\{filename}"
 
-    if not os.path.exists(set_path):
-        notification_window.delay(f"fichier introuvable : {set_path}", NotificationEnum.ERROR)
+    if not os.path.exists(filename):
+        notification_window.delay(f"fichier introuvable : {filename}", NotificationEnum.ERROR)
         return
 
-    relative_path = set_path.replace(f"{settings.ableton_set_directory}\\", "").replace("//", "\\")
+    relative_path = filename.replace(f"{settings.ableton_set_directory}\\", "").replace("//", "\\")
     notification_window.delay(f"Opening '{relative_path}'")
 
     go_to_desktop(0)
-    execute_powershell_command(f'& "{settings.ableton_exe}" "{set_path}"', minimized=True)
-    from p0_backend.lib.ableton_set import AbletonSetManager
-
-    AbletonSetManager.LAST_SET_OPENED_AT = time.time()
+    execute_powershell_command(f'& "{settings.ableton_exe}" "{filename}"', minimized=True)
     time.sleep(2)
 
     for _ in range(6):

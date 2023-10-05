@@ -3,7 +3,7 @@
     <div class="d-flex flex-row justify-content-between mb-3">
       <div></div>
       <h3 class="mb-4 text-center">
-        {{ selectedSet.name }}
+        {{ selectedSet.path_info.name }}
       </h3>
       <div class="btn-group" role="group">
         <AbletonSetSceneData
@@ -23,15 +23,15 @@
              class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
         >
           <div @click="selectSet(abletonSet)" class="flex-grow-1 btn" style="text-align: left">
-            {{ abletonSet.name }}
+            {{ abletonSet.path_info.name }}
           </div>
           <div>
             <span  @click="selectSet(abletonSet)" class="badge rounded-pill mx-1"
-                  :class="{'bg-success': !abletonSet.audio?.outdated, 'bg-warning': abletonSet.audio?.outdated}">
+                  :class="{'bg-success': !abletonSet.audio_info?.outdated, 'bg-warning': abletonSet.audio_info?.outdated}">
               <i class="fa-solid fa-volume-high"></i>
             </span>
             <span @click="selectSet(abletonSet)" class="badge rounded-pill bg-secondary">
-              <i class="fa-solid fa-bars" v-if="abletonSet.metadata"></i>
+              <i class="fa-solid fa-bars" v-if="abletonSet.metadata_info"></i>
             </span>
           </div>
 
@@ -73,7 +73,7 @@ export default defineComponent({
   methods: {
     getSetsFromFolder(category: string): AbletonSet[] {
       const isSetValid = (abletonSet: AbletonSet) => {
-        return !["test", "tests"].includes(abletonSet?.name.toLowerCase().trim())
+        return !["test", "tests"].includes(abletonSet?.path_info.name.toLowerCase().trim())
       }
 
       const sets = this.abletonSets[category]
@@ -82,16 +82,16 @@ export default defineComponent({
     },
     selectSet(abletonSet: AbletonSet) {
       this.selectedSet = abletonSet
-      this.currentScene = this.selectedSet.metadata ? this.selectedSet.metadata.scenes[0] : null
+      this.currentScene = this.selectedSet.scene_stats ? this.selectedSet.scene_stats.scenes[0] : null
     },
     async openInExplorer() {
-      await apiService.fetch(`/open_in_explorer?path=${this.selectedSet?.filename}`)
+      await apiService.fetch(`/open_in_explorer?path=${this.selectedSet?.path_info.filename}`)
     },
     onSceneChange(sceneData: SceneData) {
       this.currentScene = sceneData
     },
     onSceneSkip(increment: number) {
-      this.currentScene = this.selectedSet.metadata.scenes[this.currentScene.index + increment]
+      this.currentScene = this.selectedSet?.scene_stats.scenes[this.currentScene.index + increment]
       this.playerTime = this.currentScene?.start_time
     }
   },
@@ -100,9 +100,9 @@ export default defineComponent({
 
     // add index to scenes
     for (const abletonSet of Object.values(this.abletonSets).flat()) {
-      if (abletonSet?.metadata) {
-        for (const i in abletonSet.metadata.scenes) {
-          abletonSet.metadata.scenes[i].index = parseInt(i)
+      if (abletonSet?.scene_stats) {
+        for (const i in abletonSet.scene_stats.scenes) {
+          abletonSet.scene_stats.scenes[i].index = parseInt(i)
         }
       }
     }

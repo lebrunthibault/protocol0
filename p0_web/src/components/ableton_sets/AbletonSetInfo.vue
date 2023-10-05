@@ -6,25 +6,29 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">{{ abletonSet.name }} <small>({{ modifiedSince }})</small></h5>
+          <h5 class="modal-title">{{ abletonSet.path_info.name }} <small>({{ modifiedSince }})</small></h5>
         </div>
         <div class="modal-body">
           <ol class="list-group list-group-flush">
             <li class="list-group-item">
               <i class="fa-solid fa-info ms-1" style="width: 22px"></i>
-              {{ basename(abletonSet.filename) }} : {{ timeStampToDate(abletonSet.saved_at) }}
+              {{ basename(abletonSet.path_info.filename) }} : {{ timeStampToDate(abletonSet.path_info.saved_at) }}
             </li>
             <li class="list-group-item">
               <i class="fa-solid fa-volume-low" style="width: 30px"></i>
-              <span v-if="abletonSet.audio">
-                {{ basename(abletonSet.audio.filename) }} : {{ timeStampToDate(abletonSet.audio.saved_at) }}
-                <span class="badge bg-warning float-right ms-3" v-if="abletonSet.audio.outdated">Outdated</span>
+              <span v-if="abletonSet.audio_info">
+                {{
+                  basename(abletonSet.audio_info.filename)
+                }} : {{ timeStampToDate(abletonSet.audio_info.saved_at) }}
+                <span class="badge bg-warning float-right ms-3" v-if="abletonSet.audio_info.outdated">Outdated</span>
               </span>
               <span v-else>No Audio</span>
             </li>
             <li class="list-group-item">
               <i class="fa-solid fa-bars" style="width: 30px"></i>
-              <span v-if="abletonSet.metadata">{{ basename(abletonSet.metadata.filename) }} : {{ timeStampToDate(abletonSet.metadata.saved_at) }}</span>
+              <span v-if="abletonSet.metadata_info">{{
+                  basename(abletonSet.metadata_info.filename)
+                }} : {{ timeStampToDate(abletonSet.metadata_info.saved_at) }}</span>
               <span v-else>No metadata</span>
             </li>
           </ol>
@@ -38,6 +42,8 @@
 
 import {defineComponent, PropType} from "vue";
 import moment from 'moment';
+import { basename } from '@/utils/utils'
+
 
 export default defineComponent({
   name: 'AbletonSetInfo',
@@ -46,7 +52,7 @@ export default defineComponent({
   },
   computed: {
     modifiedSince(): string {
-      const savedAt = moment(this.abletonSet?.saved_at * 1000)
+      const savedAt = moment(this.abletonSet?.path_info.saved_at * 1000)
 
       let measurement = "month"
       let count = moment().diff(savedAt, "months")
@@ -72,9 +78,7 @@ export default defineComponent({
     showSetInfo() {
       $('#setInfoModal').modal('show')
     },
-    basename(filename: string): string {
-      return filename.split('/').reverse()[0].split("\\").reverse()[0]
-    },
+    basename,
     timeStampToDate(ts: number): string {
       return (new Date(ts * 1000)).toLocaleString()
     }

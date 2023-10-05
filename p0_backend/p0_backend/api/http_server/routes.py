@@ -1,6 +1,6 @@
 from itertools import chain
 from time import sleep
-from typing import Optional, List, Dict
+from typing import List, Dict
 
 from fastapi import APIRouter
 
@@ -19,6 +19,15 @@ from p0_backend.lib.ableton.ableton import (
     save_set_as_template,
     open_set_by_type,
 )
+from p0_backend.lib.ableton.ableton_set.ableton_set import AbletonSet, write_scene_stats
+from p0_backend.lib.ableton.ableton_set.ableton_set_manager import (
+    AbletonSetManager,
+    show_saved_tracks,
+    delete_saved_track,
+    list_sets,
+)
+from p0_backend.lib.ableton.ableton_set.scene_stats import SceneStats
+from p0_backend.lib.ableton.ableton_set.server_state import ServerState
 from p0_backend.lib.ableton.analyze_clip_jitter import analyze_test_audio_clip_jitter
 from p0_backend.lib.ableton.automation import edit_automation_value
 from p0_backend.lib.ableton.automation import set_envelope_loop_length
@@ -35,25 +44,23 @@ from p0_backend.lib.ableton.interface.track import flatten_track, load_instrumen
 from p0_backend.lib.ableton.matching_track.load_matching_track import drag_matching_track
 from p0_backend.lib.ableton.matching_track.save_track import save_track_to_sub_tracks
 from p0_backend.lib.ableton.set_profiling.ableton_set_profiler import AbletonSetProfiler
-from p0_backend.lib.ableton_set import AbletonSet, AbletonSetLight
-from p0_backend.lib.ableton_set import AbletonSetManager, show_saved_tracks, delete_saved_track
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.explorer import close_samples_windows, close_explorer_window, open_explorer
 from p0_backend.lib.keys import send_keys
 from p0_backend.lib.mouse.mouse import click, click_vertical_zone, move_to
 from p0_backend.lib.process import execute_powershell_command
-from p0_backend.lib.scene_stats import SceneStats
-from p0_backend.lib.server_state import ServerState, list_sets
 from p0_backend.lib.window.find_window import find_window_handle_by_enum
 from p0_backend.lib.window.window import focus_window
 from p0_backend.settings import Settings
-from protocol0.application.command.BounceSessionToArrangementCommand import \
-    BounceSessionToArrangementCommand
+from protocol0.application.command.BounceSessionToArrangementCommand import (
+    BounceSessionToArrangementCommand,
+)
 from protocol0.application.command.BounceTrackToAudioCommand import BounceTrackToAudioCommand
 from protocol0.application.command.CheckAudioExportValidCommand import CheckAudioExportValidCommand
-from protocol0.application.command.ColorClipWithAutomationCommand import \
-    ColorClipWithAutomationCommand
+from protocol0.application.command.ColorClipWithAutomationCommand import (
+    ColorClipWithAutomationCommand,
+)
 from protocol0.application.command.DrumRackToSimplerCommand import DrumRackToSimplerCommand
 from protocol0.application.command.FireSceneToPositionCommand import FireSceneToPositionCommand
 from protocol0.application.command.FireSelectedSceneCommand import FireSelectedSceneCommand
@@ -274,17 +281,17 @@ async def server_state() -> ServerState:
 
 
 @router.get("/sets")
-async def sets() -> Dict[str, List[AbletonSetLight]]:
-    return list_sets()
+async def sets(archive: bool = False) -> Dict[str, List[AbletonSet]]:
+    return list_sets(archive)
 
 
 @router.get("/set")
-async def get_set(path: str) -> AbletonSetLight:
+async def get_set(path: str) -> AbletonSet:
     path = path.replace("\\\\", "\\")
 
     ableton_sets = list(chain.from_iterable(list_sets().values()))
 
-    return next(s for s in ableton_sets if s.filename == path)
+    return next(s for s in ableton_sets if s.path_info.filename == path)
 
 
 @router.post("/set")
@@ -293,15 +300,15 @@ async def post_set(ableton_set: AbletonSet):
     await AbletonSetManager.register(ableton_set)
 
 
-@router.put("/set", include_in_schema=False)
-async def update_set(title: str, path: Optional[str] = None):
-    AbletonSetManager.update_set(title, path)
-
-
 @router.get("/close_set")
-async def close_set(set_id: str):
-    await AbletonSetManager.remove(set_id)
+async def close_set(filename: str):
+    await AbletonSetManager.remove(filename)
     await ws_manager.broadcast_server_state()
+
+
+@router.post("/scene_stats")
+async def post_scene_stats(scene_stats: SceneStats):
+    write_scene_stats(scene_stats)
 
 
 @router.get("/save_set_as_template")
@@ -526,7 +533,7 @@ async def _edit_automation_value():
         active_set = None
 
     if active_set is not None:
-        assert active_set.selected_track.type in (
+        assert active_set.current_state.selected_track.type in (
             "SimpleAudioTrack",
             "SimpleAudioExtTrack",
             "SimpleMidiTrack",
@@ -544,8 +551,3 @@ async def _go_to_group_track():
 @router.get("/check_audio_export_valid")
 async def check_audio_export_valid():
     p0_script_client().dispatch(CheckAudioExportValidCommand())
-
-
-@router.post("/scene_stats")
-async def post_scene_stats(scene_stats: SceneStats):
-    AbletonSetManager.write_scene_stats(scene_stats)
