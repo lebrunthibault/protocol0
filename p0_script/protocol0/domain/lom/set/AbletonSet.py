@@ -1,6 +1,5 @@
 from functools import partial
 from typing import Dict, Any, Optional
-from uuid import uuid4
 
 from protocol0.application.ScriptDisconnectedEvent import ScriptDisconnectedEvent
 from protocol0.domain.lom.device.DrumRackLoadedEvent import DrumRackLoadedEvent
@@ -22,9 +21,8 @@ class AbletonSet(object):
     def __init__(self) -> None:
         self._cache: Dict[str, Any] = {}
 
-        self._path: Optional[str] = None
+        self.path: Optional[str] = None
         self._title: Optional[str] = None
-        self._id = str(uuid4())
         self.active = True
 
         DomainEventBus.subscribe(ScriptDisconnectedEvent, lambda _: self._disconnect())
@@ -47,7 +45,7 @@ class AbletonSet(object):
 
     @property
     def is_unknown(self) -> bool:
-        return self._path is None
+        return self.path is None
 
     @property
     def is_test(self) -> bool:
@@ -62,22 +60,24 @@ class AbletonSet(object):
     #
     #     return [basename(t).replace(".als", "") for t in filenames]
 
-    def get_id(self) -> str:
-        return self._id
-
     def to_dict(self) -> Dict:
         muted = Song.master_track() is not None and Song.master_track().muted
 
         return {
-            "id": self._id,
             "active": self.active,
-            "path": self._path,
+            "path_info": {
+                "filename": self.path
+            },
             "title": self._title,
             "muted": muted,
-            "current_track": Song.current_track().to_dict(),
-            "selected_track": Song.selected_track().to_dict(),
-            "track_count": len(list(Song.simple_tracks())),
-            "drum_rack_visible": isinstance(Song.selected_track().instrument, InstrumentDrumRack),
+            "current_state": {
+                "current_track": Song.current_track().to_dict(),
+                "selected_track": Song.selected_track().to_dict(),
+                "track_count": len(list(Song.simple_tracks())),
+                "drum_rack_visible": isinstance(
+                    Song.selected_track().instrument, InstrumentDrumRack
+                ),
+            },
         }
 
     def notify(self, force: bool = False) -> None:
@@ -99,8 +99,8 @@ class AbletonSet(object):
             Logger.warning("Tried overwriting set title of %s" % self)
             # return
 
-        self._title = res["title"]
-        self._path = res["path"]
+        self._title = res["path_info"]["name"]
+        self.path = res["path_info"]["filename"]
 
         # if not self.is_unknown and not self.is_test:
         #     abstract_track_names = [t.name for t in Song.abstract_tracks()]
@@ -118,4 +118,4 @@ class AbletonSet(object):
         #         Backend.client().show_saved_tracks()
 
     def _disconnect(self) -> None:
-        Backend.client().close_set(self._id)
+        Backend.client().close_set(self.path)

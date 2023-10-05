@@ -51,7 +51,7 @@ class ScriptClient {
     }
 
     private static emitSet (set: AbletonSet) {
-        EventBus.emit(new DrumRackVisibleUpdatedEvent(set.drum_rack_visible))
+        EventBus.emit(new DrumRackVisibleUpdatedEvent(set.current_state.drum_rack_visible))
     }
 
     private static emitServerState (serverState: ServerState) {

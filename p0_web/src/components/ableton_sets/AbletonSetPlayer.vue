@@ -31,12 +31,12 @@ export default defineComponent({
   },
   computed: {
     scenes(): SceneData[] {
-      return this.abletonSet?.metadata.scenes
+      return this.abletonSet?.scene_stats.scenes
     }
   },
   methods: {
     getCurrentScene(): SceneData | null {
-      if (!this.abletonSet?.metadata || !this.wavesurfer) {
+      if (!this.abletonSet?.metadata_info || !this.wavesurfer) {
         return null
       }
 
@@ -49,7 +49,7 @@ export default defineComponent({
       return null
     },
     loadWaveform() {
-      if (!this.abletonSet?.audio?.url) {
+      if (!this.abletonSet?.audio_info?.url) {
         return
       }
 
@@ -57,7 +57,7 @@ export default defineComponent({
 
       this.wavesurfer = WaveSurfer.create({
         container: '#waveform',
-        url: this.abletonSet?.audio?.url,
+        url: this.abletonSet?.audio_info?.url,
         waveColor: '#227DD8',
         progressColor: '#0B2E50',
         barHeight: 1,
@@ -74,7 +74,7 @@ export default defineComponent({
         this.wavesurfer.play()
       })
 
-      if (this.abletonSet.metadata) {
+      if (this.abletonSet.metadata_info) {
         this.currentScene = this.scenes[0]
         this.$emit("sceneChange", this.currentScene)
         this.wavesurfer.on('timeupdate', () => {

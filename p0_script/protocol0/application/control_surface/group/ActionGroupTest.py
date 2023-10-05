@@ -40,11 +40,7 @@ class ActionGroupTest(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        from protocol0.shared.logging.Logger import Logger
-        Logger.dev(Song.selected_parameter())
-        Logger.dev(Song.selected_parameter().is_quantized)
-        Logger.dev(Song.selected_parameter().value)
-        Logger.dev(list(Song.selected_parameter().value_items))
+        pass
 
     def action_test_scroll(self, go_next: bool) -> None:
         Song.selected_track().instrument.preset_list.scroll(go_next)

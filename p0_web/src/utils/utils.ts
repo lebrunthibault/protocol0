@@ -6,4 +6,8 @@ function capitalizeFirstLetter(sentence: string) {
   return sentence.charAt(0).toUpperCase() + sentence.slice(1)
 }
 
-export { capitalizeFirstLetter }
+function basename(filename: string): string {
+  return filename.split('/').reverse()[0].split("\\").reverse()[0]
+}
+
+export { capitalizeFirstLetter, basename }

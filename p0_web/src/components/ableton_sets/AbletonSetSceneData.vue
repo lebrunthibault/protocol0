@@ -51,7 +51,7 @@ export default defineComponent({
       return this.sceneData.index != 0
     },
     hasNext(): boolean {
-      return this.sceneData.index < this.abletonSet.metadata.scenes.length - 1
+      return this.sceneData.index < this.abletonSet?.scene_stats.scenes.length - 1
     },
     trackNames(): Object {
       const namesByGroup: any = {};

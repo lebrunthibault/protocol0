@@ -1,10 +1,10 @@
 import glob
 import os
 import re
-from typing import List, Tuple
+from typing import List
 
-from p0_backend.settings import Settings
 from p0_backend.lib.window.find_window import get_windows_list
+from p0_backend.settings import Settings
 
 settings = Settings()
 
@@ -29,7 +29,7 @@ def get_last_launched_track_set(excluded_keywords=("default", "master")) -> str:
     return max(track_set_filenames, key=os.path.getatime)
 
 
-def get_launched_set_path() -> Tuple[str, str]:
+def get_launched_set_path() -> str:
     launched_set = next(w for w in get_ableton_windows() if "ableton projects" in w)
 
     set_title = re.match(r"([^*]*)", launched_set).group(1).split(" [")[0].strip()
@@ -49,4 +49,4 @@ def get_launched_set_path() -> Tuple[str, str]:
     ), f"Duplicate sets found : '{filename}' in {settings.ableton_set_directory}"
     assert len(file_paths) == 1, f"Couldn't find '{filename}' in {settings.ableton_set_directory}"
 
-    return set_title, file_paths[0]
+    return file_paths[0]

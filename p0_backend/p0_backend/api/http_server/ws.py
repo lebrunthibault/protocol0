@@ -6,7 +6,7 @@ from fastapi import APIRouter
 from loguru import logger
 from starlette.websockets import WebSocket, WebSocketDisconnect
 
-from p0_backend.lib.server_state import ServerState
+from p0_backend.lib.ableton.ableton_set.server_state import ServerState
 
 ws_router = APIRouter()
 

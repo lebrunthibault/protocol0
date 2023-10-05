@@ -1,3 +1,15 @@
+interface AbletonSetPath {
+    filename: string
+    saved_at: number
+}
+
+interface AudioFileInfo {
+    filename: string
+    saved_at: number
+    url: string
+    outdated: boolean
+}
+
 interface SceneData {
     name: string
     index: number
@@ -6,24 +18,18 @@ interface SceneData {
     track_names: string[]
 }
 
-interface AbletonSetMetadata {
+interface SceneStats {
     filename: string
     saved_at: number
     scenes: SceneData[]
 }
 
-interface AudioFileInfo {
-    filename: string
-    url: string
-    saved_at: number
-    outdated: boolean
-}
 
 // @ts-ignore
 interface AbletonSet {
-    filename: string
-    saved_at: number
+    path_info: AbletonSetPath
     name: string
-    metadata: AbletonSetMetadata
-    audio?: AudioFileInfo
+    metadata_info: SceneStats
+    audio_info?: AudioFileInfo
+    scene_stats: SceneStats
 }
