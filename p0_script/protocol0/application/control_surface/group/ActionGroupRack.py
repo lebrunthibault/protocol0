@@ -15,29 +15,34 @@ class ActionGroupRack(ActionGroupInterface):
         # RACK macro control encoders
         instrument_service = self._container.get(InstrumentService)
 
-        for i in range(1, 13):
+        for i in range(1, 12):
             if i == 5:
                 self.add_encoder(
                     identifier=5,
                     name="edit track high pass filter",
                     on_scroll=self._container.get(DeviceService).scroll_high_pass_filter,
                 )
-                continue
-
-            if i == 12:
+            elif i == 9:
                 self.add_encoder(
-                    identifier=12,
-                    name="edit arp style",
+                    identifier=9,
+                    name="edit arp mode",
+                    on_press=partial(instrument_service.toggle_macro_control, 9),
                     on_scroll=instrument_service.scroll_arp_style,
                 )
-                continue
-
-            self.add_encoder(
-                identifier=i,
-                name=f"edit macro control {i}",
-                on_press=partial(instrument_service.toggle_macro_control, i),
-                on_scroll=partial(instrument_service.scroll_macro_control, i),
-            )
+            elif i == 10:
+                self.add_encoder(
+                    identifier=10,
+                    name="edit arp rate",
+                    on_press=partial(instrument_service.toggle_macro_control, 10),
+                    on_scroll=partial(instrument_service.scroll_macro_control, 10, steps=100),
+                )
+            else:
+                self.add_encoder(
+                    identifier=i,
+                    name=f"edit macro control {i}",
+                    on_press=partial(instrument_service.toggle_macro_control, i),
+                    on_scroll=partial(instrument_service.scroll_macro_control, i),
+                )
 
         # VELO encoder
         self.add_encoder(
