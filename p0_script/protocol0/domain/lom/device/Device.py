@@ -1,8 +1,7 @@
-from pathlib import Path
+from typing import List, Any, Type, Optional, Union
 
 import Live
 from _Framework.SubjectSlot import SlotManager, subject_slot
-from typing import List, Any, Type, Optional, Union
 
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
@@ -84,6 +83,10 @@ class Device(SlotManager):
     def type_name(self) -> str:
         """type of the device (Reverb..) for Live or name of the plugin (FabFilter Pro-Q 3..)"""
         return self.class_name
+
+    @property
+    def is_instrument(self) -> bool:
+        return self._device.type == Live.Device.DeviceType.instrument
 
     @property
     def preset_name(self) -> Optional[str]:

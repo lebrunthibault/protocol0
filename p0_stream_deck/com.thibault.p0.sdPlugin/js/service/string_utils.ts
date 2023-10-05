@@ -17,6 +17,8 @@ const titleMapping: { [key: string]: string; } = {
     INSERT_REVERB: 'Insert',
     INSERT_DRY_WET: 'Dry / Wet',
     PRO_Q_3: 'Pro-Q 3',
+    SERUM_RACK: 'Serum',
+    SYLENTH1_RACK: 'Sylenth1',
     SUPER_TAP_2: 'ST2',
     SUPER_TAP_6: 'ST6',
     VALHALLA_VINTAGE_VERB: 'Valhalla'

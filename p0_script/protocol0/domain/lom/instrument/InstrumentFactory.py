@@ -16,22 +16,23 @@ class InstrumentFactory(object):
     _INSTRUMENT_CLASSES: List[Type[InstrumentInterface]] = []
 
     @classmethod
-    def make_instrument_from_simple_track(cls, devices: SimpleTrackDevices, instrument: Optional[InstrumentInterface], track_name: str) -> Optional[InstrumentInterface]:
+    def make_instrument_from_simple_track(
+        cls, devices: SimpleTrackDevices, instrument: Optional[InstrumentInterface], track_name: str
+    ) -> Optional[InstrumentInterface]:
         """
         If the instrument didn't change we keep the same instrument and don't instantiate a new one
         to keep instrument state
         """
 
-        instrument_device = find_if(lambda d: cls._get_instrument_class(d) is not None, devices)
-
-        if instrument_device is None:
-            instrument_device = find_if(
-                lambda d: cls._get_instrument_class(d) is not None, devices.all
-            )
+        instrument_device = find_if(
+            lambda d: d.is_instrument and not type(d) is RackDevice, devices.all
+        )  # taking the 1st instrument found
         if instrument_device is None:
             return None
 
         instrument_class = cls._get_instrument_class(instrument_device)
+        if instrument_class is None:
+            return None
 
         if (
             instrument_class
@@ -51,11 +52,9 @@ class InstrumentFactory(object):
             )
 
             return InstrumentDrumRack
+        elif isinstance(device, PluginDevice):
+            assert device.enum, f"plugin device not detected : {device}"
 
-        if isinstance(device, RackDevice):
-            device = cls._get_device_from_instrument_rack_device(device) or device
-
-        if isinstance(device, PluginDevice):
             for _class in cls._get_instrument_classes():
                 if _class.DEVICE == device.enum:
                     return _class
@@ -71,22 +70,6 @@ class InstrumentFactory(object):
             )
 
             return InstrumentSampler
-
-        return None
-
-    @classmethod
-    def _get_device_from_instrument_rack_device(cls, rack_device: RackDevice) -> Optional[Device]:
-        """Here, we fetch the appropriate instrument device from the instrument rack"""
-        if len(rack_device.chains) and len(rack_device.chains[0].devices):
-            # keeping only racks containing the same device
-            device_types = list(
-                set([type(chain.devices[0]) for chain in rack_device.chains if len(chain.devices)])
-            )
-            device_names = list(
-                set([chain.devices[0].name for chain in rack_device.chains if len(chain.devices)])
-            )
-            if len(device_types) == 1 and len(device_names) == 1:
-                return rack_device.chains[0].devices[0]
 
         return None
 

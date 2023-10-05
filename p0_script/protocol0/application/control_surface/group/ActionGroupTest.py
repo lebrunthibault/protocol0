@@ -2,6 +2,7 @@ from functools import partial
 
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
 from protocol0.domain.audit.AudioLatencyAnalyzerService import AudioLatencyAnalyzerService
+from protocol0.domain.lom.device.PluginDevice import PluginDevice
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
@@ -40,7 +41,24 @@ class ActionGroupTest(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        pass
+        from protocol0.shared.logging.Logger import Logger
+        Logger.dev(Song.selected_device())
+        Logger.dev(Song.selected_device().is_instrument)
+        instrument = Song.selected_track().instrument
+        assert instrument
+
+        from protocol0.shared.logging.Logger import Logger
+        Logger.dev(instrument)
+        Logger.dev(instrument.preset_list)
+
+        plugin = Song.selected_device()
+        assert isinstance(plugin, PluginDevice)
+        from protocol0.shared.logging.Logger import Logger
+        Logger.dev(plugin)
+        Logger.dev(plugin.selected_preset)
+        Logger.dev(plugin.selected_preset_index)
 
     def action_test_scroll(self, go_next: bool) -> None:
+        instrument = Song.selected_track().instrument
+        instrument.preset_list.scroll(True)
         pass

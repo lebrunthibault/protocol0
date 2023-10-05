@@ -37,9 +37,7 @@ class DeviceService(object):
         device_enum = DeviceEnum[enum_name]
         track = self._track_to_select(device_enum)
         device_to_select = self._get_device_to_select_for_insertion(track, device_enum)
-        from protocol0.shared.logging.Logger import Logger
 
-        Logger.dev(f"device_to_select: {device_to_select}")
         if device_to_select:
             track.device_insert_mode = Live.Track.DeviceInsertMode.selected_left
             self._device_component.select_device(track, device_to_select)
@@ -114,12 +112,8 @@ class DeviceService(object):
         if len(list(track.devices)) == 0:
             return None
 
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(device_enum.device_group_position)
-
         for device in track.devices:
-            if device == track.instrument_rack_device:
+            if device.is_instrument or not device.enum:
                 continue
 
             if device.enum.device_group_position > device_enum.device_group_position:
