@@ -134,6 +134,5 @@ class DeviceService(object):
 
         if not eq_eight:
             self.load_device(DeviceEnum.EQ_EIGHT.name)
-            return
 
-        eq_eight.parameters[0].scroll(go_next)
+        eq_eight.parameters[6].scroll(go_next)  # scroll frequency A

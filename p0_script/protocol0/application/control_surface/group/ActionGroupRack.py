@@ -20,7 +20,7 @@ class ActionGroupRack(ActionGroupInterface):
                 self.add_encoder(
                     identifier=5,
                     name="edit track high pass filter",
-                    on_press=self._container.get(DeviceService).scroll_high_pass_filter,
+                    on_scroll=self._container.get(DeviceService).scroll_high_pass_filter,
                 )
                 continue
 
