@@ -36,7 +36,7 @@ export default defineComponent({
   },
   methods: {
     getCurrentScene(): SceneData | null {
-      if (!this.abletonSet?.metadata || !this.wavesurfer) {
+      if (!this.abletonSet?.metadata.scenes || !this.wavesurfer) {
         return null
       }
 
@@ -74,7 +74,7 @@ export default defineComponent({
         this.wavesurfer.play()
       })
 
-      if (this.abletonSet.metadata) {
+      if (this.abletonSet.metadata.scenes) {
         this.currentScene = this.scenes[0]
         this.$emit("sceneChange", this.currentScene)
         this.wavesurfer.on('timeupdate', () => {

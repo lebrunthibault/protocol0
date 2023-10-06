@@ -51,7 +51,7 @@
             </div>
             <div style="width: 45px">
               <span @click="selectSet(abletonSet)" class="badge rounded-pill bg-secondary">
-                <i class="fa-solid fa-bars" v-if="abletonSet.metadata"></i>
+                <i class="fa-solid fa-bars" v-if="abletonSet.metadata.scenes"></i>
               </span>
             </div>
           </div>
@@ -110,7 +110,7 @@ export default defineComponent({
     },
     selectSet(abletonSet: AbletonSet) {
       this.selectedSet = abletonSet
-      this.currentScene = this.selectedSet.metadata ? this.selectedSet.metadata.scenes[0] : null
+      this.currentScene = this.selectedSet.metadata.scenes ? this.selectedSet.metadata.scenes[0] : null
     },
     async openInExplorer() {
       await apiService.get(`/open_in_explorer?path=${this.selectedSet?.path_info.filename}`)
@@ -152,12 +152,14 @@ export default defineComponent({
 
     // add index to scenes
     for (const abletonSet of Object.values(this.abletonSets).flat()) {
-      if (abletonSet?.metadata) {
+      if (abletonSet.metadata.scenes) {
         for (const i in abletonSet.metadata.scenes) {
           abletonSet.metadata.scenes[i].index = parseInt(i)
         }
       }
     }
+
+    this.sortSets()
   }
 })
 </script>

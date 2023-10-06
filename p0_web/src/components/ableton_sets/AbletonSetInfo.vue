@@ -26,7 +26,7 @@
             </li>
             <li class="list-group-item">
               <i class="fa-solid fa-bars" style="width: 30px"></i>
-              <span v-if="abletonSet.metadata">{{
+              <span v-if="abletonSet.metadata.path_info">{{
                   basename(abletonSet.metadata.path_info.filename)
                 }} : {{ timeStampToDate(abletonSet.metadata.path_info.saved_at) }}</span>
               <span v-else>No metadata</span>
