@@ -143,6 +143,7 @@ class AbletonSet(BaseModel):
                 ableton_set.metadata.path_info = metadata_path
         else:
             ableton_set = AbletonSet(path_info=set_path)
+            ableton_set.metadata = AbletonSetMetadata()
 
         # handle audio info
         if os.path.exists(ableton_set.path_info.audio_filename):
