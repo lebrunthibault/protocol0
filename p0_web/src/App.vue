@@ -6,4 +6,5 @@ import { RouterView } from 'vue-router'
   <div class="container">
     <RouterView />
   </div>
+  <div style="margin-bottom: 60px"></div>
 </template>

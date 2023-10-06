@@ -14,5 +14,6 @@ module.exports = {
   },
     "rules": {
       "no-unsafe-optional-chaining": "off",
+      "vue/no-mutating-props": "off"
   }
 }

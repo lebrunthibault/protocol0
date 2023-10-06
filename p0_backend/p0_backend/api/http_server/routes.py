@@ -3,6 +3,7 @@ from time import sleep
 from typing import List, Dict
 
 from fastapi import APIRouter
+from pydantic import BaseModel
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.api.http_server.ws import ws_manager
@@ -19,14 +20,18 @@ from p0_backend.lib.ableton.ableton import (
     save_set_as_template,
     open_set_by_type,
 )
-from p0_backend.lib.ableton.ableton_set.ableton_set import AbletonSet, write_scene_stats
+from p0_backend.lib.ableton.ableton_set.ableton_set import (
+    AbletonSet,
+    set_scene_stats,
+    set_stars,
+    SceneStat,
+)
 from p0_backend.lib.ableton.ableton_set.ableton_set_manager import (
     AbletonSetManager,
     show_saved_tracks,
     delete_saved_track,
     list_sets,
 )
-from p0_backend.lib.ableton.ableton_set.scene_stats import SceneStats
 from p0_backend.lib.ableton.ableton_set.server_state import ServerState
 from p0_backend.lib.ableton.analyze_clip_jitter import analyze_test_audio_clip_jitter
 from p0_backend.lib.ableton.automation import edit_automation_value
@@ -306,15 +311,21 @@ async def close_set(filename: str):
     await ws_manager.broadcast_server_state()
 
 
-@router.post("/scene_stats")
-async def post_scene_stats(scene_stats: SceneStats):
-    write_scene_stats(scene_stats)
+@router.post("/set/scene_stats")
+async def post_scene_stats(scene_stats: List[SceneStat]):
+    set_scene_stats(scene_stats)
 
 
-# @router.post("/set/stars")
-# async def post_set_stars(stars: int):
-#     from loguru import logger
-#     logger.success(stars)
+class StarsPayload(BaseModel):
+    stars: int
+
+
+@router.post("/set/{filename}/stars")
+async def post_set_stars(filename: str, stars: StarsPayload):
+    from loguru import logger
+
+    logger.success((filename, stars))
+    set_stars(filename, stars.stars)
 
 
 @router.get("/save_set_as_template")

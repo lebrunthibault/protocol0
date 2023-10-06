@@ -31,12 +31,12 @@ export default defineComponent({
   },
   computed: {
     scenes(): SceneData[] {
-      return this.abletonSet?.scene_stats.scenes
+      return this.abletonSet?.metadata.scenes
     }
   },
   methods: {
     getCurrentScene(): SceneData | null {
-      if (!this.abletonSet?.metadata_info || !this.wavesurfer) {
+      if (!this.abletonSet?.metadata || !this.wavesurfer) {
         return null
       }
 
@@ -74,7 +74,7 @@ export default defineComponent({
         this.wavesurfer.play()
       })
 
-      if (this.abletonSet.metadata_info) {
+      if (this.abletonSet.metadata) {
         this.currentScene = this.scenes[0]
         this.$emit("sceneChange", this.currentScene)
         this.wavesurfer.on('timeupdate', () => {

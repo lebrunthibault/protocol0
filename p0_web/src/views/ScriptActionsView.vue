@@ -34,7 +34,7 @@ export default defineComponent({
     selectedActionGroup: Object as PropType<ActionGroup>
   }),
   async mounted() {
-    this.actionGroups = await apiService.fetch('/actions')
+    this.actionGroups = await apiService.get('/actions')
     this.actionGroups.sort((a: ActionGroup) => {
       return a.name === 'Main' ? -1 : 1
     })
