@@ -8,7 +8,6 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
-from p0_backend.lib.ableton.ableton_set.scene_stats import SceneStats
 from p0_backend.lib.ableton.get_set import get_launched_set_path
 from p0_backend.settings import Settings
 
@@ -45,6 +44,19 @@ class MetadataFileInfo(BaseModel):
     saved_at: float
 
 
+class SceneStat(BaseModel):
+    name: str
+    start_time: float
+    end_time: float
+    track_names: List[str]
+
+
+class AbletonSetMetadata(BaseModel):
+    path_info: Optional[MetadataFileInfo]
+    scenes: List[SceneStat] = []
+    stars: int = 0
+
+
 class AudioFileInfo(BaseModel):
     filename: str
     url: str
@@ -73,10 +85,9 @@ class AbletonSet(BaseModel):
         return self.__repr__()
 
     path_info: AbletonSetPath
-    metadata_info: Optional[MetadataFileInfo]
     audio_info: Optional[AudioFileInfo]
+    metadata: Optional[AbletonSetMetadata]
     current_state: Optional[AbletonSetCurrentState]
-    scene_stats: Optional[SceneStats]
 
     @property
     def is_untitled(self):
@@ -116,20 +127,22 @@ class AbletonSet(BaseModel):
     def create(cls, set_filename: str) -> "AbletonSet":
         set_path = AbletonSetPath.create(set_filename)
 
+        # handle metadata
         if os.path.exists(set_path.metadata_filename):
             with open(set_path.metadata_filename, "r") as f:
                 ableton_set = AbletonSet(**json.load(f))
                 ableton_set.path_info = set_path
+
+                metadata_path = AbletonSetPath(
+                    filename=set_path.metadata_filename,
+                    saved_at=os.path.getmtime(set_path.metadata_filename),
+                )
+                ableton_set.metadata = ableton_set.metadata or AbletonSetMetadata(
+                    path_info=metadata_path
+                )
+                ableton_set.metadata.path_info = metadata_path
         else:
             ableton_set = AbletonSet(path_info=set_path)
-
-        # handle metadata
-        if os.path.exists(ableton_set.path_info.metadata_filename):
-            ableton_set.scene_stats = ableton_set.scene_stats
-            ableton_set.metadata_info = MetadataFileInfo(
-                filename=ableton_set.path_info.metadata_filename,
-                saved_at=os.path.getmtime(ableton_set.path_info.metadata_filename),
-            )
 
         # handle audio info
         if os.path.exists(ableton_set.path_info.audio_filename):
@@ -151,8 +164,15 @@ class AbletonSet(BaseModel):
             f.write(self.json())
 
 
-def write_scene_stats(scene_stats: SceneStats):
+def set_scene_stats(scene_stats: List[SceneStat]):
     ableton_set = AbletonSet.create(get_launched_set_path())
 
-    ableton_set.scene_stats = scene_stats
+    ableton_set.metadata.scenes = scene_stats
+    ableton_set.save()
+
+
+def set_stars(filename: str, stars: int):
+    ableton_set = AbletonSet.create(filename)
+
+    ableton_set.metadata.stars = stars
     ableton_set.save()

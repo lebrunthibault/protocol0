@@ -141,9 +141,6 @@ def list_sets(archive=False) -> Dict[str, List[AbletonSet]]:
     else:
         top_folders = ["drafts", "tracks"]
 
-    from loguru import logger
-
-    logger.success((archive, top_folders))
     excluded_sets = ["Dancing Feet", "Backup"]
     ableton_sets = {}
 

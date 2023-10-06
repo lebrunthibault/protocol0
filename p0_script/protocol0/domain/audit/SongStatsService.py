@@ -37,4 +37,4 @@ class SongStatsService(object):
             return
 
         scene_stats = SceneStats()
-        Backend.client().post_scene_stats(scene_stats.to_full_dict())
+        Backend.client().post_scene_stats(scene_stats.to_full_dict()["scenes"])

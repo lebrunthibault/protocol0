@@ -10,4 +10,12 @@ function basename(filename: string): string {
   return filename.split('/').reverse()[0].split("\\").reverse()[0]
 }
 
-export { capitalizeFirstLetter, basename }
+function notify(message: string) {
+  Notification.requestPermission().then(function (result) {
+    console.log(result);
+    const notification = new Notification(message)
+    setTimeout(() => notification.close(), 2000)
+  });
+}
+
+export { capitalizeFirstLetter, basename, notify }

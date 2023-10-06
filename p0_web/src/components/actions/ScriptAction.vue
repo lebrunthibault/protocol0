@@ -16,7 +16,7 @@ export default {
   },
   methods: {
     async execute(action_id: number) {
-      await apiService.fetch(`/actions/${this.actionGroupId}/${action_id}`)
+      await apiService.get(`/actions/${this.actionGroupId}/${action_id}`)
     }
   },
   computed: {
