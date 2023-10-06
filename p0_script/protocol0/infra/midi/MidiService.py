@@ -19,7 +19,7 @@ from protocol0.shared.logging.Logger import Logger
 
 
 class MidiService(object):
-    _DEBUG = False
+    _DEBUG = True
     _MIDI_STATUS_BYTES = {"note": 144, "cc": 176, "pc": 192}
 
     def __init__(self, send_midi: Callable) -> None:
@@ -59,8 +59,12 @@ class MidiService(object):
         message = self._sysex_to_string(sysex=event.midi_bytes)
         if self._DEBUG:
             Logger.info("message: %s" % message)
-        command = SerializableCommand.un_serialize(message)
-        CommandBus.dispatch(command)
+        try:
+            command = SerializableCommand.un_serialize(message)
+            CommandBus.dispatch(command)
+        except Exception as e:
+            Logger.dev(f"Midi bytes received error : {e}")
+            Logger.dev(event.midi_bytes)
 
     def _on_preset_program_selected_event(self, event: PresetProgramSelectedEvent) -> None:
         self._send_program_change(event.preset_index)

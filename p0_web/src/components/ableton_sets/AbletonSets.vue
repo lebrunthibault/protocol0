@@ -43,15 +43,15 @@
               </span>
             </div>
             <div style="width: 45px">
+              <span @click="selectSet(abletonSet)" class="badge rounded-pill bg-secondary">
+                <i class="fa-solid fa-bars" v-if="abletonSet.metadata.scenes.length"></i>
+              </span>
+            </div>
+            <div style="width: 45px">
               <span @click="selectSet(abletonSet)" class="badge rounded-pill mx-1"
                     :class="{'bg-success': !abletonSet.audio_info?.outdated, 'bg-warning': abletonSet.audio_info?.outdated}"
               >
                 <i class="fa-solid fa-volume-high" v-if="abletonSet.audio_info"></i>
-              </span>
-            </div>
-            <div style="width: 45px">
-              <span @click="selectSet(abletonSet)" class="badge rounded-pill bg-secondary">
-                <i class="fa-solid fa-bars" v-if="abletonSet.metadata.scenes"></i>
               </span>
             </div>
           </div>
@@ -96,6 +96,9 @@ export default defineComponent({
   watch: {
     filterType() {
       this.sortSets()
+    },
+    async showArchives() {
+      await this.fetchSets()
     }
   },
   methods: {
@@ -145,21 +148,28 @@ export default defineComponent({
       for (const category in this.abletonSets) {
         this.abletonSets[category].sort(getPredicate(getProp(this.filterType), this.filterType))
       }
+    },
+    async fetchSets() {
+      let url = '/sets'
+      if (this.showArchives) {
+        url += "?archive=true"
+      }
+      this.abletonSets = await apiService.get(url)
+
+      // add index to scenes
+      for (const abletonSet of Object.values(this.abletonSets).flat()) {
+        if (abletonSet.metadata.scenes) {
+          for (const i in abletonSet.metadata.scenes) {
+            abletonSet.metadata.scenes[i].index = parseInt(i)
+          }
+        }
+      }
+
+      this.sortSets()
     }
   },
   async mounted() {
-    this.abletonSets = await apiService.get('/sets')
-
-    // add index to scenes
-    for (const abletonSet of Object.values(this.abletonSets).flat()) {
-      if (abletonSet.metadata.scenes) {
-        for (const i in abletonSet.metadata.scenes) {
-          abletonSet.metadata.scenes[i].index = parseInt(i)
-        }
-      }
-    }
-
-    this.sortSets()
+    await this.fetchSets()
   }
 })
 </script>
