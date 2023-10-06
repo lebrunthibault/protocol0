@@ -40,6 +40,7 @@ from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudCom
 from protocol0.domain.lom.track.TrackAutomationService import TrackAutomationService
 from protocol0.domain.lom.track.TrackFactory import TrackFactory
 from protocol0.domain.lom.track.TrackMapperService import TrackMapperService
+from protocol0.domain.lom.track.TrackPlayerService import TrackPlayerService
 from protocol0.domain.lom.track.group_track.matching_track.MatchingTrackService import (
     MatchingTrackService,
 )
@@ -133,6 +134,7 @@ class Container(ContainerInterface):
             quantization_component,
         )
         simple_track_service = SimpleTrackService()
+        track_player_service = TrackPlayerService()
         matching_track_service = MatchingTrackService(track_crud_component)
         scene_service = SceneService(live_song, scene_crud_component)
         scene_playback_service = ScenePlaybackService(playback_component)
@@ -198,6 +200,7 @@ class Container(ContainerInterface):
         self._register(track_automation_service)
         self._register(track_mapper_service)
         self._register(simple_track_service)
+        self._register(track_player_service)
         self._register(matching_track_service)
 
         self._register(scene_service)

@@ -21,7 +21,7 @@ class Protocol0Midi(ControlSurface):
         # stop log duplication
         self._c_instance.log_message = MethodType(lambda s, message: None, self._c_instance)  # noqa
         self.main_p0_script: Protocol0 = find_if(
-            lambda s: isinstance(s, Protocol0), get_control_surfaces()
+            lambda s: type(s) == Protocol0, get_control_surfaces()
         )
 
         self._logger = LoggerService()
@@ -33,6 +33,8 @@ class Protocol0Midi(ControlSurface):
         DomainEventBus.subscribe(MidiBytesSentEvent, self._on_midi_bytes_sent_event)
 
     def receive_midi(self, midi_bytes: Tuple) -> None:
+        from protocol0.shared.logging.Logger import Logger
+        Logger.dev(midi_bytes)
         DomainEventBus.emit(MidiBytesReceivedEvent(midi_bytes))
 
     def _on_midi_bytes_sent_event(self, event: MidiBytesSentEvent) -> None:

@@ -251,6 +251,10 @@ class SimpleTrack(AbstractTrack):
         for clip in self.clips:
             clip.color = color_index
 
+    @property
+    def is_playing(self) -> bool:
+        return any(clip.is_playing for clip in self.clips)
+
     def _remove_arrangement_clips(self) -> None:
         for clip in self._track.arrangement_clips:
             self._track.delete_clip(clip)

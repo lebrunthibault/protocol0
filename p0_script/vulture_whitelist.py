@@ -75,3 +75,4 @@ OFF  # unused variable (protocol0\domain\lom\track\CurrentMonitoringStateEnum.py
 _.match_clip_colors  # unused method (protocol0\domain\lom\track\group_track\matching_track\MatchingTrackService.py:144)
 _.select_or_sync_automation  # unused method (protocol0\domain\lom\track\TrackAutomationService.py:81)
 _.color_clip_with_automation  # unused method (protocol0\domain\lom\track\TrackAutomationService.py:119)
+ActionGroupLaunchControl  # unused class (protocol0\application\control_surface\group\ActionGroupLaunchControl.py:7)
