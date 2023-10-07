@@ -89,4 +89,4 @@ class ExternalSynthTrack(AbstractGroupTrack):
 
     @property
     def instrument(self) -> InstrumentInterface:
-        return self.midi_track.instrument or InstrumentMinitaur(device=None, track_name=self.name)
+        return self.midi_track.instrument or InstrumentMinitaur(device=None)

@@ -40,6 +40,7 @@ from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.ui.ColorEnum import ColorEnum
 from protocol0.domain.shared.utils.forward_to import ForwardTo
 from protocol0.domain.shared.utils.utils import volume_to_db, db_to_volume
+from protocol0.infra.persistence.TrackData import TrackData
 from protocol0.shared.Config import Config
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.StatusBar import StatusBar
@@ -97,6 +98,9 @@ class SimpleTrack(AbstractTrack):
 
         self.devices.build()
 
+        self._data = TrackData(self)
+        self._data.restore()
+
     device_insert_mode = cast(int, ForwardTo("_view", "device_insert_mode"))
 
     def on_tracks_change(self) -> None:
@@ -139,9 +143,9 @@ class SimpleTrack(AbstractTrack):
         if isinstance(observable, SimpleTrackDevices):
             # Refreshing is only really useful from simpler devices that change when a new sample is loaded
             if self.IS_ACTIVE and not self.is_foldable:
-                self.instrument = InstrumentFactory.make_instrument_from_simple_track(
-                    self.devices, self.instrument, self.abstract_track.name
-                )
+                self.instrument = InstrumentFactory.make_instrument(self)
+        elif isinstance(observable, RackDevice):
+            self._data.save()
         elif isinstance(observable, SimpleTrackArmState) and self.arm_state.is_armed:
             DomainEventBus.emit(SimpleTrackArmedEvent(self._track))
 
@@ -191,16 +195,10 @@ class SimpleTrack(AbstractTrack):
 
     @property
     def instrument_rack_device(self) -> Optional[RackDevice]:
-        for device in self.devices:
-            if not isinstance(device, RackDevice):
-                continue
+        if not self.instrument or not self.instrument.device:
+            return None
 
-            for chain in device.chains:
-                for chain_device in chain.devices:
-                    if chain_device == self.instrument.device:
-                        return device
-
-        return None
+        return self.devices.get_rack_device(self.instrument.device)
 
     @property
     def is_foldable(self) -> bool:
@@ -264,7 +262,12 @@ class SimpleTrack(AbstractTrack):
         if clip is not None:
             clip.fire()
 
-    def stop(self, scene_index: Optional[int] = None, next_scene_index: Optional[int] = None, immediate: bool = False) -> None:
+    def stop(
+        self,
+        scene_index: Optional[int] = None,
+        next_scene_index: Optional[int] = None,
+        immediate: bool = False,
+    ) -> None:
         if scene_index is None:
             self._track.stop_all_clips(not immediate)  # noqa
             return
@@ -417,6 +420,11 @@ class SimpleTrack(AbstractTrack):
     @property
     def load_time(self) -> int:
         return self.devices.load_time
+
+    def on_set_save(self) -> None:
+        # there's no selected variation index listener
+        if self.instrument_rack_device:
+            self.instrument_rack_device.notify_observers()
 
     def disconnect(self) -> None:
         super(SimpleTrack, self).disconnect()

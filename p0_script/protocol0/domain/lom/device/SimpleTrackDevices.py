@@ -112,6 +112,18 @@ class SimpleTrackDevices(SlotManager, Observable):
 
         return all_devices
 
+    def get_rack_device(self, device: Device) -> Optional[RackDevice]:
+        for rack_device in self:
+            if not isinstance(rack_device, RackDevice):
+                continue
+
+            for device_chain in rack_device.chains:
+                for chain_device in device_chain.devices:
+                    if chain_device == device:
+                        return rack_device
+
+        return None
+
     def delete(self, device: Device) -> None:
         if device not in self.all:
             return None

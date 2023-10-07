@@ -38,6 +38,30 @@ class RackDevice(Device, Observable):
     def selected_chain(self, selected_chain: DeviceChain) -> None:
         self._view.selected_chain = selected_chain._chain
 
+    @property
+    def selected_variation_index(self) -> int:
+        return self._device.selected_variation_index
+
+    @selected_variation_index.setter
+    def selected_variation_index(self, selected_variation_index: int) -> None:
+        self._device.selected_variation_index = selected_variation_index
+        self._device.recall_selected_variation()
+
+    def increment_variation(self) -> None:
+        if self.selected_variation_index < 0:
+            self.selected_variation_index = 0
+
+        if self.selected_variation_index < self._device.variation_count - 1:
+            self.selected_variation_index += 1
+
+        self.notify_observers()
+
+    def decrement_variation(self) -> None:
+        if self.selected_variation_index > 0:
+            self.selected_variation_index -= 1
+
+        self.notify_observers()
+
     def disconnect(self) -> None:
         super(RackDevice, self).disconnect()
         for chain in self.chains:

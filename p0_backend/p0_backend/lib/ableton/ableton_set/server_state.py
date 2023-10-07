@@ -11,7 +11,6 @@ from protocol0.domain.lom.sample.SampleCategoryEnum import SampleCategoryEnum
 
 class ServerState(BaseModel):
     active_set: Optional[AbletonSet]
-    set_shortcuts: List[str]
     sample_categories: Dict[str, List[str]]
     favorite_device_names: List[List[Union[str, Dict]]]
 
@@ -25,7 +24,6 @@ class ServerState(BaseModel):
 
         return ServerState(
             active_set=AbletonSetManager.active() if AbletonSetManager.has_active_set() else None,
-            set_shortcuts=["default", "new"],
             sample_categories={
                 category.name.lower(): category.subcategories
                 for category in list(SampleCategoryEnum)

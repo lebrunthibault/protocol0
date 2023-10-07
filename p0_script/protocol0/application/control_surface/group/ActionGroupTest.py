@@ -44,9 +44,9 @@ class ActionGroupTest(ActionGroupInterface):
         rack_device = Song.selected_device()
         assert isinstance(rack_device, RackDevice)
         from protocol0.shared.logging.Logger import Logger
-        Logger.dev((rack_device, rack_device._device.selected_variation_index))
+        Logger.dev((rack_device, rack_device.selected_variation_index, rack_device._device.variation_count))
 
-        rack_device._device.selected_variation_index += 1
+        rack_device.selected_variation_index += 1
 
     def action_test_scroll(self, go_next: bool) -> None:
         Song.selected_track().instrument.preset_list.scroll(go_next)

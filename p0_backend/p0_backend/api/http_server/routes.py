@@ -11,14 +11,12 @@ from p0_backend.celery.celery import notification_window, create_app
 from p0_backend.lib.ableton.ableton import (
     reload_ableton,
     clear_arrangement,
-    save_set,
     hide_plugins,
     show_plugins,
     open_set,
 )
 from p0_backend.lib.ableton.ableton import (
     save_set_as_template,
-    open_set_by_type,
 )
 from p0_backend.lib.ableton.ableton_set.ableton_set import (
     AbletonSet,
@@ -81,6 +79,7 @@ from protocol0.application.command.MatchClipColorCommand import MatchClipColorCo
 from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongCommand
 from protocol0.application.command.RecordUnlimitedCommand import RecordUnlimitedCommand
 from protocol0.application.command.ReloadScriptCommand import ReloadScriptCommand
+from protocol0.application.command.SaveSongCommand import SaveSongCommand
 from protocol0.application.command.ScrollPresetsCommand import ScrollPresetsCommand
 from protocol0.application.command.ScrollScenePositionCommand import ScrollScenePositionCommand
 from protocol0.application.command.ScrollSceneTracksCommand import ScrollSceneTracksCommand
@@ -184,11 +183,6 @@ def show_hide_plugins():
 @router.get("/hide_plugins")
 def _hide_plugins():
     hide_plugins()
-
-
-@router.get("/save_set")
-def _save_set():
-    save_set()
 
 
 @router.get("/clear_arrangement")
@@ -322,15 +316,17 @@ class StarsPayload(BaseModel):
 
 @router.post("/set/{filename}/stars")
 async def post_set_stars(filename: str, stars: StarsPayload):
-    from loguru import logger
-
-    logger.success((filename, stars))
     set_stars(filename, stars.stars)
 
 
 @router.get("/save_set_as_template")
 async def _save_set_as_template():
     save_set_as_template()
+
+
+@router.get("/save_set")
+async def save_set():
+    p0_script_client().dispatch(SaveSongCommand())
 
 
 @router.get("/tail_logs")
@@ -355,11 +351,6 @@ async def open_in_explorer(path: str):
 @router.get("/set/open")
 async def _open_set(path: str):
     open_set(path)
-
-
-@router.get("/set/open_by_type")
-async def _open_set_by_type(name: str):
-    open_set_by_type(name)
 
 
 @router.get("/play_pause")

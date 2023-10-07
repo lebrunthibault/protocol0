@@ -1,3 +1,4 @@
+from dataclasses import dataclass, asdict
 from functools import partial
 from typing import Dict, Any, Optional
 
@@ -15,6 +16,20 @@ from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
+
+
+@dataclass
+class AbletonTrack:
+    name: str
+    type: str
+    index: int
+
+@dataclass
+class AbletonSetCurrentState:
+    current_track: AbletonTrack
+    selected_track: AbletonTrack
+    track_count: int
+    drum_rack_visible: bool
 
 
 class AbletonSet(object):
@@ -63,6 +78,7 @@ class AbletonSet(object):
     def to_dict(self) -> Dict:
         muted = Song.master_track() is not None and Song.master_track().muted
 
+
         return {
             "active": self.active,
             "path_info": {
@@ -70,18 +86,27 @@ class AbletonSet(object):
             },
             "title": self._title,
             "muted": muted,
-            "current_state": {
-                "current_track": Song.current_track().to_dict(),
-                "selected_track": Song.selected_track().to_dict(),
-                "track_count": len(list(Song.simple_tracks())),
-                "drum_rack_visible": isinstance(
+            # "current_state": {
+            #     "current_track": Song.current_track().to_dict(),
+            #     "selected_track": Song.selected_track().to_dict(),
+            #     "track_count": len(list(Song.simple_tracks())),
+            #     "drum_rack_visible": isinstance(
+            #         Song.selected_track().instrument, InstrumentDrumRack
+            #     ),
+            # },
+            "current_state": asdict(AbletonSetCurrentState(
+                current_track=AbletonTrack(**Song.current_track().to_dict()),
+                selected_track=AbletonTrack(**Song.selected_track().to_dict()),
+                track_count=len(list(Song.simple_tracks())),
+                drum_rack_visible=isinstance(
                     Song.selected_track().instrument, InstrumentDrumRack
-                ),
-            },
+                )))
         }
 
     def notify(self, force: bool = False) -> None:
         data = self.to_dict()
+        from protocol0.shared.logging.Logger import Logger
+        Logger.dev(data)
         if self._cache != data or force:
             seq = Sequence()
             seq.add(partial(Backend.client().post_set, data))
