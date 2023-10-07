@@ -7,12 +7,10 @@ from _Framework.SubjectSlot import subject_slot, SlotManager
 from typing import List, Optional, Callable
 
 from protocol0.application.control_surface.EncoderAction import EncoderAction, EncoderMoveEnum
-from protocol0.domain.lom.set.AbletonSetChangedEvent import AbletonSetChangedEvent
 from protocol0.domain.shared.errors.ErrorRaisedEvent import ErrorRaisedEvent
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.shared.Song import Song
-from protocol0.shared.logging.Logger import Logger
 
 
 class MultiEncoder(SlotManager):
@@ -27,7 +25,6 @@ class MultiEncoder(SlotManager):
         self._actions: List[EncoderAction] = []
         self.identifier = identifier
         self.name = name.title()
-        self._active = True
         self._channel = channel
         self._filter_active_tracks = filter_active_tracks
 
@@ -36,11 +33,6 @@ class MultiEncoder(SlotManager):
             self._scroll_listener.subject = ButtonElement(True, MIDI_CC_TYPE, channel, identifier)
         self._pressed_at: Optional[float] = None
         self._has_long_press = False
-
-        DomainEventBus.subscribe(AbletonSetChangedEvent, self._on_script_state_changed_event)
-
-    def _on_script_state_changed_event(self, event: AbletonSetChangedEvent) -> None:
-        self._active = event.set.active
 
     def __repr__(self) -> str:
         return json.dumps({"channel": self._channel, "name": self.name, "id": self.identifier})
@@ -81,10 +73,6 @@ class MultiEncoder(SlotManager):
     def _find_and_execute_action(self, move_type: EncoderMoveEnum, go_next: Optional[bool] = None) -> None:
         # noinspection PyBroadException
         try:
-            if not self._active:
-                Logger.warning("The encoder '%s' is not activated" % self.name)
-                return None
-
             action = self._find_matching_action(move_type=move_type)
             # special case : fallback long_press to press
             if not action and move_type == EncoderMoveEnum.LONG_PRESS:

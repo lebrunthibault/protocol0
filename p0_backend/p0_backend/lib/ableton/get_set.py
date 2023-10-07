@@ -1,4 +1,3 @@
-import glob
 import os
 import re
 from typing import List
@@ -13,20 +12,6 @@ def get_ableton_windows() -> List[str]:
     set_infos = filter(lambda i: i["app_name"] == settings.ableton_process_name, get_windows_list())
 
     return [i["name"] for i in set_infos]
-
-
-def get_last_launched_track_set(excluded_keywords=("default", "master")) -> str:
-    """Last launched track"""
-    set_filenames = glob.glob(f"{settings.ableton_set_directory}\\tracks\\**\\*.als") + glob.glob(
-        f"{settings.ableton_set_directory}\\ideas\\**\\*.als"
-    )
-
-    track_set_filenames = filter(
-        lambda name: not any(excluded in name.lower() for excluded in excluded_keywords),
-        set_filenames,
-    )
-
-    return max(track_set_filenames, key=os.path.getatime)
 
 
 def get_launched_set_path() -> str:

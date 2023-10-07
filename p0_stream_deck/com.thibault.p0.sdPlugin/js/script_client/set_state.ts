@@ -9,7 +9,6 @@ const AbletonSetCurrentStateSchema = z.object({
 const AbletonSetSchema = z.object({
     id: z.string(),
     title: z.string(),
-    muted: z.boolean(),
     current_state: AbletonSetCurrentStateSchema
 })
 

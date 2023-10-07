@@ -38,21 +38,26 @@ class AbletonSetManager:
 
         launched_sets = get_ableton_windows()
         set_title = re.match(r"([^*]*)", launched_sets[0]).group(1).split(" [")[0].strip()
+        logger.success(set_title)
+        logger.success(get_launched_set_path())
         if not set_title:
             return
 
-        if ableton_set.is_untitled:
-            if set_title.startswith("Untitled"):
-                ableton_set.path_info = AbletonSetPath.create(settings.ableton_test_set_path)
-            elif set_title.startswith("Default"):
-                ableton_set.path_info = AbletonSetPath.create(
-                    f"{settings.ableton_set_directory}\\Default.als"
-                )
-        else:
-            ableton_set.path_info = AbletonSetPath.create(get_launched_set_path())
+        if ableton_set.is_untitled and set_title.startswith("Untitled"):
+            ableton_set.path_info = AbletonSetPath.create(settings.ableton_test_set_path)
+        elif ableton_set.is_untitled and set_title.startswith("Default"):
+            ableton_set.path_info = AbletonSetPath.create(
+                f"{settings.ableton_set_directory}\\Default.als"
+            )
+
+        ableton_set.path_info = AbletonSetPath.create(
+            ableton_set.path_info.filename or get_launched_set_path()
+        )
 
         # deduplicate on set title
         existing_set = cls._ACTIVE_SET
+        if existing_set:
+            logger.success((existing_set, existing_set.path_info))
         if existing_set is not None:
             if existing_set.path_info.filename != ableton_set.path_info.filename:
                 logger.warning(f"Cannot overwrite active set: {existing_set}")

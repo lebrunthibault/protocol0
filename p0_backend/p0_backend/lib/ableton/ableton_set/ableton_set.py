@@ -70,7 +70,15 @@ class AbletonTrack(BaseModel):
     index: int
 
 
+class AbletonTracks(BaseModel):
+    drums: List[str]
+    harmony: List[str]
+    melody: List[str]
+    bass: List[str]
+
+
 class AbletonSetCurrentState(BaseModel):
+    tracks: AbletonTracks
     current_track: AbletonTrack
     selected_track: AbletonTrack
     track_count: int

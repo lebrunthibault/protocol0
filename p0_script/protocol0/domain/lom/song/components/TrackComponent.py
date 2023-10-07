@@ -2,7 +2,7 @@ from functools import partial
 
 import Live
 from _Framework.SubjectSlot import subject_slot, SlotManager
-from typing import Iterator
+from typing import Iterator, List
 
 from protocol0.domain.lom.song.SongInitializedEvent import SongInitializedEvent
 from protocol0.domain.lom.track.SelectedTrackChangedEvent import SelectedTrackChangedEvent
@@ -19,6 +19,16 @@ from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.shared.Song import Song
 
+
+def find_top_group_sub_track_names(group_name: str) -> List[str]:
+    """Recursive"""
+    sub_tracks = []
+
+    for track in Song.simple_tracks():
+        if len(track.group_tracks) and track.group_tracks[0].name.lower() == group_name.lower():
+            sub_tracks.append(track.name)
+
+    return sub_tracks
 
 class TrackComponent(SlotManager):
     def __init__(self, song_view: Live.Song.Song.View) -> None:
@@ -74,6 +84,7 @@ class TrackComponent(SlotManager):
             ):
                 continue
             yield track
+
 
     def un_focus_all_tracks(self, including_current: bool = False) -> None:
         self._un_solo_all_tracks(including_current)
