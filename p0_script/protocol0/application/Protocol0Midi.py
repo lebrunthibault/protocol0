@@ -33,8 +33,6 @@ class Protocol0Midi(ControlSurface):
         DomainEventBus.subscribe(MidiBytesSentEvent, self._on_midi_bytes_sent_event)
 
     def receive_midi(self, midi_bytes: Tuple) -> None:
-        from protocol0.shared.logging.Logger import Logger
-        Logger.dev(midi_bytes)
         DomainEventBus.emit(MidiBytesReceivedEvent(midi_bytes))
 
     def _on_midi_bytes_sent_event(self, event: MidiBytesSentEvent) -> None:

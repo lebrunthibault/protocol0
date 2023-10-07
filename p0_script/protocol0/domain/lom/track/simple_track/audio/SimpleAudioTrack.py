@@ -1,9 +1,9 @@
 from functools import partial
 from os.path import basename
+from typing import List, cast, Any, Optional
 
 import Live
 from _Framework.CompoundElement import subject_slot_group
-from typing import List, cast, Any, Optional
 
 from protocol0.domain.lom.clip.AudioClip import AudioClip
 from protocol0.domain.lom.clip_slot.AudioClipSlot import AudioClipSlot
@@ -15,7 +15,6 @@ from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.list import find_if
-from protocol0.infra.persistence.TrackData import TrackData
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
@@ -29,7 +28,6 @@ class SimpleAudioTrack(SimpleTrack):
         # don't flatten when the track did not change since last flatten (used to retry on error)
         self._needs_flattening = True
 
-        self._data = TrackData(self)
         self.clip_mapping = AudioToMidiClipMapping(self._data)
         self._data.restore()
 

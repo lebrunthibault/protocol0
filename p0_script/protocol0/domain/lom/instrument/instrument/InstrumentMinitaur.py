@@ -1,8 +1,5 @@
 from protocol0.domain.lom.instrument.InstrumentColorEnum import InstrumentColorEnum
 from protocol0.domain.lom.instrument.InstrumentInterface import InstrumentInterface
-from protocol0.domain.lom.instrument.preset.preset_initializer.PresetInitializerGroupTrackName import (
-    PresetInitializerGroupTrackName,
-)
 
 
 class InstrumentMinitaur(InstrumentInterface):
@@ -14,4 +11,3 @@ class InstrumentMinitaur(InstrumentInterface):
     PRESETS_PATH = (
         "C:\\Users\\thiba\\AppData\\Roaming\\Moog Music Inc\\Minitaur\\Presets Library\\User"
     )
-    PRESET_INITIALIZER = PresetInitializerGroupTrackName

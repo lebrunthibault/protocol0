@@ -6,6 +6,7 @@ from _Framework.SubjectSlot import SlotManager
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device.PluginDevice import PluginDevice
+from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.instrument.InstrumentColorEnum import InstrumentColorEnum
 from protocol0.domain.lom.instrument.preset.InstrumentPreset import InstrumentPreset
 from protocol0.domain.lom.instrument.preset.InstrumentPresetList import InstrumentPresetList
@@ -61,16 +62,15 @@ class InstrumentInterface(SlotManager):
     IS_EXTERNAL_SYNTH = False
 
     # noinspection PyInitNewSignature
-    def __init__(self, device: Optional[Device], track_name: str) -> None:
+    def __init__(self, device: Optional[Device], rack_device: Optional[RackDevice] = None) -> None:
         super(InstrumentInterface, self).__init__()
-        self._track_name = track_name
         self.device = device
 
         preset_importer = PresetImporterFactory.create_importer(
             device, self.PRESETS_PATH, self.PRESET_EXTENSION
         )
-        preset_initializer = self.PRESET_INITIALIZER(device, track_name)
-        preset_changer = self.PRESET_CHANGER(device)
+        preset_initializer = self.PRESET_INITIALIZER(device)
+        preset_changer = self.PRESET_CHANGER(device, rack_device)
 
         self.preset_list = InstrumentPresetList(preset_importer, preset_initializer, preset_changer)
 

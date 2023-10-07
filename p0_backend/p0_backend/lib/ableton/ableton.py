@@ -1,17 +1,12 @@
 import os
 import time
 from os.path import isabs
-from typing import Callable, Dict
 
 import keyboard
 import win32gui  # noqa
-from protocol0.application.command.ResetPlaybackCommand import ResetPlaybackCommand
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.settings import Settings
 from p0_backend.celery.celery import notification_window
-from p0_backend.lib.ableton.get_set import get_ableton_windows
-from p0_backend.lib.ableton.get_set import get_last_launched_track_set
 from p0_backend.lib.ableton.interface.pixel import get_pixel_color_at
 from p0_backend.lib.ableton.interface.pixel_color_enum import PixelColorEnum
 from p0_backend.lib.desktop.desktop import go_to_desktop
@@ -26,6 +21,8 @@ from p0_backend.lib.window.window import (
     focus_window,
     get_focused_window_process_name,
 )
+from p0_backend.settings import Settings
+from protocol0.application.command.ResetPlaybackCommand import ResetPlaybackCommand
 
 settings = Settings()
 
@@ -63,60 +60,41 @@ def reload_ableton() -> None:
     """
     Not easy to have this work every time
     """
-    if settings.is_ableton_11:
-        try:
-            focus_ableton()
-        except (AssertionError, Protocol0Error):
-            pass
-
-        kill_window_by_criteria(
-            settings.ableton_process_name, search_type=SearchTypeEnum.PROGRAM_NAME
-        )
-        time.sleep(0.2)
-        try:
-            os.unlink(f"{settings.preferences_directory}\\CrashDetection.cfg")
-            os.unlink(f"{settings.preferences_directory}\\CrashRecoveryInfo.cfg")
-        except OSError:
-            pass
-
-        open_set_by_type("new")
-
-        return
-
-    p0_script_client().dispatch(ResetPlaybackCommand())
-    # hack to get the focus when ableton is shown
-    go_to_desktop(1)
-    go_to_desktop(0)
-    time.sleep(0.1)
-
-    for i in range(0, 5):
+    try:
         focus_ableton()
-        send_keys("^n")
-        send_keys("{RIGHT}")
-        time.sleep(0.1)  # when clicking too fast, ableton is opening a template set ..
-        if len(get_ableton_windows()) == 2:
-            send_keys("{ENTER}")
-            break
+    except (AssertionError, Protocol0Error):
+        pass
 
-        if win32gui.GetCursorInfo()[1] == 65543:  # loading
-            break
+    kill_window_by_criteria(
+        settings.ableton_process_name, search_type=SearchTypeEnum.PROGRAM_NAME
+    )
+    time.sleep(0.2)
+    try:
+        os.unlink(f"{settings.preferences_directory}\\CrashDetection.cfg")
+        os.unlink(f"{settings.preferences_directory}\\CrashRecoveryInfo.cfg")
+    except OSError:
+        pass
 
+    open_set("Test.als")
 
-def open_set_by_type(set_type: str):
-    if set_type == "new":
-        go_to_desktop(0)
-        execute_powershell_command(f'& "{settings.ableton_exe}"', minimized=True)
-        notification_window.delay("Opening new set")
-        return
-
-    sets: Dict[str, Callable] = {
-        "default": lambda: "Default.als",
-        "last": get_last_launched_track_set,
-    }
-
-    set_filename = sets[set_type]()
-    if set_filename is not None:
-        open_set(set_filename)
+    # ableton 10
+    # p0_script_client().dispatch(ResetPlaybackCommand())
+    # # hack to get the focus when ableton is shown
+    # go_to_desktop(1)
+    # go_to_desktop(0)
+    # time.sleep(0.1)
+    #
+    # for i in range(0, 5):
+    #     focus_ableton()
+    #     send_keys("^n")
+    #     send_keys("{RIGHT}")
+    #     time.sleep(0.1)  # when clicking too fast, ableton is opening a template set ..
+    #     if len(get_ableton_windows()) == 2:
+    #         send_keys("{ENTER}")
+    #         break
+    #
+    #     if win32gui.GetCursorInfo()[1] == 65543:  # loading
+    #         break
 
 
 def open_set(filename: str):
@@ -138,10 +116,6 @@ def open_set(filename: str):
         send_right()
         send_keys("{ENTER}")
         time.sleep(0.5)
-
-
-def save_set():
-    send_keys("^s")
 
 
 @keep_mouse_position

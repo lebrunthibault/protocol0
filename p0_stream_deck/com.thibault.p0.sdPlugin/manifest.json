@@ -71,18 +71,6 @@
       ],
       "Tooltip": "Load vocal track",
       "UUID": "com.thibault.p0.load-vocal-track"
-    },
-    {
-      "Icon": "icon/p0_action/action",
-      "Name": "Open set",
-      "States": [
-        {
-          "Title": "",
-          "Image": "icon/p0_action/state"
-        }
-      ],
-      "Tooltip": "Open set",
-      "UUID": "com.thibault.p0.open-set"
     }
   ],
   "Profiles": [

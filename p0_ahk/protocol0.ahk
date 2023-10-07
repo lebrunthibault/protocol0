@@ -133,6 +133,11 @@ return
 ^+*::
     Send {Right}
 return
+^s::
+	callBackend("save_set")
+	Sleep, 200
+    Send ^s
+return
 ~^+r::
 	callBackend("check_audio_export_valid")
 return

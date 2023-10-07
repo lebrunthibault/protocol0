@@ -7,7 +7,6 @@ import DrumRackVisibleUpdatedEvent from './event/drum_rack_visible_updated_event
 import VocalCategoriesUpdatedEvent from './event/vocal_categories_updated_event'
 import ServerStateSchema, { ServerState } from './server_state'
 import { AbletonSet } from './set_state'
-import AbletonFavoriteSetsUpdatedEvent from './event/ableton_favorite_sets_updated_event'
 
 interface WebSocketPayload {
     type: string
@@ -58,7 +57,6 @@ class ScriptClient {
         // deep copy
         serverState = JSON.parse(JSON.stringify(serverState))
 
-        EventBus.emit(new AbletonFavoriteSetsUpdatedEvent(serverState.set_shortcuts))
         EventBus.emit(new DrumCategoriesUpdatedEvent(serverState.sample_categories.drums))
         EventBus.emit(new VocalCategoriesUpdatedEvent(serverState.sample_categories.vocals))
         EventBus.emit(new FavoriteDeviceNamesUpdatedEvent(serverState.favorite_device_names))
