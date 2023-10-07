@@ -57,7 +57,9 @@ class RackDevice(Device, Observable):
         self.notify_observers()
 
     def decrement_variation(self) -> None:
-        if self.selected_variation_index > 0:
+        if self.selected_variation_index < 0:
+            self.selected_variation_index = 0
+        else:
             self.selected_variation_index -= 1
 
         self.notify_observers()

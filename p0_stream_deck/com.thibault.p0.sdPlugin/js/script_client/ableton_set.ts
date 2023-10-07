@@ -2,13 +2,19 @@
 
 import { z } from 'zod'
 
+const TracksSchema = z.object({
+    drums: z.array(z.string()),
+    harmony: z.array(z.string()),
+    melody: z.array(z.string()),
+    bass: z.array(z.string())
+})
+
 const AbletonSetCurrentStateSchema = z.object({
+    tracks: TracksSchema,
     drum_rack_visible: z.boolean()
 })
 
 const AbletonSetSchema = z.object({
-    id: z.string(),
-    title: z.string(),
     current_state: AbletonSetCurrentStateSchema
 })
 

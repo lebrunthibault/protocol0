@@ -104,8 +104,6 @@ class AbletonSet(object):
 
     def notify(self, force: bool = False) -> None:
         data = self.to_dict()
-        from protocol0.shared.logging.Logger import Logger
-        Logger.dev(data)
         if self._cache != data or force:
             seq = Sequence()
             seq.add(partial(Backend.client().post_set, data))

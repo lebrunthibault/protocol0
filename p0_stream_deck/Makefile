@@ -1,3 +1,6 @@
+help:
+	@echo "commands: bootstrap, log, dev, icon, build"
+
 bootstrap:
 	@yarn install
 .PHONY: bootstrap

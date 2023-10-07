@@ -14,6 +14,7 @@ import VocalCategoriesUpdatedEvent from '../script_client/event/vocal_categories
 import { actionTypes } from './action_type'
 import { loadDevice, selectOrLoadDevice } from '../domain/device/load_device'
 import SelectedGroupedDevicesUpdatedEvent from '../domain/device/selected_grouped_devices_updated_event'
+import TracksUpdatedEvent from '../domain/clip/tracks_updated_event'
 
 @injectable()
 class ActionFactory {
@@ -30,6 +31,14 @@ class ActionFactory {
             },
             null
         )
+        new ActionGroup(
+            this.actionRepository,
+            actionTypes.CLIP_CONTROL,
+            Icons.empty,
+            TracksUpdatedEvent,
+            API.toggleClip,
+            loadDevice
+        )
         new ToggleAction(new Action(
             actionTypes.DRUM_RACK_TO_SIMPLER,
             API.drumRackToSimpler,
@@ -41,7 +50,7 @@ class ActionFactory {
         new ActionGroup(
             this.actionRepository,
             actionTypes.LOAD_DEVICE,
-            Icons.device,
+            Icons.empty,
             FavoriteDeviceNamesUpdatedEvent,
             selectOrLoadDevice,
             loadDevice
@@ -49,7 +58,7 @@ class ActionFactory {
         new ActionGroup(
             this.actionRepository,
             actionTypes.LOAD_GROUPED_DEVICE,
-            Icons.device,
+            Icons.empty,
             SelectedGroupedDevicesUpdatedEvent,
             selectOrLoadDevice,
             loadDevice
@@ -57,14 +66,14 @@ class ActionFactory {
         new ActionGroup(
             this.actionRepository,
             actionTypes.LOAD_DRUM_TRACK,
-            Icons.newTrack,
+            Icons.empty,
             DrumCategoriesUpdatedEvent,
             API.loadDrumSamples
         )
         new ActionGroup(
             this.actionRepository,
             actionTypes.LOAD_VOCAL_TRACK,
-            Icons.newTrack,
+            Icons.empty,
             VocalCategoriesUpdatedEvent,
             API.loadVocalSamples
         )

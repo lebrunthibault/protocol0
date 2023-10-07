@@ -15,6 +15,9 @@ const API = {
     },
     selectOrLoadDevice (name: string) {
         fetch(`${Config.P0_API_URL}/select_or_load_device?name=${name}`).then(() => null)
+    },
+    toggleClip (trackName: string) {
+        fetch(`${Config.P0_API_URL}/toggle_clip?track_name=${trackName}`).then(() => null)
     }
 }
 

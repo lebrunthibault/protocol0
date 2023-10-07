@@ -25,10 +25,15 @@ def find_top_group_sub_track_names(group_name: str) -> List[str]:
     sub_tracks = []
 
     for track in Song.simple_tracks():
-        if len(track.group_tracks) and track.group_tracks[0].name.lower() == group_name.lower():
+        if (
+            not track.is_foldable
+            and len(track.group_tracks)
+            and track.group_tracks[0].name.lower() == group_name.lower()
+        ):
             sub_tracks.append(track.name)
 
     return sub_tracks
+
 
 class TrackComponent(SlotManager):
     def __init__(self, song_view: Live.Song.Song.View) -> None:
@@ -84,7 +89,6 @@ class TrackComponent(SlotManager):
             ):
                 continue
             yield track
-
 
     def un_focus_all_tracks(self, including_current: bool = False) -> None:
         self._un_solo_all_tracks(including_current)
