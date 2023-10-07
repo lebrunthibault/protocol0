@@ -113,7 +113,9 @@ class ActionGroup {
 
         // grid or list shape
         if (parameters[0] instanceof Array) {
+            console.log(parameters)
             for (const [i, rowParameters] of parameters.entries()) {
+                console.log(i, rowParameters)
                 yield * this.slots.filter((slot: ActionSlot) => slot.row === i).slice(0, (rowParameters as unknown as ActionSlotItem[]).length)
             }
         } else {

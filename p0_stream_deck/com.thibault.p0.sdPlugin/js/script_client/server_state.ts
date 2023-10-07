@@ -1,7 +1,7 @@
 // noinspection TypeScriptValidateJSTypes
 
 import { z } from 'zod'
-import AbletonSetSchema from './set_state'
+import AbletonSetSchema from './ableton_set'
 
 const SampleCategoriesSchema = z.object({
     drums: z.array(z.string()),

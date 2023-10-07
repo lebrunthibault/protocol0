@@ -1,7 +1,7 @@
 from functools import partial
 
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
-from protocol0.domain.lom.track.TrackPlayerService import TrackPlayerService
+from protocol0.domain.lom.track.ClipPlayerService import ClipPlayerService
 
 
 class ActionGroupLaunchControl(ActionGroupInterface):
@@ -26,5 +26,5 @@ class ActionGroupLaunchControl(ActionGroupInterface):
             self.add_encoder(
                 identifier=note,
                 name="toggle clip",
-                on_press=partial(self._container.get(TrackPlayerService).play_pause_track, track_name),
+                on_press=partial(self._container.get(ClipPlayerService).toggle_clip, track_name),
             )

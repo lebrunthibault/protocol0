@@ -89,6 +89,7 @@ from protocol0.application.command.SelectOrLoadDeviceCommand import SelectOrLoad
 from protocol0.application.command.ShowAutomationCommand import ShowAutomationCommand
 from protocol0.application.command.ShowInstrumentCommand import ShowInstrumentCommand
 from protocol0.application.command.ToggleArmCommand import ToggleArmCommand
+from protocol0.application.command.ToggleClipCommand import ToggleClipCommand
 from protocol0.application.command.ToggleNotesCommand import ToggleNotesCommand
 from protocol0.application.command.ToggleReferenceTrackCommand import ToggleReferenceTrackCommand
 from protocol0.application.command.ToggleSceneLoopCommand import ToggleSceneLoopCommand
@@ -356,6 +357,11 @@ async def _open_set(path: str):
 @router.get("/play_pause")
 async def play_pause():
     p0_script_client().dispatch(PlayPauseSongCommand())
+
+
+@router.get("/toggle_clip")
+async def toggle_clip(track_name: str):
+    p0_script_client().dispatch(ToggleClipCommand(track_name))
 
 
 @router.get("/load_device")

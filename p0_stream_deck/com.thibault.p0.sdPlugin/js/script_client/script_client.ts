@@ -6,7 +6,8 @@ import { injectable } from 'tsyringe'
 import DrumRackVisibleUpdatedEvent from './event/drum_rack_visible_updated_event'
 import VocalCategoriesUpdatedEvent from './event/vocal_categories_updated_event'
 import ServerStateSchema, { ServerState } from './server_state'
-import { AbletonSet } from './set_state'
+import { AbletonSet } from './ableton_set'
+import TracksUpdatedEvent from '../domain/clip/tracks_updated_event'
 
 interface WebSocketPayload {
     type: string
@@ -60,6 +61,20 @@ class ScriptClient {
         EventBus.emit(new DrumCategoriesUpdatedEvent(serverState.sample_categories.drums))
         EventBus.emit(new VocalCategoriesUpdatedEvent(serverState.sample_categories.vocals))
         EventBus.emit(new FavoriteDeviceNamesUpdatedEvent(serverState.favorite_device_names))
+
+        console.log(serverState)
+        console.log(serverState.active_set)
+
+        if (serverState.active_set) {
+            console.log(serverState.active_set.current_state)
+            console.log(serverState.active_set.current_state.tracks)
+            EventBus.emit(new TracksUpdatedEvent([
+                serverState.active_set.current_state.tracks.drums,
+                serverState.active_set.current_state.tracks.harmony,
+                serverState.active_set.current_state.tracks.melody,
+                serverState.active_set.current_state.tracks.bass
+            ]))
+        }
 
         if (serverState.active_set) {
             ScriptClient.emitSet(serverState.active_set)

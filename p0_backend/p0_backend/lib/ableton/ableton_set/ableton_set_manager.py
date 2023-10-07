@@ -38,8 +38,6 @@ class AbletonSetManager:
 
         launched_sets = get_ableton_windows()
         set_title = re.match(r"([^*]*)", launched_sets[0]).group(1).split(" [")[0].strip()
-        logger.success(set_title)
-        logger.success(get_launched_set_path())
         if not set_title:
             return
 
