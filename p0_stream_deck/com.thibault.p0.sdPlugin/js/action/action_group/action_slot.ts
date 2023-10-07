@@ -36,7 +36,7 @@ class ActionSlot {
     }
 
     toString () {
-        return `ActionSlot(name="${this.name}", context=${this._context}, index=${this.index}, parameter="${this.parameter}")`
+        return `ActionSlot(name="${this.name}", row=${this.row}, index=${this.index}, context=${this._context}, parameter="${this.parameter}")`
     }
 
     private onWillAppear (event: SDEvent) {
@@ -56,7 +56,7 @@ class ActionSlot {
     }
 
     setParameter (parameter: ActionSlotItem) {
-        if (parameter !== this.parameter) {
+        if (parameter && parameter !== this.parameter) {
             console.debug(`setting parameter "${parameter.label}" for ${this}`)
             this.parameter = parameter
             this.enable()

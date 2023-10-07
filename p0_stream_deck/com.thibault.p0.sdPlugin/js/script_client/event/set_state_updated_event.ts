@@ -4,6 +4,10 @@ class ActionSlotItem {
     ) {
     }
 
+    toString (): string {
+        return `ActionSlotItem(${this.value})`
+    }
+
     get value (): string {
         return this._item
     }
