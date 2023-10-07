@@ -90,36 +90,47 @@ class ActionGroup {
             return
         }
 
-        const activeSlots = [...this.getSlotsToEnable(this.lastUpdatedEvent.items)]
-        // NB : we receive parameters in row form or grid form. flattening to row form for further processing.
-        const parameters = this.lastUpdatedEvent.items.flat()
+        // reset slots
+        this.slots.forEach(a => a.disable())
 
-        // disable unused action slots
-        this.slots.filter((slot: ActionSlot) => !activeSlots.includes(slot)).forEach(a => a.disable())
+        const activeSlots = this.getSlotsToEnable(this.lastUpdatedEvent.items)
 
-        if (activeSlots.length < parameters.length) {
-            console.warn(`Got ${parameters.length} parameters to display but only ${activeSlots.length} action slots`)
+        if (activeSlots[0] instanceof Array) {
+            for (const [i, activeSlotRow] of activeSlots?.entries()) {
+                (activeSlotRow as ActionSlot[]).forEach((slot: ActionSlot, j: number) => {
+                    slot.setParameter((event.items as [][])[i][j])
+                })
+            }
+        } else {
+            (activeSlots as ActionSlot[]).forEach((slot: ActionSlot, i: number) => {
+                slot.setParameter((event.items as [])[i])
+            })
         }
 
-        activeSlots.forEach((slot: ActionSlot, i: number) => {
-            slot.setParameter(parameters[i])
-        })
+        // grid or list shape
+        const flatItems = event.items.flat()
+        const flatActiveSlots = activeSlots.flat()
+        if (flatActiveSlots.length < flatItems.length) {
+            console.warn(`Got ${flatItems.length} parameters to display but only ${flatActiveSlots.length} action slots`)
+        }
     }
 
-    private * getSlotsToEnable (parameters: ActionSlotItems): Generator<ActionSlot, ActionSlot[] | undefined, undefined> {
+    private getSlotsToEnable (parameters: ActionSlotItems): ActionSlot[] | ActionSlot[][] {
         if (parameters.length === 0) {
             return []
         }
 
         // grid or list shape
         if (parameters[0] instanceof Array) {
-            console.log(parameters)
-            for (const [i, rowParameters] of parameters.entries()) {
-                console.log(i, rowParameters)
-                yield * this.slots.filter((slot: ActionSlot) => slot.row === i).slice(0, (rowParameters as unknown as ActionSlotItem[]).length)
+            const activeSlots: ActionSlot[][] = []
+            console.log(parameters, this.slots)
+            for (const [rowIndex, slotItems] of parameters.entries()) {
+                const rowSlots = this.slots.filter((slot: ActionSlot) => slot.row === rowIndex)
+                activeSlots.push(rowSlots.slice(0, (slotItems as ActionSlotItem[]).length))
             }
+            return activeSlots
         } else {
-            yield * this.slots.slice(0, parameters.length)
+            return this.slots.slice(0, parameters.length)
         }
     }
 }

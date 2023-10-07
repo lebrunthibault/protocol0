@@ -62,12 +62,7 @@ class ScriptClient {
         EventBus.emit(new VocalCategoriesUpdatedEvent(serverState.sample_categories.vocals))
         EventBus.emit(new FavoriteDeviceNamesUpdatedEvent(serverState.favorite_device_names))
 
-        console.log(serverState)
-        console.log(serverState.active_set)
-
         if (serverState.active_set) {
-            console.log(serverState.active_set.current_state)
-            console.log(serverState.active_set.current_state.tracks)
             EventBus.emit(new TracksUpdatedEvent([
                 serverState.active_set.current_state.tracks.drums,
                 serverState.active_set.current_state.tracks.harmony,
