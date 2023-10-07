@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 
 enum ProfileNameEnum {
+    CLIPS = 'profiles/Clips',
     DEVICES = 'profiles/Devices',
     DEVICE_GROUP = 'profiles/DeviceGroup',
     DRUMS = 'profiles/Drums',

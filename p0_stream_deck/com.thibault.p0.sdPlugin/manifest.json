@@ -14,6 +14,18 @@
     },
     {
       "Icon": "icon/p0_action/action",
+      "Name": "Clip control",
+      "States": [
+        {
+          "Title": "",
+          "Image": "icon/p0_action/state"
+        }
+      ],
+      "Tooltip": "Control a scene clip",
+      "UUID": "com.thibault.p0.clip-control"
+    },
+    {
+      "Icon": "icon/p0_action/action",
       "Name": "Drum Rack to Simpler",
       "States": [
         {
@@ -74,6 +86,12 @@
     }
   ],
   "Profiles": [
+    {
+      "Name": "profiles/Clips",
+      "ReadOnly": false,
+      "DeviceType": 2,
+      "DontAutoSwitchWhenInstalled": true
+    },
     {
       "Name": "profiles/Devices",
       "ReadOnly": false,

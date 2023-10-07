@@ -1,10 +1,11 @@
 from dataclasses import dataclass, asdict
 from functools import partial
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 
 from protocol0.application.ScriptDisconnectedEvent import ScriptDisconnectedEvent
 from protocol0.domain.lom.device.DrumRackLoadedEvent import DrumRackLoadedEvent
 from protocol0.domain.lom.instrument.instrument.InstrumentDrumRack import InstrumentDrumRack
+from protocol0.domain.lom.song.components.TrackComponent import find_top_group_sub_track_names
 from protocol0.domain.lom.track.SelectedTrackChangedEvent import SelectedTrackChangedEvent
 from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
 from protocol0.domain.lom.track.abstract_track.AbstractTrackNameUpdatedEvent import (
@@ -19,6 +20,17 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 @dataclass
+class AbletonSetPath:
+    filename: Optional[str]
+
+@dataclass
+class AbletonTracks:
+    drums: List[str]
+    harmony: List[str]
+    melody: List[str]
+    bass: List[str]
+
+@dataclass
 class AbletonTrack:
     name: str
     type: str
@@ -26,10 +38,16 @@ class AbletonTrack:
 
 @dataclass
 class AbletonSetCurrentState:
+    tracks: AbletonTracks
     current_track: AbletonTrack
     selected_track: AbletonTrack
     track_count: int
     drum_rack_visible: bool
+
+@dataclass
+class AbletonSetModel:
+    path_info: AbletonSetPath
+    current_state: AbletonSetCurrentState
 
 
 class AbletonSet(object):
@@ -38,7 +56,6 @@ class AbletonSet(object):
 
         self.path: Optional[str] = None
         self._title: Optional[str] = None
-        self.active = True
 
         DomainEventBus.subscribe(ScriptDisconnectedEvent, lambda _: self._disconnect())
 
@@ -66,42 +83,24 @@ class AbletonSet(object):
     def is_test(self) -> bool:
         return self._title in ("Toto", "Default")
 
-    # @property
-    # def _saved_tracks(self) -> List[str]:
-    #     assert self._path, "set path not set"
-    #     tracks_folder = "%s\\tracks" % dirname(self._path)
-    #
-    #     filenames = glob.glob("%s\\*.als" % tracks_folder)
-    #
-    #     return [basename(t).replace(".als", "") for t in filenames]
 
     def to_dict(self) -> Dict:
-        muted = Song.master_track() is not None and Song.master_track().muted
-
-
-        return {
-            "active": self.active,
-            "path_info": {
-                "filename": self.path
-            },
-            "title": self._title,
-            "muted": muted,
-            # "current_state": {
-            #     "current_track": Song.current_track().to_dict(),
-            #     "selected_track": Song.selected_track().to_dict(),
-            #     "track_count": len(list(Song.simple_tracks())),
-            #     "drum_rack_visible": isinstance(
-            #         Song.selected_track().instrument, InstrumentDrumRack
-            #     ),
-            # },
-            "current_state": asdict(AbletonSetCurrentState(
+        return asdict(AbletonSetModel(
+            path_info=AbletonSetPath(filename=self.path),
+            current_state=AbletonSetCurrentState(
+                tracks=AbletonTracks(
+                    drums=find_top_group_sub_track_names("drums"),
+                    harmony=find_top_group_sub_track_names("harmony"),
+                    melody=find_top_group_sub_track_names("melody"),
+                    bass=find_top_group_sub_track_names("bass"),
+                ),
                 current_track=AbletonTrack(**Song.current_track().to_dict()),
                 selected_track=AbletonTrack(**Song.selected_track().to_dict()),
                 track_count=len(list(Song.simple_tracks())),
                 drum_rack_visible=isinstance(
                     Song.selected_track().instrument, InstrumentDrumRack
                 )))
-        }
+        )
 
     def notify(self, force: bool = False) -> None:
         data = self.to_dict()
@@ -126,21 +125,6 @@ class AbletonSet(object):
 
         self._title = res["path_info"]["name"]
         self.path = res["path_info"]["filename"]
-
-        # if not self.is_unknown and not self.is_test:
-        #     abstract_track_names = [t.name for t in Song.abstract_tracks()]
-        #     orphan_tracks = [
-        #         t
-        #         for t in self._saved_tracks
-        #         if t not in abstract_track_names
-        #         and t.replace(" midi", "") not in abstract_track_names
-        #     ]
-        #
-        #     if len(orphan_tracks):
-        #         Backend.client().show_warning(
-        #             "Found orphan saved tracks: \n\n%s" % "\n".join(orphan_tracks)
-        #         )
-        #         Backend.client().show_saved_tracks()
 
     def _disconnect(self) -> None:
         Backend.client().close_set(self.path)
