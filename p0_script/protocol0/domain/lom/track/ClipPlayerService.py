@@ -3,26 +3,23 @@ from functools import partial
 from protocol0.domain.lom.song.components.TrackComponent import get_track_by_name
 from protocol0.domain.shared.scheduler.BarChangedEvent import BarChangedEvent
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
-
 from protocol0.shared.Song import Song
+from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
 
 
 class ClipPlayerService(object):
     def select_clip(self, track_name: str) -> None:
         track = get_track_by_name(track_name)
-        from protocol0.shared.logging.Logger import Logger
-        Logger.dev(("select", track))
         if track is None:
             return
 
+        track.is_folded = False
         track.clip_slots[Song.selected_scene().index].select()
         track.arm_state.toggle()
 
     def toggle_clip(self, track_name: str) -> None:
         track = get_track_by_name(track_name)
-        from protocol0.shared.logging.Logger import Logger
-        Logger.dev(("toggle", track))
         if track is None:
             return
 
