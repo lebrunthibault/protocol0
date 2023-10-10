@@ -28,7 +28,7 @@ class ActionDisplay {
     }
 
     set enabled (enabled: boolean) {
-        if (enabled === this.isEnabled) {
+        if (enabled && enabled === this.isEnabled) {
             return
         }
 

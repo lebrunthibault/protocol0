@@ -1,8 +1,8 @@
 from itertools import chain
+from typing import List, Optional, Iterator, cast
 
 import Live
 from _Framework.SubjectSlot import subject_slot, SlotManager
-from typing import List, Optional, Iterator, cast
 
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
@@ -10,7 +10,6 @@ from protocol0.domain.lom.device.MixerDevice import MixerDevice
 from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
 from protocol0.domain.shared.LiveObjectMapping import LiveObjectMapping
-from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.observer.Observable import Observable
@@ -78,18 +77,9 @@ class SimpleTrackDevices(SlotManager, Observable):
     def get_one_from_enum(self, device_enum: DeviceEnum) -> Optional[Device]:
         return find_if(lambda d: d.enum == device_enum, self._all_devices)
 
-    def get_from_enum(self, device_enum: DeviceEnum) -> List[Device]:
-        devices = []
-        for d in self._all_devices:
-            try:
-                if d.enum == device_enum:
-                    devices.append(d)
-            except Protocol0Error:
-                continue
-
-        return devices
-
-    def _find_all_devices(self, devices: Optional[List[Device]], only_visible: bool = False) -> List[Device]:
+    def _find_all_devices(
+        self, devices: Optional[List[Device]], only_visible: bool = False
+    ) -> List[Device]:
         """Returns a list with all devices from a track or chain"""
         all_devices = []
         if devices is None:

@@ -7,6 +7,9 @@ const API = {
     loadDevice (name: string) {
         fetch(`${Config.P0_API_URL}/load_device?name=${name}`).then(() => null)
     },
+    loadDeviceInNewTrack (name: string) {
+        fetch(`${Config.P0_API_URL}/load_device?name=${name}&create_track=true`).then(() => null)
+    },
     loadDrumSamples (category: string) {
         fetch(`${Config.P0_API_URL}/load_drum_rack/?category=drums&subcategory=${category}`).then(() => null)
     },
