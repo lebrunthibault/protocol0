@@ -1,8 +1,8 @@
 from functools import partial
-
 from typing import Optional
 
 import Live
+
 from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
@@ -14,7 +14,6 @@ from protocol0.domain.lom.track.group_track.ext_track.SimpleMidiExtTrack import 
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.BrowserServiceInterface import BrowserServiceInterface
-from protocol0.domain.shared.ValueScroller import ValueScroller
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.Song import Song
@@ -33,7 +32,7 @@ class DeviceService(object):
         self._browser_service = browser_service
         DomainEventBus.subscribe(DeviceLoadedEvent, self._on_device_loaded_event)
 
-    def load_device(self, enum_name: str) -> Sequence:
+    def load_device(self, enum_name: str, create_track: bool = False) -> Sequence:
         device_enum = DeviceEnum[enum_name]
         track = self._track_to_select(device_enum)
         device_to_select = self._get_device_to_select_for_insertion(track, device_enum)
@@ -48,7 +47,7 @@ class DeviceService(object):
 
         seq = Sequence()
         seq.add(track.select)
-        if device_enum.is_instrument and track.instrument is not None:
+        if create_track and device_enum.is_instrument and track.instrument:
             seq.add(self._track_crud_component.create_midi_track)
             seq.add(lambda: setattr(Song.selected_track(), "name", device_enum.value))
 
@@ -63,22 +62,6 @@ class DeviceService(object):
             seq.add(partial(self._create_default_automation, Song.selected_clip()))
 
         return seq.done()
-
-    def select_or_load_device(self, enum_name: str) -> Optional[Sequence]:
-        device_enum = DeviceEnum[enum_name]
-        track = self._track_to_select(device_enum)
-
-        devices = track.devices.get_from_enum(device_enum)
-        if len(devices) == 0 or device_enum.is_instrument:
-            return self.load_device(enum_name)
-
-        if track.devices.selected in devices and Song.selected_track() != track:
-            next_device = track.devices.selected
-        else:
-            next_device = ValueScroller.scroll_values(devices, track.devices.selected, True)
-
-        self._device_component.select_device(track, next_device)
-        return None
 
     def _track_to_select(self, device_enum: DeviceEnum) -> SimpleTrack:
         selected_track = Song.selected_track()

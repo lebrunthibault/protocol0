@@ -38,14 +38,14 @@
     },
     {
       "Icon": "icon/p0_action/action",
-      "Name": "Select or add device",
+      "Name": "Load device",
       "States": [
         {
           "Title": "",
           "Image": "icon/p0_action/state"
         }
       ],
-      "Tooltip": "Select or add a chosen device on the selected track",
+      "Tooltip": "Add a chosen device on the selected track",
       "UUID": "com.thibault.p0.load-device"
     },
     {

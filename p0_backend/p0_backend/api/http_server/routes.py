@@ -86,7 +86,6 @@ from protocol0.application.command.ScrollScenePositionCommand import ScrollScene
 from protocol0.application.command.ScrollSceneTracksCommand import ScrollSceneTracksCommand
 from protocol0.application.command.ScrollScenesCommand import ScrollScenesCommand
 from protocol0.application.command.ScrollTrackVolumeCommand import ScrollTrackVolumeCommand
-from protocol0.application.command.SelectOrLoadDeviceCommand import SelectOrLoadDeviceCommand
 from protocol0.application.command.ShowAutomationCommand import ShowAutomationCommand
 from protocol0.application.command.ShowInstrumentCommand import ShowInstrumentCommand
 from protocol0.application.command.ToggleArmCommand import ToggleArmCommand
@@ -366,13 +365,8 @@ async def toggle_clip(track_name: str):
 
 
 @router.get("/load_device")
-async def load_device(name: str):
-    p0_script_client().dispatch(LoadDeviceCommand(name))
-
-
-@router.get("/select_or_load_device")
-async def select_or_load_device(name: str):
-    p0_script_client().dispatch(SelectOrLoadDeviceCommand(name))
+async def load_device(name: str, create_track: bool = False):
+    p0_script_client().dispatch(LoadDeviceCommand(name, create_track))
 
 
 @router.get("/load_drum_rack")

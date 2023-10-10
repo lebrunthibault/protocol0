@@ -13,7 +13,7 @@ function selectOrLoadDevice (device: string | DeviceGroup) {
 
 function loadDevice (device: string | DeviceGroup) {
     if (typeof device === 'string') {
-        API.loadDevice(device)
+        API.loadDeviceInNewTrack(device)
     } else {
         EventBus.emit(new SelectedGroupedDevicesUpdatedEvent(device.devices))
     }
