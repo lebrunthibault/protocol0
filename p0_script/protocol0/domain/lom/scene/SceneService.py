@@ -79,7 +79,7 @@ class SceneService(SlotManager):
 
     @subject_slot("selected_scene")
     @handle_error
-    @debounce(duration=50)
+    @debounce(duration=20)
     def _selected_scene_listener(self) -> None:
         """
         debounce necessary when multiple scenes are added at the same time

@@ -2,6 +2,8 @@ import Icons from '../service/icons'
 import ActionContext from './action_context'
 
 class ActionDisplay {
+    private isEnabled: boolean = true;
+
     /* eslint-disable no-useless-constructor */
     constructor (
         private readonly actionContext: ActionContext,
@@ -22,10 +24,16 @@ class ActionDisplay {
 
     // noinspection JSUnusedGlobalSymbols
     get enabled (): boolean {
-        return true // unused
+        return this.isEnabled // unused
     }
 
     set enabled (enabled: boolean) {
+        if (enabled === this.isEnabled) {
+            return
+        }
+
+        this.isEnabled = enabled
+
         if (enabled) {
             if (this.title) {
                 this.setTitle(this.title)
