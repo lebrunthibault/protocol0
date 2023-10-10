@@ -36,14 +36,18 @@ def find_top_group_sub_tracks(group_name: str) -> List[SimpleTrack]:
 
     return sub_tracks
 
+
 def get_track_by_name(track_name: str) -> Optional[SimpleTrack]:
-    track = find_if(lambda t: t.name.lower() == track_name.lower(), Song.simple_tracks())
+    track = find_if(
+        lambda t: not t.is_foldable and t.name.lower() == track_name.lower(), Song.simple_tracks()
+    )
 
     if track is None:
         Logger.warning(f"Could not find track '{track_name}' in set")
         return None
 
     return track
+
 
 class TrackComponent(SlotManager):
     def __init__(self, song_view: Live.Song.Song.View) -> None:

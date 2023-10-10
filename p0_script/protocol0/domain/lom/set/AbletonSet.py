@@ -16,6 +16,7 @@ from protocol0.domain.lom.track.abstract_track.AbstractTrackNameUpdatedEvent imp
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
+from protocol0.domain.shared.utils.timing import debounce
 from protocol0.infra.interface.session.SessionUpdatedEvent import SessionUpdatedEvent
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
@@ -112,11 +113,9 @@ class AbletonSet(object):
             ),
         )
 
+    @debounce(duration=50)
     def notify(self, force: bool = False) -> None:
         model = self.to_model()
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(model.current_state.selected_scene.melody)
 
         if self._model_cached != model or force:
             seq = Sequence()
