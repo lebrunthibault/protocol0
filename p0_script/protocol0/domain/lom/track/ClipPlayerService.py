@@ -23,11 +23,25 @@ class ClipPlayerService(object):
         if track is None:
             return
 
-        cs = track.clip_slots[Song.selected_scene().index]
+        scene_index = Song.selected_scene().index
+        cs = track.clip_slots[scene_index]
 
         if cs.clip is None:
-            Logger.info("No clip")
-            return
+            # look for another clip to copy in previous or next scenes
+            other_clip_slots = list(reversed(track.clip_slots[:scene_index])) + track.clip_slots[scene_index:]
+            previous_or_next_cs = next((cs for cs in other_clip_slots if cs.clip), None)
+            if previous_or_next_cs is None:
+                Logger.info("No clip")
+            else:
+                previous_or_next_cs.duplicate_clip_to(cs)
+                seq = Sequence()
+                if previous_or_next_cs.clip.muted:
+                    seq.defer()
+                    seq.add(lambda: setattr(cs.clip, "muted", False))
+                seq.defer()
+                seq.add(lambda: setattr(cs.clip, "is_playing", True))
+                seq.done()
+                return
 
         if cs.clip.muted:
             cs.clip.muted = False

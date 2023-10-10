@@ -90,9 +90,6 @@ class ActionGroup {
             return
         }
 
-        // reset slots
-        this.slots.forEach(a => a.disable())
-
         const activeSlots = this.getSlotsToEnable(this.lastUpdatedEvent.items)
 
         if (activeSlots[0] instanceof Array) {
@@ -113,6 +110,7 @@ class ActionGroup {
         if (flatActiveSlots.length < flatItems.length) {
             console.warn(`Got ${flatItems.length} parameters to display but only ${flatActiveSlots.length} action slots`)
         }
+        this.slots.filter((slot: ActionSlot) => !flatActiveSlots.includes(slot)).forEach(a => a.disable())
     }
 
     private getSlotsToEnable (parameters: ActionSlotItems): ActionSlot[] | ActionSlot[][] {

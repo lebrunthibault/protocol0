@@ -75,7 +75,7 @@ def reload_ableton() -> None:
     except OSError:
         pass
 
-    open_set("Test.als")
+    open_set("Test 2.als")
 
     # ableton 10
     # p0_script_client().dispatch(ResetPlaybackCommand())

@@ -13,6 +13,7 @@ from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
 from protocol0.domain.lom.track.abstract_track.AbstractTrackNameUpdatedEvent import (
     AbstractTrackNameUpdatedEvent,
 )
+from protocol0.domain.lom.track.simple_track.SimpleTrackArmedEvent import SimpleTrackArmedEvent
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
@@ -81,6 +82,7 @@ class AbletonSet(object):
             SessionUpdatedEvent,
             TracksMappedEvent,
             ClipSlotPlayingStatusUpdatedEvent,
+            SimpleTrackArmedEvent
         ]
 
         for event in listened_events:
@@ -113,7 +115,7 @@ class AbletonSet(object):
             ),
         )
 
-    @debounce(duration=50)
+    @debounce(duration=20)
     def notify(self, force: bool = False) -> None:
         model = self.to_model()
 

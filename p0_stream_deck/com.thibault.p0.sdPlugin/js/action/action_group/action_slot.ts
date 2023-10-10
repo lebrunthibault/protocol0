@@ -60,6 +60,8 @@ class ActionSlot {
             console.debug(`setting parameter "${parameter.label}" for ${this}`)
             this.parameter = parameter
             this.enable()
+        } else {
+            console.log(`cached: ${parameter}`)
         }
     }
 
@@ -82,11 +84,11 @@ class ActionSlot {
         this.shown = true
         // @ts-ignore
         this.display.setTitle(toStreamDeckTitle(this.parameter.label))
-        this.display.enabled = true
         // @ts-ignore
         if (!this.parameter.active) {
             this.display.setImage(this.iconInactive)
         }
+        this.display.enabled = true
     }
 
     disable () {

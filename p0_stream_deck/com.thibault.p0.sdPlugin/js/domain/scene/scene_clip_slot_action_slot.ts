@@ -48,6 +48,8 @@ class SceneClipActionSlot extends ActionSlot {
             }
         } else if (clipState.is_armed) {
             this.display.setImage(Icons.trackArmedColor)
+        } else {
+            this.display.setImage(Icons.empty)
         }
     }
 }
