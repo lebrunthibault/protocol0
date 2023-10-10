@@ -14,15 +14,15 @@
     },
     {
       "Icon": "icon/p0_action/action",
-      "Name": "Clip control",
+      "Name": "Clip slot control",
       "States": [
         {
           "Title": "",
           "Image": "icon/p0_action/state"
         }
       ],
-      "Tooltip": "Control a scene clip",
-      "UUID": "com.thibault.p0.clip-control"
+      "Tooltip": "Control a scene clip slot",
+      "UUID": "com.thibault.p0.clip-slot-control"
     },
     {
       "Icon": "icon/p0_action/action",

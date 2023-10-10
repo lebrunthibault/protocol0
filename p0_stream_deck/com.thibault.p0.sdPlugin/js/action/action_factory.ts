@@ -14,7 +14,7 @@ import VocalCategoriesUpdatedEvent from '../script_client/event/vocal_categories
 import { actionTypes } from './action_type'
 import { loadDevice, selectOrLoadDevice } from '../domain/device/load_device'
 import SelectedGroupedDevicesUpdatedEvent from '../domain/device/selected_grouped_devices_updated_event'
-import TracksUpdatedEvent from '../domain/clip/tracks_updated_event'
+import SelectedSceneUpdated from '../domain/scene/selected_scene_updated_event'
 
 @injectable()
 class ActionFactory {
@@ -33,11 +33,11 @@ class ActionFactory {
         )
         new ActionGroup(
             this.actionRepository,
-            actionTypes.CLIP_CONTROL,
+            actionTypes.CLIP_SLOT_CONTROL,
             Icons.empty,
-            TracksUpdatedEvent,
-            API.toggleClip,
-            loadDevice
+            SelectedSceneUpdated,
+            API.selectClip,
+            API.toggleClip
         )
         new ToggleAction(new Action(
             actionTypes.DRUM_RACK_TO_SIMPLER,

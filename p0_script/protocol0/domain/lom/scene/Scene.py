@@ -14,6 +14,8 @@ from protocol0.domain.lom.scene.SceneLength import SceneLength
 from protocol0.domain.lom.scene.SceneName import SceneName
 from protocol0.domain.lom.scene.ScenePlayingState import ScenePlayingState
 from protocol0.domain.lom.scene.ScenePositionScroller import ScenePositionScroller
+from protocol0.domain.lom.set.AbletonSet import SceneTrackState, AbletonScene
+from protocol0.domain.lom.song.components.TrackComponent import find_top_group_sub_tracks
 from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.ValueScroller import ValueScroller
@@ -205,6 +207,25 @@ class Scene(SlotManager):
                 track.base_track.is_folded = False
             if track.group_track:
                 track.base_track.group_track.is_folded = False
+
+    def to_scene_state(self) -> AbletonScene:
+        scene_state = AbletonScene()
+        for group_name in ["drums", "harmony", "melody", "bass"]:
+            sub_tracks = find_top_group_sub_tracks(group_name)
+
+            for track in sub_tracks:
+                clip = track.clip_slots[self.index].clip
+                getattr(scene_state, group_name).append(
+                    SceneTrackState(
+                        track_name=track.name,
+                        group_name=group_name,
+                        has_clip=clip is not None,
+                        is_playing=clip is not None and clip.is_playing,
+                        is_armed=track.arm_state.is_armed
+                    )
+                )
+
+        return scene_state
 
     def disconnect(self) -> None:
         super(Scene, self).disconnect()

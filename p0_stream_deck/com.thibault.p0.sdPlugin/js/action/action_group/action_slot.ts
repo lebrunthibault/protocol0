@@ -8,7 +8,7 @@ class ActionSlot {
     public readonly name: string;
     private readonly _context: ActionContext;
     public shown: boolean = true;
-    private parameter: ActionSlotItem | null = null;
+    protected parameter: ActionSlotItem | null = null;
     public readonly row: number
     public readonly index: number
     public readonly display: ActionDisplay

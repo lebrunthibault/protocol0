@@ -70,15 +70,23 @@ class AbletonTrack(BaseModel):
     index: int
 
 
-class AbletonTracks(BaseModel):
-    drums: List[str]
-    harmony: List[str]
-    melody: List[str]
-    bass: List[str]
+class SceneTrackState(BaseModel):
+    track_name: str
+    group_name: str
+    has_clip: bool
+    is_playing: bool
+    is_armed: bool
+
+
+class AbletonScene(BaseModel):
+    drums: List[SceneTrackState]
+    harmony: List[SceneTrackState]
+    melody: List[SceneTrackState]
+    bass: List[SceneTrackState]
 
 
 class AbletonSetCurrentState(BaseModel):
-    tracks: AbletonTracks
+    selected_scene: AbletonScene
     current_track: AbletonTrack
     selected_track: AbletonTrack
     track_count: int

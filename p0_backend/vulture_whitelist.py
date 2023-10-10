@@ -74,3 +74,8 @@ harmony  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py:75
 melody  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py:76)
 bass  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py:77)
 tracks  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py:81)
+has_clip  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py:75)
+selected_scene  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py:86)
+group_name  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py:75)
+is_playing  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py:77)
+is_armed  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py:78)

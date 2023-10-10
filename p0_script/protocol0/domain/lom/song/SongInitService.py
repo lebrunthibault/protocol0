@@ -31,6 +31,7 @@ class SongInitService(object):
             seq.add(self._check_sound_id_device)
 
         seq.add(self._playback_component.reset)
+        seq.add(self._ableton_set.loop_notify_selected_scene)
 
         return seq.done()
 
