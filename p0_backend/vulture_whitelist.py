@@ -31,7 +31,6 @@ validation_exception_handler  # unused function (p0_backend\api\http_server\main
 execute_action  # unused function (p0_backend\api\http_server\script_actions\router.py:71)
 select_window  # unused function (p0_backend\celery\celery.py:68)
 toggle_fold_set  # unused function (p0_backend\lib\ableton\ableton.py:176)
-clear_arrangement  # unused function (p0_backend\lib\ableton\ableton.py:184)
 save_drum_rack  # unused function (p0_backend\lib\ableton\drum_rack.py:9)
 delete_saved_track  # unused function (p0_backend\lib\ableton_set.py:230)
 crop_clip  # unused function (p0_backend\lib\ableton\interface\clip.py:26)
