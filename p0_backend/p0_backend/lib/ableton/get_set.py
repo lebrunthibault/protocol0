@@ -8,14 +8,14 @@ from p0_backend.settings import Settings
 settings = Settings()
 
 
-def get_ableton_windows() -> List[str]:
+def get_ableton_window_titles() -> List[str]:
     set_infos = filter(lambda i: i["app_name"] == settings.ableton_process_name, get_windows_list())
 
     return [i["name"] for i in set_infos]
 
 
 def get_launched_set_path() -> str:
-    launched_set = next(w for w in get_ableton_windows() if "ableton projects" in w)
+    launched_set = next(w for w in get_ableton_window_titles() if "ableton projects" in w)
 
     set_title = re.match(r"([^*]*)", launched_set).group(1).split(" [")[0].strip()
 

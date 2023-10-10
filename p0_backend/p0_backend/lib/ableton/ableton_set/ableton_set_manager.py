@@ -13,7 +13,7 @@ from p0_backend.celery.celery import notification_window
 from p0_backend.lib.ableton.ableton import is_ableton_focused
 from p0_backend.lib.ableton.ableton_set.ableton_set import AbletonSet, AbletonSetPath
 from p0_backend.lib.ableton.get_set import (
-    get_ableton_windows,
+    get_ableton_window_titles,
     get_launched_set_path,
 )
 from p0_backend.lib.enum.notification_enum import NotificationEnum
@@ -28,7 +28,7 @@ settings = Settings()
 
 
 class AbletonSetManager:
-    DEBUG = True
+    DEBUG = False
     _ACTIVE_SET: Optional[AbletonSet] = None
 
     @classmethod
@@ -36,9 +36,11 @@ class AbletonSetManager:
         if cls.DEBUG:
             logger.info(f"registering set {ableton_set}")
 
-        launched_sets = get_ableton_windows()
+        launched_sets = [title for title in get_ableton_window_titles() if title]
+        assert len(launched_sets), "No ableton window"
         set_title = re.match(r"([^*]*)", launched_sets[0]).group(1).split(" [")[0].strip()
         if not set_title:
+            logger.warning(f"Couldn't find set title in launched sets: {launched_sets}")
             return
 
         if ableton_set.is_untitled and set_title.startswith("Untitled"):
@@ -54,20 +56,23 @@ class AbletonSetManager:
 
         # deduplicate on set title
         existing_set = cls._ACTIVE_SET
-        if existing_set:
-            logger.success((existing_set, existing_set.path_info))
         if existing_set is not None:
             if existing_set.path_info.filename != ableton_set.path_info.filename:
-                logger.warning(f"Cannot overwrite active set: {existing_set}")
-                return
+                logger.warning(f"overwriting active set: {existing_set}")
+                # return
 
             _check_track_name_change(existing_set, ableton_set)
+
+        if existing_set == ableton_set:
+            logger.info("No change")
+            return
 
         cls._ACTIVE_SET = ableton_set
 
         from p0_backend.api.http_server.ws import ws_manager
 
-        await ws_manager.broadcast_server_state()
+        if existing_set and existing_set.current_state.selected_scene != ableton_set.current_state.selected_scene:
+            await ws_manager.broadcast_server_state()
 
         # update backend
         time.sleep(0.5)  # fix too fast backend ..?

@@ -7,7 +7,7 @@ import DrumRackVisibleUpdatedEvent from './event/drum_rack_visible_updated_event
 import VocalCategoriesUpdatedEvent from './event/vocal_categories_updated_event'
 import ServerStateSchema, { ServerState } from './server_state'
 import { AbletonSet } from './ableton_set'
-import TracksUpdatedEvent from '../domain/clip/tracks_updated_event'
+import SelectedSceneUpdated from '../domain/scene/selected_scene_updated_event'
 
 interface WebSocketPayload {
     type: string
@@ -63,11 +63,11 @@ class ScriptClient {
         EventBus.emit(new FavoriteDeviceNamesUpdatedEvent(serverState.favorite_device_names))
 
         if (serverState.active_set) {
-            EventBus.emit(new TracksUpdatedEvent([
-                serverState.active_set.current_state.tracks.drums,
-                serverState.active_set.current_state.tracks.harmony,
-                serverState.active_set.current_state.tracks.melody,
-                serverState.active_set.current_state.tracks.bass
+            EventBus.emit(new SelectedSceneUpdated([
+                serverState.active_set.current_state.selected_scene.drums,
+                serverState.active_set.current_state.selected_scene.harmony,
+                serverState.active_set.current_state.selected_scene.melody,
+                serverState.active_set.current_state.selected_scene.bass
             ]))
         }
 

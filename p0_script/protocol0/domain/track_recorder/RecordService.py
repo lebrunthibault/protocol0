@@ -47,7 +47,12 @@ from protocol0.shared.sequence.Sequence import Sequence
 class RecordService(object):
     _DEBUG = False
 
-    def __init__(self, playback_component: PlaybackComponent, scene_crud_component: SceneCrudComponent, quantization_component: QuantizationComponent) -> None:
+    def __init__(
+        self,
+        playback_component: PlaybackComponent,
+        scene_crud_component: SceneCrudComponent,
+        quantization_component: QuantizationComponent,
+    ) -> None:
         self._playback_component = playback_component
         self._scene_crud_component = scene_crud_component
         self._quantization_component = quantization_component
@@ -104,7 +109,13 @@ class RecordService(object):
         seq.add(partial(self._start_recording, track, record_type, config, processors))
         return seq.done()
 
-    def _start_recording(self, track: AbstractTrack, record_type: RecordTypeEnum, config: RecordConfig, processors: RecordProcessors) -> Optional[Sequence]:
+    def _start_recording(
+        self,
+        track: AbstractTrack,
+        record_type: RecordTypeEnum,
+        config: RecordConfig,
+        processors: RecordProcessors,
+    ) -> Optional[Sequence]:
         # this will stop the previous playing scene on playback stop
         PlayingSceneFacade.set(config.recording_scene)
         DomainEventBus.once(ErrorRaisedEvent, self._on_error_raised_event)
@@ -170,3 +181,18 @@ class RecordService(object):
         # deferring this to allow components to react to the song stopped event
         Scheduler.defer(Scheduler.restart)
         self._recorder = None
+
+    def capture_midi(self) -> None:
+        scene_index = Song.selected_scene().index
+        Song.capture_midi()
+
+        def copy_created_clip() -> None:
+            source_cs = Song.selected_track().clip_slots[-1]
+            dest_cs = Song.selected_track().clip_slots[scene_index]
+
+            source_cs.duplicate_clip_to(dest_cs)
+
+            self._scene_crud_component.delete_scene(Song.scenes()[-1])
+            dest_cs.select()
+
+        Scheduler.defer(copy_created_clip)

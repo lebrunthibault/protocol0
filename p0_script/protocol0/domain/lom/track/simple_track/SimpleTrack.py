@@ -253,7 +253,7 @@ class SimpleTrack(AbstractTrack):
     def is_playing(self) -> bool:
         return any(clip.is_playing for clip in self.clips)
 
-    def _remove_arrangement_clips(self) -> None:
+    def remove_arrangement_clips(self) -> None:
         for clip in self._track.arrangement_clips:
             self._track.delete_clip(clip)
 
@@ -378,7 +378,7 @@ class SimpleTrack(AbstractTrack):
         for clip in self.clips:
             clip.loop.end = clip.loop.end_marker  # to have tails
 
-        self._remove_arrangement_clips()
+        self.remove_arrangement_clips()
 
         seq = Sequence()
 

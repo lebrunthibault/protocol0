@@ -80,6 +80,7 @@ from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongComm
 from protocol0.application.command.RecordUnlimitedCommand import RecordUnlimitedCommand
 from protocol0.application.command.ReloadScriptCommand import ReloadScriptCommand
 from protocol0.application.command.SaveSongCommand import SaveSongCommand
+from protocol0.application.command.SelectClipCommand import SelectClipCommand
 from protocol0.application.command.ScrollPresetsCommand import ScrollPresetsCommand
 from protocol0.application.command.ScrollScenePositionCommand import ScrollScenePositionCommand
 from protocol0.application.command.ScrollSceneTracksCommand import ScrollSceneTracksCommand
@@ -357,6 +358,11 @@ async def _open_set(path: str):
 @router.get("/play_pause")
 async def play_pause():
     p0_script_client().dispatch(PlayPauseSongCommand())
+
+
+@router.get("/select_clip")
+async def select_clip(track_name: str):
+    p0_script_client().dispatch(SelectClipCommand(track_name))
 
 
 @router.get("/toggle_clip")

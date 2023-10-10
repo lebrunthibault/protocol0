@@ -1,25 +1,45 @@
-from protocol0.domain.shared.utils.list import find_if
+from functools import partial
+
+from protocol0.domain.lom.song.components.TrackComponent import get_track_by_name
+from protocol0.domain.shared.scheduler.BarChangedEvent import BarChangedEvent
+from protocol0.domain.shared.scheduler.Scheduler import Scheduler
+
 from protocol0.shared.Song import Song
-from protocol0.shared.logging.Logger import Logger
+from protocol0.shared.sequence.Sequence import Sequence
 
 
 class ClipPlayerService(object):
-    def toggle_clip(self, track_name: str) -> None:
-        track = find_if(lambda t: t.name.lower() == track_name.lower(), Song.simple_tracks())
-
+    def select_clip(self, track_name: str) -> None:
+        track = get_track_by_name(track_name)
+        from protocol0.shared.logging.Logger import Logger
+        Logger.dev(("select", track))
         if track is None:
-            Logger.warning(f"Could not find track '{track_name}' in set")
             return
 
-        clip = track.clip_slots[Song.selected_scene().index].clip
+        track.clip_slots[Song.selected_scene().index].select()
+        track.arm_state.toggle()
 
-        Logger.dev((clip, track))
-
-        if clip is None:
-            track.arm_state.arm()
+    def toggle_clip(self, track_name: str) -> None:
+        track = get_track_by_name(track_name)
+        from protocol0.shared.logging.Logger import Logger
+        Logger.dev(("toggle", track))
+        if track is None:
             return
 
-        if track.is_playing:
-            track.stop()
+        cs = track.clip_slots[Song.selected_scene().index]
+
+        if cs.clip is None:
+            Logger.info("No clip")
+            return
+
+        if cs.clip.muted:
+            cs.clip.muted = False
+
+        if cs.clip.is_playing:
+            cs.clip.stop()
+            seq = Sequence()
+            seq.wait_for_event(BarChangedEvent)
+            seq.add(partial(setattr, cs.clip, "muted", True))
+            seq.done()
         else:
-            clip.is_playing = True
+            Scheduler.defer(partial(setattr, cs.clip, "is_playing", True))

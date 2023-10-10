@@ -1,0 +1,2 @@
+class ClipSlotPlayingStatusUpdatedEvent(object):
+    pass

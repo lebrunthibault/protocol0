@@ -150,8 +150,6 @@ class LogService(object):
         Logger.info("********* SONG SCENES *************")
         Logger.info("scenes : %s" % list(Song.scenes()))
         Logger.info()
-        Logger.info("selected_scene.tracks : %s" % list(Song.selected_scene().clips.tracks))
-        Logger.info()
         Logger.info("selected_scene.abstract_tracks : %s" % Song.selected_scene().abstract_tracks)
         Logger.info()
         Logger.info("selected_scene.clips : %s" % list(Song.selected_scene().clips))
@@ -184,7 +182,7 @@ class LogService(object):
 
         Logger.info()
         Logger.info("********* ABLETON_SET *************")
-        Logger.info(self._ableton_set.to_dict())
+        Logger.info(self._ableton_set.to_model())
 
     @tail_logs
     def log_missing_vsts(self) -> None:

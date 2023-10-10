@@ -2,7 +2,7 @@ from functools import partial
 
 import Live
 from _Framework.SubjectSlot import subject_slot, SlotManager
-from typing import Iterator, List
+from typing import Iterator, List, Optional
 
 from protocol0.domain.lom.song.SongInitializedEvent import SongInitializedEvent
 from protocol0.domain.lom.track.SelectedTrackChangedEvent import SelectedTrackChangedEvent
@@ -17,10 +17,12 @@ from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.ValueScroller import ValueScroller
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
+from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.Song import Song
+from protocol0.shared.logging.Logger import Logger
 
 
-def find_top_group_sub_track_names(group_name: str) -> List[str]:
+def find_top_group_sub_tracks(group_name: str) -> List[SimpleTrack]:
     """Recursive"""
     sub_tracks = []
 
@@ -30,10 +32,18 @@ def find_top_group_sub_track_names(group_name: str) -> List[str]:
             and len(track.group_tracks)
             and track.group_tracks[0].name.lower() == group_name.lower()
         ):
-            sub_tracks.append(track.name)
+            sub_tracks.append(track)
 
     return sub_tracks
 
+def get_track_by_name(track_name: str) -> Optional[SimpleTrack]:
+    track = find_if(lambda t: t.name.lower() == track_name.lower(), Song.simple_tracks())
+
+    if track is None:
+        Logger.warning(f"Could not find track '{track_name}' in set")
+        return None
+
+    return track
 
 class TrackComponent(SlotManager):
     def __init__(self, song_view: Live.Song.Song.View) -> None:

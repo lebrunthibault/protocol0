@@ -2,15 +2,23 @@
 
 import { z } from 'zod'
 
-const TracksSchema = z.object({
-    drums: z.array(z.string()),
-    harmony: z.array(z.string()),
-    melody: z.array(z.string()),
-    bass: z.array(z.string())
+const SceneTrackStateSchema = z.object({
+    track_name: z.string(),
+    group_name: z.string(),
+    has_clip: z.boolean(),
+    is_playing: z.boolean(),
+    is_armed: z.boolean()
+})
+
+const AbletonSceneSchema = z.object({
+    drums: z.array(SceneTrackStateSchema),
+    harmony: z.array(SceneTrackStateSchema),
+    melody: z.array(SceneTrackStateSchema),
+    bass: z.array(SceneTrackStateSchema)
 })
 
 const AbletonSetCurrentStateSchema = z.object({
-    tracks: TracksSchema,
+    selected_scene: AbletonSceneSchema,
     drum_rack_visible: z.boolean()
 })
 
@@ -20,6 +28,7 @@ const AbletonSetSchema = z.object({
 
 // extract the inferred type
 type AbletonSet = z.infer<typeof AbletonSetSchema>;
+type SceneTrackState = z.infer<typeof SceneTrackStateSchema>;
 
-export type { AbletonSet }
+export type { AbletonSet, SceneTrackState }
 export default AbletonSetSchema

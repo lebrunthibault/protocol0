@@ -1,11 +1,13 @@
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 from functools import partial
-from typing import Dict, Any, Optional, List
+from typing import Dict, Optional, List
 
 from protocol0.application.ScriptDisconnectedEvent import ScriptDisconnectedEvent
+from protocol0.domain.lom.clip_slot.ClipSlotPlayingStatusUpdatedEvent import (
+    ClipSlotPlayingStatusUpdatedEvent,
+)
 from protocol0.domain.lom.device.DrumRackLoadedEvent import DrumRackLoadedEvent
 from protocol0.domain.lom.instrument.instrument.InstrumentDrumRack import InstrumentDrumRack
-from protocol0.domain.lom.song.components.TrackComponent import find_top_group_sub_track_names
 from protocol0.domain.lom.track.SelectedTrackChangedEvent import SelectedTrackChangedEvent
 from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
 from protocol0.domain.lom.track.abstract_track.AbstractTrackNameUpdatedEvent import (
@@ -14,6 +16,7 @@ from protocol0.domain.lom.track.abstract_track.AbstractTrackNameUpdatedEvent imp
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
+from protocol0.infra.interface.session.SessionUpdatedEvent import SessionUpdatedEvent
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
@@ -23,12 +26,23 @@ from protocol0.shared.sequence.Sequence import Sequence
 class AbletonSetPath:
     filename: Optional[str]
 
+
 @dataclass
-class AbletonTracks:
-    drums: List[str]
-    harmony: List[str]
-    melody: List[str]
-    bass: List[str]
+class SceneTrackState:
+    track_name: str
+    group_name: str
+    has_clip: bool
+    is_playing: bool
+    is_armed: bool
+
+
+@dataclass
+class AbletonScene:
+    drums: List[SceneTrackState] = field(default_factory=lambda: [])
+    harmony: List[SceneTrackState] = field(default_factory=lambda: [])
+    melody: List[SceneTrackState] = field(default_factory=lambda: [])
+    bass: List[SceneTrackState] = field(default_factory=lambda: [])
+
 
 @dataclass
 class AbletonTrack:
@@ -36,13 +50,15 @@ class AbletonTrack:
     type: str
     index: int
 
+
 @dataclass
 class AbletonSetCurrentState:
-    tracks: AbletonTracks
+    selected_scene: AbletonScene
     current_track: AbletonTrack
     selected_track: AbletonTrack
     track_count: int
     drum_rack_visible: bool
+
 
 @dataclass
 class AbletonSetModel:
@@ -52,17 +68,18 @@ class AbletonSetModel:
 
 class AbletonSet(object):
     def __init__(self) -> None:
-        self._cache: Dict[str, Any] = {}
-
         self.path: Optional[str] = None
         self._title: Optional[str] = None
+        self._model_cached: Optional[AbletonSetModel] = None
 
         DomainEventBus.subscribe(ScriptDisconnectedEvent, lambda _: self._disconnect())
 
         listened_events = [
             AbstractTrackNameUpdatedEvent,
             DrumRackLoadedEvent,
+            SessionUpdatedEvent,
             TracksMappedEvent,
+            ClipSlotPlayingStatusUpdatedEvent,
         ]
 
         for event in listened_events:
@@ -83,30 +100,27 @@ class AbletonSet(object):
     def is_test(self) -> bool:
         return self._title in ("Toto", "Default")
 
-
-    def to_dict(self) -> Dict:
-        return asdict(AbletonSetModel(
+    def to_model(self) -> AbletonSetModel:
+        return AbletonSetModel(
             path_info=AbletonSetPath(filename=self.path),
             current_state=AbletonSetCurrentState(
-                tracks=AbletonTracks(
-                    drums=find_top_group_sub_track_names("drums"),
-                    harmony=find_top_group_sub_track_names("harmony"),
-                    melody=find_top_group_sub_track_names("melody"),
-                    bass=find_top_group_sub_track_names("bass"),
-                ),
+                selected_scene=Song.selected_scene().to_scene_state(),
                 current_track=AbletonTrack(**Song.current_track().to_dict()),
                 selected_track=AbletonTrack(**Song.selected_track().to_dict()),
                 track_count=len(list(Song.simple_tracks())),
-                drum_rack_visible=isinstance(
-                    Song.selected_track().instrument, InstrumentDrumRack
-                )))
+                drum_rack_visible=isinstance(Song.selected_track().instrument, InstrumentDrumRack),
+            ),
         )
 
     def notify(self, force: bool = False) -> None:
-        data = self.to_dict()
-        if self._cache != data or force:
+        model = self.to_model()
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev(model.current_state.selected_scene.melody)
+
+        if self._model_cached != model or force:
             seq = Sequence()
-            seq.add(partial(Backend.client().post_set, data))
+            seq.add(partial(Backend.client().post_set, asdict(model)))
 
             if self._title is None:
                 seq.wait_for_backend_event("set_updated")
@@ -114,7 +128,17 @@ class AbletonSet(object):
 
             seq.done()
 
-        self._cache = data
+        self._model_cached = model
+
+    def loop_notify_selected_scene(self) -> None:
+        if (
+            self._model_cached
+            and self._model_cached.current_state.selected_scene
+            != Song.selected_scene().to_scene_state()
+        ):
+            self.notify()
+
+        Scheduler.wait_ms(1000, self.loop_notify_selected_scene)
 
     def _set_from_server_response(self, res: Dict) -> None:
         if self._title is not None:

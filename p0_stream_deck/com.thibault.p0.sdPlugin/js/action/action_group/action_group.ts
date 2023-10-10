@@ -26,7 +26,7 @@ class ActionGroup {
         private readonly updateEvent: typeof SetStateUpdatedEvent,
         private readonly actionFunc: ActionSlotFunction,
         private readonly longPressFunc: ActionSlotFunction | null = null,
-        private readonly icon_disabled: string = Icons.disabled
+        private readonly iconDisabled: string = Icons.disabled
     ) {
         this.emitGroupAppearedEventDebounced = _.debounce(() => this.emitGroupAppearedEvent(), 10, { leading: false })
 
@@ -60,11 +60,11 @@ class ActionGroup {
             return
         }
 
-        this.actionRepository.save(new ActionSlot(
+        this.actionRepository.save(new (this.actionType.actionSlotClass)(
             event,
             this.actionType.name,
             this.icon,
-            this.icon_disabled,
+            this.iconDisabled,
             this.actionFunc,
             this.longPressFunc
         ))

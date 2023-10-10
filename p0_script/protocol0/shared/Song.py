@@ -344,3 +344,7 @@ class Song(object):
     @classmethod
     def draw_mode(cls, draw_mode: bool) -> None:
         cls._INSTANCE._clip_component.draw_mode = draw_mode
+
+    @classmethod
+    def capture_midi(cls) -> None:
+        cls._live_song().capture_midi()
