@@ -10,7 +10,6 @@ from p0_backend.api.http_server.ws import ws_manager
 from p0_backend.celery.celery import notification_window, create_app
 from p0_backend.lib.ableton.ableton import (
     reload_ableton,
-    clear_arrangement,
     hide_plugins,
     show_plugins,
     open_set,
@@ -185,11 +184,6 @@ def show_hide_plugins():
 @router.get("/hide_plugins")
 def _hide_plugins():
     hide_plugins()
-
-
-@router.get("/clear_arrangement")
-def _clear_arrangement():
-    clear_arrangement()
 
 
 @router.get("/toggle_ableton_button")

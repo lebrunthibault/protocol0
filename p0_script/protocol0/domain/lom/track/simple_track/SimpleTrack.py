@@ -253,10 +253,6 @@ class SimpleTrack(AbstractTrack):
     def is_playing(self) -> bool:
         return any(clip.is_playing for clip in self.clips)
 
-    def remove_arrangement_clips(self) -> None:
-        for clip in self._track.arrangement_clips:
-            self._track.delete_clip(clip)
-
     def fire(self, scene_index: int) -> None:
         clip = self.clip_slots[scene_index].clip
         if clip is not None:
@@ -314,7 +310,11 @@ class SimpleTrack(AbstractTrack):
         seq.done()
 
     def clear_arrangement(self) -> None:
-        pass
+        try:
+            for clip in self._track.arrangement_clips:
+                self._track.delete_clip(clip)
+        except RuntimeError:
+            pass
 
     def reset_mixer(self) -> None:
         self.volume = 0
@@ -378,7 +378,7 @@ class SimpleTrack(AbstractTrack):
         for clip in self.clips:
             clip.loop.end = clip.loop.end_marker  # to have tails
 
-        self.remove_arrangement_clips()
+        self.clear_arrangement()
 
         seq = Sequence()
 

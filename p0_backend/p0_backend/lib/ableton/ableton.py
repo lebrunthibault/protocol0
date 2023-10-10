@@ -150,12 +150,3 @@ def toggle_fold_set():
     time.sleep(0.01)
     send_keys("%u")
     send_keys("{TAB}")
-
-
-def clear_arrangement():
-    time.sleep(0.1)
-    click((968, 348))  # click on File Folder
-    time.sleep(0.05)
-    send_keys("^a")
-    time.sleep(0.05)
-    send_keys("{BACKSPACE}")

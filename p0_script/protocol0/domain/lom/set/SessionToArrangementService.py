@@ -4,6 +4,7 @@ import Live
 from protocol0.application.CommandBus import CommandBus
 from protocol0.application.command.ResetPlaybackCommand import ResetPlaybackCommand
 from protocol0.domain.audit.SetFixerService import SetFixerService
+from protocol0.domain.audit.stats.DeviceStats import DevicesStats
 from protocol0.domain.audit.stats.SceneStats import SceneStats
 from protocol0.domain.lom.scene.SceneLastBarPassedEvent import SceneLastBarPassedEvent
 from protocol0.domain.lom.song.SongStoppedEvent import SongStoppedEvent
@@ -64,20 +65,17 @@ class SessionToArrangementService(object):
     def _bounce(self) -> None:
         self._setup_bounce()
 
-        seq = Sequence()
-        seq.add(ApplicationView.show_arrangement)
-        seq.add(Backend.client().clear_arrangement)
-        seq.wait_ms(700)
-        seq.add(ApplicationView.show_session)
-        seq.add(partial(CommandBus.dispatch, ResetPlaybackCommand()))
+        for track in Song.simple_tracks():
+            track.clear_arrangement()
+
+        CommandBus.dispatch(ResetPlaybackCommand())
+
         self._quantization_component.clip_trigger_quantization = Live.Song.Quantization.q_half
 
         # make recording start at 1.1.1
+        seq = Sequence()
         seq.add(self._pre_fire_first_scene)
         seq.add(partial(setattr, self._recording_component, "record_mode", True))
-        # seq.defer()
-        # seq.wait_beats(1)
-        # seq.add(Song.scenes()[0].fire)
         seq.done()
 
     def _setup_bounce(self) -> None:
@@ -85,7 +83,8 @@ class SessionToArrangementService(object):
         self.is_bouncing = True
         self._track_component.un_focus_all_tracks(including_current=True)
         self._tempo = self._tempo_component.tempo
-        self._tempo_component.tempo = 750
+        is_big_set = DevicesStats().count > 200
+        self._tempo_component.tempo = 750 if is_big_set else 999
         self._recorded_bar_length = 0
 
         for track in Song.external_synth_tracks():
