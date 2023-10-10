@@ -59,6 +59,7 @@ from protocol0.application.command.BounceSessionToArrangementCommand import (
     BounceSessionToArrangementCommand,
 )
 from protocol0.application.command.BounceTrackToAudioCommand import BounceTrackToAudioCommand
+from protocol0.application.command.CaptureMidiCommand import CaptureMidiCommand
 from protocol0.application.command.CheckAudioExportValidCommand import CheckAudioExportValidCommand
 from protocol0.application.command.ColorClipWithAutomationCommand import (
     ColorClipWithAutomationCommand,
@@ -565,3 +566,8 @@ async def _go_to_group_track():
 @router.get("/check_audio_export_valid")
 async def check_audio_export_valid():
     p0_script_client().dispatch(CheckAudioExportValidCommand())
+
+
+@router.get("/capture_midi")
+async def capture_midi():
+    p0_script_client().dispatch(CaptureMidiCommand())
