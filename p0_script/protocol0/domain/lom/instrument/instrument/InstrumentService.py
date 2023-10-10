@@ -11,8 +11,6 @@ class InstrumentService(object):
         assert rack_device is not None, "No instrument rack device"
 
         param = rack_device.parameters[index]
-        from protocol0.shared.logging.Logger import Logger
-        Logger.dev(("toggle", rack_device, param))
         if param.value == param.min:
             param.value = param.max
         else:
