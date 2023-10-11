@@ -72,7 +72,9 @@ class InstrumentInterface(SlotManager):
         preset_initializer = self.PRESET_INITIALIZER(device)
         preset_changer = self.PRESET_CHANGER(device)
 
-        self.preset_list = InstrumentPresetList(preset_importer, preset_initializer, preset_changer, rack_device)
+        self.preset_list = InstrumentPresetList(
+            preset_importer, preset_initializer, preset_changer, device, rack_device
+        )
 
     def __repr__(self) -> str:
         return self.__class__.__name__
@@ -97,7 +99,11 @@ class InstrumentInterface(SlotManager):
 
         if self.selected_preset:
             full_name += f": {self.selected_preset.name}"
-        elif isinstance(self.device, PluginDevice) and self.device.selected_preset and self.device.selected_preset != "Default":
+        elif (
+            isinstance(self.device, PluginDevice)
+            and self.device.selected_preset
+            and self.device.selected_preset != "Default"
+        ):
             full_name += f": {self.device.selected_preset}"
 
         return full_name

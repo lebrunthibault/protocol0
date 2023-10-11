@@ -1,5 +1,7 @@
 from typing import List, Optional, Any
 
+from protocol0.domain.lom.device.Device import Device
+from protocol0.domain.lom.device.DrumRackDevice import DrumRackDevice
 from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.instrument.preset.InstrumentPreset import InstrumentPreset
 from protocol0.domain.lom.instrument.preset.preset_changer.PresetChangerInterface import (
@@ -20,11 +22,13 @@ class InstrumentPresetList(object):
         preset_importer: PresetImportInterface,
         preset_initializer: PresetInitializerInterface,
         preset_changer: PresetChangerInterface,
+        device: Optional[Device],
         rack_device: Optional[RackDevice],
     ) -> None:
         self._preset_importer = preset_importer
         self._preset_initializer = preset_initializer
         self._preset_changer = preset_changer
+        self._device = device
         self._rack_device = rack_device
         self.presets: List[InstrumentPreset] = []
         self.selected_preset: Optional[InstrumentPreset] = None
@@ -73,7 +77,11 @@ class InstrumentPresetList(object):
 
     def scroll(self, go_next: bool) -> None:
         # macro variations have precedence o
-        if self._rack_device and self._rack_device.variation_count > 0:
+        if (
+            isinstance(self._device, DrumRackDevice)
+            and self._rack_device
+            and self._rack_device.variation_count > 0
+        ):
             if go_next:
                 self._rack_device.increment_variation()
             else:
