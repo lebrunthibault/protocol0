@@ -94,7 +94,7 @@ class ClipLoop(SlotManager, Observable, LoopableInterface):
 
     @start_marker.setter
     def start_marker(self, start_marker: float) -> None:
-        self._clip._start_marker = start_marker
+        self._clip.start_marker = start_marker
 
     @property
     def end(self) -> float:
@@ -122,7 +122,7 @@ class ClipLoop(SlotManager, Observable, LoopableInterface):
 
     @end_marker.setter
     def end_marker(self, end_marker: float) -> None:
-        self._clip._end_marker = end_marker
+        self._clip.end_marker = end_marker
 
     @property
     def bar_offset(self) -> float:
@@ -157,6 +157,18 @@ class ClipLoop(SlotManager, Observable, LoopableInterface):
     @bar_length.setter
     def bar_length(self, bar_length: float) -> None:
         self.length = bar_length * Song.signature_numerator()
+
+    def move(self, forward: bool = True) -> None:
+        if forward:
+            self.end_marker += 1
+            self.end += 1
+            self.start_marker += 1
+            self.start += 1
+        else:
+            self.start_marker -= 1
+            self.start -= 1
+            self.end_marker -= 1
+            self.end -= 1
 
     def match(self, loop: "ClipLoop") -> None:
         self.start = loop.start

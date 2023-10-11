@@ -38,7 +38,6 @@ from p0_backend.lib.ableton.external_synth_track import (
     post_activate_rev2_editor,
 )
 from p0_backend.lib.ableton.interface.browser import preload_sample_category
-from p0_backend.lib.ableton.interface.clip import set_clip_file_path, crop_clip
 from p0_backend.lib.ableton.interface.sample import load_sample_in_simpler
 from p0_backend.lib.ableton.interface.toggle_ableton_button import toggle_ableton_button
 from p0_backend.lib.ableton.interface.track import click_focused_track
@@ -61,9 +60,6 @@ from protocol0.application.command.BounceSessionToArrangementCommand import (
 from protocol0.application.command.BounceTrackToAudioCommand import BounceTrackToAudioCommand
 from protocol0.application.command.CaptureMidiCommand import CaptureMidiCommand
 from protocol0.application.command.CheckAudioExportValidCommand import CheckAudioExportValidCommand
-from protocol0.application.command.ColorClipWithAutomationCommand import (
-    ColorClipWithAutomationCommand,
-)
 from protocol0.application.command.DrumRackToSimplerCommand import DrumRackToSimplerCommand
 from protocol0.application.command.FireSceneToPositionCommand import FireSceneToPositionCommand
 from protocol0.application.command.FireSelectedSceneCommand import FireSelectedSceneCommand
@@ -75,12 +71,10 @@ from protocol0.application.command.LoadMinitaurCommand import LoadMinitaurComman
 from protocol0.application.command.LoadRev2Command import LoadRev2Command
 from protocol0.application.command.LogSelectedCommand import LogSelectedCommand
 from protocol0.application.command.LogSongStatsCommand import LogSongStatsCommand
-from protocol0.application.command.MatchClipColorCommand import MatchClipColorCommand
 from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongCommand
 from protocol0.application.command.RecordUnlimitedCommand import RecordUnlimitedCommand
 from protocol0.application.command.ReloadScriptCommand import ReloadScriptCommand
 from protocol0.application.command.SaveSongCommand import SaveSongCommand
-from protocol0.application.command.SelectClipCommand import SelectClipCommand
 from protocol0.application.command.ScrollPresetsCommand import ScrollPresetsCommand
 from protocol0.application.command.ScrollScenePositionCommand import ScrollScenePositionCommand
 from protocol0.application.command.ScrollSceneTracksCommand import ScrollSceneTracksCommand
@@ -89,17 +83,17 @@ from protocol0.application.command.ScrollTrackVolumeCommand import ScrollTrackVo
 from protocol0.application.command.ShowAutomationCommand import ShowAutomationCommand
 from protocol0.application.command.ShowInstrumentCommand import ShowInstrumentCommand
 from protocol0.application.command.ToggleArmCommand import ToggleArmCommand
-from protocol0.application.command.ToggleClipCommand import ToggleClipCommand
-from protocol0.application.command.ToggleNotesCommand import ToggleNotesCommand
 from protocol0.application.command.ToggleReferenceTrackCommand import ToggleReferenceTrackCommand
 from protocol0.application.command.ToggleSceneLoopCommand import ToggleSceneLoopCommand
-from .script_actions.router import router as script_actions_router
+from .script_action_routes import router as script_actions_router
+from .clip_routes import router as clip_router
 
 router = APIRouter()
 
 settings = Settings()
 
 router.include_router(script_actions_router, prefix="/actions")
+router.include_router(clip_router, prefix="/clip")
 
 
 @router.get("/")
@@ -132,11 +126,6 @@ async def _reload_ableton():
 @router.get("/flatten_track")
 def _flatten_track():
     flatten_track()
-
-
-@router.get("/crop_clip")
-def _crop_clip():
-    crop_clip()
 
 
 @router.get("/move_to")
@@ -199,11 +188,6 @@ def _load_instrument_track(instrument_name: str):
 @router.get("/load_sample_in_simpler")
 def _load_sample_in_simpler(sample_path: str):
     load_sample_in_simpler(sample_path)
-
-
-@router.get("/set_clip_file_path")
-def _set_clip_file_path(file_path: str):
-    set_clip_file_path(file_path)
 
 
 @router.get("/set_envelope_loop_length")
@@ -354,16 +338,6 @@ async def play_pause():
     p0_script_client().dispatch(PlayPauseSongCommand())
 
 
-@router.get("/select_clip")
-async def select_clip(track_name: str):
-    p0_script_client().dispatch(SelectClipCommand(track_name))
-
-
-@router.get("/toggle_clip")
-async def toggle_clip(track_name: str):
-    p0_script_client().dispatch(ToggleClipCommand(track_name))
-
-
 @router.get("/load_device")
 async def load_device(name: str, create_track: bool = False):
     p0_script_client().dispatch(LoadDeviceCommand(name, create_track))
@@ -412,16 +386,6 @@ async def load_matching_track():
 @router.get("/drag_matching_track")
 async def _drag_matching_track():
     drag_matching_track(AbletonSetManager.active())
-
-
-@router.get("/match_clip_colors")
-async def _match_clip_colors():
-    p0_script_client().dispatch(MatchClipColorCommand())
-
-
-@router.get("/color_clip_with_automation")
-async def _color_clip_with_automation():
-    p0_script_client().dispatch(ColorClipWithAutomationCommand())
 
 
 @router.get("/log_selected")
@@ -527,11 +491,6 @@ async def show_instrument():
 @router.get("/show_automation")
 async def show_automation(direction: str):
     p0_script_client().dispatch(ShowAutomationCommand(go_next=direction == "next"))
-
-
-@router.get("/toggle_clip_notes")
-async def _toggle_clip_notes():
-    p0_script_client().dispatch(ToggleNotesCommand())
 
 
 @router.get("/edit_automation_value")

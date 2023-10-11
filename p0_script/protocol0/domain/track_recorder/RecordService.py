@@ -1,7 +1,7 @@
 from functools import partial
+from typing import Optional
 
 import Live
-from typing import Optional
 
 from protocol0.domain.lom.scene.PlayingSceneFacade import PlayingSceneFacade
 from protocol0.domain.lom.song.SongStoppedEvent import SongStoppedEvent
@@ -184,15 +184,31 @@ class RecordService(object):
 
     def capture_midi(self) -> None:
         scene_index = Song.selected_scene().index
+        scene_length = Song.selected_scene().length
+
         Song.capture_midi()
 
         def copy_created_clip() -> None:
             source_cs = Song.selected_track().clip_slots[-1]
             dest_cs = Song.selected_track().clip_slots[scene_index]
 
-            source_cs.duplicate_clip_to(dest_cs)
+            if dest_cs == source_cs:
+                return  # midi overdub
 
-            self._scene_crud_component.delete_scene(Song.scenes()[-1])
+            minimum_expected_length = max(scene_length, 32)
+            start = max(0, source_cs.clip.loop.end - minimum_expected_length)
+            source_cs.clip.quantize()
+            source_cs.clip.loop.start_marker = start
+            source_cs.clip.loop.start = start
+
+            if dest_cs.clip is not None:
+                return  # already existing clipN
+
+            source_cs.duplicate_clip_to(dest_cs)
+            last_scene = Song.scenes()[-1]
+
+            if list(last_scene.clips) == [source_cs.clip]:
+                self._scene_crud_component.delete_scene(Song.scenes()[-1])
             dest_cs.select()
 
         Scheduler.defer(copy_created_clip)
