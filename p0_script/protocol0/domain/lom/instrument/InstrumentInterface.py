@@ -70,9 +70,9 @@ class InstrumentInterface(SlotManager):
             device, self.PRESETS_PATH, self.PRESET_EXTENSION
         )
         preset_initializer = self.PRESET_INITIALIZER(device)
-        preset_changer = self.PRESET_CHANGER(device, rack_device)
+        preset_changer = self.PRESET_CHANGER(device)
 
-        self.preset_list = InstrumentPresetList(preset_importer, preset_initializer, preset_changer)
+        self.preset_list = InstrumentPresetList(preset_importer, preset_initializer, preset_changer, rack_device)
 
     def __repr__(self) -> str:
         return self.__class__.__name__

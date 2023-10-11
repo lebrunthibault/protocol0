@@ -5,4 +5,5 @@ from protocol0.shared.Song import Song
 
 class ScrollPresetsCommandHandler(CommandHandlerInterface):
     def handle(self, command: ScrollPresetsCommand) -> None:
-        Song.selected_track().instrument.preset_list.scroll(command.go_next)
+        if Song.selected_track().instrument:
+            Song.selected_track().instrument.preset_list.scroll(command.go_next)

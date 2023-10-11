@@ -39,6 +39,10 @@ class RackDevice(Device, Observable):
         self._view.selected_chain = selected_chain._chain
 
     @property
+    def variation_count(self) -> int:
+        return self._device.variation_count
+
+    @property
     def selected_variation_index(self) -> int:
         return self._device.selected_variation_index
 
@@ -51,7 +55,7 @@ class RackDevice(Device, Observable):
         if self.selected_variation_index < 0:
             self.selected_variation_index = 0
 
-        if self.selected_variation_index < self._device.variation_count - 1:
+        if self.selected_variation_index < self.variation_count - 1:
             self.selected_variation_index += 1
 
         self.notify_observers()

@@ -43,7 +43,7 @@ return
 return
 ^#+s::
     Send ^,  ; works best from ahk
-    callBackend("save_set_as_template")
+    callBackend("set/save_as_template")
 return
 ^!+l::
 	callBackend("tail_logs_raw")
@@ -113,7 +113,7 @@ return
 	callBackend("show_automation?direction=prev")
 return
 ^e::
-	callBackend("toggle_clip_notes")
+	callBackend("clip/toggle_notes")
 return
 ^+e::
 	callBackend("edit_automation_value")
@@ -134,7 +134,7 @@ return
     Send {Right}
 return
 ^s::
-	callBackend("save_set")
+	callBackend("set/save")
 	Sleep, 200
     Send ^s
 return

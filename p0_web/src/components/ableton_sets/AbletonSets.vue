@@ -150,7 +150,7 @@ export default defineComponent({
       }
     },
     async fetchSets() {
-      let url = '/sets'
+      let url = '/set/all'
       if (this.showArchives) {
         url += "?archive=true"
       }

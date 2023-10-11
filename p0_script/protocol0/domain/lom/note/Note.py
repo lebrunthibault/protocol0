@@ -9,7 +9,14 @@ from protocol0.domain.shared.utils.utils import clamp
 class Note(object):
     MIN_DURATION = 1 / 128
 
-    def __init__(self, pitch: int = 127, start: float = 0, duration: float = 1, velocity: int = 127, muted: bool = False) -> None:
+    def __init__(
+        self,
+        pitch: int = 127,
+        start: float = 0,
+        duration: float = 1,
+        velocity: int = 127,
+        muted: bool = False,
+    ) -> None:
         super(Note, self).__init__()
         self._pitch = int(pitch)
         self._start = start
@@ -41,14 +48,16 @@ class Note(object):
             pitch=note.pitch, start=note.start_time, duration=note.duration, velocity=note.velocity
         )
 
-    @classmethod
-    def from_tuple(cls, note: Tuple) -> "Note":
-        return Note(
-            pitch=note[0], start=note[1], duration=note[2], velocity=note[3]
-        )
-
     def to_data(self) -> Tuple[int, float, float, int, bool]:
         return self.pitch, self.start, self.duration, int(self.velocity), self.muted
+
+    def to_spec(self) -> Live.Clip.MidiNoteSpecification:
+        # noinspection PyUnresolvedReferences
+        from Live.Clip import MidiNoteSpecification as NoteSpec
+
+        return NoteSpec(
+            self.pitch, self.start, self.duration, velocity=self.velocity, mute=self.muted
+        )
 
     def _is_value_equal(self, val1: float, val2: float, delta: float = 0.00001) -> bool:
         return abs(val1 - val2) < delta
