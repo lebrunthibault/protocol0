@@ -8,7 +8,9 @@ from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device.DeviceLoadedEvent import DeviceLoadedEvent
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
+from protocol0.domain.lom.song.components.TrackComponent import get_track_by_name
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
+from protocol0.domain.lom.track.group_track.NormalGroupTrackEnum import NormalGroupTrackEnum
 from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import ExternalSynthTrack
 from protocol0.domain.lom.track.group_track.ext_track.SimpleMidiExtTrack import SimpleMidiExtTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
@@ -48,6 +50,11 @@ class DeviceService(object):
         seq = Sequence()
         seq.add(track.select)
         if create_track and device_enum.is_instrument and track.instrument:
+            if device_enum.is_bass_instrument:
+                bass_track = get_track_by_name(NormalGroupTrackEnum.BASS.value, True)
+                if bass_track:
+                    seq.add(bass_track.sub_tracks[0].select)
+
             seq.add(self._track_crud_component.create_midi_track)
             seq.add(lambda: setattr(Song.selected_track(), "name", device_enum.value))
 

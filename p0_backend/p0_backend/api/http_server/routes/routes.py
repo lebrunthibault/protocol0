@@ -50,6 +50,7 @@ from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.explorer import close_samples_windows, close_explorer_window, open_explorer
 from p0_backend.lib.keys import send_keys
 from p0_backend.lib.mouse.mouse import click, click_vertical_zone, move_to
+from p0_backend.lib.notification.notification.notification_factory import NotificationFactory
 from p0_backend.lib.process import execute_powershell_command
 from p0_backend.lib.window.find_window import find_window_handle_by_enum
 from p0_backend.lib.window.window import focus_window
@@ -245,8 +246,7 @@ def show_warning(message: str):
 
 @router.get("/show_error")
 def show_error(message: str):
-    create_app()
-    notification_window.delay(message, NotificationEnum.ERROR)
+    NotificationFactory.show_error(message)
 
 
 @router.get("/reload_script")

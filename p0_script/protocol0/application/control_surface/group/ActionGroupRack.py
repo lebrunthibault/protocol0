@@ -38,7 +38,7 @@ class ActionGroupRack(ActionGroupInterface):
                 )
             elif i == 12:
                 self.add_encoder(
-                    identifier=10,
+                    identifier=12,
                     name="edit lfo tool",
                     on_scroll=self._container.get(DeviceService).scroll_lfo_tool,
                 )
