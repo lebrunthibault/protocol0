@@ -59,10 +59,22 @@ class SessionToArrangementService(object):
         self._set_fixer_service.fix_set()
 
         self._stop_playing_on_last_scene_end()
+        self._setup_bounce()
         self._bounce()
 
+    def _setup_bounce(self) -> None:
+        self._scene_component.looping_scene_toggler.reset()
+        self.is_bouncing = True
+        self._track_component.un_focus_all_tracks(including_current=True)
+        self._tempo = self._tempo_component.tempo
+        is_big_set = DevicesStats().count > 200
+        self._tempo_component.tempo = 750 if is_big_set else 999
+        self._recorded_bar_length = 0
+
+        for track in Song.external_synth_tracks():
+            track.midi_track.external_device.is_enabled = False
+
     def _bounce(self) -> None:
-        self._setup_bounce()
 
         for track in Song.simple_tracks():
             track.clear_arrangement()
@@ -76,18 +88,6 @@ class SessionToArrangementService(object):
         seq.add(self._pre_fire_first_scene)
         seq.add(partial(setattr, self._recording_component, "record_mode", True))
         seq.done()
-
-    def _setup_bounce(self) -> None:
-        self._scene_component.looping_scene_toggler.reset()
-        self.is_bouncing = True
-        self._track_component.un_focus_all_tracks(including_current=True)
-        self._tempo = self._tempo_component.tempo
-        is_big_set = DevicesStats().count > 200
-        self._tempo_component.tempo = 750 if is_big_set else 999
-        self._recorded_bar_length = 0
-
-        for track in Song.external_synth_tracks():
-            track.midi_track.external_device.is_enabled = False
 
     def _pre_fire_first_scene(self) -> Sequence:
         scene = Song.scenes()[0]
@@ -108,7 +108,7 @@ class SessionToArrangementService(object):
             seq.wait_for_event(BarChangedEvent)
 
         seq.add(self._validate_recording_duration)
-        seq.wait_bars(4)  # leaving some space for tails
+        # seq.wait_bars(4)  # leaving some space for tails
         seq.add(self._playback_component.stop_playing)
         seq.done()
 
