@@ -13,7 +13,7 @@ from protocol0.shared.Song import Song
 class DeviceStats(object):
     def __init__(self, name: str) -> None:
         self.count = 0
-        self.device_enum = find_if(lambda enums: enums.class_name == name, list(DeviceEnum))
+        self.device_enum = find_if(lambda enum: enum.class_name == name, list(DeviceEnum))
         self.name = self.device_enum.value if self.device_enum else name
 
     def __repr__(self) -> str:

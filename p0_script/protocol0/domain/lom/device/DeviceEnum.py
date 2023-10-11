@@ -72,6 +72,10 @@ class DeviceEnum(AbstractEnum):
     SATURN_2 = "Saturn 2"
     SERUM = "Serum_x64"
     SERUM_RACK = "Serum Rack.adg"
+    SERUM_BASS = "Serum Rack.adg "
+    SERUM_KEYS = "Serum Rack.adg  "
+    SERUM_LEAD = "Serum Rack.adg   "
+    SERUM_PLUCK = "Serum Rack.adg    "
     SIMPLER = "Simpler"
     SOOTHE2 = "soothe2"
     SOUNDID_REFERENCE_PLUGIN = "SoundID Reference Plugin"
@@ -83,6 +87,10 @@ class DeviceEnum(AbstractEnum):
     SURFEREQ = "SurferEQ"
     SYLENTH1 = "Sylenth1"
     SYLENTH1_RACK = "Sylenth1 Rack.adg"
+    SYLENTH1_BASS = "Sylenth1 Rack.adg "
+    SYLENTH1_KEYS = "Sylenth1 Rack.adg  "
+    SYLENTH1_LEAD = "Sylenth1 Rack.adg   "
+    SYLENTH1_PLUCK = "Sylenth1 Rack.adg    "
     SYNTH_MASTER_2 = "SynthMaster 2.vstpreset"
     TRACK_SPACER = "Trackspacer 2.5"
     TRUE_VERB = "TrueVerb Stereo"
@@ -95,13 +103,12 @@ class DeviceEnum(AbstractEnum):
     YOULEAN = "Youlean Loudness Meter 2"
 
     @classmethod
-    def from_value(cls, value: Any) -> 'DeviceEnum':  # type: ignore[override]
+    def from_value(cls, value: Any) -> "DeviceEnum":  # type: ignore[override]
         for _, enum in cls.__members__.items():
             if value == Path(enum.value).stem:  # removes the extension
                 return enum
 
         raise Protocol0Error("Couldn't find matching enum for value %s" % value)
-
 
     @property
     def is_device_preset(self) -> bool:
@@ -145,7 +152,7 @@ class DeviceEnum(AbstractEnum):
             elif self.is_rack_preset:
                 return "%s.adg" % self.value
             else:
-                return self.value
+                return self.value.strip()
 
     @property
     def class_name(self) -> str:
@@ -221,10 +228,10 @@ class DeviceEnum(AbstractEnum):
                 cls.UTILITY,
             ],
             [
+                DeviceEnumGroup("Comp", [cls.H_COMP, cls.COMPRESSOR, cls.SSL_COMP, cls.VCOMP]),
                 DeviceEnumGroup(
-                    "Comp", [cls.H_COMP, cls.COMPRESSOR, cls.SSL_COMP, cls.VCOMP]
+                    "Sat", [cls.BLACK_BOX, cls.SATURN_2, cls.SATURATOR, cls.DECAPITATOR]
                 ),
-                DeviceEnumGroup("Sat", [cls.BLACK_BOX, cls.SATURN_2, cls.SATURATOR, cls.DECAPITATOR]),
             ],
             [
                 cls.LFO_TOOL,
@@ -237,8 +244,26 @@ class DeviceEnum(AbstractEnum):
             ],
             [
                 cls.DRUM_RACK,
-                cls.SYLENTH1_RACK,
-                cls.SERUM_RACK,
+                DeviceEnumGroup(
+                    "Sylenth1",
+                    [
+                        cls.SYLENTH1_RACK,
+                        cls.SYLENTH1_BASS,
+                        cls.SYLENTH1_KEYS,
+                        cls.SYLENTH1_LEAD,
+                        cls.SYLENTH1_PLUCK,
+                    ],
+                ),
+                DeviceEnumGroup(
+                    "Serum",
+                    [
+                        cls.SERUM_RACK,
+                        cls.SERUM_BASS,
+                        cls.SERUM_KEYS,
+                        cls.SERUM_LEAD,
+                        cls.SERUM_PLUCK,
+                    ],
+                ),
                 # cls.SYNTH_MASTER_2,
                 DeviceEnumGroup(
                     "Opus",
@@ -359,10 +384,26 @@ class DeviceEnum(AbstractEnum):
             DeviceEnum.REV2_EDITOR,
             DeviceEnum.SERUM,
             DeviceEnum.SERUM_RACK,
+            DeviceEnum.SERUM_BASS,
+            DeviceEnum.SERUM_KEYS,
+            DeviceEnum.SERUM_LEAD,
+            DeviceEnum.SERUM_PLUCK,
             DeviceEnum.SPLICE,
             DeviceEnum.SYLENTH1,
             DeviceEnum.SYLENTH1_RACK,
+            DeviceEnum.SYLENTH1_BASS,
+            DeviceEnum.SYLENTH1_KEYS,
+            DeviceEnum.SYLENTH1_LEAD,
+            DeviceEnum.SYLENTH1_PLUCK,
             DeviceEnum.SYNTH_MASTER_2,
+        ]
+
+
+    @property
+    def is_bass_instrument(self) -> bool:
+        return self in [
+            DeviceEnum.SERUM_BASS,
+            DeviceEnum.SYLENTH1_BASS,
         ]
 
     @property
@@ -447,6 +488,33 @@ class DeviceEnum(AbstractEnum):
             DeviceEnum.DOUBLER4,
             DeviceEnum.EFFECTRIX,
         ]
+
+    @property
+    def instrument_enum(self) -> "DeviceEnum":
+        """Different device enums can be linked to one instrument"""
+        assert self.is_instrument, f"{self} is not an instrument"
+
+        if self in [
+            DeviceEnum.SYLENTH1,
+            DeviceEnum.SYLENTH1_RACK,
+            DeviceEnum.SYLENTH1_BASS,
+            DeviceEnum.SYLENTH1_KEYS,
+            DeviceEnum.SYLENTH1_LEAD,
+            DeviceEnum.SYLENTH1_PLUCK,
+        ]:
+            return DeviceEnum.SYLENTH1
+
+        if self in [
+            DeviceEnum.SERUM,
+            DeviceEnum.SERUM_RACK,
+            DeviceEnum.SERUM_BASS,
+            DeviceEnum.SERUM_KEYS,
+            DeviceEnum.SERUM_LEAD,
+            DeviceEnum.SERUM_PLUCK,
+        ]:
+            return DeviceEnum.SERUM
+
+        return self
 
     @classmethod
     def missing_plugin_names(cls) -> List[str]:

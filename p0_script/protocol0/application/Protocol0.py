@@ -1,7 +1,6 @@
-import logging
+from typing import Any
 
 from _Framework.ControlSurface import ControlSurface
-from typing import Any
 
 from protocol0.application.CommandBus import CommandBus
 from protocol0.application.Container import Container
@@ -32,7 +31,6 @@ class Protocol0(ControlSurface):
             print(e)
             DomainEventBus.emit(ErrorRaisedEvent())
             return
-        logging.info("container saved")
 
         DomainEventBus.subscribe(ScriptResetActivatedEvent, lambda _: self._initialize(reset=True))
         CommandBus.dispatch(ReloadScriptCommand())

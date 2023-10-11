@@ -102,6 +102,9 @@ class InstrumentInterface(SlotManager):
 
         return full_name
 
+    def on_loaded(self, device_enum: DeviceEnum) -> None:
+        return
+
     @property
     def needs_exclusive_activation(self) -> bool:
         return False

@@ -104,12 +104,28 @@ class DeviceService(object):
 
         return None
 
-    def scroll_high_pass_filter(self, go_next: bool) -> None:
+    def scroll_high_pass_filter(self, go_next: bool) -> Sequence:
         eq_eight: Optional[Device] = find_if(
             lambda d: d.enum == DeviceEnum.EQ_EIGHT, Song.selected_track().devices
         )
 
-        if not eq_eight:
-            self.load_device(DeviceEnum.EQ_EIGHT.name)
+        seq = Sequence()
 
-        eq_eight.parameters[6].scroll(go_next)  # scroll frequency A
+        if not eq_eight:
+            seq.add(partial(self.load_device, DeviceEnum.EQ_EIGHT.name))
+
+        seq.add(partial(eq_eight.parameters[6].scroll, go_next))  # scroll frequency A
+        return seq.done()
+
+    def scroll_lfo_tool(self, go_next: bool) -> Sequence:
+        lfo_tool: Optional[Device] = find_if(
+            lambda d: d.enum == DeviceEnum.LFO_TOOL, Song.selected_track().devices
+        )
+
+        seq = Sequence()
+
+        if not lfo_tool:
+            seq.add(partial(self.load_device, DeviceEnum.LFO_TOOL.name))
+
+        seq.add(partial(lfo_tool.parameters[1].scroll, go_next))  # scroll frequency A
+        return seq.done()
