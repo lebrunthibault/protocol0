@@ -43,9 +43,8 @@ class MidiClip(Clip):
         live_notes = self._clip.get_selected_notes_extended()
 
         if len(live_notes) != 0:
-            clip_notes = map(Note.from_tuple, live_notes)
+            clip_notes = map(Note.from_midi_note, live_notes)
         else:
-            # live_notes = self._clip.get_notes(self.loop.start, 0, self.length, 128)
             live_notes = self._clip.get_notes_extended(0, 128, self.loop.start, self.length)
             clip_notes = map(Note.from_midi_note, live_notes)
 
@@ -61,15 +60,18 @@ class MidiClip(Clip):
                 (cached_note for cached_note in self._cached_notes if cached_note == note), note
             )
 
-    def set_notes(self, notes: List[Note]) -> Optional[Sequence]:
+    def set_notes(self, notes: List[Note], replace: bool = False) -> Optional[Sequence]:
         if not self._clip:
             return None
+
         self._cached_notes = notes
-        # self._clip.select_all_notes()  # noqa
         seq = Sequence()
-        # seq.add(partial(self._clip.replace_selected_notes, tuple(note.to_data() for note in notes)))
-        seq.add(partial(self._clip.set_notes, tuple(note.to_data() for note in notes)))
-        # noinspection PyUnresolvedReferences
+
+        if replace:
+            seq.add(partial(self._clip.remove_notes_extended, 0, 128, 0, self._clip.length))
+
+        seq.add(partial(self._clip.add_new_notes, [note.to_spec() for note in notes]))
+
         seq.defer()
         return seq.done()
 
@@ -143,7 +145,9 @@ class MidiClip(Clip):
 
             self.set_notes(notes)
 
-    def get_linked_parameters(self, device_parameters: List[DeviceParameter]) -> List[LinkedDeviceParameters]:
+    def get_linked_parameters(
+        self, device_parameters: List[DeviceParameter]
+    ) -> List[LinkedDeviceParameters]:
         """
         NB : this is only really useful for my rev2 where I want to copy and paste easily automation curves
         between the 2 layers.

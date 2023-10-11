@@ -39,5 +39,6 @@ class ActionGroupTest(ActionGroupInterface):
     def action_test(self) -> None:
         pass
 
+
     def action_test_scroll(self, go_next: bool) -> None:
         Song.selected_track().instrument.preset_list.scroll(go_next)

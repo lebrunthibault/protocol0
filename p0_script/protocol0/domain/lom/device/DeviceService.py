@@ -49,6 +49,12 @@ class DeviceService(object):
 
         seq = Sequence()
         seq.add(track.select)
+
+        if device_enum.is_instrument and track.instrument:
+            instrument_device = track.instrument_rack_device or track.instrument.device
+            if instrument_device:
+                track.devices.delete(instrument_device)
+
         if create_track and device_enum.is_instrument and track.instrument:
             if device_enum.is_bass_instrument:
                 bass_track = get_track_by_name(NormalGroupTrackEnum.BASS.value, True)

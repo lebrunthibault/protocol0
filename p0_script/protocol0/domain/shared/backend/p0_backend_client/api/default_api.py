@@ -694,6 +694,21 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
+    def open_set_by_type(self, set_type, ):  # noqa: E501
+        # type: (str, ) -> None
+        """
+            Open Set By Type  # noqa: E501
+        """
+
+        dict = {
+            "method": "open_set_by_type",
+            "args": {
+                "set_type": set_type, 
+            }
+        }
+
+        self._send_dict_as_midi(dict)
+
     def ping(self, ):  # noqa: E501
         # type: () -> None
         """
@@ -1064,6 +1079,21 @@ class P0BackendClient(object):
             "method": "set_envelope_loop_length",
             "args": {
                 "length": length, 
+            }
+        }
+
+        self._send_dict_as_midi(dict)
+
+    def set_loop_length(self, bar_length, ):  # noqa: E501
+        # type: (int, ) -> None
+        """
+            Set Loop Length  # noqa: E501
+        """
+
+        dict = {
+            "method": "set_loop_length",
+            "args": {
+                "bar_length": bar_length, 
             }
         }
 

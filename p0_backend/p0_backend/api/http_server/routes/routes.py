@@ -1,33 +1,18 @@
-from itertools import chain
 from time import sleep
-from typing import List, Dict
 
 from fastapi import APIRouter
-from pydantic import BaseModel
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.api.http_server.ws import ws_manager
 from p0_backend.celery.celery import notification_window, create_app
 from p0_backend.lib.ableton.ableton import (
     reload_ableton,
     hide_plugins,
     show_plugins,
-    open_set,
-)
-from p0_backend.lib.ableton.ableton import (
-    save_set_as_template,
-)
-from p0_backend.lib.ableton.ableton_set.ableton_set import (
-    AbletonSet,
-    set_scene_stats,
-    set_stars,
-    SceneStat,
 )
 from p0_backend.lib.ableton.ableton_set.ableton_set_manager import (
     AbletonSetManager,
     show_saved_tracks,
     delete_saved_track,
-    list_sets,
 )
 from p0_backend.lib.ableton.ableton_set.server_state import ServerState
 from p0_backend.lib.ableton.analyze_clip_jitter import analyze_test_audio_clip_jitter
@@ -75,7 +60,6 @@ from protocol0.application.command.LogSongStatsCommand import LogSongStatsComman
 from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongCommand
 from protocol0.application.command.RecordUnlimitedCommand import RecordUnlimitedCommand
 from protocol0.application.command.ReloadScriptCommand import ReloadScriptCommand
-from protocol0.application.command.SaveSongCommand import SaveSongCommand
 from protocol0.application.command.ScrollPresetsCommand import ScrollPresetsCommand
 from protocol0.application.command.ScrollScenePositionCommand import ScrollScenePositionCommand
 from protocol0.application.command.ScrollSceneTracksCommand import ScrollSceneTracksCommand
@@ -86,8 +70,9 @@ from protocol0.application.command.ShowInstrumentCommand import ShowInstrumentCo
 from protocol0.application.command.ToggleArmCommand import ToggleArmCommand
 from protocol0.application.command.ToggleReferenceTrackCommand import ToggleReferenceTrackCommand
 from protocol0.application.command.ToggleSceneLoopCommand import ToggleSceneLoopCommand
-from .script_action_routes import router as script_actions_router
 from .clip_routes import router as clip_router
+from .script_action_routes import router as script_actions_router
+from .set_routes import router as set_router
 
 router = APIRouter()
 
@@ -95,6 +80,7 @@ settings = Settings()
 
 router.include_router(script_actions_router, prefix="/actions")
 router.include_router(clip_router, prefix="/clip")
+router.include_router(set_router, prefix="/set")
 
 
 @router.get("/")
@@ -259,56 +245,6 @@ async def server_state() -> ServerState:
     return ServerState.create()
 
 
-@router.get("/sets")
-async def sets(archive: bool = False) -> Dict[str, List[AbletonSet]]:
-    return list_sets(archive)
-
-
-@router.get("/set")
-async def get_set(path: str) -> AbletonSet:
-    path = path.replace("\\\\", "\\")
-
-    ableton_sets = list(chain.from_iterable(list_sets().values()))
-
-    return next(s for s in ableton_sets if s.path_info.filename == path)
-
-
-@router.post("/set")
-async def post_set(ableton_set: AbletonSet):
-    """Forwarded from midi server"""
-    await AbletonSetManager.register(ableton_set)
-
-
-@router.get("/close_set")
-async def close_set(filename: str):
-    await AbletonSetManager.remove(filename)
-    await ws_manager.broadcast_server_state()
-
-
-@router.post("/set/scene_stats")
-async def post_scene_stats(scene_stats: List[SceneStat]):
-    set_scene_stats(scene_stats)
-
-
-class StarsPayload(BaseModel):
-    stars: int
-
-
-@router.post("/set/{filename}/stars")
-async def post_set_stars(filename: str, stars: StarsPayload):
-    set_stars(filename, stars.stars)
-
-
-@router.get("/save_set_as_template")
-async def _save_set_as_template():
-    save_set_as_template()
-
-
-@router.get("/save_set")
-async def save_set():
-    p0_script_client().dispatch(SaveSongCommand())
-
-
 @router.get("/tail_logs")
 async def tail_logs():
     if find_window_handle_by_enum(settings.log_window_title):
@@ -326,11 +262,6 @@ async def tail_logs_raw():
 @router.get("/open_in_explorer")
 async def open_in_explorer(path: str):
     open_explorer(path)
-
-
-@router.get("/set/open")
-async def _open_set(path: str):
-    open_set(path)
 
 
 @router.get("/play_pause")
@@ -430,9 +361,6 @@ async def fire_scene_to_last_position():
 
 @router.get("/fire_scene_to_position")
 async def fire_scene_to_position(bar_length: int = 0):
-    from loguru import logger
-
-    logger.info(f"fire_scene_to_position: {bar_length}")
     p0_script_client().dispatch(FireSceneToPositionCommand(bar_length))
 
 

@@ -28,3 +28,5 @@ class InstrumentSylenth1(InstrumentInterface):
             DomainEventBus.emit(PresetProgramSelectedEvent(64))
         elif device_enum == DeviceEnum.SYLENTH1_PLUCK:
             DomainEventBus.emit(PresetProgramSelectedEvent(96))
+        else:
+            DomainEventBus.emit(PresetProgramSelectedEvent(96))
