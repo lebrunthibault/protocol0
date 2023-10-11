@@ -56,7 +56,7 @@ class DeviceService(object):
                     seq.add(bass_track.sub_tracks[0].select)
 
             seq.add(self._track_crud_component.create_midi_track)
-            seq.add(lambda: setattr(Song.selected_track(), "name", device_enum.value))
+            seq.add(lambda: setattr(Song.selected_track(), "name", device_enum.instrument_enum.value))
 
         seq.add(partial(self._browser_service.load_device_from_enum, device_enum))
 
