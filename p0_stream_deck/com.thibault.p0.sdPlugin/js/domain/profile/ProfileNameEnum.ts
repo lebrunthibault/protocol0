@@ -1,11 +1,12 @@
 /* eslint-disable no-unused-vars */
 
 enum ProfileNameEnum {
+    CLIP_LOOP = 'profiles/ClipLoop',
     DEVICES = 'profiles/Devices',
     DEVICE_GROUP = 'profiles/DeviceGroup',
     DRUMS = 'profiles/Drums',
     HOME = 'profiles/Home',
-    SCENE_CONTROL = 'profiles/SceneControl',
+    SELECTED_SCENE = 'profiles/Selected Scene',
     VOCALS = 'profiles/Vocals',
 }
 

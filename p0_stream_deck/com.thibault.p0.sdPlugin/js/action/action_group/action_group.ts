@@ -121,7 +121,6 @@ class ActionGroup {
         // grid or list shape
         if (parameters[0] instanceof Array) {
             const activeSlots: ActionSlot[][] = []
-            console.log(parameters, this.slots)
             for (const [rowIndex, slotItems] of parameters.entries()) {
                 const rowSlots = this.slots.filter((slot: ActionSlot) => slot.row === rowIndex)
                 activeSlots.push(rowSlots.slice(0, (slotItems as ActionSlotItem[]).length))

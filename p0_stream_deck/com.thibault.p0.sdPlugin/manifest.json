@@ -14,6 +14,18 @@
     },
     {
       "Icon": "icon/p0_action/action",
+      "Name": "Capture Midi",
+      "States": [
+        {
+          "Title": "",
+          "Image": "icon/p0_action/state"
+        }
+      ],
+      "Tooltip": "Capture midi",
+      "UUID": "com.thibault.p0.capture-midi"
+    },
+    {
+      "Icon": "icon/p0_action/action",
       "Name": "Clip slot control",
       "States": [
         {
@@ -87,18 +99,6 @@
   ],
   "Profiles": [
     {
-      "Name": "profiles/Clips",
-      "ReadOnly": false,
-      "DeviceType": 2,
-      "DontAutoSwitchWhenInstalled": true
-    },
-    {
-      "Name": "profiles/Clip Loop",
-      "ReadOnly": false,
-      "DeviceType": 2,
-      "DontAutoSwitchWhenInstalled": true
-    },
-    {
       "Name": "profiles/Devices",
       "ReadOnly": false,
       "DeviceType": 2,
@@ -106,6 +106,12 @@
     },
     {
       "Name": "profiles/DeviceGroup",
+      "ReadOnly": false,
+      "DeviceType": 2,
+      "DontAutoSwitchWhenInstalled": true
+    },
+    {
+      "Name": "profiles/ClipLoop",
       "ReadOnly": false,
       "DeviceType": 2,
       "DontAutoSwitchWhenInstalled": true
@@ -123,13 +129,13 @@
       "DontAutoSwitchWhenInstalled": true
     },
     {
-      "Name": "profiles/Insert Devices",
+      "Name": "profiles/Vocals",
       "ReadOnly": false,
       "DeviceType": 2,
       "DontAutoSwitchWhenInstalled": true
     },
     {
-      "Name": "profiles/Vocals",
+      "Name": "profiles/Selected Scene",
       "ReadOnly": false,
       "DeviceType": 2,
       "DontAutoSwitchWhenInstalled": true

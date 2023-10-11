@@ -634,8 +634,8 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
-    def move_loop(self, forward=):  # noqa: E501
-        # type: (object, ) -> None
+    def move_loop(self, forward=True):  # noqa: E501
+        # type: (bool, ) -> None
         """
             Move Loop  # noqa: E501
         """
