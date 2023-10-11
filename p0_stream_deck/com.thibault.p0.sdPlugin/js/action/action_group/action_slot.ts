@@ -60,8 +60,6 @@ class ActionSlot {
             console.debug(`setting parameter "${parameter.label}" for ${this}`)
             this.parameter = parameter
             this.enable()
-        } else {
-            console.log(`cached: ${parameter}`)
         }
     }
 

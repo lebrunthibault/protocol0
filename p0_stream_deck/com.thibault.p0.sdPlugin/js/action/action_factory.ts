@@ -27,8 +27,12 @@ class ActionFactory {
     createActions () {
         new Action(
             actionTypes.BACK_TO_PREVIOUS_PROFILE,
-            () => {
-            },
+            () => {},
+            null
+        )
+        new Action(
+            actionTypes.CAPTURE_MIDI,
+            API.captureMidi,
             null
         )
         new ActionGroup(

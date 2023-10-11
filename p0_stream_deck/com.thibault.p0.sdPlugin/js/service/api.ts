@@ -1,6 +1,9 @@
 import Config from '../config'
 
 const API = {
+    captureMidi () {
+        fetch(`${Config.P0_API_URL}/capture_midi`).then(() => null)
+    },
     drumRackToSimpler () {
         fetch(`${Config.P0_API_URL}/drum_rack_to_simpler`).then(() => null)
     },

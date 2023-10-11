@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 
+from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.lib.ableton.interface.clip import set_clip_file_path, crop_clip
 from protocol0.application.command.ColorClipWithAutomationCommand import (
     ColorClipWithAutomationCommand,
@@ -9,7 +10,6 @@ from protocol0.application.command.MoveClipLoopCommand import MoveClipLoopComman
 from protocol0.application.command.SelectClipCommand import SelectClipCommand
 from protocol0.application.command.ToggleClipCommand import ToggleClipCommand
 from protocol0.application.command.ToggleNotesCommand import ToggleNotesCommand
-from p0_backend.api.client.p0_script_api_client import p0_script_client
 
 router = APIRouter()
 
@@ -50,5 +50,5 @@ async def _color_clip_with_automation():
 
 
 @router.get("/move_loop")
-async def move_loop(forward=True):
+async def move_loop(forward: bool = True):
     p0_script_client().dispatch(MoveClipLoopCommand(forward=forward))
