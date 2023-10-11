@@ -40,7 +40,7 @@ class MidiClip(Clip):
         if not self._clip:
             return []
 
-        live_notes = self._clip.get_selected_notes()
+        live_notes = self._clip.get_selected_notes_extended()
 
         if len(live_notes) != 0:
             clip_notes = map(Note.from_tuple, live_notes)

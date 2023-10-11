@@ -17,10 +17,10 @@ const API = {
         fetch(`${Config.P0_API_URL}/load_drum_rack/?category=vocals&subcategory=${category}`).then(() => null)
     },
     selectClip (trackName: string) {
-        fetch(`${Config.P0_API_URL}/select_clip?track_name=${trackName}`).then(() => null)
+        fetch(`${Config.P0_API_URL}/clip/select?track_name=${trackName}`).then(() => null)
     },
     toggleClip (trackName: string) {
-        fetch(`${Config.P0_API_URL}/toggle_clip?track_name=${trackName}`).then(() => null)
+        fetch(`${Config.P0_API_URL}/clip/toggle?track_name=${trackName}`).then(() => null)
     }
 }
 

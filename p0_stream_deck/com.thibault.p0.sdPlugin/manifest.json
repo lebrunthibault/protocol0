@@ -93,6 +93,12 @@
       "DontAutoSwitchWhenInstalled": true
     },
     {
+      "Name": "profiles/Clip Loop",
+      "ReadOnly": false,
+      "DeviceType": 2,
+      "DontAutoSwitchWhenInstalled": true
+    },
+    {
       "Name": "profiles/Devices",
       "ReadOnly": false,
       "DeviceType": 2,

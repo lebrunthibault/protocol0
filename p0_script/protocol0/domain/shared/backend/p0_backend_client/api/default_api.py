@@ -94,6 +94,21 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
+    def bounce_session_to_arrangement(self, ):  # noqa: E501
+        # type: () -> None
+        """
+             Bounce Session To Arrangement  # noqa: E501
+        """
+
+        dict = {
+            "method": "bounce_session_to_arrangement",
+            "args": {
+                
+            }
+        }
+
+        self._send_dict_as_midi(dict)
+
     def bounce_track_to_audio(self, ):  # noqa: E501
         # type: () -> None
         """
@@ -109,6 +124,21 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
+    def capture_midi(self, ):  # noqa: E501
+        # type: () -> None
+        """
+            Capture Midi  # noqa: E501
+        """
+
+        dict = {
+            "method": "capture_midi",
+            "args": {
+                
+            }
+        }
+
+        self._send_dict_as_midi(dict)
+
     def check_audio_export_valid(self, ):  # noqa: E501
         # type: () -> None
         """
@@ -117,21 +147,6 @@ class P0BackendClient(object):
 
         dict = {
             "method": "check_audio_export_valid",
-            "args": {
-                
-            }
-        }
-
-        self._send_dict_as_midi(dict)
-
-    def clear_arrangement(self, ):  # noqa: E501
-        # type: () -> None
-        """
-             Clear Arrangement  # noqa: E501
-        """
-
-        dict = {
-            "method": "clear_arrangement",
             "args": {
                 
             }
@@ -214,7 +229,7 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
-    def close_set(self, set_id, ):  # noqa: E501
+    def close_set(self, filename, ):  # noqa: E501
         # type: (str, ) -> None
         """
             Close Set  # noqa: E501
@@ -223,7 +238,22 @@ class P0BackendClient(object):
         dict = {
             "method": "close_set",
             "args": {
-                "set_id": set_id, 
+                "filename": filename, 
+            }
+        }
+
+        self._send_dict_as_midi(dict)
+
+    def color_clip_with_automation(self, ):  # noqa: E501
+        # type: () -> None
+        """
+             Color Clip With Automation  # noqa: E501
+        """
+
+        dict = {
+            "method": "color_clip_with_automation",
+            "args": {
+                
             }
         }
 
@@ -394,6 +424,21 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
+    def get_set(self, path, ):  # noqa: E501
+        # type: (str, ) -> None
+        """
+            Get Set  # noqa: E501
+        """
+
+        dict = {
+            "method": "get_set",
+            "args": {
+                "path": path, 
+            }
+        }
+
+        self._send_dict_as_midi(dict)
+
     def go_to_group_track(self, ):  # noqa: E501
         # type: () -> None
         """
@@ -424,8 +469,23 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
-    def load_device(self, name, ):  # noqa: E501
-        # type: (str, ) -> None
+    def home(self, ):  # noqa: E501
+        # type: () -> None
+        """
+            Home  # noqa: E501
+        """
+
+        dict = {
+            "method": "home",
+            "args": {
+                
+            }
+        }
+
+        self._send_dict_as_midi(dict)
+
+    def load_device(self, name, create_track=False):  # noqa: E501
+        # type: (str, bool, ) -> None
         """
             Load Device  # noqa: E501
         """
@@ -433,7 +493,7 @@ class P0BackendClient(object):
         dict = {
             "method": "load_device",
             "args": {
-                "name": name, 
+                "name": name, "create_track": create_track, 
             }
         }
 
@@ -529,6 +589,66 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
+    def log_selected(self, ):  # noqa: E501
+        # type: () -> None
+        """
+             Log Selected  # noqa: E501
+        """
+
+        dict = {
+            "method": "log_selected",
+            "args": {
+                
+            }
+        }
+
+        self._send_dict_as_midi(dict)
+
+    def log_song_stats(self, ):  # noqa: E501
+        # type: () -> None
+        """
+             Log Song Stats  # noqa: E501
+        """
+
+        dict = {
+            "method": "log_song_stats",
+            "args": {
+                
+            }
+        }
+
+        self._send_dict_as_midi(dict)
+
+    def match_clip_colors(self, ):  # noqa: E501
+        # type: () -> None
+        """
+             Match Clip Colors  # noqa: E501
+        """
+
+        dict = {
+            "method": "match_clip_colors",
+            "args": {
+                
+            }
+        }
+
+        self._send_dict_as_midi(dict)
+
+    def move_loop(self, forward=):  # noqa: E501
+        # type: (object, ) -> None
+        """
+            Move Loop  # noqa: E501
+        """
+
+        dict = {
+            "method": "move_loop",
+            "args": {
+                "forward": forward, 
+            }
+        }
+
+        self._send_dict_as_midi(dict)
+
     def move_to(self, x, y, ):  # noqa: E501
         # type: (int, int, ) -> None
         """
@@ -544,7 +664,22 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
-    def open_set(self, name, ):  # noqa: E501
+    def open_in_explorer(self, path, ):  # noqa: E501
+        # type: (str, ) -> None
+        """
+            Open In Explorer  # noqa: E501
+        """
+
+        dict = {
+            "method": "open_in_explorer",
+            "args": {
+                "path": path, 
+            }
+        }
+
+        self._send_dict_as_midi(dict)
+
+    def open_set(self, path, ):  # noqa: E501
         # type: (str, ) -> None
         """
              Open Set  # noqa: E501
@@ -553,7 +688,7 @@ class P0BackendClient(object):
         dict = {
             "method": "open_set",
             "args": {
-                "name": name, 
+                "path": path, 
             }
         }
 
@@ -604,8 +739,8 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
-    def post_scene_stats(self, scene_stats, ):  # noqa: E501
-        # type: (SceneStats, ) -> None
+    def post_scene_stats(self, scene_stat, ):  # noqa: E501
+        # type: (list[SceneStat], ) -> None
         """
             Post Scene Stats  # noqa: E501
         """
@@ -613,7 +748,7 @@ class P0BackendClient(object):
         dict = {
             "method": "post_scene_stats",
             "args": {
-                "scene_stats": scene_stats, 
+                "scene_stat": scene_stat, 
             }
         }
 
@@ -629,6 +764,21 @@ class P0BackendClient(object):
             "method": "post_set",
             "args": {
                 "ableton_set": ableton_set, 
+            }
+        }
+
+        self._send_dict_as_midi(dict)
+
+    def post_set_stars(self, filename, stars_payload, ):  # noqa: E501
+        # type: (str, StarsPayload, ) -> None
+        """
+            Post Set Stars  # noqa: E501
+        """
+
+        dict = {
+            "method": "post_set_stars",
+            "args": {
+                "filename": filename, "stars_payload": stars_payload, 
             }
         }
 
@@ -682,7 +832,7 @@ class P0BackendClient(object):
     def save_set(self, ):  # noqa: E501
         # type: () -> None
         """
-             Save Set  # noqa: E501
+            Save Set  # noqa: E501
         """
 
         dict = {
@@ -719,6 +869,21 @@ class P0BackendClient(object):
             "method": "save_track_to_sub_tracks",
             "args": {
                 
+            }
+        }
+
+        self._send_dict_as_midi(dict)
+
+    def scroll_presets(self, direction, ):  # noqa: E501
+        # type: (str, ) -> None
+        """
+            Scroll Presets  # noqa: E501
+        """
+
+        dict = {
+            "method": "scroll_presets",
+            "args": {
+                "direction": direction, 
             }
         }
 
@@ -844,16 +1009,16 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
-    def select_or_load_device(self, name, ):  # noqa: E501
+    def select_clip(self, track_name, ):  # noqa: E501
         # type: (str, ) -> None
         """
-            Select Or Load Device  # noqa: E501
+            Select Clip  # noqa: E501
         """
 
         dict = {
-            "method": "select_or_load_device",
+            "method": "select_clip",
             "args": {
-                "name": name, 
+                "track_name": track_name, 
             }
         }
 
@@ -899,6 +1064,21 @@ class P0BackendClient(object):
             "method": "set_envelope_loop_length",
             "args": {
                 "length": length, 
+            }
+        }
+
+        self._send_dict_as_midi(dict)
+
+    def sets(self, archive=False):  # noqa: E501
+        # type: (bool, ) -> None
+        """
+            Sets  # noqa: E501
+        """
+
+        dict = {
+            "method": "sets",
+            "args": {
+                "archive": archive, 
             }
         }
 
@@ -1124,6 +1304,21 @@ class P0BackendClient(object):
             "method": "toggle_ableton_button",
             "args": {
                 "x": x, "y": y, "activate": activate, 
+            }
+        }
+
+        self._send_dict_as_midi(dict)
+
+    def toggle_clip(self, track_name, ):  # noqa: E501
+        # type: (str, ) -> None
+        """
+            Toggle Clip  # noqa: E501
+        """
+
+        dict = {
+            "method": "toggle_clip",
+            "args": {
+                "track_name": track_name, 
             }
         }
 

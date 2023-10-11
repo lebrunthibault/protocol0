@@ -86,7 +86,7 @@ make_whitelist = true
 sort_by_size = true
 verbose = false
 exclude = [
-    'p0_backend/api/http_server/routes.py',
+    'p0_backend/api/http_server/routes',
     'p0_backend\lib\scene_stats.py',
     'protocol0_stub'
 ]

@@ -35,10 +35,6 @@ class AbletonClip(Subject):
     def get_notes_extended(self, *a, **k):
         return ()
 
-    # noinspection PyUnusedLocal
-    def get_selected_notes(self):
-        return ()
-
     def select_all_notes(self):
         pass
 
