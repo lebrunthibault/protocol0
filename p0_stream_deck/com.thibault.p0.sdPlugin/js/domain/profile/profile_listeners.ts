@@ -28,7 +28,6 @@ class ProfileListeners {
         const actionType = actionTypes.fromName(event.context.name)
 
         if (actionType.profileAutoSwitch) {
-            console.log(actionType.profileAutoSwitch)
             $SD.api.switchToProfile('', this.db.deviceId, actionType.profileAutoSwitch)
             return
         }

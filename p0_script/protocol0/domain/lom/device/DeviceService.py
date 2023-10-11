@@ -17,6 +17,7 @@ from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.BrowserServiceInterface import BrowserServiceInterface
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
+from protocol0.domain.shared.utils.concurrency import lock
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.Song import Song
 from protocol0.shared.sequence.Sequence import Sequence
@@ -55,14 +56,16 @@ class DeviceService(object):
             if instrument_device:
                 track.devices.delete(instrument_device)
 
-        if create_track and device_enum.is_instrument and track.instrument:
+        if create_track and device_enum.is_instrument:
             if device_enum.is_bass_instrument:
                 bass_track = get_track_by_name(NormalGroupTrackEnum.BASS.value, True)
                 if bass_track:
                     seq.add(bass_track.sub_tracks[0].select)
 
             seq.add(self._track_crud_component.create_midi_track)
-            seq.add(lambda: setattr(Song.selected_track(), "name", device_enum.instrument_enum.value))
+            seq.add(
+                lambda: setattr(Song.selected_track(), "name", device_enum.instrument_enum.value)
+            )
 
         seq.add(partial(self._browser_service.load_device_from_enum, device_enum))
 
@@ -117,6 +120,7 @@ class DeviceService(object):
 
         return None
 
+    @lock
     def scroll_high_pass_filter(self, go_next: bool) -> Sequence:
         eq_eight: Optional[Device] = find_if(
             lambda d: d.enum == DeviceEnum.EQ_EIGHT, Song.selected_track().devices
@@ -126,10 +130,12 @@ class DeviceService(object):
 
         if not eq_eight:
             seq.add(partial(self.load_device, DeviceEnum.EQ_EIGHT.name))
+        else:
+            seq.add(partial(eq_eight.parameters[6].scroll, go_next))  # scroll frequency A
 
-        seq.add(partial(eq_eight.parameters[6].scroll, go_next))  # scroll frequency A
         return seq.done()
 
+    @lock
     def scroll_lfo_tool(self, go_next: bool) -> Sequence:
         lfo_tool: Optional[Device] = find_if(
             lambda d: d.enum == DeviceEnum.LFO_TOOL, Song.selected_track().devices
@@ -139,6 +145,7 @@ class DeviceService(object):
 
         if not lfo_tool:
             seq.add(partial(self.load_device, DeviceEnum.LFO_TOOL.name))
+        else:
+            seq.add(partial(lfo_tool.parameters[1].scroll, go_next))  # scroll frequency A
 
-        seq.add(partial(lfo_tool.parameters[1].scroll, go_next))  # scroll frequency A
         return seq.done()

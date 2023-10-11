@@ -12,7 +12,6 @@ function basename(filename: string): string {
 
 function notify(message: string) {
   Notification.requestPermission().then(function (result) {
-    console.log(result);
     const notification = new Notification(message)
     setTimeout(() => notification.close(), 2000)
   });
