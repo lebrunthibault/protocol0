@@ -56,8 +56,7 @@ class SessionToArrangementService(object):
             self._playback_component.stop_playing()
             return None
 
-        if not self._set_fixer_service.fix_set():
-            return None
+        self._set_fixer_service.fix_set()
 
         self._stop_playing_on_last_scene_end()
         self._bounce()
