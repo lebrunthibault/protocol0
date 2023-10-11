@@ -1,9 +1,8 @@
-import logging
 from functools import wraps
-
 from typing import Optional, Callable, Any
 
 from protocol0.domain.shared.backend.p0_backend_client.api.default_api import P0BackendClient
+
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.types import Func
 
@@ -24,7 +23,6 @@ class Backend(object):
 
     def __init__(self, send_midi: Callable) -> None:
         Backend._INSTANCE = self
-        logging.info(P0BackendClient)
         self._client = P0BackendClient(send_midi)
 
         # wrap backend notification to also log

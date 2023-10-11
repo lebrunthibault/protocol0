@@ -15,7 +15,7 @@ class ActionGroupRack(ActionGroupInterface):
         # RACK macro control encoders
         instrument_service = self._container.get(InstrumentService)
 
-        for i in range(1, 12):
+        for i in range(1, 13):
             if i == 5:
                 self.add_encoder(
                     identifier=5,
@@ -35,6 +35,12 @@ class ActionGroupRack(ActionGroupInterface):
                     name="edit arp rate",
                     on_press=partial(instrument_service.toggle_macro_control, 10),
                     on_scroll=partial(instrument_service.scroll_macro_control, 10, steps=100),
+                )
+            elif i == 12:
+                self.add_encoder(
+                    identifier=10,
+                    name="edit lfo tool",
+                    on_scroll=self._container.get(DeviceService).scroll_lfo_tool,
                 )
             else:
                 self.add_encoder(

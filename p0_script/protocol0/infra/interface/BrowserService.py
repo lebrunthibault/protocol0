@@ -4,6 +4,7 @@ import Live
 
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device.DeviceLoadedEvent import DeviceLoadedEvent
+from protocol0.domain.lom.instrument.InstrumentLoadedEvent import InstrumentLoadedEvent
 from protocol0.domain.lom.instrument.preset.SampleSelectedEvent import SampleSelectedEvent
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.BrowserServiceInterface import BrowserServiceInterface
@@ -31,6 +32,8 @@ class BrowserService(BrowserServiceInterface):
         seq.wait(20)
         seq.add(ApplicationView.focus_detail)
         seq.add(partial(DomainEventBus.emit, DeviceLoadedEvent(device_enum)))
+        if device_enum.is_instrument:
+            seq.add(partial(DomainEventBus.emit, InstrumentLoadedEvent(device_enum)))
         return seq.done()
 
     def load_sample(self, name: str) -> Sequence:

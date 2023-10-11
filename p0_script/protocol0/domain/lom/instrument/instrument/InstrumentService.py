@@ -1,3 +1,5 @@
+from protocol0.domain.lom.instrument.InstrumentLoadedEvent import InstrumentLoadedEvent
+from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
@@ -5,6 +7,15 @@ from protocol0.shared.logging.Logger import Logger
 
 class InstrumentService(object):
     _DEBUG = True
+
+    def __init__(self) -> None:
+        super(InstrumentService, self).__init__()
+        DomainEventBus.subscribe(InstrumentLoadedEvent, self._on_instrument_loaded_event)
+
+    def _on_instrument_loaded_event(self, event: InstrumentLoadedEvent) -> None:
+        instrument = Song.selected_track().instrument
+        if instrument and instrument.device.enum == event.device_enum.instrument_enum:
+            instrument.on_loaded(event.device_enum)
 
     def toggle_macro_control(self, index: int) -> None:
         rack_device = Song.selected_track().instrument_rack_device
@@ -16,7 +27,7 @@ class InstrumentService(object):
         else:
             param.value = param.min
 
-    def scroll_macro_control(self, index: int, go_next: bool, steps: int = 1000) -> None:
+    def scroll_macro_control(self, index: int, go_next: bool, steps: int = 500) -> None:
         rack_device = Song.selected_track().instrument_rack_device
         assert rack_device is not None, "No instrument rack device"
 

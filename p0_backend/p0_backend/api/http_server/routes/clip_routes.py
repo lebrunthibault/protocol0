@@ -8,6 +8,7 @@ from protocol0.application.command.ColorClipWithAutomationCommand import (
 from protocol0.application.command.MatchClipColorCommand import MatchClipColorCommand
 from protocol0.application.command.MoveClipLoopCommand import MoveClipLoopCommand
 from protocol0.application.command.SelectClipCommand import SelectClipCommand
+from protocol0.application.command.SetClipLoopLengthCommand import SetClipLoopLengthCommand
 from protocol0.application.command.ToggleClipCommand import ToggleClipCommand
 from protocol0.application.command.ToggleNotesCommand import ToggleNotesCommand
 
@@ -52,3 +53,8 @@ async def _color_clip_with_automation():
 @router.get("/move_loop")
 async def move_loop(forward: bool = True):
     p0_script_client().dispatch(MoveClipLoopCommand(forward=forward))
+
+
+@router.get("/set_loop_length")
+async def set_loop_length(bar_length: int):
+    p0_script_client().dispatch(SetClipLoopLengthCommand(bar_length=bar_length))
