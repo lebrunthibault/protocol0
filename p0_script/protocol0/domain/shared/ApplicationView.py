@@ -3,7 +3,9 @@ from typing import Optional
 
 from protocol0.domain.lom.song.components.RecordingComponent import RecordingComponent
 from protocol0.domain.shared.SessionServiceInterface import SessionServiceInterface
+from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.shared.Song import Song
+from protocol0.shared.logging.Logger import Logger
 
 
 class ApplicationView(object):
@@ -53,7 +55,12 @@ class ApplicationView(object):
     @classmethod
     def focus_current_track(cls) -> None:
         """Moves the focus to the detail view."""
-        selected_track = Song.selected_track()
+        try:
+            selected_track = Song.selected_track()
+        except Protocol0Error as e:
+            Logger.error(str(e), show_notification=False)
+            return
+
         is_visible = Song.selected_track().is_visible
         if Song.selected_track().group_track:
             Song.selected_track().group_track.is_folded = False
