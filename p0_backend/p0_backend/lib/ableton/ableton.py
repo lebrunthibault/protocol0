@@ -75,7 +75,7 @@ def reload_ableton() -> None:
     except OSError:
         pass
 
-    open_set("Test 2.als", confirm_dialog=False)
+    open_set("Test.als", confirm_dialog=False)
 
 
 def open_set(filename: str, confirm_dialog=True):

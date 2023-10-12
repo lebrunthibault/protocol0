@@ -398,6 +398,21 @@ class DeviceEnum(AbstractEnum):
             DeviceEnum.SYNTH_MASTER_2,
         ]
 
+    @property
+    def is_harmony_instrument(self) -> bool:
+        return self in [
+            DeviceEnum.SERUM_KEYS,
+            DeviceEnum.SYLENTH1_KEYS,
+            DeviceEnum.SERUM_PLUCK,
+            DeviceEnum.SYLENTH1_PLUCK,
+        ]
+
+    @property
+    def is_melody_instrument(self) -> bool:
+        return self in [
+            DeviceEnum.SERUM_LEAD,
+            DeviceEnum.SYLENTH1_LEAD,
+        ]
 
     @property
     def is_bass_instrument(self) -> bool:
@@ -515,6 +530,24 @@ class DeviceEnum(AbstractEnum):
             return DeviceEnum.SERUM
 
         return self
+
+    @property
+    def track_name(self) -> str:
+        assert self.is_instrument
+        return {
+            DeviceEnum.SYLENTH1: "Sylenth1",
+            DeviceEnum.SYLENTH1_RACK: "Sylenth1",
+            DeviceEnum.SYLENTH1_BASS: "Bass",
+            DeviceEnum.SYLENTH1_KEYS: "Keys",
+            DeviceEnum.SYLENTH1_LEAD: "Lead",
+            DeviceEnum.SYLENTH1_PLUCK: "Pluck",
+            DeviceEnum.SERUM: "Serum",
+            DeviceEnum.SERUM_RACK: "Serum",
+            DeviceEnum.SERUM_BASS: "Bass",
+            DeviceEnum.SERUM_KEYS: "Keys",
+            DeviceEnum.SERUM_LEAD: "Lead",
+            DeviceEnum.SERUM_PLUCK: "Pluck",
+        }.get(self, self.instrument_enum.value)
 
     @classmethod
     def missing_plugin_names(cls) -> List[str]:

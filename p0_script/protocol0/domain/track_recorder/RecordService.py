@@ -194,7 +194,10 @@ class RecordService(object):
 
         def copy_created_clip() -> None:
             source_cs = Song.selected_track().clip_slots[-1]
-            assert source_cs.clip, "no source clip"
+            if not source_cs.clip:
+                Logger.warning("no source clip")
+                return
+
             dest_cs = Song.selected_track().clip_slots[scene_index]
 
             if dest_cs == source_cs:
@@ -219,8 +222,12 @@ class RecordService(object):
         Scheduler.defer(copy_created_clip)
 
     def capture_midi_validate(self) -> None:
-        clip = Song.selected_clip()
-        assert isinstance(clip, MidiClip), "no selected midi clip"
+        clip = Song.selected_clip(raise_if_none=False)
+        if not isinstance(clip, MidiClip):
+            return
+
         clip.fix_notes_left_boundary()
+        clip.name = str(clip.bar_length)
         clip.crop()
+        clip.quantize()
         self._scene_playback_service.fire_scene(Song.selected_scene())

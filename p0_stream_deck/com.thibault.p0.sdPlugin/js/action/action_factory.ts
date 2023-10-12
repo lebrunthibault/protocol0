@@ -69,8 +69,8 @@ class ActionFactory {
             actionTypes.LOAD_GROUPED_DEVICE,
             Icons.empty,
             SelectedGroupedDevicesUpdatedEvent,
+            loadDevice,
             selectOrLoadDevice,
-            loadDevice
         )
         new ActionGroup(
             this.actionRepository,

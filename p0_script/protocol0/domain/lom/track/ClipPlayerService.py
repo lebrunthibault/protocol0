@@ -17,7 +17,12 @@ class ClipPlayerService(object):
 
         track.is_folded = False
         track.clip_slots[Song.selected_scene().index].select()
-        track.arm_state.toggle()
+        if track.arm_state.is_armed:
+            if Song.selected_track() == track:
+                track.arm_state.unarm()
+        else:
+            track.arm_state.arm()
+
         ApplicationView.show_device()
 
     def toggle_clip(self, track_name: str) -> None:

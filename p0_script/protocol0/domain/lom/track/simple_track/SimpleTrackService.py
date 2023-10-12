@@ -1,9 +1,26 @@
+from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrackFlattenedEvent import (
     SimpleTrackFlattenedEvent,
 )
 from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.shared.Song import Song
+
+
+def rename_track(track: SimpleTrack, name: str) -> None:
+    track_names = [track.name for track in Song.simple_tracks()]
+
+    if name not in track_names:
+        track.name = name
+        return
+
+    count = 2
+    new_name = name
+    while new_name in track_names:
+        new_name = f"{name} count"
+        count += 1
+
+    track.name = name
 
 
 class SimpleTrackService(object):
@@ -19,7 +36,3 @@ class SimpleTrackService(object):
             clip.loop.end = clip.loop.end / 2
 
         flattened_track._needs_flattening = False
-
-
-    def select_tracks_to_freeze(self) -> None:
-        pass
