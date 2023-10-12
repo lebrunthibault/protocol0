@@ -42,7 +42,7 @@ class MidiClip(Clip):
 
         live_notes = self._clip.get_selected_notes_extended()
 
-        if len(live_notes) != 0:
+        if len(live_notes) > 1:
             clip_notes = map(Note.from_midi_note, live_notes)
         else:
             live_notes = self._clip.get_notes_extended(0, 128, self.loop.start, self.length)
@@ -137,13 +137,28 @@ class MidiClip(Clip):
         if len(notes) < 2:
             return None
 
+
+        notes[0].start = self.loop.start
+        notes[-1].end = self.loop.end
+
         current_note = notes[0]
 
         for next_note in notes[1:]:
             current_note.end = max(current_note.end, next_note.start)
             current_note = next_note
 
-            self.set_notes(notes)
+        self.set_notes(notes)
+
+    def fix_notes_left_boundary(self) -> None:
+        loop_start = self.loop.start
+        self.loop.start = 0
+        notes = self.get_notes()
+        for note in notes:
+            if note.start < loop_start < note.end:
+                note.start = loop_start
+
+        self.set_notes(notes)
+        self.loop.start = loop_start
 
     def get_linked_parameters(
         self, device_parameters: List[DeviceParameter]

@@ -44,7 +44,6 @@ from protocol0.application.command.BounceSessionToArrangementCommand import (
     BounceSessionToArrangementCommand,
 )
 from protocol0.application.command.BounceTrackToAudioCommand import BounceTrackToAudioCommand
-from protocol0.application.command.CaptureMidiCommand import CaptureMidiCommand
 from protocol0.application.command.CheckAudioExportValidCommand import CheckAudioExportValidCommand
 from protocol0.application.command.DrumRackToSimplerCommand import DrumRackToSimplerCommand
 from protocol0.application.command.FireSceneToPositionCommand import FireSceneToPositionCommand
@@ -58,7 +57,6 @@ from protocol0.application.command.LoadRev2Command import LoadRev2Command
 from protocol0.application.command.LogSelectedCommand import LogSelectedCommand
 from protocol0.application.command.LogSongStatsCommand import LogSongStatsCommand
 from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongCommand
-from protocol0.application.command.RecordUnlimitedCommand import RecordUnlimitedCommand
 from protocol0.application.command.ReloadScriptCommand import ReloadScriptCommand
 from protocol0.application.command.ScrollPresetsCommand import ScrollPresetsCommand
 from protocol0.application.command.ScrollScenePositionCommand import ScrollScenePositionCommand
@@ -70,16 +68,18 @@ from protocol0.application.command.ShowInstrumentCommand import ShowInstrumentCo
 from protocol0.application.command.ToggleArmCommand import ToggleArmCommand
 from protocol0.application.command.ToggleReferenceTrackCommand import ToggleReferenceTrackCommand
 from protocol0.application.command.ToggleSceneLoopCommand import ToggleSceneLoopCommand
+from .script_action_routes import router as actions_router
 from .clip_routes import router as clip_router
-from .script_action_routes import router as script_actions_router
+from .record_routes import router as record_router
 from .set_routes import router as set_router
 
 router = APIRouter()
 
 settings = Settings()
 
-router.include_router(script_actions_router, prefix="/actions")
+router.include_router(actions_router, prefix="/actions")
 router.include_router(clip_router, prefix="/clip")
+router.include_router(record_router, prefix="/record")
 router.include_router(set_router, prefix="/set")
 
 
@@ -369,11 +369,6 @@ async def fire_selected_scene():
     p0_script_client().dispatch(FireSelectedSceneCommand())
 
 
-@router.get("/record_unlimited")
-async def record_unlimited():
-    p0_script_client().dispatch(RecordUnlimitedCommand())
-
-
 @router.get("/scroll_scenes")
 async def scroll_scenes(direction: str):
     p0_script_client().dispatch(ScrollScenesCommand(go_next=direction == "next"))
@@ -447,8 +442,3 @@ async def _go_to_group_track():
 @router.get("/check_audio_export_valid")
 async def check_audio_export_valid():
     p0_script_client().dispatch(CheckAudioExportValidCommand())
-
-
-@router.get("/capture_midi")
-async def capture_midi():
-    p0_script_client().dispatch(CaptureMidiCommand())

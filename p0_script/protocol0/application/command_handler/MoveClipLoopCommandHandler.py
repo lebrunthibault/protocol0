@@ -9,4 +9,4 @@ class MoveClipLoopCommandHandler(CommandHandlerInterface):
         if not clip:
             return
 
-        clip.loop.move(forward=command.forward)
+        clip.loop.move(forward=command.forward, bar=command.bar)

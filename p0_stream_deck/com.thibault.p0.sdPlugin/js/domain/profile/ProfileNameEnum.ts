@@ -6,7 +6,7 @@ enum ProfileNameEnum {
     DEVICE_GROUP = 'profiles/DeviceGroup',
     DRUMS = 'profiles/Drums',
     HOME = 'profiles/Home',
-    SELECTED_SCENE = 'profiles/Selected Scene',
+    SELECTED_SCENE = 'profiles/SelectedScene',
     VOCALS = 'profiles/Vocals',
 }
 

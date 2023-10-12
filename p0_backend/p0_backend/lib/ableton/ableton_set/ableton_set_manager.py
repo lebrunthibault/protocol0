@@ -32,12 +32,15 @@ class AbletonSetManager:
     _ACTIVE_SET: Optional[AbletonSet] = None
 
     @classmethod
-    async def register(cls, ableton_set: AbletonSet):
+    async def register(cls, ableton_set: AbletonSet) -> None:
         if cls.DEBUG:
             logger.info(f"registering set {ableton_set}")
 
         launched_sets = [title for title in get_ableton_window_titles() if title]
-        assert len(launched_sets), "No ableton window"
+        if len(launched_sets) == 0:
+            logger.warning("No ableton window")
+            return
+
         set_title = re.match(r"([^*]*)", launched_sets[0]).group(1).split(" [")[0].strip()
         if not set_title:
             logger.warning(f"Couldn't find set title in launched sets: {launched_sets}")
