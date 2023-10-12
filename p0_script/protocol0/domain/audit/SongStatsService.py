@@ -34,7 +34,6 @@ class SongStatsService(object):
 
         if len(list(set(scene_names))) < 2:
             StatusBar.show_message("Scenes are not named")
-            return
 
         scene_stats = SceneStats()
         Backend.client().post_scene_stats(scene_stats.to_full_dict()["scenes"])

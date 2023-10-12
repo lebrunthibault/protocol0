@@ -13,6 +13,7 @@ from protocol0.domain.lom.note.Note import Note
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.list import find_if
+from protocol0.domain.shared.utils.utils import clamp
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
@@ -122,6 +123,8 @@ class MidiClip(Clip):
                 note.velocity += velocity_diff / (scaling_factor - 1)
             else:
                 note.velocity -= velocity_diff / scaling_factor
+
+            note.velocity = clamp(note.velocity, 1, 128)
         self.set_notes(notes)
 
     def crop(self) -> Optional[Sequence]:

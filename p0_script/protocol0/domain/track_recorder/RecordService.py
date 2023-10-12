@@ -194,7 +194,8 @@ class RecordService(object):
 
         def copy_created_clip() -> None:
             source_cs = Song.selected_track().clip_slots[-1]
-            if not source_cs.clip:
+            source_clip = source_cs.clip
+            if not isinstance(source_clip, MidiClip):
                 Logger.warning("no source clip")
                 return
 
@@ -205,9 +206,10 @@ class RecordService(object):
 
             minimum_expected_length = max(scene_length, 32)
             start = max(0, source_cs.clip.loop.end - minimum_expected_length)
-            source_cs.clip.quantize()
-            source_cs.clip.loop.start_marker = start
-            source_cs.clip.loop.start = start
+            source_clip.quantize()
+            source_clip.scale_velocities(go_next=False, scaling_factor=2)
+            source_clip.loop.start_marker = start
+            source_clip.loop.start = start
 
             if dest_cs.clip is not None:
                 return  # already existing clipN
@@ -215,7 +217,7 @@ class RecordService(object):
             source_cs.duplicate_clip_to(dest_cs)
             last_scene = Song.scenes()[-1]
 
-            if list(last_scene.clips) == [source_cs.clip]:
+            if list(last_scene.clips) == [source_clip]:
                 self._scene_crud_component.delete_scene(Song.scenes()[-1])
             dest_cs.select()
 

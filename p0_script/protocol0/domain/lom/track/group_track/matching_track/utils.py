@@ -20,7 +20,8 @@ def assert_valid_track_name(track_name: str) -> None:
     excluded_names = [d.value.lower() for d in DeviceEnum if d.is_instrument]
     excluded_names += ["midi", "audio"]
 
-    assert track_name.lower() not in excluded_names, f"Track name should be specific : '{track_name}'"
+    if track_name.lower() not in excluded_names:
+        Logger.warning(f"Track name should be specific : '{track_name}'")
 
 
 def ensure_clips_looped(clips: List[Clip]) -> None:
