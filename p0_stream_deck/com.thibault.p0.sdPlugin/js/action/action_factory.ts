@@ -70,7 +70,7 @@ class ActionFactory {
             Icons.empty,
             SelectedGroupedDevicesUpdatedEvent,
             loadDevice,
-            selectOrLoadDevice,
+            selectOrLoadDevice
         )
         new ActionGroup(
             this.actionRepository,

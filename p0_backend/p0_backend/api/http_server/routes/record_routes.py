@@ -12,10 +12,12 @@ router = APIRouter()
 async def record_unlimited():
     p0_script_client().dispatch(RecordUnlimitedCommand())
 
+
 @router.get("/capture_midi")
 async def capture_midi():
     p0_script_client().dispatch(CaptureMidiCommand())
 
+
 @router.get("/capture_midi/validate")
-async def capture_midi():
+async def capture_midi_validate():
     p0_script_client().dispatch(CaptureMidiValidateCommand())
