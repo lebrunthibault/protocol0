@@ -7,7 +7,6 @@ from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device.DeviceLoadedEvent import DeviceLoadedEvent
-from protocol0.domain.lom.instrument.instrument.InstrumentService import InstrumentService
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
 from protocol0.domain.lom.song.components.TrackComponent import get_track_by_name
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
@@ -155,9 +154,7 @@ class DeviceService(object):
                 filter_param.scroll(go_next)
                 return None
 
-        eq_eight: Optional[Device] = find_if(
-            lambda d: d.enum == DeviceEnum.EQ_EIGHT, Song.selected_track().devices
-        )
+        eq_eight = Song.selected_track().devices.get_one_from_enum(DeviceEnum.EQ_EIGHT)
 
         seq = Sequence()
 
@@ -170,11 +167,14 @@ class DeviceService(object):
 
         return seq.done()
 
+    def toggle_eq(self) -> None:
+        eq_eight = Song.selected_track().devices.get_one_from_enum(DeviceEnum.EQ_EIGHT)
+        if eq_eight:
+            eq_eight.is_enabled = not eq_eight.is_enabled
+
     @lock
     def scroll_high_pass_filter(self, go_next: bool) -> Sequence:
-        eq_eight: Optional[Device] = find_if(
-            lambda d: d.enum == DeviceEnum.EQ_EIGHT, Song.selected_track().devices
-        )
+        eq_eight = Song.selected_track().devices.get_one_from_enum(DeviceEnum.EQ_EIGHT)
 
         seq = Sequence()
 
@@ -205,6 +205,7 @@ class DeviceService(object):
         insert_reverb = Song.selected_track().devices.get_one_from_enum(DeviceEnum.INSERT_REVERB)
         if insert_reverb:
             from protocol0.shared.logging.Logger import Logger
+
             Logger.dev(insert_reverb.parameters[1])
             insert_reverb.parameters[1].scroll(go_next)
         else:
@@ -223,6 +224,7 @@ class DeviceService(object):
         insert_delay = Song.selected_track().devices.get_one_from_enum(DeviceEnum.INSERT_DELAY)
         if insert_delay:
             from protocol0.shared.logging.Logger import Logger
+
             Logger.dev(insert_delay.parameters[1])
             insert_delay.parameters[1].scroll(go_next)
 
