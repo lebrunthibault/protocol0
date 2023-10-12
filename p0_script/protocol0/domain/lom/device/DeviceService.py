@@ -14,6 +14,7 @@ from protocol0.domain.lom.track.group_track.NormalGroupTrackEnum import NormalGr
 from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import ExternalSynthTrack
 from protocol0.domain.lom.track.group_track.ext_track.SimpleMidiExtTrack import SimpleMidiExtTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
+from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_track
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.BrowserServiceInterface import BrowserServiceInterface
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
@@ -37,7 +38,7 @@ class DeviceService(object):
 
     def load_device(self, enum_name: str, create_track: bool = False) -> Sequence:
         device_enum = DeviceEnum[enum_name]
-        track = self._track_to_select(device_enum)
+        track = self._get_instrument_track(device_enum)
         device_to_select = self._get_device_to_select_for_insertion(track, device_enum)
 
         if device_to_select:
@@ -51,21 +52,18 @@ class DeviceService(object):
         seq = Sequence()
         seq.add(track.select)
 
-        if create_track and device_enum.is_instrument and track.instrument:
-            instrument_device = track.instrument_rack_device or track.instrument.device
-            if instrument_device:
-                track.devices.delete(instrument_device)
+        if device_enum.is_instrument:
+            if create_track:
+                track_to_select_for_creation = self._get_track_to_select_for_creation(device_enum)
+                if track_to_select_for_creation:
+                    seq.add(track_to_select_for_creation.select)
 
-        if create_track and device_enum.is_instrument:
-            if device_enum.is_bass_instrument:
-                bass_track = get_track_by_name(NormalGroupTrackEnum.BASS.value, True)
-                if bass_track:
-                    seq.add(bass_track.sub_tracks[0].select)
-
-            seq.add(self._track_crud_component.create_midi_track)
-            seq.add(
-                lambda: setattr(Song.selected_track(), "name", device_enum.instrument_enum.value)
-            )
+                seq.add(self._track_crud_component.create_midi_track)
+                seq.add(lambda: rename_track(Song.selected_track(), device_enum.track_name))
+            elif track.instrument:
+                instrument_device = track.instrument_rack_device or track.instrument.device
+                if instrument_device:
+                    track.devices.delete(instrument_device)
 
         seq.add(partial(self._browser_service.load_device_from_enum, device_enum))
 
@@ -79,7 +77,7 @@ class DeviceService(object):
 
         return seq.done()
 
-    def _track_to_select(self, device_enum: DeviceEnum) -> SimpleTrack:
+    def _get_instrument_track(self, device_enum: DeviceEnum) -> SimpleTrack:
         selected_track = Song.selected_track()
         current_track = Song.current_track()
 
@@ -90,6 +88,20 @@ class DeviceService(object):
             return current_track.audio_track
 
         return selected_track
+
+    def _get_track_to_select_for_creation(self, device_enum: DeviceEnum) -> Optional[SimpleTrack]:
+        track = None
+        if device_enum.is_harmony_instrument:
+            track = get_track_by_name(NormalGroupTrackEnum.HARMONY.value, True)
+        elif device_enum.is_melody_instrument:
+            track = get_track_by_name(NormalGroupTrackEnum.MELODY.value, True)
+        elif device_enum.is_bass_instrument:
+            track = get_track_by_name(NormalGroupTrackEnum.BASS.value, True)
+
+        if track:
+            return track.sub_tracks[-1]
+
+        return None
 
     def _on_device_loaded_event(self, _: DeviceLoadedEvent) -> None:
         """Select the default parameter if it exists"""

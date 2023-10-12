@@ -1,8 +1,10 @@
 from functools import partial
 from typing import Optional
 
+from protocol0.application.ScriptResetActivatedEvent import ScriptResetActivatedEvent
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
 from protocol0.domain.lom.song.components.TempoComponent import TempoComponent
+from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.track_recorder.RecordService import RecordService
 from protocol0.domain.track_recorder.RecordTypeEnum import RecordTypeEnum
 from protocol0.shared.Song import Song
@@ -25,6 +27,13 @@ class ActionGroupMain(ActionGroupInterface):
             name="tap tempo",
             on_press=self._container.get(TempoComponent).tap,
             on_scroll=self._container.get(TempoComponent).scroll,
+        )
+
+        # INIT song encoder
+        self.add_encoder(
+            identifier=4,
+            name="(re) initialize the script",
+            on_press=partial(DomainEventBus.emit, ScriptResetActivatedEvent()),
         )
 
         # RECordAudio encoder

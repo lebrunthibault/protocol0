@@ -19,7 +19,8 @@ class InstrumentService(object):
 
     def toggle_macro_control(self, index: int) -> None:
         rack_device = Song.selected_track().instrument_rack_device
-        assert rack_device is not None, "No instrument rack device"
+        if rack_device is None:
+            return
 
         param = rack_device.parameters[index]
         if param.value == param.min:
@@ -29,7 +30,8 @@ class InstrumentService(object):
 
     def scroll_macro_control(self, index: int, go_next: bool, steps: int = 500) -> None:
         rack_device = Song.selected_track().instrument_rack_device
-        assert rack_device is not None, "No instrument rack device"
+        if rack_device is None:
+            return
 
         param = rack_device.parameters[index]
         if self._DEBUG:
@@ -39,7 +41,8 @@ class InstrumentService(object):
 
     def scroll_arp_style(self, go_next: bool) -> None:
         rack_device = Song.selected_track().instrument_rack_device
-        assert rack_device is not None, "No instrument rack device"
+        if rack_device is None:
+            return
 
         allowed_values = [
             "Up",
