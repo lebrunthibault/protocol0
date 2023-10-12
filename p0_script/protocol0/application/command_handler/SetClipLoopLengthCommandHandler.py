@@ -10,4 +10,4 @@ class SetClipLoopLengthCommandHandler(CommandHandlerInterface):
             return
 
         clip.loop.bar_length = command.bar_length
-        clip.show_loop()
+        # clip.show_loop()

@@ -37,7 +37,7 @@ class ActionGroupTest(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        pass
+        Song.selected_clip().fix_notes_left_boundary()
 
 
     def action_test_scroll(self, go_next: bool) -> None:

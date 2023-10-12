@@ -35,6 +35,11 @@ class ActionFactory {
             API.captureMidi,
             null
         )
+        new Action(
+            actionTypes.CAPTURE_MIDI_VALIDATE,
+            API.captureMidiValidate,
+            null
+        )
         new ActionGroup(
             this.actionRepository,
             actionTypes.CLIP_SLOT_CONTROL,

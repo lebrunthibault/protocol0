@@ -51,8 +51,8 @@ async def _color_clip_with_automation():
 
 
 @router.get("/move_loop")
-async def move_loop(forward: bool = True):
-    p0_script_client().dispatch(MoveClipLoopCommand(forward=forward))
+async def move_loop(forward: bool = True, bar: bool = False):
+    p0_script_client().dispatch(MoveClipLoopCommand(forward=forward, bar=bar))
 
 
 @router.get("/set_loop_length")

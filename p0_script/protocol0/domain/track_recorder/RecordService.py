@@ -3,7 +3,9 @@ from typing import Optional
 
 import Live
 
+from protocol0.domain.lom.clip.MidiClip import MidiClip
 from protocol0.domain.lom.scene.PlayingSceneFacade import PlayingSceneFacade
+from protocol0.domain.lom.scene.ScenePlaybackService import ScenePlaybackService
 from protocol0.domain.lom.song.SongStoppedEvent import SongStoppedEvent
 from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
 from protocol0.domain.lom.song.components.QuantizationComponent import QuantizationComponent
@@ -52,10 +54,12 @@ class RecordService(object):
         playback_component: PlaybackComponent,
         scene_crud_component: SceneCrudComponent,
         quantization_component: QuantizationComponent,
+        scene_playback_service: ScenePlaybackService
     ) -> None:
         self._playback_component = playback_component
         self._scene_crud_component = scene_crud_component
         self._quantization_component = quantization_component
+        self._scene_playback_service = scene_playback_service
 
         self.recording_bar_length_scroller = RecordingBarLengthScroller(
             Config.DEFAULT_RECORDING_BAR_LENGTH
@@ -212,3 +216,10 @@ class RecordService(object):
             dest_cs.select()
 
         Scheduler.defer(copy_created_clip)
+
+    def capture_midi_validate(self) -> None:
+        clip = Song.selected_clip()
+        assert isinstance(clip, MidiClip), "no selected midi clip"
+        clip.fix_notes_left_boundary()
+        clip.crop()
+        self._scene_playback_service.fire_scene(Song.selected_scene())

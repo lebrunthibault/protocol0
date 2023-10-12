@@ -75,29 +75,10 @@ def reload_ableton() -> None:
     except OSError:
         pass
 
-    open_set("Test 2.als")
-
-    # ableton 10
-    # p0_script_client().dispatch(ResetPlaybackCommand())
-    # # hack to get the focus when ableton is shown
-    # go_to_desktop(1)
-    # go_to_desktop(0)
-    # time.sleep(0.1)
-    #
-    # for i in range(0, 5):
-    #     focus_ableton()
-    #     send_keys("^n")
-    #     send_keys("{RIGHT}")
-    #     time.sleep(0.1)  # when clicking too fast, ableton is opening a template set ..
-    #     if len(get_ableton_windows()) == 2:
-    #         send_keys("{ENTER}")
-    #         break
-    #
-    #     if win32gui.GetCursorInfo()[1] == 65543:  # loading
-    #         break
+    open_set("Test 2.als", confirm_dialog=False)
 
 
-def open_set(filename: str):
+def open_set(filename: str, confirm_dialog=True):
     if not isabs(filename):
         filename = f"{settings.ableton_set_directory}\\{filename}"
 
@@ -112,10 +93,11 @@ def open_set(filename: str):
     execute_powershell_command(f'& "{settings.ableton_exe}" "{filename}"', minimized=True)
     time.sleep(2)
 
-    for _ in range(6):
-        send_right()
-        send_keys("{ENTER}")
-        time.sleep(0.5)
+    if confirm_dialog:
+        for _ in range(6):
+            send_right()
+            send_keys("{ENTER}")
+            time.sleep(0.5)
 
 
 @keep_mouse_position

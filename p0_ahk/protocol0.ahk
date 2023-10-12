@@ -71,7 +71,7 @@ Return
 	callBackend("go_to_group_track")
 return
 ^!+r::
-	callBackend("record_unlimited")
+	callBackend("record/unlimited")
 return
 ^Left::
 	callBackend("scroll_scene_position?direction=prev")

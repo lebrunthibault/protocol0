@@ -128,17 +128,18 @@ class Container(ContainerInterface):
         track_factory = TrackFactory(track_crud_component, browser_service, drum_rack_service)
         track_automation_service = TrackAutomationService(track_factory)
         track_mapper_service = TrackMapperService(live_song, track_factory)
-        track_recorder_service = RecordService(
-            playback_component,
-            scene_crud_component,
-            quantization_component,
-        )
         simple_track_service = SimpleTrackService()
         track_player_service = ClipPlayerService()
         matching_track_service = MatchingTrackService(track_crud_component)
         scene_service = SceneService(live_song, scene_crud_component)
         scene_playback_service = ScenePlaybackService(playback_component)
         PlayingSceneFacade(scene_component)
+        track_recorder_service = RecordService(
+            playback_component,
+            scene_crud_component,
+            quantization_component,
+            scene_playback_service
+        )
         validator_service = ValidatorService(ValidatorFactory(browser_service), drum_rack_service)
         set_fixer_service = SetFixerService(validator_service)
         session_to_arrangement_service = SessionToArrangementService(

@@ -26,6 +26,18 @@
     },
     {
       "Icon": "icon/p0_action/action",
+      "Name": "Capture Midi Validate",
+      "States": [
+        {
+          "Title": "",
+          "Image": "icon/p0_action/state"
+        }
+      ],
+      "Tooltip": "Validate the midi capture",
+      "UUID": "com.thibault.p0.capture-midi-validate"
+    },
+    {
+      "Icon": "icon/p0_action/action",
       "Name": "Clip slot control",
       "States": [
         {
@@ -135,7 +147,7 @@
       "DontAutoSwitchWhenInstalled": true
     },
     {
-      "Name": "profiles/Selected Scene",
+      "Name": "profiles/SelectedScene",
       "ReadOnly": false,
       "DeviceType": 2,
       "DontAutoSwitchWhenInstalled": true

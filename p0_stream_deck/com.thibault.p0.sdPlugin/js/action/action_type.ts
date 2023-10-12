@@ -19,6 +19,7 @@ const BACK_TO_PREVIOUS_PROFILE = 'back-to-previous-profile'
 const actionTypes = {
     BACK_TO_PREVIOUS_PROFILE: new ActionType(BACK_TO_PREVIOUS_PROFILE, null),
     CAPTURE_MIDI: new ActionType('capture-midi', ProfileNameEnum.SELECTED_SCENE, ProfileNameEnum.CLIP_LOOP),
+    CAPTURE_MIDI_VALIDATE: new ActionType('capture-midi-validate', ProfileNameEnum.CLIP_LOOP, ProfileNameEnum.SELECTED_SCENE),
     DRUM_RACK_TO_SIMPLER: new ActionType('drum-rack-to-simpler', ProfileNameEnum.DRUMS),
     LOAD_DEVICE: new ActionType('load-device', ProfileNameEnum.DEVICES),
     LOAD_GROUPED_DEVICE: new ActionType('load-grouped-device', ProfileNameEnum.DEVICE_GROUP, ProfileNameEnum.DEVICES),
