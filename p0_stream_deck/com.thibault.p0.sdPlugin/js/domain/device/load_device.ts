@@ -25,4 +25,10 @@ function loadDevice (device: string | DeviceGroup) {
     }
 }
 
-export { selectOrLoadDevice, loadDevice }
+function loadInstruments () {
+    EventBus.emit(new SelectedGroupedDevicesUpdatedEvent([[], [],
+        ['SYLENTH1_BASS', 'SYLENTH1_KEYS', 'SYLENTH1_LEAD', 'SYLENTH1_PLUCK'],
+        ['SERUM_BASS', 'SERUM_KEYS', 'SERUM_LEAD', 'SERUM_PLUCK']]))
+}
+
+export { selectOrLoadDevice, loadDevice, loadInstruments }

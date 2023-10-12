@@ -21,6 +21,7 @@ from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.utils.concurrency import lock
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.Song import Song
+from protocol0.shared.UndoFacade import UndoFacade
 from protocol0.shared.sequence.Sequence import Sequence
 
 
@@ -37,6 +38,7 @@ class DeviceService(object):
         DomainEventBus.subscribe(DeviceLoadedEvent, self._on_device_loaded_event)
 
     def load_device(self, enum_name: str, create_track: bool = False) -> Sequence:
+        UndoFacade.begin_undo_step()
         device_enum = DeviceEnum[enum_name]
         track = self._get_instrument_track(device_enum)
         device_to_select = self._get_device_to_select_for_insertion(track, device_enum)
@@ -75,6 +77,7 @@ class DeviceService(object):
         ):
             seq.add(partial(self._create_default_automation, Song.selected_clip()))
 
+        seq.add(UndoFacade.end_undo_step)
         return seq.done()
 
     def _get_instrument_track(self, device_enum: DeviceEnum) -> SimpleTrack:

@@ -39,6 +39,7 @@ class ClipPlayerService(object):
             previous_or_next_cs = next((cs for cs in other_clip_slots if cs.clip), None)
             if previous_or_next_cs is None:
                 Logger.info("No clip")
+                return
             else:
                 previous_or_next_cs.duplicate_clip_to(cs)
                 seq = Sequence()
