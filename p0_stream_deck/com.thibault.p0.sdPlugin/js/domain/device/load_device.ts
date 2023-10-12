@@ -15,7 +15,13 @@ function loadDevice (device: string | DeviceGroup) {
     if (typeof device === 'string') {
         API.loadDeviceInNewTrack(device)
     } else {
-        EventBus.emit(new SelectedGroupedDevicesUpdatedEvent(device.devices))
+        if (['Sylenth1', 'Serum'].includes(device.name)) {
+            // removing the base option for instruments
+            // and displaying options on the base row
+            EventBus.emit(new SelectedGroupedDevicesUpdatedEvent([[], [], [], device.devices.slice(1)]))
+        } else {
+            EventBus.emit(new SelectedGroupedDevicesUpdatedEvent([[], [], [], device.devices]))
+        }
     }
 }
 
