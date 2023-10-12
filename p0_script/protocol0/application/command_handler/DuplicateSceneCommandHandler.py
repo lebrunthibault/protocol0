@@ -6,4 +6,6 @@ from protocol0.shared.Song import Song
 
 class DuplicateSceneCommandHandler(CommandHandlerInterface):
     def handle(self, _: DuplicateSceneCommand) -> None:
-        self._container.get(SceneCrudComponent).duplicate_scene(Song.selected_scene())
+        self._container.get(SceneCrudComponent).duplicate_scene(
+            Song.selected_scene(), play_scene=True
+        )

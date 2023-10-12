@@ -2,6 +2,8 @@ from functools import partial
 
 from typing import Optional, Callable
 
+from protocol0.application.CommandBus import CommandBus
+from protocol0.application.command.FireSelectedSceneCommand import FireSelectedSceneCommand
 from protocol0.domain.lom.scene.Scene import Scene
 from protocol0.domain.lom.scene.SceneWindow import SceneWindow
 from protocol0.domain.lom.scene.ScenesMappedEvent import ScenesMappedEvent
@@ -26,10 +28,12 @@ class SceneCrudComponent(object):
         seq.defer()
         return seq.done()
 
-    def duplicate_scene(self, scene: Scene) -> Sequence:
+    def duplicate_scene(self, scene: Scene, play_scene: bool = False) -> Sequence:
         seq = Sequence()
         seq.add(partial(self._duplicate_scene, scene.index))
         seq.wait_for_event(ScenesMappedEvent)
+        if play_scene:
+            seq.add(partial(CommandBus.dispatch, FireSelectedSceneCommand()))
         return seq.done()
 
     def split_scene(self, scene: Scene) -> Sequence:
