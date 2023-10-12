@@ -9,8 +9,9 @@ class MixerDevice(SlotManager):
     def __init__(self, live_mixer_device: Live.MixerDevice.MixerDevice) -> None:
         super(MixerDevice, self).__init__()
 
-        parameters = live_mixer_device.sends + [live_mixer_device.volume, live_mixer_device.panning]
-        self._parameters = [DeviceParameter(parameter) for parameter in parameters]
+        self._sends = [DeviceParameter(parameter) for parameter in live_mixer_device.sends]
+        self._volume = DeviceParameter(live_mixer_device.volume)
+        self._pan = DeviceParameter(live_mixer_device.panning)
 
     def to_dict(self) -> Dict:
         return {"params": [p.value for p in self.parameters]}
@@ -22,7 +23,15 @@ class MixerDevice(SlotManager):
 
     @property
     def parameters(self) -> List[DeviceParameter]:
-        return self._parameters
+        return self._sends + [self._volume] + [self._pan]
+
+    @property
+    def sends(self) -> List[DeviceParameter]:
+        return self._sends
+
+    @property
+    def volume(self) -> DeviceParameter:
+        return self._volume
 
     def reset(self) -> None:
         for param in self.parameters:

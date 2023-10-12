@@ -43,7 +43,6 @@ from protocol0.domain.shared.utils.utils import volume_to_db, db_to_volume
 from protocol0.infra.persistence.TrackData import TrackData
 from protocol0.shared.Config import Config
 from protocol0.shared.Song import Song
-from protocol0.shared.logging.StatusBar import StatusBar
 from protocol0.shared.observer.Observable import Observable
 from protocol0.shared.sequence.Sequence import Sequence
 
@@ -293,21 +292,7 @@ class SimpleTrack(AbstractTrack):
 
     def scroll_volume(self, go_next: bool) -> None:
         """Editing directly the mixer device volume"""
-        volume = self._track.mixer_device.volume.value
-        volume += 0.01 if go_next else -0.01
-        volume = min(volume, 1)
-
-        seq = Sequence()
-        seq.defer()
-        seq.add(
-            partial(
-                DeviceParameter.set_live_device_parameter,
-                self._track.mixer_device.volume,
-                volume,
-            )
-        )
-        seq.add(lambda: StatusBar.show_message("Track volume: %.1f dB" % self.volume))
-        seq.done()
+        self.devices.mixer_device.volume.scroll(go_next)
 
     def clear_arrangement(self) -> None:
         try:

@@ -7,6 +7,7 @@ from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device.DeviceLoadedEvent import DeviceLoadedEvent
+from protocol0.domain.lom.instrument.instrument.InstrumentService import InstrumentService
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
 from protocol0.domain.lom.song.components.TrackComponent import get_track_by_name
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
@@ -135,6 +136,40 @@ class DeviceService(object):
 
         return None
 
+    def scroll_volume(self, go_next: bool) -> None:
+        rack_device = Song.selected_track().instrument_rack_device
+        if rack_device:
+            volume = rack_device.get_parameter_by_name("Volume")
+            if volume:
+                volume.scroll(go_next)
+                return
+
+        Song.selected_track().scroll_volume(go_next)
+
+    @lock
+    def scroll_low_pass_filter(self, go_next: bool) -> Optional[Sequence]:
+        rack_device = Song.selected_track().instrument_rack_device
+        if rack_device:
+            filter_param = rack_device.get_parameter_by_name("Filter")
+            if filter_param:
+                filter_param.scroll(go_next)
+                return None
+
+        eq_eight: Optional[Device] = find_if(
+            lambda d: d.enum == DeviceEnum.EQ_EIGHT, Song.selected_track().devices
+        )
+
+        seq = Sequence()
+
+        if not eq_eight:
+            seq.add(partial(self.load_device, DeviceEnum.EQ_EIGHT.name))
+        else:
+            eq_eight.is_enabled = True
+            frequency = eq_eight.get_parameter_by_name("8 Frequency A")
+            frequency.scroll(go_next)
+
+        return seq.done()
+
     @lock
     def scroll_high_pass_filter(self, go_next: bool) -> Sequence:
         eq_eight: Optional[Device] = find_if(
@@ -146,9 +181,50 @@ class DeviceService(object):
         if not eq_eight:
             seq.add(partial(self.load_device, DeviceEnum.EQ_EIGHT.name))
         else:
-            seq.add(partial(eq_eight.parameters[6].scroll, go_next))  # scroll frequency A
+            eq_eight.is_enabled = True
+            frequency = eq_eight.get_parameter_by_name("1 Frequency A")
+            frequency.scroll(go_next)
 
         return seq.done()
+
+    def scroll_release(self, go_next: bool) -> None:
+        rack_device = Song.selected_track().instrument_rack_device
+        if rack_device:
+            release = rack_device.get_parameter_by_name("Release")
+            if release:
+                release.scroll(go_next)
+
+    def scroll_reverb(self, go_next: bool) -> None:
+        rack_device = Song.selected_track().instrument_rack_device
+        if rack_device:
+            reverb = rack_device.get_parameter_by_name("Reverb")
+            if reverb:
+                reverb.scroll(go_next)
+                return
+
+        insert_reverb = Song.selected_track().devices.get_one_from_enum(DeviceEnum.INSERT_REVERB)
+        if insert_reverb:
+            from protocol0.shared.logging.Logger import Logger
+            Logger.dev(insert_reverb.parameters[1])
+            insert_reverb.parameters[1].scroll(go_next)
+        else:
+            sends = Song.selected_track().devices.mixer_device.sends
+            if len(sends):
+                sends[-1].scroll(go_next)
+
+    def scroll_delay(self, go_next: bool) -> None:
+        rack_device = Song.selected_track().instrument_rack_device
+        if rack_device:
+            delay = rack_device.get_parameter_by_name("Delay")
+            if delay:
+                delay.scroll(go_next)
+                return
+
+        insert_delay = Song.selected_track().devices.get_one_from_enum(DeviceEnum.INSERT_DELAY)
+        if insert_delay:
+            from protocol0.shared.logging.Logger import Logger
+            Logger.dev(insert_delay.parameters[1])
+            insert_delay.parameters[1].scroll(go_next)
 
     @lock
     def scroll_lfo_tool(self, go_next: bool) -> Sequence:
@@ -161,6 +237,6 @@ class DeviceService(object):
         if not lfo_tool:
             seq.add(partial(self.load_device, DeviceEnum.LFO_TOOL.name))
         else:
-            seq.add(partial(lfo_tool.parameters[1].scroll, go_next))  # scroll frequency A
+            seq.add(partial(lfo_tool.parameters[1].scroll, go_next))
 
         return seq.done()

@@ -55,17 +55,17 @@ return
 	callBackend("arm")
 return
 ^space::
-	callBackend("fire_selected_scene")
+	callBackend("scene/fire_selected")
 return
 +space::
-	callBackend("fire_scene_to_last_position")
+	callBackend("scene/fire_to_last_position")
 return
 ^NumPad0::
-	callBackend("fire_scene_to_position?bar_length=-1")
+	callBackend("scene/fire_to_position?bar_length=-1")
 return
 FireSceneToPosition:
     barLength:=SubStr(A_ThisHotkey,"^NumPad") - 1
-	callBackend("fire_scene_to_position?bar_length="barLength)
+	callBackend("scene/fire_to_position?bar_length="barLength)
 Return
 ^Enter::
 	callBackend("go_to_group_track")
@@ -74,28 +74,28 @@ return
 	callBackend("record/unlimited")
 return
 ^Left::
-	callBackend("scroll_scene_position?direction=prev")
+	callBackend("scene/scroll_position?direction=prev")
 return
 ^Right::
-	callBackend("scroll_scene_position?direction=next")
+	callBackend("scene/scroll_position?direction=next")
 return
 ^+Left::
-	callBackend("scroll_scene_position_fine?direction=prev")
+	callBackend("scene/scroll_position_fine?direction=prev")
 return
 ^+Right::
-	callBackend("scroll_scene_position_fine?direction=next")
+	callBackend("scene/scroll_position_fine?direction=next")
 return
 +Left::
-	callBackend("scroll_scene_tracks?direction=prev")
+	callBackend("scene/scroll_tracks?direction=prev")
 return
 +Right::
-	callBackend("scroll_scene_tracks?direction=next")
+	callBackend("scene/scroll_tracks?direction=next")
 return
 ^Up::
-	callBackend("scroll_scenes?direction=next")
+	callBackend("scene/scroll?direction=next")
 return
 ^Down::
-	callBackend("scroll_scenes?direction=prev")
+	callBackend("scene/scroll?direction=prev")
 return
 ^!Up::
 	callBackend("scroll_track_volume?direction=next")
@@ -119,7 +119,7 @@ return
 	callBackend("edit_automation_value")
 return
 ^l::
-	callBackend("toggle_scene_loop")
+	callBackend("scene/toggle_loop")
 return
 ^+_::
     Send {Up}
@@ -144,9 +144,6 @@ return
 ^!q::
     Send ^!p  ; left hand shortcut
 return
-
-
-
 !f:: ; fold / unfold set
 	Send `t
 	Send !u
@@ -154,19 +151,22 @@ return
 	Send !u
 	Send `t
 return
+^+d::
+	callBackend("scene/duplicate")
+return
 
 #IfWinActive
 
 ; minitaur editor
 #IfWinActive ahk_class JUCE_18999b05416
 ^space::
-	callBackend("fire_selected_scene")
+	callBackend("scene/fire_selected")
 return
 #IfWinActive
 
 ; splice window
 #IfWinActive ahk_exe Splice.exe
 ^space::
-	callBackend("fire_selected_scene")
+	callBackend("scene/fire_selected")
 return
 #IfWinActive

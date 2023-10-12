@@ -16,30 +16,60 @@ class ActionGroupRack(ActionGroupInterface):
         instrument_service = self._container.get(InstrumentService)
 
         for i in range(1, 13):
-            if i == 5:
+            if i == 1:
+                self.add_encoder(
+                    identifier=1,
+                    name="scroll filter",
+                    on_scroll=self._container.get(DeviceService).scroll_low_pass_filter,
+                )
+            elif i == 3:
+                self.add_encoder(
+                    identifier=3,
+                    name="scroll release",
+                    on_scroll=self._container.get(DeviceService).scroll_release,
+                )
+            elif i == 4:
+                self.add_encoder(
+                    identifier=4,
+                    name="scroll volume",
+                    on_scroll=self._container.get(DeviceService).scroll_volume,
+                )
+            elif i == 5:
                 self.add_encoder(
                     identifier=5,
-                    name="edit track high pass filter",
+                    name="scroll track high pass filter",
                     on_scroll=self._container.get(DeviceService).scroll_high_pass_filter,
+                )
+            elif i == 7:
+                self.add_encoder(
+                    identifier=7,
+                    name="scroll reverb",
+                    on_scroll=self._container.get(DeviceService).scroll_reverb,
+                )
+            elif i == 8:
+                self.add_encoder(
+                    identifier=8,
+                    name="scroll delay",
+                    on_scroll=self._container.get(DeviceService).scroll_delay,
                 )
             elif i == 9:
                 self.add_encoder(
                     identifier=9,
-                    name="edit arp mode",
+                    name="scroll arp mode",
                     on_press=partial(instrument_service.toggle_macro_control, 9),
                     on_scroll=instrument_service.scroll_arp_style,
                 )
             elif i == 10:
                 self.add_encoder(
                     identifier=10,
-                    name="edit arp rate",
+                    name="scroll arp rate",
                     on_press=partial(instrument_service.toggle_macro_control, 10),
-                    on_scroll=partial(instrument_service.scroll_macro_control, 10, steps=100),
+                    on_scroll=partial(instrument_service.scroll_macro_control, 10, steps=200),
                 )
             elif i == 12:
                 self.add_encoder(
                     identifier=12,
-                    name="edit lfo tool",
+                    name="scroll lfo tool",
                     on_scroll=self._container.get(DeviceService).scroll_lfo_tool,
                 )
             else:

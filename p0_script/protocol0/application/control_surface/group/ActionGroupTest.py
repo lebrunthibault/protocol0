@@ -37,8 +37,12 @@ class ActionGroupTest(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        Song.selected_clip().fix_notes_left_boundary()
-
+        track = Song.selected_track()
+        from protocol0.shared.logging.Logger import Logger
+        Logger.dev(track.devices.mixer_device)
+        Logger.dev(track.devices.mixer_device.sends)
+        param = track.devices.mixer_device.sends[-1]
+        param.scroll(go_next=True)
 
     def action_test_scroll(self, go_next: bool) -> None:
         Song.selected_track().instrument.preset_list.scroll(go_next)
