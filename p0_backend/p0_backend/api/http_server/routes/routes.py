@@ -46,8 +46,6 @@ from protocol0.application.command.BounceSessionToArrangementCommand import (
 from protocol0.application.command.BounceTrackToAudioCommand import BounceTrackToAudioCommand
 from protocol0.application.command.CheckAudioExportValidCommand import CheckAudioExportValidCommand
 from protocol0.application.command.DrumRackToSimplerCommand import DrumRackToSimplerCommand
-from protocol0.application.command.FireSceneToPositionCommand import FireSceneToPositionCommand
-from protocol0.application.command.FireSelectedSceneCommand import FireSelectedSceneCommand
 from protocol0.application.command.GoToGroupTrackCommand import GoToGroupTrackCommand
 from protocol0.application.command.LoadDeviceCommand import LoadDeviceCommand
 from protocol0.application.command.LoadDrumRackCommand import LoadDrumRackCommand
@@ -59,18 +57,15 @@ from protocol0.application.command.LogSongStatsCommand import LogSongStatsComman
 from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongCommand
 from protocol0.application.command.ReloadScriptCommand import ReloadScriptCommand
 from protocol0.application.command.ScrollPresetsCommand import ScrollPresetsCommand
-from protocol0.application.command.ScrollScenePositionCommand import ScrollScenePositionCommand
-from protocol0.application.command.ScrollSceneTracksCommand import ScrollSceneTracksCommand
-from protocol0.application.command.ScrollScenesCommand import ScrollScenesCommand
 from protocol0.application.command.ScrollTrackVolumeCommand import ScrollTrackVolumeCommand
 from protocol0.application.command.ShowAutomationCommand import ShowAutomationCommand
 from protocol0.application.command.ShowInstrumentCommand import ShowInstrumentCommand
 from protocol0.application.command.ToggleArmCommand import ToggleArmCommand
 from protocol0.application.command.ToggleReferenceTrackCommand import ToggleReferenceTrackCommand
-from protocol0.application.command.ToggleSceneLoopCommand import ToggleSceneLoopCommand
-from .script_action_routes import router as actions_router
 from .clip_routes import router as clip_router
 from .record_routes import router as record_router
+from .script_action_routes import router as actions_router
+from .scene_routes import router as scene_router
 from .set_routes import router as set_router
 
 router = APIRouter()
@@ -80,6 +75,7 @@ settings = Settings()
 router.include_router(actions_router, prefix="/actions")
 router.include_router(clip_router, prefix="/clip")
 router.include_router(record_router, prefix="/record")
+router.include_router(scene_router, prefix="/scene")
 router.include_router(set_router, prefix="/set")
 
 
@@ -347,48 +343,6 @@ async def drum_rack_to_simpler():
 @router.get("/arm")
 async def arm():
     p0_script_client().dispatch(ToggleArmCommand())
-
-
-@router.get("/toggle_scene_loop")
-async def toggle_scene_loop():
-    p0_script_client().dispatch(ToggleSceneLoopCommand())
-
-
-@router.get("/fire_scene_to_last_position")
-async def fire_scene_to_last_position():
-    p0_script_client().dispatch(FireSceneToPositionCommand(None))
-
-
-@router.get("/fire_scene_to_position")
-async def fire_scene_to_position(bar_length: int = 0):
-    p0_script_client().dispatch(FireSceneToPositionCommand(bar_length))
-
-
-@router.get("/fire_selected_scene")
-async def fire_selected_scene():
-    p0_script_client().dispatch(FireSelectedSceneCommand())
-
-
-@router.get("/scroll_scenes")
-async def scroll_scenes(direction: str):
-    p0_script_client().dispatch(ScrollScenesCommand(go_next=direction == "next"))
-
-
-@router.get("/scroll_scene_position")
-async def scroll_scene_position(direction: str):
-    p0_script_client().dispatch(ScrollScenePositionCommand(go_next=direction == "next"))
-
-
-@router.get("/scroll_scene_position_fine")
-async def scroll_scene_position_fine(direction: str):
-    p0_script_client().dispatch(
-        ScrollScenePositionCommand(go_next=direction == "next", use_fine_scrolling=True)
-    )
-
-
-@router.get("/scroll_scene_tracks")
-async def scroll_scene_tracks(direction: str):
-    p0_script_client().dispatch(ScrollSceneTracksCommand(go_next=direction == "next"))
 
 
 @router.get("/scroll_track_volume")

@@ -34,7 +34,7 @@ class ActionGroupInterface(object):
                 ]
             )
             == 0
-        ), ("duplicate multi encoder with id %s" % multi_encoder.identifier)
+        ), f"duplicate multi encoder id : {multi_encoder}"
         self._multi_encoders.append(multi_encoder)
         return multi_encoder
 

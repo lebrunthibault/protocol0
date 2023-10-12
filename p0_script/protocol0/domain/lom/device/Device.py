@@ -67,7 +67,7 @@ class Device(SlotManager):
     def get_parameter_by_name(self, device_parameter_name: Union[DeviceParameterEnum, str]) -> Optional[DeviceParameter]:
         if isinstance(device_parameter_name, DeviceParameterEnum):
             device_parameter_name = device_parameter_name.parameter_name
-        return find_if(lambda p: p.name == device_parameter_name, self.parameters)
+        return find_if(lambda p: p.name.lower() == device_parameter_name.lower(), self.parameters)
 
     @property
     def name(self) -> str:
