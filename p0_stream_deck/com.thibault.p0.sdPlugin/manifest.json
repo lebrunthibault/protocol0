@@ -74,6 +74,18 @@
     },
     {
       "Icon": "icon/p0_action/action",
+      "Name": "Load drum track",
+      "States": [
+        {
+          "Title": "",
+          "Image": "icon/p0_action/state"
+        }
+      ],
+      "Tooltip": "Load drum track",
+      "UUID": "com.thibault.p0.load-drum-track"
+    },
+    {
+      "Icon": "icon/p0_action/action",
       "Name": "Load grouped device",
       "States": [
         {
@@ -86,15 +98,15 @@
     },
     {
       "Icon": "icon/p0_action/action",
-      "Name": "Load drum track",
+      "Name": "Load instrument",
       "States": [
         {
           "Title": "",
           "Image": "icon/p0_action/state"
         }
       ],
-      "Tooltip": "Load drum track",
-      "UUID": "com.thibault.p0.load-drum-track"
+      "Tooltip": "Load instrument device",
+      "UUID": "com.thibault.p0.load-instrument"
     },
     {
       "Icon": "icon/p0_action/action",

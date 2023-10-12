@@ -12,7 +12,7 @@ import ToggleAction from './toggle_action'
 import DrumRackVisibleUpdatedEvent from '../script_client/event/drum_rack_visible_updated_event'
 import VocalCategoriesUpdatedEvent from '../script_client/event/vocal_categories_updated_event'
 import { actionTypes } from './action_type'
-import { loadDevice, selectOrLoadDevice } from '../domain/device/load_device'
+import { loadDevice, loadInstruments, selectOrLoadDevice } from '../domain/device/load_device'
 import SelectedGroupedDevicesUpdatedEvent from '../domain/device/selected_grouped_devices_updated_event'
 import SelectedSceneUpdated from '../domain/scene/selected_scene_updated_event'
 
@@ -66,18 +66,23 @@ class ActionFactory {
         )
         new ActionGroup(
             this.actionRepository,
+            actionTypes.LOAD_DRUM_TRACK,
+            Icons.empty,
+            DrumCategoriesUpdatedEvent,
+            API.loadDrumSamples
+        )
+        new ActionGroup(
+            this.actionRepository,
             actionTypes.LOAD_GROUPED_DEVICE,
             Icons.empty,
             SelectedGroupedDevicesUpdatedEvent,
             loadDevice,
             selectOrLoadDevice
         )
-        new ActionGroup(
-            this.actionRepository,
-            actionTypes.LOAD_DRUM_TRACK,
-            Icons.empty,
-            DrumCategoriesUpdatedEvent,
-            API.loadDrumSamples
+        new Action(
+            actionTypes.LOAD_INSTRUMENT,
+            loadInstruments,
+            null
         )
         new ActionGroup(
             this.actionRepository,
