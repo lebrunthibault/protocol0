@@ -108,7 +108,7 @@ class ActionGroup {
         const flatItems = event.items.flat()
         const flatActiveSlots = activeSlots.flat()
         if (flatActiveSlots.length < flatItems.length) {
-            console.warn(`Got ${flatItems.length} parameters to display but only ${flatActiveSlots.length} action slots`)
+            console.warn(`Got ${flatItems.length} parameters of type ${typeof flatItems[0]} to display but only ${flatActiveSlots.length} action slots`)
         }
         this.slots.filter((slot: ActionSlot) => !flatActiveSlots.includes(slot)).forEach(a => a.disable())
     }

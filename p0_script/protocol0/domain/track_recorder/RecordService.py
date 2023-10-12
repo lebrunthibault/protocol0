@@ -194,6 +194,7 @@ class RecordService(object):
 
         def copy_created_clip() -> None:
             source_cs = Song.selected_track().clip_slots[-1]
+            assert source_cs.clip, "no source clip"
             dest_cs = Song.selected_track().clip_slots[scene_index]
 
             if dest_cs == source_cs:
