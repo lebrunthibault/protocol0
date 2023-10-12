@@ -15,6 +15,7 @@ from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrackArmedEvent import SimpleTrackArmedEvent
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.ValueScroller import ValueScroller
+from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.list import find_if
@@ -62,7 +63,11 @@ class TrackComponent(SlotManager):
 
     @subject_slot("selected_track")
     def _selected_track_listener(self) -> None:
-        ApplicationView.focus_current_track()
+        try:
+            ApplicationView.focus_current_track()
+        except Protocol0Error:
+            return
+
         DomainEventBus.emit(SelectedTrackChangedEvent())
 
     def _on_abstract_track_selected_event(self, event: AbstractTrackSelectedEvent) -> None:
