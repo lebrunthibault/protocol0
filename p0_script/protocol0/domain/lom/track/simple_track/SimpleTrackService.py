@@ -8,19 +8,19 @@ from protocol0.shared.Song import Song
 
 
 def rename_track(track: SimpleTrack, name: str) -> None:
-    track_names = [track.name for track in Song.simple_tracks()]
+    track_names = [track.name.lower().strip() for track in Song.simple_tracks()]
 
-    if name not in track_names:
+    if name.lower().strip() not in track_names:
         track.name = name
         return
 
     count = 2
     new_name = name
-    while new_name in track_names:
-        new_name = f"{name} count"
+    while new_name.lower().strip() in track_names:
+        new_name = f"{name} {count}"
         count += 1
 
-    track.name = name
+    track.name = new_name
 
 
 class SimpleTrackService(object):

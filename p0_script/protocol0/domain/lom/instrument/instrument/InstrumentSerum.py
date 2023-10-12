@@ -4,7 +4,6 @@ from protocol0.domain.lom.instrument.InstrumentInterface import InstrumentInterf
 from protocol0.domain.lom.instrument.preset.preset_changer.SerumCCPresetChanger import (
     SerumCCPresetChanger,
 )
-from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_track
 from protocol0.shared.Song import Song
 
 
@@ -22,6 +21,5 @@ class InstrumentSerum(InstrumentInterface):
         track.arm_state.arm()
         if device_enum == DeviceEnum.SERUM_BASS:
             self.preset_list.scroll(go_next=False)
-            rename_track(track, "Bass")
         else:
             self.preset_list.scroll(go_next=True)
