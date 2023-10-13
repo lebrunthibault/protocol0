@@ -62,6 +62,9 @@ class DeviceService(object):
 
                 seq.add(self._track_crud_component.create_midi_track)
                 seq.add(lambda: rename_track(Song.selected_track(), device_enum.track_name))
+                # if selected track is empty, delete it to make some room
+                if len(Song.selected_track().clips) == 0:
+                    seq.add(Song.selected_track().delete)
             elif track.instrument:
                 instrument_device = track.instrument_rack_device or track.instrument.device
                 if instrument_device:
