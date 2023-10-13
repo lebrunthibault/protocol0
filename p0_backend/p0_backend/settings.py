@@ -48,6 +48,10 @@ class Settings(BaseSettings):
     def ableton_test_set_path(self) -> str:
         return f"{self.ableton_set_directory}\\tracks\\Test\\Test.als"
 
+    @property
+    def ableton_set_trash_directory(self) -> str:
+        return f"{self.ableton_set_directory}\\_other\\trash"
+
     icons_directory = "C:\\Users\\thiba\\OneDrive\\Images\\icons"
 
     http_api_url = "http://127.0.0.1:8000"

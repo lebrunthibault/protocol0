@@ -1,8 +1,10 @@
 import glob
 import os.path
 import re
+import shutil
 import time
-from os.path import basename, dirname
+from itertools import chain
+from os.path import basename, dirname, exists
 from pathlib import Path
 from typing import Optional, Dict, List
 
@@ -74,7 +76,11 @@ class AbletonSetManager:
 
         from p0_backend.api.http_server.ws import ws_manager
 
-        if existing_set and existing_set.current_state.selected_scene != ableton_set.current_state.selected_scene:
+        if (
+            existing_set
+            and existing_set.current_state.selected_scene
+            != ableton_set.current_state.selected_scene
+        ):
             await ws_manager.broadcast_server_state()
 
         # update backend
@@ -105,6 +111,9 @@ class AbletonSetManager:
 
 
 def _check_track_name_change(existing_set: AbletonSet, new_set: AbletonSet):
+    if not existing_set.current_state or not new_set.current_state:
+        return
+
     existing_current_track = existing_set.current_state.current_track
     new_current_track = new_set.current_state.current_track
 
@@ -174,6 +183,37 @@ def list_sets(archive=False) -> Dict[str, List[AbletonSet]]:
             ableton_sets[top_folder].append(AbletonSet.create(als_file))
 
     return ableton_sets
+
+
+def get_set(path: str) -> Optional[AbletonSet]:
+    path = path.replace("\\\\", "\\")
+
+    ableton_sets = list(chain.from_iterable(list_sets().values()))
+
+    return next(s for s in ableton_sets if s.path_info.filename == path)
+
+
+def delete_set(ableton_set: AbletonSet):
+    def move_to_trash(filename):
+        if not exists(filename):
+            return
+
+        dest = filename.replace(
+            settings.ableton_set_directory, settings.ableton_set_trash_directory
+        )
+        shutil.move(filename, dest)
+
+    from loguru import logger
+
+    logger.success(ableton_set)
+    logger.success(ableton_set.has_own_folder)
+    if ableton_set.has_own_folder:
+        move_to_trash(dirname(str(ableton_set.path_info.filename)))
+    else:
+        move_to_trash(ableton_set.path_info.filename)
+        move_to_trash(ableton_set.path_info.metadata_filename)
+        move_to_trash(ableton_set.path_info.audio_filename)
+        move_to_trash(f"{ableton_set.path_info.audio_filename}.asd")
 
 
 def show_saved_tracks():
