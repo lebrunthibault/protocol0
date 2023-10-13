@@ -2,41 +2,40 @@
   <div class="d-inline-flex align-items-center me-3">
       <i
           v-for="i in [1, 2, 3, 4, 5]" :key="i"
-          @mouseover="starCount = i"
-          @mouseleave="starCount = stars"
+          @mouseover="stars = i"
+          @mouseleave="stars = abletonSet.metadata.stars"
           @click="save"
           class="fa-star mx-1 ms-2 fa-lg"
-          :class="{'fa-solid': starCount && starCount >= i, 'fa-regular': !starCount || starCount < i}"
+          :class="{'fa-solid': stars && stars >= i, 'fa-regular': !stars || stars < i}"
       ></i>
   </div>
 </template>
 
 <script lang="ts">
 import {defineComponent, PropType} from "vue";
-import { apiService } from '@/utils/apiService';
-import { notify } from '@/utils/utils';
+import {apiService} from '@/utils/apiService';
+import {notify} from '@/utils/utils';
 
 
 export default defineComponent({
   name: 'AbletonSetStars',
   props: {
     abletonSet: Object as PropType<AbletonSet>,
-    stars: Number,
   },
   data() {
     return {
-      starCount: this.stars
+      stars: this.abletonSet.metadata.stars
     }
   },
   watch: {
-    stars() {
-      this.starCount = this.stars
+    abletonSet() {
+      this.stars = this.abletonSet?.metadata.stars
     }
   },
   methods: {
     async save() {
-      this.abletonSet.metadata.stars = this.starCount
-      await apiService.post(`/set/${encodeURI(this.abletonSet?.path_info.filename)}/stars`, {stars: this.starCount})
+      this.abletonSet.metadata.stars = this.stars
+      await apiService.post(`/set/${encodeURI(this.abletonSet?.path_info.filename)}/stars`, {stars: this.stars})
       notify("Set saved")
       this.$emit("update")
     }

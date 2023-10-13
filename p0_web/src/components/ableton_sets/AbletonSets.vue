@@ -6,16 +6,17 @@
         {{ selectedSet.path_info.name }}
       </h3>
       <div class="btn-group" role="group">
-        <AbletonSetStars :ableton-set="selectedSet" :stars="selectedSet.metadata?.stars"
+        <AbletonSetStars :ableton-set="selectedSet"
           @update="sortSets"></AbletonSetStars>
         <AbletonSetSceneData
             :ableton-set="selectedSet"  :scene-data="currentScene" v-if="currentScene"
             @scene-skip="onSceneSkip"
         ></AbletonSetSceneData>
         <AbletonSetInfo :ableton-set="selectedSet"></AbletonSetInfo>
+        <AbletonSetComment :ableton-set="selectedSet"></AbletonSetComment>
         <button v-if="!selectedSet.metadata?.stars || selectedSet.metadata?.stars < 3"
                 @click="deleteSet" type="button" class="btn btn-lg btn-light">
-          <i class="fa-solid fa-trash" data-toggle="tooltip" data-placement="top" title="Move set to trash"></i>
+          <i class="fa-regular fa-trash-can" data-toggle="tooltip" data-placement="top" title="Move set to trash"></i>
         </button>
       </div>
     </div>
@@ -47,8 +48,13 @@
               </span>
             </div>
             <div style="width: 45px">
-              <span @click="selectSet(abletonSet)" class="badge rounded-pill bg-secondary">
-                <i class="fa-solid fa-bars" v-if="abletonSet.metadata.scenes.length"></i>
+              <span @click="selectSet(abletonSet)" class="badge rounded-pill bg-secondary position-relative"
+                :class="{'hide-badge': !abletonSet.metadata.scenes.length}"
+              >
+                <i class="fa-solid fa-bars"></i>
+                <span v-if="abletonSet.metadata.comment"
+                  class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                </span>
               </span>
             </div>
             <div style="width: 45px">
@@ -71,6 +77,7 @@ import { defineComponent } from 'vue'
 import { apiService } from '@/utils/apiService'
 import AbletonSetPlayer from "@/components/ableton_sets/AbletonSetPlayer.vue";
 import AbletonSetSceneData from "@/components/ableton_sets/AbletonSetSceneData.vue";
+import AbletonSetComment from "@/components/ableton_sets/AbletonSetComment.vue";
 import AbletonSetInfo from "@/components/ableton_sets/AbletonSetInfo.vue";
 import AbletonSetStars from "@/components/ableton_sets/AbletonSetStars.vue";
 import {notify} from "@/utils/utils";
@@ -78,7 +85,13 @@ import {notify} from "@/utils/utils";
 
 export default defineComponent({
   name: 'AbletonSets',
-  components: {AbletonSetStars, AbletonSetInfo, AbletonSetPlayer, AbletonSetSceneData},
+  components: {
+    AbletonSetPlayer,
+    AbletonSetSceneData,
+    AbletonSetComment,
+    AbletonSetInfo,
+    AbletonSetStars,
+  },
   data: () => ({
     abletonSets: {},
     selectedSet: null as AbletonSet | null,
@@ -186,6 +199,9 @@ export default defineComponent({
 <style scoped lang="scss">
 .list-group-item .btn {
   border: hidden;
+}
+.hide-badge {
+  background-color: white !important;
 }
 </style>
 

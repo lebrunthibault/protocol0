@@ -107,11 +107,17 @@ export default defineComponent({
   mounted() {
     this.loadWaveform()
     onKeyStroke(' ', (e: any) => {
+      if ($('#setCommentModal.show').length) {
+        return
+      }
       e.preventDefault()
       this.wavesurfer?.playPause()
     }, {passive: false})
 
     onKeyStroke('ArrowLeft', (e: any) => {
+      if ($('#setCommentModal.show').length) {
+        return
+      }
       if (e.altKey) {
         return // don't catch back navigation
       }
@@ -119,6 +125,9 @@ export default defineComponent({
     })
 
     onKeyStroke('ArrowRight', (e: any) => {
+      if ($('#setCommentModal.show').length) {
+        return
+      }
       e.preventDefault()
       this.wavesurfer?.skip(5)
     })

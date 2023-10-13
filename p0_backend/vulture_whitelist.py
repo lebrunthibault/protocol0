@@ -80,3 +80,4 @@ is_playing  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py
 is_armed  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py:78)
 get_set  # unused function (p0_backend\lib\ableton\ableton_set\ableton_set_manager.py:188)
 delete_set  # unused function (p0_backend\lib\ableton\ableton_set\ableton_set_manager.py:196)
+set_comment  # unused function (p0_backend\lib\ableton\ableton_set\ableton_set.py:203)
