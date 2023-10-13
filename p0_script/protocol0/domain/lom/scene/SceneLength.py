@@ -58,7 +58,7 @@ class SceneLength(object):
 
         clips = []
 
-        for scene_cs in self._clips._clip_slot_tracks:
+        for scene_cs in self._clips.clip_slot_tracks:
             if scene_cs.clip is None or not scene_cs.is_main_clip:
                 continue
 

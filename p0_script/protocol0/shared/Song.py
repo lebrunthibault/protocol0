@@ -19,8 +19,6 @@ if TYPE_CHECKING:
     from protocol0.domain.lom.scene.SceneService import SceneService
     from protocol0.domain.lom.track.TrackMapperService import TrackMapperService
     from protocol0.domain.track_recorder.RecordService import RecordService
-    from protocol0.domain.lom.set.SessionToArrangementService import SessionToArrangementService
-
     from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
     from protocol0.domain.lom.track.group_track.AbstractGroupTrack import AbstractGroupTrack  # noqa
     from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import (  # noqa
@@ -58,7 +56,6 @@ class Song(object):
         scene_service: "SceneService",
         track_mapper_service: "TrackMapperService",
         track_recorder_service: "RecordService",
-        session_to_arrangement_service: "SessionToArrangementService",
     ) -> None:
         Song._INSTANCE = self
 
@@ -76,7 +73,6 @@ class Song(object):
         self._track_mapper_service = track_mapper_service
         self._scene_service = scene_service
         self._track_recorder_service = track_recorder_service
-        self._session_to_arrangement_service = session_to_arrangement_service
 
     @classmethod
     def _live_song(cls) -> Live.Song.Song:
@@ -320,10 +316,6 @@ class Song(object):
     @classmethod
     def is_track_recording(cls) -> bool:
         return cls._INSTANCE._track_recorder_service.is_recording
-
-    @classmethod
-    def is_bouncing(cls) -> bool:
-        return cls._INSTANCE._session_to_arrangement_service.is_bouncing
 
     @classmethod
     def midi_recording_quantization(cls) -> int:

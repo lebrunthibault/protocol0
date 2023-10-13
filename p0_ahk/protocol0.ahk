@@ -26,9 +26,6 @@ return
 ^#+n::
 	callBackend("reload_ableton")
 return
-^!+r::
-	callBackend("reload_script")
-return
 ^#+l::
 	callBackend("tail_logs")
 return
@@ -69,9 +66,6 @@ FireSceneToPosition:
 Return
 ^Enter::
 	callBackend("go_to_group_track")
-return
-^!+r::
-	callBackend("record/unlimited")
 return
 ^Left::
 	callBackend("scene/scroll_position?direction=prev")
@@ -138,8 +132,8 @@ return
 	Sleep, 200
     Send ^s
 return
-~^+r::
-	callBackend("check_audio_export_valid")
+^+!r::
+	callBackend("export")
 return
 ^!q::
     Send ^!p  ; left hand shortcut

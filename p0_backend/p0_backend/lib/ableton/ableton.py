@@ -65,9 +65,7 @@ def reload_ableton() -> None:
     except (AssertionError, Protocol0Error):
         pass
 
-    kill_window_by_criteria(
-        settings.ableton_process_name, search_type=SearchTypeEnum.PROGRAM_NAME
-    )
+    kill_window_by_criteria(settings.ableton_process_name, search_type=SearchTypeEnum.PROGRAM_NAME)
     time.sleep(0.2)
     try:
         os.unlink(f"{settings.preferences_directory}\\CrashDetection.cfg")
@@ -98,6 +96,14 @@ def open_set(filename: str, confirm_dialog=True):
             send_right()
             send_keys("{ENTER}")
             time.sleep(0.5)
+
+
+def export_audio():
+    send_keys("^+r")
+    send_keys("{ENTER}")
+    send_keys("{ENTER}")
+    send_keys("{LEFT}")
+    send_keys("{ENTER}")
 
 
 @keep_mouse_position

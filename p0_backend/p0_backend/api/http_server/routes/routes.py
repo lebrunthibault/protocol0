@@ -40,11 +40,7 @@ from p0_backend.lib.process import execute_powershell_command
 from p0_backend.lib.window.find_window import find_window_handle_by_enum
 from p0_backend.lib.window.window import focus_window
 from p0_backend.settings import Settings
-from protocol0.application.command.BounceSessionToArrangementCommand import (
-    BounceSessionToArrangementCommand,
-)
 from protocol0.application.command.BounceTrackToAudioCommand import BounceTrackToAudioCommand
-from protocol0.application.command.CheckAudioExportValidCommand import CheckAudioExportValidCommand
 from protocol0.application.command.DrumRackToSimplerCommand import DrumRackToSimplerCommand
 from protocol0.application.command.GoToGroupTrackCommand import GoToGroupTrackCommand
 from protocol0.application.command.LoadDeviceCommand import LoadDeviceCommand
@@ -62,9 +58,10 @@ from protocol0.application.command.ShowAutomationCommand import ShowAutomationCo
 from protocol0.application.command.ShowInstrumentCommand import ShowInstrumentCommand
 from protocol0.application.command.ToggleArmCommand import ToggleArmCommand
 from protocol0.application.command.ToggleReferenceTrackCommand import ToggleReferenceTrackCommand
+from .action_routes import router as actions_router
 from .clip_routes import router as clip_router
+from .export_routes import router as export_router
 from .record_routes import router as record_router
-from .script_action_routes import router as actions_router
 from .scene_routes import router as scene_router
 from .set_routes import router as set_router
 
@@ -74,6 +71,7 @@ settings = Settings()
 
 router.include_router(actions_router, prefix="/actions")
 router.include_router(clip_router, prefix="/clip")
+router.include_router(export_router, prefix="/export")
 router.include_router(record_router, prefix="/record")
 router.include_router(scene_router, prefix="/scene")
 router.include_router(set_router, prefix="/set")
@@ -290,11 +288,6 @@ async def _bounce_track_to_audio():
     p0_script_client().dispatch(BounceTrackToAudioCommand())
 
 
-@router.get("/bounce_session_to_arrangement")
-async def _bounce_session_to_arrangement():
-    p0_script_client().dispatch(BounceSessionToArrangementCommand())
-
-
 @router.get("/click_focused_track")
 async def _click_focused_track():
     click_focused_track()
@@ -391,8 +384,3 @@ async def _edit_automation_value():
 @router.get("/go_to_group_track")
 async def _go_to_group_track():
     p0_script_client().dispatch(GoToGroupTrackCommand())
-
-
-@router.get("/check_audio_export_valid")
-async def check_audio_export_valid():
-    p0_script_client().dispatch(CheckAudioExportValidCommand())

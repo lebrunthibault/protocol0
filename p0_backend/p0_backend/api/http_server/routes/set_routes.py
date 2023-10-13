@@ -43,9 +43,13 @@ async def _get_set(path: str) -> Optional[AbletonSet]:
     return get_set(path)
 
 
+class PostSetPayload(BaseModel):
+    ableton_set: AbletonSet
+
+
 @router.post("")
-async def post_set(ableton_set: AbletonSet):
-    await AbletonSetManager.register(ableton_set)
+async def post_set(payload: PostSetPayload):
+    await AbletonSetManager.register(payload.ableton_set)
 
 
 @router.delete("")
@@ -66,9 +70,13 @@ async def close_set(filename: str):
     await ws_manager.broadcast_server_state()
 
 
+class PostSceneStatsPayload(BaseModel):
+    scene_stat: List[SceneStat]
+
+
 @router.post("/scene_stats")
-async def post_scene_stats(scene_stats: List[SceneStat]):
-    set_scene_stats(scene_stats)
+async def post_scene_stats(payload: PostSceneStatsPayload):
+    set_scene_stats(payload.scene_stat)
 
 
 class StarsPayload(BaseModel):

@@ -34,13 +34,14 @@ class {{custom_classname}}(object):
             {{#summary}}{{{.}}}{{/summary}}{{^summary}}{{operationId}}{{/summary}}  # noqa: E501
         """
 
-        dict = {
-            "method": "{{operationId}}",
-            "args": {
+        payload = {
+            "method": "{{httpMethod}}",
+            "path": "{{path}}",
+            "params": {
                 {{#allParams}}"{{paramName}}": {{paramName}}, {{/allParams}}
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
     {{/operation}}
 {{/operations}}

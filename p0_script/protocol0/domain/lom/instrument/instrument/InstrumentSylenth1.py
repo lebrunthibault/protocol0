@@ -21,7 +21,7 @@ class InstrumentSylenth1(InstrumentInterface):
         Song.selected_track().arm_state.arm()
 
         if device_enum == DeviceEnum.SYLENTH1_BASS:
-            DomainEventBus.emit(PresetProgramSelectedEvent(4))
+            DomainEventBus.emit(PresetProgramSelectedEvent(2))
         elif device_enum == DeviceEnum.SYLENTH1_KEYS:
             DomainEventBus.emit(PresetProgramSelectedEvent(32))
         elif device_enum == DeviceEnum.SYLENTH1_LEAD:

@@ -81,3 +81,4 @@ is_armed  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py:7
 get_set  # unused function (p0_backend\lib\ableton\ableton_set\ableton_set_manager.py:188)
 delete_set  # unused function (p0_backend\lib\ableton\ableton_set\ableton_set_manager.py:196)
 set_comment  # unused function (p0_backend\lib\ableton\ableton_set\ableton_set.py:203)
+export_audio  # unused function (p0_backend\lib\ableton\ableton.py:101)

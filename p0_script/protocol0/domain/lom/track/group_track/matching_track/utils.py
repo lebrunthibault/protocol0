@@ -20,7 +20,7 @@ def assert_valid_track_name(track_name: str) -> None:
     excluded_names = [d.value.lower() for d in DeviceEnum if d.is_instrument]
     excluded_names += ["midi", "audio"]
 
-    if track_name.lower() not in excluded_names:
+    if track_name.lower() in excluded_names:
         Logger.warning(f"Track name should be specific : '{track_name}'")
 
 
@@ -48,7 +48,10 @@ def get_matching_audio_track(base_track: "AbstractTrack") -> Optional["SimpleAud
     from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 
     previous_abstract_track = list(Song.simple_tracks())[base_track.index - 1].abstract_track
-    if previous_abstract_track.group_track == base_track.group_track and previous_abstract_track.name == base_track.name:
+    if (
+        previous_abstract_track.group_track == base_track.group_track
+        and previous_abstract_track.name == base_track.name
+    ):
         return None  # ignore duplicated tracks
 
     if base_track.name.strip().lower() == "audio":
