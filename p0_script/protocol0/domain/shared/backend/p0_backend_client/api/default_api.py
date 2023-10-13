@@ -139,6 +139,21 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
+    def capture_midi_validate(self, ):  # noqa: E501
+        # type: () -> None
+        """
+            Capture Midi Validate  # noqa: E501
+        """
+
+        dict = {
+            "method": "capture_midi_validate",
+            "args": {
+                
+            }
+        }
+
+        self._send_dict_as_midi(dict)
+
     def check_audio_export_valid(self, ):  # noqa: E501
         # type: () -> None
         """
@@ -289,6 +304,21 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
+    def delete_set(self, path, ):  # noqa: E501
+        # type: (str, ) -> None
+        """
+             Delete Set  # noqa: E501
+        """
+
+        dict = {
+            "method": "delete_set",
+            "args": {
+                "path": path, 
+            }
+        }
+
+        self._send_dict_as_midi(dict)
+
     def drag_matching_track(self, ):  # noqa: E501
         # type: () -> None
         """
@@ -312,6 +342,21 @@ class P0BackendClient(object):
 
         dict = {
             "method": "drum_rack_to_simpler",
+            "args": {
+                
+            }
+        }
+
+        self._send_dict_as_midi(dict)
+
+    def duplicate_scene(self, ):  # noqa: E501
+        # type: () -> None
+        """
+            Duplicate Scene  # noqa: E501
+        """
+
+        dict = {
+            "method": "duplicate_scene",
             "args": {
                 
             }
@@ -427,7 +472,7 @@ class P0BackendClient(object):
     def get_set(self, path, ):  # noqa: E501
         # type: (str, ) -> None
         """
-            Get Set  # noqa: E501
+             Get Set  # noqa: E501
         """
 
         dict = {
@@ -634,8 +679,8 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
-    def move_loop(self, forward=True):  # noqa: E501
-        # type: (bool, ) -> None
+    def move_loop(self, forward=True, bar=False):  # noqa: E501
+        # type: (bool, bool, ) -> None
         """
             Move Loop  # noqa: E501
         """
@@ -643,7 +688,7 @@ class P0BackendClient(object):
         dict = {
             "method": "move_loop",
             "args": {
-                "forward": forward, 
+                "forward": forward, "bar": bar, 
             }
         }
 
@@ -694,7 +739,7 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(dict)
 
-    def open_set_by_type(self, set_type, ):  # noqa: E501
+    def open_set_by_type(self, name, ):  # noqa: E501
         # type: (str, ) -> None
         """
             Open Set By Type  # noqa: E501
@@ -703,7 +748,7 @@ class P0BackendClient(object):
         dict = {
             "method": "open_set_by_type",
             "args": {
-                "set_type": set_type, 
+                "name": name, 
             }
         }
 

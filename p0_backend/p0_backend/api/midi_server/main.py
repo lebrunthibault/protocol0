@@ -112,7 +112,7 @@ def _execute_midi_message(message: Message):
         requests.post(f"{settings.http_api_url}/set", json=args["ableton_set"])
         return
     if method_name == "post_scene_stats":
-        requests.post(f"{settings.http_api_url}/set/scene_stats", json=args["scene_stats"])
+        requests.post(f"{settings.http_api_url}/set/scene_stats", json=args["scene_stat"])
         return
 
     requests.get(f"{settings.http_api_url}/{method_name}", params=args)
