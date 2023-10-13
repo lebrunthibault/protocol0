@@ -9,8 +9,8 @@ from protocol0.application.command.ScrollSceneTracksCommand import ScrollSceneTr
 from protocol0.application.command.ScrollScenesCommand import ScrollScenesCommand
 from protocol0.application.command.ToggleSceneLoopCommand import ToggleSceneLoopCommand
 
-
 router = APIRouter()
+
 
 @router.get("/toggle_loop")
 async def toggle_scene_loop():
@@ -20,7 +20,6 @@ async def toggle_scene_loop():
 @router.get("/fire_to_last_position")
 async def fire_scene_to_last_position():
     p0_script_client().dispatch(FireSceneToPositionCommand(None))
-
 
 
 @router.get("/fire_to_position")

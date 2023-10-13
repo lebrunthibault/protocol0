@@ -13,6 +13,10 @@
             @scene-skip="onSceneSkip"
         ></AbletonSetSceneData>
         <AbletonSetInfo :ableton-set="selectedSet"></AbletonSetInfo>
+        <button v-if="!selectedSet.metadata?.stars || selectedSet.metadata?.stars < 3"
+                @click="deleteSet" type="button" class="btn btn-lg btn-light">
+          <i class="fa-solid fa-trash" data-toggle="tooltip" data-placement="top" title="Move set to trash"></i>
+        </button>
       </div>
     </div>
       <AbletonSetPlayer :ableton-set="selectedSet" @sceneChange="onSceneChange" :time="playerTime"></AbletonSetPlayer>
@@ -69,6 +73,7 @@ import AbletonSetPlayer from "@/components/ableton_sets/AbletonSetPlayer.vue";
 import AbletonSetSceneData from "@/components/ableton_sets/AbletonSetSceneData.vue";
 import AbletonSetInfo from "@/components/ableton_sets/AbletonSetInfo.vue";
 import AbletonSetStars from "@/components/ableton_sets/AbletonSetStars.vue";
+import {notify} from "@/utils/utils";
 
 
 export default defineComponent({
@@ -79,7 +84,7 @@ export default defineComponent({
     selectedSet: null as AbletonSet | null,
     currentScene: null as SceneData | null,
     playerTime: 0,
-    filterType: "stars"
+    filterType: "recent"
   }),
   computed: {
     setFolders() {
@@ -166,6 +171,10 @@ export default defineComponent({
       }
 
       this.sortSets()
+    },
+    async deleteSet() {
+      await apiService.delete(`/set?path=${this.selectedSet.path_info.filename}`)
+      notify("Set moved to trash")
     }
   },
   async mounted() {

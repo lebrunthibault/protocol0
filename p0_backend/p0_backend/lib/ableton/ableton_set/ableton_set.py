@@ -109,6 +109,10 @@ class AbletonSet(BaseModel):
     def is_untitled(self):
         return self.path_info.filename is None or Path(self.path_info.filename).stem == "None"
 
+    @property
+    def has_own_folder(self) -> bool:
+        return basename(dirname(str(self.path_info.filename))).lower().strip() == self.path_info.name
+
     @classmethod
     def all_tracks_folder(cls) -> List[str]:
         return next(os.walk(f"{settings.ableton_set_directory}\\tracks"))[1]

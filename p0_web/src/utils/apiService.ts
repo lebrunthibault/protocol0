@@ -1,3 +1,19 @@
+function getOptions(method: string, body: Object | null = null) {
+  const options: any = {
+      method: method,
+      mode: 'cors',
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+
+    if (body) {
+        options["body"] = JSON.stringify(body)
+    }
+
+    return options
+}
+
 class APIService {
   private readonly baseURL = 'http://localhost:8000'
 
@@ -9,15 +25,14 @@ class APIService {
 
   async post(path: string, data: Object) {
     const url = `${this.baseURL}${path}`
-    const response = await fetch(url, {
-      method: 'POST',
-      mode: 'cors',
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data)
-    })
+    const response = await fetch(url, getOptions("POST", data))
 
+    return await response.json()
+  }
+
+  async delete(path: string) {
+    const url = `${this.baseURL}${path}`
+    const response = await fetch(url, getOptions("DELETE"))
     return await response.json()
   }
 }

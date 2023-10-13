@@ -1,5 +1,4 @@
-from itertools import chain
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from fastapi import APIRouter
 from loguru import logger
@@ -22,6 +21,7 @@ from p0_backend.lib.ableton.ableton_set.ableton_set import (
 from p0_backend.lib.ableton.ableton_set.ableton_set_manager import (
     AbletonSetManager,
     list_sets,
+    get_set, delete_set,
 )
 from p0_backend.settings import Settings
 from protocol0.application.command.SaveSongCommand import SaveSongCommand
@@ -37,18 +37,24 @@ async def sets(archive: bool = False) -> Dict[str, List[AbletonSet]]:
 
 
 @router.get("")
-async def get_set(path: str) -> AbletonSet:
-    path = path.replace("\\\\", "\\")
-
-    ableton_sets = list(chain.from_iterable(list_sets().values()))
-
-    return next(s for s in ableton_sets if s.path_info.filename == path)
+async def _get_set(path: str) -> Optional[AbletonSet]:
+    return get_set(path)
 
 
 @router.post("")
 async def post_set(ableton_set: AbletonSet):
-    """Forwarded from midi server"""
     await AbletonSetManager.register(ableton_set)
+
+
+@router.delete("")
+async def _delete_set(path: str):
+    ableton_set = get_set(path)
+    from loguru import logger
+    logger.success(ableton_set)
+    if not ableton_set:
+        return
+
+    delete_set(ableton_set)
 
 
 @router.get("/close")
