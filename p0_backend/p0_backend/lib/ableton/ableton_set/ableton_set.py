@@ -55,6 +55,7 @@ class AbletonSetMetadata(BaseModel):
     path_info: Optional[MetadataFileInfo]
     scenes: List[SceneStat] = []
     stars: int = 0
+    comment: str = ""
 
 
 class AudioFileInfo(BaseModel):
@@ -196,4 +197,11 @@ def set_stars(filename: str, stars: int):
     ableton_set = AbletonSet.create(filename)
 
     ableton_set.metadata.stars = stars
+    ableton_set.save()
+
+
+def set_comment(filename: str, comment: str):
+    ableton_set = AbletonSet.create(filename)
+
+    ableton_set.metadata.comment = comment
     ableton_set.save()

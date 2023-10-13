@@ -17,11 +17,13 @@ from p0_backend.lib.ableton.ableton_set.ableton_set import (
     set_scene_stats,
     set_stars,
     SceneStat,
+    set_comment,
 )
 from p0_backend.lib.ableton.ableton_set.ableton_set_manager import (
     AbletonSetManager,
     list_sets,
-    get_set, delete_set,
+    get_set,
+    delete_set,
 )
 from p0_backend.settings import Settings
 from protocol0.application.command.SaveSongCommand import SaveSongCommand
@@ -50,6 +52,7 @@ async def post_set(ableton_set: AbletonSet):
 async def _delete_set(path: str):
     ableton_set = get_set(path)
     from loguru import logger
+
     logger.success(ableton_set)
     if not ableton_set:
         return
@@ -75,6 +78,15 @@ class StarsPayload(BaseModel):
 @router.post("/{filename}/stars")
 async def post_set_stars(filename: str, stars: StarsPayload):
     set_stars(filename, stars.stars)
+
+
+class CommentPayload(BaseModel):
+    comment: str
+
+
+@router.post("/{filename}/comment")
+async def post_set_comment(filename: str, comment: CommentPayload):
+    set_comment(filename, comment.comment)
 
 
 @router.get("/save_as_template")

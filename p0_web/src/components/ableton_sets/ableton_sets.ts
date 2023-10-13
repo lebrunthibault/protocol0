@@ -27,6 +27,7 @@ interface AbletonSetMetadata {
     path_info: MetadataFileInfo
     scenes: SceneStats[]
     stars: number
+    comment: string
 }
 
 interface AudioFileInfo {
