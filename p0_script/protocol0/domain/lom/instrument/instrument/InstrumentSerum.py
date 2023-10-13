@@ -19,7 +19,5 @@ class InstrumentSerum(InstrumentInterface):
     def on_loaded(self, device_enum: DeviceEnum) -> None:
         track = Song.selected_track()
         track.arm_state.arm()
-        if device_enum == DeviceEnum.SERUM_BASS:
-            self.preset_list.scroll(go_next=False)
-        else:
-            self.preset_list.scroll(go_next=True)
+        self.preset_list.scroll(go_next=False)
+        self.preset_list.scroll(go_next=True)
