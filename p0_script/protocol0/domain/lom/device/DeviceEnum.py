@@ -244,26 +244,26 @@ class DeviceEnum(AbstractEnum):
             ],
             [
                 cls.DRUM_RACK,
-                DeviceEnumGroup(
-                    "Sylenth1",
-                    [
-                        cls.SYLENTH1_RACK,
-                        cls.SYLENTH1_BASS,
-                        cls.SYLENTH1_KEYS,
-                        cls.SYLENTH1_LEAD,
-                        cls.SYLENTH1_PLUCK,
-                    ],
-                ),
-                DeviceEnumGroup(
-                    "Serum",
-                    [
-                        cls.SERUM_RACK,
-                        cls.SERUM_BASS,
-                        cls.SERUM_KEYS,
-                        cls.SERUM_LEAD,
-                        cls.SERUM_PLUCK,
-                    ],
-                ),
+                # DeviceEnumGroup(
+                #     "Sylenth1",
+                #     [
+                #         cls.SYLENTH1_RACK,
+                #         cls.SYLENTH1_BASS,
+                #         cls.SYLENTH1_KEYS,
+                #         cls.SYLENTH1_LEAD,
+                #         cls.SYLENTH1_PLUCK,
+                #     ],
+                # ),
+                # DeviceEnumGroup(
+                #     "Serum",
+                #     [
+                #         cls.SERUM_RACK,
+                #         cls.SERUM_BASS,
+                #         cls.SERUM_KEYS,
+                #         cls.SERUM_LEAD,
+                #         cls.SERUM_PLUCK,
+                #     ],
+                # ),
                 # cls.SYNTH_MASTER_2,
                 DeviceEnumGroup(
                     "Opus",
