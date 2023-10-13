@@ -1,4 +1,5 @@
 import collections
+from functools import partial
 from itertools import chain
 
 import Live
@@ -7,6 +8,7 @@ from typing import List, Iterator, Dict
 
 from protocol0.domain.lom.scene.PlayingSceneFacade import PlayingSceneFacade
 from protocol0.domain.lom.scene.Scene import Scene
+from protocol0.domain.lom.scene.ScenePlaybackService import ScenePlaybackService
 from protocol0.domain.lom.scene.ScenesMappedEvent import ScenesMappedEvent
 from protocol0.domain.lom.song.components.SceneCrudComponent import SceneCrudComponent
 from protocol0.domain.lom.track.TrackAddedEvent import TrackAddedEvent
@@ -25,10 +27,16 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 class SceneService(SlotManager):
     # noinspection PyInitNewSignature
-    def __init__(self, live_song: Live.Song.Song, scene_crud_component: SceneCrudComponent) -> None:
+    def __init__(
+        self,
+        live_song: Live.Song.Song,
+        scene_crud_component: SceneCrudComponent,
+        scene_playback_service: ScenePlaybackService,
+    ) -> None:
         super(SceneService, self).__init__()
         self._live_song = live_song
         self._scene_crud_component = scene_crud_component
+        self._scene_playback_service = scene_playback_service
 
         self.scenes_listener.subject = live_song
         self._selected_scene_listener.subject = live_song.view
@@ -51,7 +59,6 @@ class SceneService(SlotManager):
         while current_scene.next_scene and current_scene.next_scene != current_scene:
             current_scene = current_scene.next_scene
             active_scenes.append(current_scene)
-
 
         return active_scenes
 
@@ -93,9 +100,7 @@ class SceneService(SlotManager):
         self._clean_deleted_scenes()
 
         # mapping cs should be done before generating the scenes
-        tracks: Iterator[AbstractTrack] = chain(
-            Song.simple_tracks(), Song.abstract_tracks()
-        )
+        tracks: Iterator[AbstractTrack] = chain(Song.simple_tracks(), Song.abstract_tracks())
         for track in collections.OrderedDict.fromkeys(tracks):
             track.on_scenes_change()
 
@@ -139,6 +144,15 @@ class SceneService(SlotManager):
         for scene in self._live_song.scenes:
             sorted_dict[scene._live_ptr] = self.get_scene(scene)
         self._live_scene_id_to_scene = sorted_dict
+
+    def duplicate_scene(self) -> Sequence:
+        selected_scene_index = Song.selected_scene().index
+        seq = Sequence()
+        seq.add(partial(self._scene_crud_component.duplicate_scene, Song.selected_scene()))
+        seq.add(
+            lambda: self._scene_playback_service.fire_scene(Song.scenes()[selected_scene_index + 1])
+        )
+        return seq.done()
 
     def _on_track_added_event(self, _: TrackAddedEvent) -> Sequence:
         seq = Sequence()

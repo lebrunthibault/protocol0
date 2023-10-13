@@ -131,8 +131,8 @@ class Container(ContainerInterface):
         simple_track_service = SimpleTrackService()
         track_player_service = ClipPlayerService()
         matching_track_service = MatchingTrackService(track_crud_component)
-        scene_service = SceneService(live_song, scene_crud_component)
         scene_playback_service = ScenePlaybackService(playback_component)
+        scene_service = SceneService(live_song, scene_crud_component, scene_playback_service)
         PlayingSceneFacade(scene_component)
         track_recorder_service = RecordService(
             playback_component,
