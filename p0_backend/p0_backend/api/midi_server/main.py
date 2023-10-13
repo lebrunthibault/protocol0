@@ -105,14 +105,20 @@ def _execute_midi_message(message: Message):
         return
 
     # or it can exploit the routes public API by passing an operation name
-    method_name = payload["method"]
-    args = payload["args"]
+    method = payload["method"]
+    path = payload["path"]
+    params = payload["params"]
 
-    if method_name == "post_set":
-        requests.post(f"{settings.http_api_url}/set", json=args["ableton_set"])
-        return
-    if method_name == "post_scene_stats":
-        requests.post(f"{settings.http_api_url}/set/scene_stats", json=args["scene_stat"])
-        return
+    endpoint = f"{settings.http_api_url}{path}"
 
-    requests.get(f"{settings.http_api_url}/{method_name}", params=args)
+    assert method in ("GET", "POST", "DELETE"), f"unknown method {method}"
+
+    if method == "GET":
+        requests.get(endpoint, params=params)
+    elif method == "POST":
+        from loguru import logger
+
+        logger.success((endpoint, params))
+        requests.post(endpoint, json=params)
+    elif method == "DELETE":
+        requests.delete(endpoint, params=params)

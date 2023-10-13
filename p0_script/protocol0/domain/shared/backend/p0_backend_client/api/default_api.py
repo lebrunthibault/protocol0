@@ -40,14 +40,15 @@ class P0BackendClient(object):
             Actions  # noqa: E501
         """
 
-        dict = {
-            "method": "actions",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/actions",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def activate_rev2_editor(self, ):  # noqa: E501
         # type: () -> None
@@ -55,14 +56,15 @@ class P0BackendClient(object):
              Activate Rev2 Editor  # noqa: E501
         """
 
-        dict = {
-            "method": "activate_rev2_editor",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/activate_rev2_editor",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def analyze_test_audio_clip_jitter(self, clip_path, ):  # noqa: E501
         # type: (str, ) -> None
@@ -70,14 +72,15 @@ class P0BackendClient(object):
              Analyze Test Audio Clip Jitter  # noqa: E501
         """
 
-        dict = {
-            "method": "analyze_test_audio_clip_jitter",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/analyze_test_audio_clip_jitter",
+            "params": {
                 "clip_path": clip_path, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def arm(self, ):  # noqa: E501
         # type: () -> None
@@ -85,29 +88,15 @@ class P0BackendClient(object):
             Arm  # noqa: E501
         """
 
-        dict = {
-            "method": "arm",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/arm",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
-
-    def bounce_session_to_arrangement(self, ):  # noqa: E501
-        # type: () -> None
-        """
-             Bounce Session To Arrangement  # noqa: E501
-        """
-
-        dict = {
-            "method": "bounce_session_to_arrangement",
-            "args": {
-                
-            }
-        }
-
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def bounce_track_to_audio(self, ):  # noqa: E501
         # type: () -> None
@@ -115,14 +104,15 @@ class P0BackendClient(object):
              Bounce Track To Audio  # noqa: E501
         """
 
-        dict = {
-            "method": "bounce_track_to_audio",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/bounce_track_to_audio",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def capture_midi(self, ):  # noqa: E501
         # type: () -> None
@@ -130,14 +120,15 @@ class P0BackendClient(object):
             Capture Midi  # noqa: E501
         """
 
-        dict = {
-            "method": "capture_midi",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/record/capture_midi",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def capture_midi_validate(self, ):  # noqa: E501
         # type: () -> None
@@ -145,29 +136,15 @@ class P0BackendClient(object):
             Capture Midi Validate  # noqa: E501
         """
 
-        dict = {
-            "method": "capture_midi_validate",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/record/capture_midi/validate",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
-
-    def check_audio_export_valid(self, ):  # noqa: E501
-        # type: () -> None
-        """
-            Check Audio Export Valid  # noqa: E501
-        """
-
-        dict = {
-            "method": "check_audio_export_valid",
-            "args": {
-                
-            }
-        }
-
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def click(self, x, y, ):  # noqa: E501
         # type: (int, int, ) -> None
@@ -175,14 +152,15 @@ class P0BackendClient(object):
              Click  # noqa: E501
         """
 
-        dict = {
-            "method": "click",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/click",
+            "params": {
                 "x": x, "y": y, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def click_focused_track(self, ):  # noqa: E501
         # type: () -> None
@@ -190,14 +168,15 @@ class P0BackendClient(object):
              Click Focused Track  # noqa: E501
         """
 
-        dict = {
-            "method": "click_focused_track",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/click_focused_track",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def click_vertical_zone(self, x, y, ):  # noqa: E501
         # type: (int, int, ) -> None
@@ -205,14 +184,15 @@ class P0BackendClient(object):
              Click Vertical Zone  # noqa: E501
         """
 
-        dict = {
-            "method": "click_vertical_zone",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/click_vertical_zone",
+            "params": {
                 "x": x, "y": y, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def close_explorer_window(self, title, ):  # noqa: E501
         # type: (str, ) -> None
@@ -220,14 +200,15 @@ class P0BackendClient(object):
              Close Explorer Window  # noqa: E501
         """
 
-        dict = {
-            "method": "close_explorer_window",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/close_explorer_window",
+            "params": {
                 "title": title, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def close_samples_windows(self, ):  # noqa: E501
         # type: () -> None
@@ -235,14 +216,15 @@ class P0BackendClient(object):
              Close Samples Windows  # noqa: E501
         """
 
-        dict = {
-            "method": "close_samples_windows",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/close_samples_windows",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def close_set(self, filename, ):  # noqa: E501
         # type: (str, ) -> None
@@ -250,14 +232,15 @@ class P0BackendClient(object):
             Close Set  # noqa: E501
         """
 
-        dict = {
-            "method": "close_set",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/set/close",
+            "params": {
                 "filename": filename, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def color_clip_with_automation(self, ):  # noqa: E501
         # type: () -> None
@@ -265,14 +248,15 @@ class P0BackendClient(object):
              Color Clip With Automation  # noqa: E501
         """
 
-        dict = {
-            "method": "color_clip_with_automation",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/clip/color_with_automation",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def crop_clip(self, ):  # noqa: E501
         # type: () -> None
@@ -280,14 +264,15 @@ class P0BackendClient(object):
              Crop Clip  # noqa: E501
         """
 
-        dict = {
-            "method": "crop_clip",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/clip/crop",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def delete_saved_track(self, track_name, ):  # noqa: E501
         # type: (str, ) -> None
@@ -295,14 +280,15 @@ class P0BackendClient(object):
              Delete Saved Track  # noqa: E501
         """
 
-        dict = {
-            "method": "delete_saved_track",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/delete_saved_track",
+            "params": {
                 "track_name": track_name, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def delete_set(self, path, ):  # noqa: E501
         # type: (str, ) -> None
@@ -310,14 +296,15 @@ class P0BackendClient(object):
              Delete Set  # noqa: E501
         """
 
-        dict = {
-            "method": "delete_set",
-            "args": {
+        payload = {
+            "method": "DELETE",
+            "path": "/set",
+            "params": {
                 "path": path, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def drag_matching_track(self, ):  # noqa: E501
         # type: () -> None
@@ -325,14 +312,15 @@ class P0BackendClient(object):
              Drag Matching Track  # noqa: E501
         """
 
-        dict = {
-            "method": "drag_matching_track",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/drag_matching_track",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def drum_rack_to_simpler(self, ):  # noqa: E501
         # type: () -> None
@@ -340,14 +328,15 @@ class P0BackendClient(object):
             Drum Rack To Simpler  # noqa: E501
         """
 
-        dict = {
-            "method": "drum_rack_to_simpler",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/drum_rack_to_simpler",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def duplicate_scene(self, ):  # noqa: E501
         # type: () -> None
@@ -355,14 +344,15 @@ class P0BackendClient(object):
             Duplicate Scene  # noqa: E501
         """
 
-        dict = {
-            "method": "duplicate_scene",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/scene/duplicate",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def edit_automation_value(self, ):  # noqa: E501
         # type: () -> None
@@ -370,14 +360,15 @@ class P0BackendClient(object):
              Edit Automation Value  # noqa: E501
         """
 
-        dict = {
-            "method": "edit_automation_value",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/edit_automation_value",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def execute_action(self, group_id, action_id, ):  # noqa: E501
         # type: (int, int, ) -> None
@@ -385,14 +376,47 @@ class P0BackendClient(object):
             Execute Action  # noqa: E501
         """
 
-        dict = {
-            "method": "execute_action",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/actions/{group_id}/{action_id}",
+            "params": {
                 "group_id": group_id, "action_id": action_id, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
+
+    def export(self, ):  # noqa: E501
+        # type: () -> None
+        """
+            Export  # noqa: E501
+        """
+
+        payload = {
+            "method": "GET",
+            "path": "/export/",
+            "params": {
+                
+            }
+        }
+
+        self._send_dict_as_midi(payload)
+
+    def export_audio(self, ):  # noqa: E501
+        # type: () -> None
+        """
+             Export Audio  # noqa: E501
+        """
+
+        payload = {
+            "method": "GET",
+            "path": "/export/audio",
+            "params": {
+                
+            }
+        }
+
+        self._send_dict_as_midi(payload)
 
     def fire_scene_to_last_position(self, ):  # noqa: E501
         # type: () -> None
@@ -400,14 +424,15 @@ class P0BackendClient(object):
             Fire Scene To Last Position  # noqa: E501
         """
 
-        dict = {
-            "method": "fire_scene_to_last_position",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/scene/fire_to_last_position",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def fire_scene_to_position(self, bar_length=0):  # noqa: E501
         # type: (int, ) -> None
@@ -415,14 +440,15 @@ class P0BackendClient(object):
             Fire Scene To Position  # noqa: E501
         """
 
-        dict = {
-            "method": "fire_scene_to_position",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/scene/fire_to_position",
+            "params": {
                 "bar_length": bar_length, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def fire_selected_scene(self, ):  # noqa: E501
         # type: () -> None
@@ -430,14 +456,15 @@ class P0BackendClient(object):
             Fire Selected Scene  # noqa: E501
         """
 
-        dict = {
-            "method": "fire_selected_scene",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/scene/fire_selected",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def flatten_track(self, ):  # noqa: E501
         # type: () -> None
@@ -445,14 +472,15 @@ class P0BackendClient(object):
              Flatten Track  # noqa: E501
         """
 
-        dict = {
-            "method": "flatten_track",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/flatten_track",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def get_connections(self, ):  # noqa: E501
         # type: () -> None
@@ -460,14 +488,15 @@ class P0BackendClient(object):
             Get Connections  # noqa: E501
         """
 
-        dict = {
-            "method": "get_connections",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/ws/connections",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def get_set(self, path, ):  # noqa: E501
         # type: (str, ) -> None
@@ -475,14 +504,15 @@ class P0BackendClient(object):
              Get Set  # noqa: E501
         """
 
-        dict = {
-            "method": "get_set",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/set",
+            "params": {
                 "path": path, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def go_to_group_track(self, ):  # noqa: E501
         # type: () -> None
@@ -490,14 +520,15 @@ class P0BackendClient(object):
              Go To Group Track  # noqa: E501
         """
 
-        dict = {
-            "method": "go_to_group_track",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/go_to_group_track",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def hide_plugins(self, ):  # noqa: E501
         # type: () -> None
@@ -505,14 +536,15 @@ class P0BackendClient(object):
              Hide Plugins  # noqa: E501
         """
 
-        dict = {
-            "method": "hide_plugins",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/hide_plugins",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def home(self, ):  # noqa: E501
         # type: () -> None
@@ -520,14 +552,15 @@ class P0BackendClient(object):
             Home  # noqa: E501
         """
 
-        dict = {
-            "method": "home",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def load_device(self, name, create_track=False):  # noqa: E501
         # type: (str, bool, ) -> None
@@ -535,14 +568,15 @@ class P0BackendClient(object):
             Load Device  # noqa: E501
         """
 
-        dict = {
-            "method": "load_device",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/load_device",
+            "params": {
                 "name": name, "create_track": create_track, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def load_drum_rack(self, category, subcategory, ):  # noqa: E501
         # type: (str, str, ) -> None
@@ -550,14 +584,15 @@ class P0BackendClient(object):
             Load Drum Rack  # noqa: E501
         """
 
-        dict = {
-            "method": "load_drum_rack",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/load_drum_rack",
+            "params": {
                 "category": category, "subcategory": subcategory, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def load_instrument_track(self, instrument_name, ):  # noqa: E501
         # type: (str, ) -> None
@@ -565,14 +600,15 @@ class P0BackendClient(object):
              Load Instrument Track  # noqa: E501
         """
 
-        dict = {
-            "method": "load_instrument_track",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/load_instrument_track",
+            "params": {
                 "instrument_name": instrument_name, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def load_matching_track(self, ):  # noqa: E501
         # type: () -> None
@@ -580,14 +616,15 @@ class P0BackendClient(object):
             Load Matching Track  # noqa: E501
         """
 
-        dict = {
-            "method": "load_matching_track",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/load_matching_track",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def load_minitaur(self, ):  # noqa: E501
         # type: () -> None
@@ -595,14 +632,15 @@ class P0BackendClient(object):
             Load Minitaur  # noqa: E501
         """
 
-        dict = {
-            "method": "load_minitaur",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/load_minitaur",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def load_rev2(self, ):  # noqa: E501
         # type: () -> None
@@ -610,14 +648,15 @@ class P0BackendClient(object):
             Load Rev2  # noqa: E501
         """
 
-        dict = {
-            "method": "load_rev2",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/load_rev2",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def load_sample_in_simpler(self, sample_path, ):  # noqa: E501
         # type: (str, ) -> None
@@ -625,14 +664,15 @@ class P0BackendClient(object):
              Load Sample In Simpler  # noqa: E501
         """
 
-        dict = {
-            "method": "load_sample_in_simpler",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/load_sample_in_simpler",
+            "params": {
                 "sample_path": sample_path, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def log_selected(self, ):  # noqa: E501
         # type: () -> None
@@ -640,14 +680,15 @@ class P0BackendClient(object):
              Log Selected  # noqa: E501
         """
 
-        dict = {
-            "method": "log_selected",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/log_selected",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def log_song_stats(self, ):  # noqa: E501
         # type: () -> None
@@ -655,14 +696,15 @@ class P0BackendClient(object):
              Log Song Stats  # noqa: E501
         """
 
-        dict = {
-            "method": "log_song_stats",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/log_song_stats",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def match_clip_colors(self, ):  # noqa: E501
         # type: () -> None
@@ -670,14 +712,15 @@ class P0BackendClient(object):
              Match Clip Colors  # noqa: E501
         """
 
-        dict = {
-            "method": "match_clip_colors",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/clip/match_colors",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def move_loop(self, forward=True, bar=False):  # noqa: E501
         # type: (bool, bool, ) -> None
@@ -685,14 +728,15 @@ class P0BackendClient(object):
             Move Loop  # noqa: E501
         """
 
-        dict = {
-            "method": "move_loop",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/clip/move_loop",
+            "params": {
                 "forward": forward, "bar": bar, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def move_to(self, x, y, ):  # noqa: E501
         # type: (int, int, ) -> None
@@ -700,14 +744,15 @@ class P0BackendClient(object):
              Move To  # noqa: E501
         """
 
-        dict = {
-            "method": "move_to",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/move_to",
+            "params": {
                 "x": x, "y": y, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def open_in_explorer(self, path, ):  # noqa: E501
         # type: (str, ) -> None
@@ -715,14 +760,15 @@ class P0BackendClient(object):
             Open In Explorer  # noqa: E501
         """
 
-        dict = {
-            "method": "open_in_explorer",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/open_in_explorer",
+            "params": {
                 "path": path, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def open_set(self, path, ):  # noqa: E501
         # type: (str, ) -> None
@@ -730,14 +776,15 @@ class P0BackendClient(object):
              Open Set  # noqa: E501
         """
 
-        dict = {
-            "method": "open_set",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/set/open",
+            "params": {
                 "path": path, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def open_set_by_type(self, name, ):  # noqa: E501
         # type: (str, ) -> None
@@ -745,14 +792,15 @@ class P0BackendClient(object):
             Open Set By Type  # noqa: E501
         """
 
-        dict = {
-            "method": "open_set_by_type",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/set/open_by_type",
+            "params": {
                 "name": name, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def ping(self, ):  # noqa: E501
         # type: () -> None
@@ -760,14 +808,15 @@ class P0BackendClient(object):
             Ping  # noqa: E501
         """
 
-        dict = {
-            "method": "ping",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/ping",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def play_pause(self, ):  # noqa: E501
         # type: () -> None
@@ -775,14 +824,15 @@ class P0BackendClient(object):
             Play Pause  # noqa: E501
         """
 
-        dict = {
-            "method": "play_pause",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/play_pause",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def post_activate_rev2_editor(self, ):  # noqa: E501
         # type: () -> None
@@ -790,14 +840,15 @@ class P0BackendClient(object):
              Post Activate Rev2 Editor  # noqa: E501
         """
 
-        dict = {
-            "method": "post_activate_rev2_editor",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/post_activate_rev2_editor",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def post_scene_stats(self, scene_stat, ):  # noqa: E501
         # type: (list[SceneStat], ) -> None
@@ -805,14 +856,15 @@ class P0BackendClient(object):
             Post Scene Stats  # noqa: E501
         """
 
-        dict = {
-            "method": "post_scene_stats",
-            "args": {
+        payload = {
+            "method": "POST",
+            "path": "/set/scene_stats",
+            "params": {
                 "scene_stat": scene_stat, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def post_set(self, ableton_set, ):  # noqa: E501
         # type: (AbletonSet, ) -> None
@@ -820,14 +872,31 @@ class P0BackendClient(object):
             Post Set  # noqa: E501
         """
 
-        dict = {
-            "method": "post_set",
-            "args": {
+        payload = {
+            "method": "POST",
+            "path": "/set",
+            "params": {
                 "ableton_set": ableton_set, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
+
+    def post_set_comment(self, filename, comment_payload, ):  # noqa: E501
+        # type: (str, CommentPayload, ) -> None
+        """
+            Post Set Comment  # noqa: E501
+        """
+
+        payload = {
+            "method": "POST",
+            "path": "/set/{filename}/comment",
+            "params": {
+                "filename": filename, "comment_payload": comment_payload, 
+            }
+        }
+
+        self._send_dict_as_midi(payload)
 
     def post_set_stars(self, filename, stars_payload, ):  # noqa: E501
         # type: (str, StarsPayload, ) -> None
@@ -835,14 +904,15 @@ class P0BackendClient(object):
             Post Set Stars  # noqa: E501
         """
 
-        dict = {
-            "method": "post_set_stars",
-            "args": {
+        payload = {
+            "method": "POST",
+            "path": "/set/{filename}/stars",
+            "params": {
                 "filename": filename, "stars_payload": stars_payload, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def record_unlimited(self, ):  # noqa: E501
         # type: () -> None
@@ -850,14 +920,15 @@ class P0BackendClient(object):
             Record Unlimited  # noqa: E501
         """
 
-        dict = {
-            "method": "record_unlimited",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/record/unlimited",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def reload_ableton(self, ):  # noqa: E501
         # type: () -> None
@@ -865,14 +936,15 @@ class P0BackendClient(object):
              Reload Ableton  # noqa: E501
         """
 
-        dict = {
-            "method": "reload_ableton",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/reload_ableton",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def reload_script(self, ):  # noqa: E501
         # type: () -> None
@@ -880,14 +952,15 @@ class P0BackendClient(object):
              Reload Script  # noqa: E501
         """
 
-        dict = {
-            "method": "reload_script",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/reload_script",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def save_set(self, ):  # noqa: E501
         # type: () -> None
@@ -895,14 +968,15 @@ class P0BackendClient(object):
             Save Set  # noqa: E501
         """
 
-        dict = {
-            "method": "save_set",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/set/save",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def save_set_as_template(self, ):  # noqa: E501
         # type: () -> None
@@ -910,14 +984,15 @@ class P0BackendClient(object):
              Save Set As Template  # noqa: E501
         """
 
-        dict = {
-            "method": "save_set_as_template",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/set/save_as_template",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def save_track_to_sub_tracks(self, ):  # noqa: E501
         # type: () -> None
@@ -925,14 +1000,15 @@ class P0BackendClient(object):
              Save Track To Sub Tracks  # noqa: E501
         """
 
-        dict = {
-            "method": "save_track_to_sub_tracks",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/save_track_to_sub_tracks",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def scroll_presets(self, direction, ):  # noqa: E501
         # type: (str, ) -> None
@@ -940,14 +1016,15 @@ class P0BackendClient(object):
             Scroll Presets  # noqa: E501
         """
 
-        dict = {
-            "method": "scroll_presets",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/scroll_presets",
+            "params": {
                 "direction": direction, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def scroll_scene_position(self, direction, ):  # noqa: E501
         # type: (str, ) -> None
@@ -955,14 +1032,15 @@ class P0BackendClient(object):
             Scroll Scene Position  # noqa: E501
         """
 
-        dict = {
-            "method": "scroll_scene_position",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/scene/scroll_position",
+            "params": {
                 "direction": direction, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def scroll_scene_position_fine(self, direction, ):  # noqa: E501
         # type: (str, ) -> None
@@ -970,14 +1048,15 @@ class P0BackendClient(object):
             Scroll Scene Position Fine  # noqa: E501
         """
 
-        dict = {
-            "method": "scroll_scene_position_fine",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/scene/scroll_position_fine",
+            "params": {
                 "direction": direction, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def scroll_scene_tracks(self, direction, ):  # noqa: E501
         # type: (str, ) -> None
@@ -985,14 +1064,15 @@ class P0BackendClient(object):
             Scroll Scene Tracks  # noqa: E501
         """
 
-        dict = {
-            "method": "scroll_scene_tracks",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/scene/scroll_tracks",
+            "params": {
                 "direction": direction, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def scroll_scenes(self, direction, ):  # noqa: E501
         # type: (str, ) -> None
@@ -1000,14 +1080,15 @@ class P0BackendClient(object):
             Scroll Scenes  # noqa: E501
         """
 
-        dict = {
-            "method": "scroll_scenes",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/scene/scroll",
+            "params": {
                 "direction": direction, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def scroll_track_volume(self, direction, ):  # noqa: E501
         # type: (str, ) -> None
@@ -1015,14 +1096,15 @@ class P0BackendClient(object):
             Scroll Track Volume  # noqa: E501
         """
 
-        dict = {
-            "method": "scroll_track_volume",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/scroll_track_volume",
+            "params": {
                 "direction": direction, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def search(self, text, ):  # noqa: E501
         # type: (str, ) -> None
@@ -1030,14 +1112,15 @@ class P0BackendClient(object):
             Search  # noqa: E501
         """
 
-        dict = {
-            "method": "search",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/search",
+            "params": {
                 "text": text, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def select_and_copy(self, ):  # noqa: E501
         # type: () -> None
@@ -1045,14 +1128,15 @@ class P0BackendClient(object):
             Select And Copy  # noqa: E501
         """
 
-        dict = {
-            "method": "select_and_copy",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/select_and_copy",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def select_and_paste(self, ):  # noqa: E501
         # type: () -> None
@@ -1060,14 +1144,15 @@ class P0BackendClient(object):
             Select And Paste  # noqa: E501
         """
 
-        dict = {
-            "method": "select_and_paste",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/select_and_paste",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def select_clip(self, track_name, ):  # noqa: E501
         # type: (str, ) -> None
@@ -1075,14 +1160,15 @@ class P0BackendClient(object):
             Select Clip  # noqa: E501
         """
 
-        dict = {
-            "method": "select_clip",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/clip/select",
+            "params": {
                 "track_name": track_name, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def server_state(self, ):  # noqa: E501
         # type: () -> None
@@ -1090,14 +1176,15 @@ class P0BackendClient(object):
             Server State  # noqa: E501
         """
 
-        dict = {
-            "method": "server_state",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/server_state",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def set_clip_file_path(self, file_path, ):  # noqa: E501
         # type: (str, ) -> None
@@ -1105,14 +1192,15 @@ class P0BackendClient(object):
              Set Clip File Path  # noqa: E501
         """
 
-        dict = {
-            "method": "set_clip_file_path",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/clip/set_file_path",
+            "params": {
                 "file_path": file_path, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def set_envelope_loop_length(self, length, ):  # noqa: E501
         # type: (int, ) -> None
@@ -1120,14 +1208,15 @@ class P0BackendClient(object):
              Set Envelope Loop Length  # noqa: E501
         """
 
-        dict = {
-            "method": "set_envelope_loop_length",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/set_envelope_loop_length",
+            "params": {
                 "length": length, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def set_loop_length(self, bar_length, ):  # noqa: E501
         # type: (int, ) -> None
@@ -1135,14 +1224,15 @@ class P0BackendClient(object):
             Set Loop Length  # noqa: E501
         """
 
-        dict = {
-            "method": "set_loop_length",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/clip/set_loop_length",
+            "params": {
                 "bar_length": bar_length, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def sets(self, archive=False):  # noqa: E501
         # type: (bool, ) -> None
@@ -1150,14 +1240,15 @@ class P0BackendClient(object):
             Sets  # noqa: E501
         """
 
-        dict = {
-            "method": "sets",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/set/all",
+            "params": {
                 "archive": archive, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def show_automation(self, direction, ):  # noqa: E501
         # type: (str, ) -> None
@@ -1165,14 +1256,15 @@ class P0BackendClient(object):
             Show Automation  # noqa: E501
         """
 
-        dict = {
-            "method": "show_automation",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/show_automation",
+            "params": {
                 "direction": direction, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def show_error(self, message, ):  # noqa: E501
         # type: (str, ) -> None
@@ -1180,14 +1272,15 @@ class P0BackendClient(object):
             Show Error  # noqa: E501
         """
 
-        dict = {
-            "method": "show_error",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/show_error",
+            "params": {
                 "message": message, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def show_hide_plugins(self, ):  # noqa: E501
         # type: () -> None
@@ -1195,14 +1288,15 @@ class P0BackendClient(object):
             Show Hide Plugins  # noqa: E501
         """
 
-        dict = {
-            "method": "show_hide_plugins",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/show_hide_plugins",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def show_info(self, message, body=''):  # noqa: E501
         # type: (str, str, ) -> None
@@ -1210,14 +1304,15 @@ class P0BackendClient(object):
             Show Info  # noqa: E501
         """
 
-        dict = {
-            "method": "show_info",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/show_info",
+            "params": {
                 "message": message, "body": body, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def show_instrument(self, ):  # noqa: E501
         # type: () -> None
@@ -1225,14 +1320,15 @@ class P0BackendClient(object):
             Show Instrument  # noqa: E501
         """
 
-        dict = {
-            "method": "show_instrument",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/show_instrument",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def show_plugins(self, ):  # noqa: E501
         # type: () -> None
@@ -1240,14 +1336,15 @@ class P0BackendClient(object):
              Show Plugins  # noqa: E501
         """
 
-        dict = {
-            "method": "show_plugins",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/show_plugins",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def show_sample_category(self, category, ):  # noqa: E501
         # type: (str, ) -> None
@@ -1255,14 +1352,15 @@ class P0BackendClient(object):
             Show Sample Category  # noqa: E501
         """
 
-        dict = {
-            "method": "show_sample_category",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/show_sample_category",
+            "params": {
                 "category": category, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def show_saved_tracks(self, ):  # noqa: E501
         # type: () -> None
@@ -1270,14 +1368,15 @@ class P0BackendClient(object):
              Show Saved Tracks  # noqa: E501
         """
 
-        dict = {
-            "method": "show_saved_tracks",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/show_saved_tracks",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def show_success(self, message, ):  # noqa: E501
         # type: (str, ) -> None
@@ -1285,14 +1384,15 @@ class P0BackendClient(object):
             Show Success  # noqa: E501
         """
 
-        dict = {
-            "method": "show_success",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/show_success",
+            "params": {
                 "message": message, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def show_warning(self, message, ):  # noqa: E501
         # type: (str, ) -> None
@@ -1300,14 +1400,15 @@ class P0BackendClient(object):
             Show Warning  # noqa: E501
         """
 
-        dict = {
-            "method": "show_warning",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/show_warning",
+            "params": {
                 "message": message, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def start_profiling_single_measurement(self, ):  # noqa: E501
         # type: () -> None
@@ -1315,14 +1416,15 @@ class P0BackendClient(object):
             Start Profiling Single Measurement  # noqa: E501
         """
 
-        dict = {
-            "method": "start_profiling_single_measurement",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/start_profiling_single_measurement",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def start_set_profiling(self, ):  # noqa: E501
         # type: () -> None
@@ -1330,14 +1432,15 @@ class P0BackendClient(object):
             Start Set Profiling  # noqa: E501
         """
 
-        dict = {
-            "method": "start_set_profiling",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/start_set_profiling",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def tail_logs(self, ):  # noqa: E501
         # type: () -> None
@@ -1345,14 +1448,15 @@ class P0BackendClient(object):
             Tail Logs  # noqa: E501
         """
 
-        dict = {
-            "method": "tail_logs",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/tail_logs",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def tail_logs_raw(self, ):  # noqa: E501
         # type: () -> None
@@ -1360,14 +1464,15 @@ class P0BackendClient(object):
             Tail Logs Raw  # noqa: E501
         """
 
-        dict = {
-            "method": "tail_logs_raw",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/tail_logs_raw",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def toggle_ableton_button(self, x, y, activate=False):  # noqa: E501
         # type: (int, int, bool, ) -> None
@@ -1375,14 +1480,15 @@ class P0BackendClient(object):
              Toggle Ableton Button  # noqa: E501
         """
 
-        dict = {
-            "method": "toggle_ableton_button",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/toggle_ableton_button",
+            "params": {
                 "x": x, "y": y, "activate": activate, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def toggle_clip(self, track_name, ):  # noqa: E501
         # type: (str, ) -> None
@@ -1390,14 +1496,15 @@ class P0BackendClient(object):
             Toggle Clip  # noqa: E501
         """
 
-        dict = {
-            "method": "toggle_clip",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/clip/toggle",
+            "params": {
                 "track_name": track_name, 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def toggle_clip_notes(self, ):  # noqa: E501
         # type: () -> None
@@ -1405,14 +1512,15 @@ class P0BackendClient(object):
              Toggle Clip Notes  # noqa: E501
         """
 
-        dict = {
-            "method": "toggle_clip_notes",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/clip/toggle_notes",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def toggle_reference(self, ):  # noqa: E501
         # type: () -> None
@@ -1420,14 +1528,15 @@ class P0BackendClient(object):
             Toggle Reference  # noqa: E501
         """
 
-        dict = {
-            "method": "toggle_reference",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/toggle_reference",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)
 
     def toggle_scene_loop(self, ):  # noqa: E501
         # type: () -> None
@@ -1435,11 +1544,12 @@ class P0BackendClient(object):
             Toggle Scene Loop  # noqa: E501
         """
 
-        dict = {
-            "method": "toggle_scene_loop",
-            "args": {
+        payload = {
+            "method": "GET",
+            "path": "/scene/toggle_loop",
+            "params": {
                 
             }
         }
 
-        self._send_dict_as_midi(dict)
+        self._send_dict_as_midi(payload)

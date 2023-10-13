@@ -30,7 +30,8 @@ class SongStatsService(object):
                 raise e
 
         scene_names = [scene.scene_name.get_base_name() for scene in Song.scenes()]
-        scene_names.remove("")
+        if "" in scene_names:
+            scene_names.remove("")
 
         if len(list(set(scene_names))) < 2:
             StatusBar.show_message("Scenes are not named")

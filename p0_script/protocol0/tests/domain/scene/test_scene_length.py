@@ -27,7 +27,7 @@ def test_scene_length():
     clip_slot = AbletonClipSlot()
     clip_slot.has_clip = True
     clip_slot.clip = Clip(live_clip_slot.clip, 1, ClipConfig(1))
-    clips._clip_slot_tracks.append(SceneClipSlot(None, clip_slot))  # noqa
+    clips.clip_slot_tracks.append(SceneClipSlot(None, clip_slot))  # noqa
 
     assert scene_length.length == 4
     assert scene_length.bar_length == 1

@@ -294,6 +294,12 @@ class SimpleTrack(AbstractTrack):
         """Editing directly the mixer device volume"""
         self.devices.mixer_device.volume.scroll(go_next)
 
+    def duplicate_clip_to_arrangement(self, clip: Clip, time: float) -> None:
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev(f"duplicating {clip} to {time}, len : {clip.length}")
+        self._track.duplicate_clip_to_arrangement(clip._clip, time)
+
     def clear_arrangement(self) -> None:
         try:
             for clip in self._track.arrangement_clips:

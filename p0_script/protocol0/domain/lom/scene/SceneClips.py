@@ -34,7 +34,7 @@ class SceneClips(Observable):
     def __init__(self, index: int) -> None:
         super(SceneClips, self).__init__()
         self.index = index
-        self._clip_slot_tracks: List[SceneClipSlot] = []
+        self.clip_slot_tracks: List[SceneClipSlot] = []
 
         self.build()
 
@@ -44,17 +44,17 @@ class SceneClips(Observable):
     def __iter__(self) -> Iterator[Clip]:
         return iter(
             scene_cs.clip
-            for scene_cs in self._clip_slot_tracks
+            for scene_cs in self.clip_slot_tracks
             if scene_cs.clip is not None and scene_cs.is_main_clip
         )
 
     @property
     def all(self) -> List[Clip]:
-        return [scene_cs.clip for scene_cs in self._clip_slot_tracks if scene_cs.clip is not None]
+        return [scene_cs.clip for scene_cs in self.clip_slot_tracks if scene_cs.clip is not None]
 
     @property
     def tracks(self) -> List[SimpleTrack]:
-        return [scene_cs.track for scene_cs in self._clip_slot_tracks if scene_cs.clip is not None]
+        return [scene_cs.track for scene_cs in self.clip_slot_tracks if scene_cs.clip is not None]
 
     @debounce(duration=50)
     def update(self, observable: Observable) -> None:
@@ -63,14 +63,14 @@ class SceneClips(Observable):
             self.notify_observers()
 
     def build(self) -> None:
-        self._clip_slot_tracks = []
+        self.clip_slot_tracks = []
 
         for track in Song.simple_tracks():
             # if self.index not in track.clip_slots:
             #     continue
             clip_slot = track.clip_slots[self.index]
             clip_slot.register_observer(self)
-            self._clip_slot_tracks.append(SceneClipSlot(track, clip_slot))
+            self.clip_slot_tracks.append(SceneClipSlot(track, clip_slot))
 
         for clip in self:
             clip.register_observer(self)

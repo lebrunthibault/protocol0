@@ -25,7 +25,7 @@ from protocol0.domain.lom.scene.ScenePlaybackService import ScenePlaybackService
 from protocol0.domain.lom.scene.SceneService import SceneService
 from protocol0.domain.lom.set.AbletonSet import AbletonSet
 from protocol0.domain.lom.set.MixingService import MixingService
-from protocol0.domain.lom.set.SessionToArrangementService import SessionToArrangementService
+from protocol0.domain.lom.set.AudioExportService import AudioExportService
 from protocol0.domain.lom.song.SongInitService import SongInitService
 from protocol0.domain.lom.song.components.ClipComponent import ClipComponent
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
@@ -135,21 +135,13 @@ class Container(ContainerInterface):
         scene_service = SceneService(live_song, scene_crud_component, scene_playback_service)
         PlayingSceneFacade(scene_component)
         track_recorder_service = RecordService(
-            playback_component,
-            scene_crud_component,
-            quantization_component,
-            scene_playback_service
+            playback_component, scene_crud_component, quantization_component, scene_playback_service
         )
         validator_service = ValidatorService(ValidatorFactory(browser_service), drum_rack_service)
         set_fixer_service = SetFixerService(validator_service)
-        session_to_arrangement_service = SessionToArrangementService(
-            playback_component,
-            recording_component,
-            quantization_component,
-            scene_component,
-            tempo_component,
-            track_component,
-            set_fixer_service,
+        song_stats_service = SongStatsService(ableton_set)
+        audio_export_service = AudioExportService(
+            song_stats_service, set_fixer_service, playback_component
         )
         Song(
             live_song,
@@ -164,7 +156,6 @@ class Container(ContainerInterface):
             scene_service,
             track_mapper_service,
             track_recorder_service,
-            session_to_arrangement_service,
         )
 
         song_service = SongInitService(playback_component, ableton_set)
@@ -179,8 +170,6 @@ class Container(ContainerInterface):
             track_recorder_service, interface_clicks_service, track_crud_component, tempo_component
         )
         log_service = LogService(ableton_set, track_mapper_service, matching_track_service)
-
-        song_stats_service = SongStatsService(ableton_set)
 
         self._register(midi_service)
         self._register(browser_service)
@@ -225,12 +214,11 @@ class Container(ContainerInterface):
         self._register(set_fixer_service)
         self._register(song_stats_service)
 
-        self._register(session_to_arrangement_service)
+        self._register(audio_export_service)
 
         ActionGroupFactory.create_action_groups(self, control_surface.component_guard)
 
     def _register(self, service: object) -> None:
-
         if service.__class__ in self._registry:
             raise Protocol0Error("service already registered in container : %s" % service)
         self._registry[service.__class__] = service
