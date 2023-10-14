@@ -122,6 +122,14 @@ class Song(object):
             raise Protocol0Warning("current track is not an ExternalSynthTrack")
 
     @classmethod
+    def armed_or_selected_track(cls) -> "SimpleTrack":
+        armed_track = next(cls.armed_tracks(), None)
+        if armed_track:
+            return armed_track.base_track
+        else:
+            return cls.selected_track()
+
+    @classmethod
     def abstract_tracks(cls) -> Iterator["AbstractTrack"]:
         return cls._INSTANCE._track_component.abstract_tracks
 

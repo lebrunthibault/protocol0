@@ -20,7 +20,7 @@ function loadDevice (device: string | DeviceGroup) {
             // and displaying options on the base row
             EventBus.emit(new SelectedGroupedDevicesUpdatedEvent([[], [], [], device.devices.slice(1)]))
         } else {
-            EventBus.emit(new SelectedGroupedDevicesUpdatedEvent([[], [], [], device.devices]))
+            EventBus.emit(new SelectedGroupedDevicesUpdatedEvent(device.devices))
         }
     }
 }

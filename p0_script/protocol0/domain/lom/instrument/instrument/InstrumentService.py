@@ -18,7 +18,7 @@ class InstrumentService(object):
             instrument.on_loaded(event.device_enum)
 
     def toggle_macro_control(self, index: int) -> None:
-        rack_device = Song.selected_track().instrument_rack_device
+        rack_device = Song.armed_or_selected_track().instrument_rack_device
         if rack_device is None:
             return
 
@@ -29,7 +29,7 @@ class InstrumentService(object):
             param.value = param.min
 
     def scroll_macro_control(self, index: int, go_next: bool, steps: int = 500) -> None:
-        rack_device = Song.selected_track().instrument_rack_device
+        rack_device = Song.armed_or_selected_track().instrument_rack_device
         if rack_device is None:
             return
 
@@ -40,7 +40,7 @@ class InstrumentService(object):
         param.scroll(go_next, steps=steps)
 
     def scroll_arp_style(self, go_next: bool) -> None:
-        rack_device = Song.selected_track().instrument_rack_device
+        rack_device = Song.armed_or_selected_track().instrument_rack_device
         if rack_device is None:
             return
 
