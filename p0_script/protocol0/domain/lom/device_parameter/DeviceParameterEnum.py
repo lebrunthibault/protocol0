@@ -1,32 +1,32 @@
 from typing import Optional, Any, TYPE_CHECKING
 
-from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.shared.AbstractEnum import AbstractEnum
 
 if TYPE_CHECKING:
-    from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
+    pass
 
 
 class DeviceParameterEnum(AbstractEnum):
-    AUTO_FILTER_HIGH_PASS_FREQUENCY = "AUTO FILTER HIGH PASS FREQUENCY"
-    AUTO_FILTER_LOW_PASS_FREQUENCY = "AUTO FILTER LOW PASS FREQUENCY"
-    AUTO_PAN_AMOUNT = "AUTO PAN AMOUNT"
-    CHAIN_SELECTOR = "CHAIN SELECTOR"
-    COMPRESSOR_OUTPUT_GAIN = "COMPRESSOR OUTPUT GAIN"
-    COMPRESSOR_THRESHOLD = "COMPRESSOR THRESHOLD"
-    DEVICE_ON = "DEVICE ON"
-    EFFECTRIX_GLOBALWET = "EFFECTRIX GLOBALWET"
-    EQ_EIGHT_FREQUENCY_1_A = "EQ EIGHT FREQUENCY 1 A"
-    EQ_EIGHT_FREQUENCY_8_A = "EQ EIGHT FREQUENCY 8 A"
-    EQ_EIGHT_GAIN_4_A = "EQ EIGHT GAIN 4 A"
-    LFO_TOOL_LFO_DEPTH = "LFO TOOL LFO DEPTH"
-    LFO_TOOL_POINT_Y0 = "LFO TOOL POINT Y0"
-    LIMITER_GAIN = "LIMITER GAIN"
-    SATURATOR_DRIVE = "SATURATOR DRIVE"
-    SATURATOR_OUTPUT = "SATURATOR OUTPUT"
-    UTILITY_GAIN = "UTILITY GAIN"
-    UTILITY_SILENT_GAIN = "UTILITY SILENT GAIN"
-    UTILITY_MID_SIDE = "UTILITY MID SIDE"
+    AUTO_FILTER_HIGH_PASS_FREQUENCY = "AUTO_FILTER_HIGH_PASS_FREQUENCY"
+    AUTO_FILTER_LOW_PASS_FREQUENCY = "AUTO_FILTER_LOW_PASS_FREQUENCY"
+    AUTO_PAN_AMOUNT = "AUTO_PAN_AMOUNT"
+    CHAIN_SELECTOR = "CHAIN_SELECTOR"
+    COMPRESSOR_OUTPUT_GAIN = "COMPRESSOR_OUTPUT_GAIN"
+    COMPRESSOR_THRESHOLD = "COMPRESSOR_THRESHOLD"
+    DEVICE_ON = "DEVICE_ON"
+    EFFECTRIX_GLOBALWET = "EFFECTRIX_GLOBALWET"
+    EQ_EIGHT_FREQUENCY_1_A = "EQ_EIGHT_FREQUENCY_1_A"
+    EQ_EIGHT_FREQUENCY_8_A = "EQ_EIGHT_FREQUENCY_8_A"
+    EQ_EIGHT_GAIN_4_A = "EQ_EIGHT_GAIN_4_A"
+    INSERT_DELAY_INPUT = "INSERT_DELAY_INPUT"
+    INSERT_REVERB_INPUT = "INSERT_REVERB_INPUT"
+    LFO_TOOL_LFO_DEPTH = "LFO_TOOL_LFO_DEPTH"
+    LIMITER_GAIN = "LIMITER_GAIN"
+    SATURATOR_DRIVE = "SATURATOR_DRIVE"
+    SATURATOR_OUTPUT = "SATURATOR_OUTPUT"
+    UTILITY_GAIN = "UTILITY_GAIN"
+    UTILITY_SILENT_GAIN = "UTILITY_SILENT_GAIN"
+    UTILITY_MID_SIDE = "UTILITY_MID_SIDE"
 
     @property
     def parameter_name(self) -> str:
@@ -40,9 +40,11 @@ class DeviceParameterEnum(AbstractEnum):
                 DeviceParameterEnum.COMPRESSOR_THRESHOLD: "Threshold",
                 DeviceParameterEnum.DEVICE_ON: "Device On",
                 DeviceParameterEnum.EQ_EIGHT_FREQUENCY_1_A: "1 Frequency A",
-                DeviceParameterEnum.EQ_EIGHT_GAIN_4_A: "4 Gain A",
                 DeviceParameterEnum.EQ_EIGHT_FREQUENCY_8_A: "8 Frequency A",
-                DeviceParameterEnum.LFO_TOOL_POINT_Y0: "Point Y0",
+                DeviceParameterEnum.EQ_EIGHT_GAIN_4_A: "4 Gain A",
+                DeviceParameterEnum.INSERT_DELAY_INPUT: "Input",
+                DeviceParameterEnum.INSERT_REVERB_INPUT: "Input",
+                DeviceParameterEnum.LFO_TOOL_LFO_DEPTH: "LFO Depth",
                 DeviceParameterEnum.LIMITER_GAIN: "Gain",
                 DeviceParameterEnum.SATURATOR_DRIVE: "Drive",
                 DeviceParameterEnum.SATURATOR_OUTPUT: "Output",
@@ -52,32 +54,12 @@ class DeviceParameterEnum(AbstractEnum):
             }
         )
 
-    @property
-    def label(self) -> str:
-        return self.get_value_from_mapping(
-            {
-                DeviceParameterEnum.AUTO_FILTER_LOW_PASS_FREQUENCY: "Low Pass Frequency",
-                DeviceParameterEnum.UTILITY_GAIN: "Gain",
-                DeviceParameterEnum.AUTO_FILTER_HIGH_PASS_FREQUENCY: "High Pass Frequency",
-            }
-        )
-
-    @property
-    def device_enum(self) -> "DeviceEnum":
-        return self.get_value_from_mapping(
-            {
-                DeviceParameterEnum.AUTO_FILTER_LOW_PASS_FREQUENCY: "Low Pass Frequency",
-                DeviceParameterEnum.UTILITY_GAIN: "Gain",
-                DeviceParameterEnum.AUTO_FILTER_HIGH_PASS_FREQUENCY: "High Pass Frequency",
-            }
-        )
-
     @classmethod
     def from_name(cls, device_name: str, name: str) -> Optional["DeviceParameterEnum"]:
-        enum_name = "%s %s" % (device_name.upper(), name.upper())
+        enum_name = f"{device_name.upper()}_{name.upper}".replace(" ", "_")
         try:
-            return DeviceParameterEnum.from_value(enum_name)
-        except Protocol0Error:
+            return DeviceParameterEnum[enum_name]
+        except KeyError:
             return None
 
     @property

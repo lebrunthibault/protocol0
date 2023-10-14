@@ -39,9 +39,9 @@ class DeviceEnum(AbstractEnum):
     H_COMP = "H-Comp Stereo.vstpreset"
     H_DELAY = "H-Delay Stereo"
     KONTAKT = "Kontakt 7.vstpreset"
-    INSERT_DELAY = "Delay"
+    INSERT_DELAY = "Delay Rack"
     INSERT_FILTER = "Auto Filter"
-    INSERT_REVERB = "Reverb"
+    INSERT_REVERB = "Reverb Rack"
     INSERT_VOLUME = "Volume"
     INSTRUMENT_RACK = "Instrument Rack"
     JJP_STRINGS = "JJP-Strings-Keys Stereo"
@@ -207,8 +207,10 @@ class DeviceEnum(AbstractEnum):
                     DeviceEnum.AUTO_FILTER_HIGH_PASS: DeviceParameterEnum.AUTO_FILTER_HIGH_PASS_FREQUENCY,
                     DeviceEnum.AUTO_FILTER_LOW_PASS: DeviceParameterEnum.AUTO_FILTER_LOW_PASS_FREQUENCY,
                     DeviceEnum.AUTO_PAN: DeviceParameterEnum.AUTO_PAN_AMOUNT,
+                    DeviceEnum.INSERT_DELAY: DeviceParameterEnum.INSERT_DELAY_INPUT,
+                    DeviceEnum.INSERT_REVERB: DeviceParameterEnum.INSERT_REVERB_INPUT,
                     DeviceEnum.LIMITER: DeviceParameterEnum.LIMITER_GAIN,
-                    DeviceEnum.LFO_TOOL: DeviceParameterEnum.LFO_TOOL_POINT_Y0,
+                    DeviceEnum.LFO_TOOL: DeviceParameterEnum.LFO_TOOL_LFO_DEPTH,
                     DeviceEnum.SATURATOR: DeviceParameterEnum.SATURATOR_DRIVE,
                     DeviceEnum.UTILITY: DeviceParameterEnum.UTILITY_GAIN,
                 }

@@ -82,9 +82,9 @@ class CommandBus(object):
         if (
             type(command) not in broadcast_commands
             and command.set_id is not None
-            and command.set_id != self._ableton_set.path
+            and command.set_id != self._ableton_set.filename
         ):
-            pass
+            pass  # for now
 
         self._history.push(command)
 

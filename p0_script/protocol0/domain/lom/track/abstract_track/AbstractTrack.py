@@ -15,6 +15,7 @@ from protocol0.domain.lom.track.abstract_track.AbstractTrackAppearance import (
 from protocol0.domain.lom.track.abstract_track.AbstractTrackSelectedEvent import (
     AbstractTrackSelectedEvent,
 )
+from protocol0.domain.lom.track.group_track.TrackCategoryEnum import TrackCategoryEnum
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.utils.forward_to import ForwardTo
 from protocol0.shared.sequence.Sequence import Sequence
@@ -76,6 +77,12 @@ class AbstractTrack(SlotManager):
         if not self.group_track:
             return []
         return self.group_track.group_tracks + [self.group_track.abstract_track]
+
+    def has_category(self, category: TrackCategoryEnum) -> bool:
+        return (
+            len(self.group_tracks) != 0
+            and self.group_tracks[0].name.lower() == category.value.lower()
+        )
 
     def add_or_replace_sub_track(
         self, sub_track: "AbstractTrack", previous_sub_track: Optional["AbstractTrack"] = None
