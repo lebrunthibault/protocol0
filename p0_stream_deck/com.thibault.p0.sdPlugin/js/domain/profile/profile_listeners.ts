@@ -6,6 +6,7 @@ import ActionPressedEvent from '../../action/action_pressed_event'
 import { actionTypes, BACK_TO_PREVIOUS_PROFILE } from '../../action/action_type'
 import ProfileNameEnum from './ProfileNameEnum'
 import SelectedGroupedDevicesUpdatedEvent from '../device/selected_grouped_devices_updated_event'
+import ProfileChangedEvent from './profile_changed_event'
 
 @injectable()
 class ProfileListeners {
@@ -15,7 +16,7 @@ class ProfileListeners {
     public setup () {
         EventBus.subscribe(ActionGroupAppearedEvent, (event: ActionGroupAppearedEvent) => this.onActionGroupAppearedEvent(event))
         EventBus.subscribe(ActionPressedEvent, (event: ActionPressedEvent) => this.onActionPressedEvent(event))
-        EventBus.subscribe(SelectedGroupedDevicesUpdatedEvent, (event: SelectedGroupedDevicesUpdatedEvent) => this.onSelectedGroupedDevicesUpdatedEvent(event))
+        EventBus.subscribe(ProfileChangedEvent, (event: ProfileChangedEvent) => this.onProfileChangedEvent(event))
     }
 
     private onActionGroupAppearedEvent (event: ActionGroupAppearedEvent) {
@@ -28,20 +29,23 @@ class ProfileListeners {
         const actionType = actionTypes.fromName(event.context.name)
 
         if (actionType.profileAutoSwitch) {
-            $SD.api.switchToProfile('', this.db.deviceId, actionType.profileAutoSwitch)
-            return
-        }
+            this.switchProfile(actionType.profileAutoSwitch)
+        } else if (actionType.name === BACK_TO_PREVIOUS_PROFILE) {
+            this.switchProfile(this.db.profileHistory.getPrevious() || ProfileNameEnum.HOME)
 
-        if (actionType.name === BACK_TO_PREVIOUS_PROFILE) {
-            const previousProfile = this.db.profileHistory.getPrevious() || ProfileNameEnum.HOME
-
-            $SD.api.switchToProfile('', this.db.deviceId, previousProfile)
             this.db.profileHistory.clear()
         }
     }
 
-    private onSelectedGroupedDevicesUpdatedEvent (_: SelectedGroupedDevicesUpdatedEvent) {
-        $SD.api.switchToProfile('', this.db.deviceId, ProfileNameEnum.DEVICE_GROUP)
+    private onProfileChangedEvent (event: ProfileChangedEvent) {
+        this.switchProfile(event.profile)
+    }
+
+    private switchProfile (profile: ProfileNameEnum) {
+        // clean previous profiles
+        EventBus.emit(new SelectedGroupedDevicesUpdatedEvent([[], [], [], []]))
+
+        $SD.api.switchToProfile('', this.db.deviceId, profile)
     }
 }
 

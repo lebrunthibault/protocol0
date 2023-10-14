@@ -1,6 +1,6 @@
 from functools import partial
 
-from protocol0.domain.lom.song.components.TrackComponent import get_track_by_name
+from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.scheduler.BarChangedEvent import BarChangedEvent
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
@@ -10,11 +10,7 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class ClipPlayerService(object):
-    def select_clip(self, track_name: str) -> None:
-        track = get_track_by_name(track_name)
-        if track is None:
-            return
-
+    def select_clip(self, track: SimpleTrack) -> None:
         track.is_folded = False
         track.clip_slots[Song.selected_scene().index].select()
         if track.arm_state.is_armed:
@@ -25,17 +21,15 @@ class ClipPlayerService(object):
 
         ApplicationView.show_device()
 
-    def toggle_clip(self, track_name: str) -> None:
-        track = get_track_by_name(track_name)
-        if track is None:
-            return
-
+    def toggle_clip(self, track: SimpleTrack) -> None:
         scene_index = Song.selected_scene().index
         cs = track.clip_slots[scene_index]
 
         if cs.clip is None:
             # look for another clip to copy in previous or next scenes
-            other_clip_slots = list(reversed(track.clip_slots[:scene_index])) + track.clip_slots[scene_index:]
+            other_clip_slots = (
+                list(reversed(track.clip_slots[:scene_index])) + track.clip_slots[scene_index:]
+            )
             previous_or_next_cs = next((cs for cs in other_clip_slots if cs.clip), None)
             if previous_or_next_cs is None:
                 Logger.info("No clip")
