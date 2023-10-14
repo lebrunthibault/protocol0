@@ -3,6 +3,9 @@ from typing import Optional
 
 import Live
 
+from protocol0.domain.lom.device_parameter.DeviceParameterEnum import DeviceParameterEnum
+from protocol0.domain.lom.track.group_track.TrackCategoryEnum import TrackCategoryEnum
+
 from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
@@ -10,7 +13,6 @@ from protocol0.domain.lom.device.DeviceLoadedEvent import DeviceLoadedEvent
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
 from protocol0.domain.lom.song.components.TrackComponent import get_track_by_name
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
-from protocol0.domain.lom.track.group_track.NormalGroupTrackEnum import NormalGroupTrackEnum
 from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import ExternalSynthTrack
 from protocol0.domain.lom.track.group_track.ext_track.SimpleMidiExtTrack import SimpleMidiExtTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
@@ -40,31 +42,21 @@ class DeviceService(object):
     def load_device(self, enum_name: str, create_track: bool = False) -> Sequence:
         UndoFacade.begin_undo_step()
         device_enum = DeviceEnum[enum_name]
-        track = self._get_instrument_track(device_enum)
-        device_to_select = self._get_device_to_select_for_insertion(track, device_enum)
+        track = Song.selected_track()
+        is_clip_view_visible = ApplicationView.is_clip_view_visible()
 
-        if device_to_select:
-            track.device_insert_mode = Live.Track.DeviceInsertMode.selected_left
-            self._device_component.select_device(track, device_to_select)
-        else:
-            track.device_insert_mode = Live.Track.DeviceInsertMode.selected_right
-            if len(list(track.devices)) > 0:
-                self._device_component.select_device(track, list(track.devices)[-1])
+        self._load_device_select_track(device_enum, create_track)
 
         seq = Sequence()
-        seq.add(track.select)
 
         if device_enum.is_instrument:
             if create_track:
-                track_to_select_for_creation = self._get_track_to_select_for_creation(device_enum)
-                if track_to_select_for_creation:
-                    seq.add(track_to_select_for_creation.select)
-
                 seq.add(self._track_crud_component.create_midi_track)
                 seq.add(lambda: rename_track(Song.selected_track(), device_enum.track_name))
+
                 # if selected track is empty, delete it to make some room
-                if len(Song.selected_track().clips) == 0:
-                    seq.add(Song.selected_track().delete)
+                if len(track.clips) == 0 and not track.has_category(TrackCategoryEnum.BASS):
+                    seq.add(track.delete)
             elif track.instrument:
                 instrument_device = track.instrument_rack_device or track.instrument.device
                 if instrument_device:
@@ -76,9 +68,9 @@ class DeviceService(object):
             device_enum.default_parameter is not None
             and Song.selected_clip_slot() is not None
             and Song.selected_clip(raise_if_none=False) is not None
-            and ApplicationView.is_clip_view_visible()
+            and is_clip_view_visible
         ):
-            seq.add(partial(self._create_default_automation, Song.selected_clip()))
+            seq.add(partial(self._show_default_automation, Song.selected_clip()))
 
         seq.add(UndoFacade.end_undo_step)
         return seq.done()
@@ -95,14 +87,35 @@ class DeviceService(object):
 
         return selected_track
 
+    def _load_device_select_track(self, device_enum: DeviceEnum, create_track: bool) -> None:
+        track = self._get_instrument_track(device_enum)
+
+        if device_enum.is_instrument:
+            if create_track:
+                track_to_select_for_creation = self._get_track_to_select_for_creation(device_enum)
+                if track_to_select_for_creation:
+                    track_to_select_for_creation.select()
+            else:
+                track.select()
+            return
+
+        device_to_select = self._get_device_to_select_for_insertion(track, device_enum)
+        if device_to_select:
+            track.device_insert_mode = Live.Track.DeviceInsertMode.selected_left
+            self._device_component.select_device(track, device_to_select)
+        else:
+            track.device_insert_mode = Live.Track.DeviceInsertMode.selected_right
+            if len(list(track.devices)) > 0:
+                self._device_component.select_device(track, list(track.devices)[-1])
+
     def _get_track_to_select_for_creation(self, device_enum: DeviceEnum) -> Optional[SimpleTrack]:
         track = None
         if device_enum.is_harmony_instrument:
-            track = get_track_by_name(NormalGroupTrackEnum.HARMONY.value, True)
+            track = get_track_by_name(TrackCategoryEnum.HARMONY.value, True)
         elif device_enum.is_melody_instrument:
-            track = get_track_by_name(NormalGroupTrackEnum.MELODY.value, True)
+            track = get_track_by_name(TrackCategoryEnum.MELODY.value, True)
         elif device_enum.is_bass_instrument:
-            track = get_track_by_name(NormalGroupTrackEnum.BASS.value, True)
+            track = get_track_by_name(TrackCategoryEnum.BASS.value, True)
 
         if track:
             return track.sub_tracks[-1]
@@ -116,11 +129,12 @@ class DeviceService(object):
             parameter = device.get_parameter_by_name(device.enum.default_parameter)
             self._device_component.selected_parameter = parameter
 
-    def _create_default_automation(self, clip: Clip) -> None:
+    def _show_default_automation(self, clip: Clip) -> None:
         device = Song.selected_track().devices.selected
         assert device.enum.default_parameter, "Loaded device has no default parameter"
         parameter = device.get_parameter_by_name(device.enum.default_parameter)
         assert parameter is not None, "parameter not found"
+
         clip.automation.show_parameter_envelope(parameter)
 
     def _get_device_to_select_for_insertion(
@@ -157,18 +171,7 @@ class DeviceService(object):
                 filter_param.scroll(go_next)
                 return None
 
-        eq_eight = Song.selected_track().devices.get_one_from_enum(DeviceEnum.EQ_EIGHT)
-
-        seq = Sequence()
-
-        if not eq_eight:
-            seq.add(partial(self.load_device, DeviceEnum.EQ_EIGHT.name))
-        else:
-            eq_eight.is_enabled = True
-            frequency = eq_eight.get_parameter_by_name("8 Frequency A")
-            frequency.scroll(go_next)
-
-        return seq.done()
+        return self._scroll_eq_parameter(DeviceParameterEnum.EQ_EIGHT_FREQUENCY_8_A, go_next)
 
     def toggle_eq(self) -> None:
         eq_eight = Song.selected_track().devices.get_one_from_enum(DeviceEnum.EQ_EIGHT)
@@ -177,6 +180,9 @@ class DeviceService(object):
 
     @lock
     def scroll_high_pass_filter(self, go_next: bool) -> Sequence:
+        return self._scroll_eq_parameter(DeviceParameterEnum.EQ_EIGHT_FREQUENCY_1_A, go_next)
+
+    def _scroll_eq_parameter(self, param: DeviceParameterEnum, go_next: bool) -> Sequence:
         eq_eight = Song.selected_track().devices.get_one_from_enum(DeviceEnum.EQ_EIGHT)
 
         seq = Sequence()
@@ -185,7 +191,7 @@ class DeviceService(object):
             seq.add(partial(self.load_device, DeviceEnum.EQ_EIGHT.name))
         else:
             eq_eight.is_enabled = True
-            frequency = eq_eight.get_parameter_by_name("1 Frequency A")
+            frequency = eq_eight.get_parameter_by_name(param)
             frequency.scroll(go_next)
 
         return seq.done()
@@ -207,9 +213,6 @@ class DeviceService(object):
 
         insert_reverb = Song.selected_track().devices.get_one_from_enum(DeviceEnum.INSERT_REVERB)
         if insert_reverb:
-            from protocol0.shared.logging.Logger import Logger
-
-            Logger.dev(insert_reverb.parameters[1])
             insert_reverb.parameters[1].scroll(go_next)
         else:
             sends = Song.selected_track().devices.mixer_device.sends
@@ -226,9 +229,6 @@ class DeviceService(object):
 
         insert_delay = Song.selected_track().devices.get_one_from_enum(DeviceEnum.INSERT_DELAY)
         if insert_delay:
-            from protocol0.shared.logging.Logger import Logger
-
-            Logger.dev(insert_delay.parameters[1])
             insert_delay.parameters[1].scroll(go_next)
 
     @lock

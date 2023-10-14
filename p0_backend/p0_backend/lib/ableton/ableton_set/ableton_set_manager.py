@@ -38,15 +38,7 @@ class AbletonSetManager:
         if cls.DEBUG:
             logger.info(f"registering set {ableton_set}")
 
-        launched_sets = [title for title in get_ableton_window_titles() if title]
-        if len(launched_sets) == 0:
-            logger.warning("No ableton window")
-            return
-
-        set_title = re.match(r"([^*]*)", launched_sets[0]).group(1).split(" [")[0].strip()
-        if not set_title:
-            logger.warning(f"Couldn't find set title in launched sets: {launched_sets}")
-            return
+        set_title = _get_ableton_set_title()
 
         if ableton_set.is_untitled and set_title.startswith("Untitled"):
             ableton_set.path_info = AbletonSetPath.create(settings.ableton_test_set_path)
@@ -126,6 +118,20 @@ def _check_track_name_change(existing_set: AbletonSet, new_set: AbletonSet):
     ):
         notification_window.delay("You updated a saved track", NotificationEnum.WARNING)
         show_saved_tracks()
+
+
+def _get_ableton_set_title() -> Optional[str]:
+    launched_sets = [title for title in get_ableton_window_titles() if title]
+    if len(launched_sets) == 0:
+        logger.warning("No ableton window")
+        return None
+
+    set_title = re.match(r"([^*]*)", launched_sets[0]).group(1).split(" [")[0].strip()
+    if not set_title:
+        logger.warning(f"Couldn't find set title in launched sets: {launched_sets}")
+        return None
+
+    return set_title
 
 
 def _get_focused_set_title() -> Optional[str]:

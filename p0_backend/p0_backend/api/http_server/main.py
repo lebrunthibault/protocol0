@@ -70,7 +70,7 @@ async def _catch_protocol0_errors(request: Request, call_next):
 
 async def _get_state():
     """Delaying so the http and midi servers are up to receive set data"""
-    await asyncio.sleep(3)
+    await asyncio.sleep(2)
     p0_script_client().dispatch(GetSetStateCommand())
 
 

@@ -43,6 +43,7 @@ from protocol0.domain.shared.utils.utils import volume_to_db, db_to_volume
 from protocol0.infra.persistence.TrackData import TrackData
 from protocol0.shared.Config import Config
 from protocol0.shared.Song import Song
+from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.observer.Observable import Observable
 from protocol0.shared.sequence.Sequence import Sequence
 
@@ -273,7 +274,10 @@ class SimpleTrack(AbstractTrack):
         if clip is not None and clip.is_playing:
             clip.stop(wait_until_end=True)
 
-    def delete(self) -> Sequence:
+    def delete(self) -> Optional[Sequence]:
+        if self.group_track and self.group_track.sub_tracks == [self]:
+            Logger.warning(f"Cannot delete {self}: it is the only subtrack")
+            return None
         DomainEventBus.emit(SimpleTrackDeletedEvent(self))
         return Sequence().wait_for_event(TracksMappedEvent).done()
 
@@ -295,9 +299,6 @@ class SimpleTrack(AbstractTrack):
         self.devices.mixer_device.volume.scroll(go_next)
 
     def duplicate_clip_to_arrangement(self, clip: Clip, time: float) -> None:
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(f"duplicating {clip} to {time}, len : {clip.length}")
         self._track.duplicate_clip_to_arrangement(clip._clip, time)
 
     def clear_arrangement(self) -> None:
