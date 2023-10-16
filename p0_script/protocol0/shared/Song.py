@@ -124,8 +124,15 @@ class Song(object):
     @classmethod
     def armed_or_selected_track(cls) -> "SimpleTrack":
         armed_track = next(cls.armed_tracks(), None)
-        if armed_track:
-            return armed_track.base_track
+        if armed_track and armed_track != cls.selected_track():
+            if cls.selected_track().solo and not armed_track.solo:
+                cls.selected_track().arm_state.arm()
+                return cls.selected_track()
+            elif cls.selected_track().is_playing and not armed_track.base_track.is_playing:
+                cls.selected_track().arm_state.arm()
+                return cls.selected_track()
+            else:
+                return armed_track.base_track
         else:
             return cls.selected_track()
 
