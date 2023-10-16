@@ -51,6 +51,7 @@ class DeviceEnum(AbstractEnum):
     L1_ULTRAMAXIMIZER = "L1+ Ultramaximizer Stereo"
     LIMITER = "Limiter"
     MASTERING_RACK = "Mastering Rack"
+    OCTAVA = "Octava.adg"
     OPUS = "Opus"
     OPUS_VIOLINS = "Opus Violins.vstpreset"
     OPUS_CELLO = "Opus Cello.vstpreset"

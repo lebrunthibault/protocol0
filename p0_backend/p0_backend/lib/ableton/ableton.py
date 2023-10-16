@@ -100,10 +100,10 @@ def open_set(filename: str, confirm_dialog=True):
 
 def export_audio():
     send_keys("^+r")
-    send_keys("{ENTER}")
-    send_keys("{ENTER}")
-    send_keys("{LEFT}")
-    send_keys("{ENTER}")
+    # send_keys("{ENTER}")
+    # send_keys("{ENTER}")
+    # send_keys("{LEFT}")
+    # send_keys("{ENTER}")
 
 
 @keep_mouse_position

@@ -132,10 +132,10 @@ class DeviceParameter(object):
     def scroll(
         self, go_next: bool, value_items: List = None, factor: int = 1, steps: int = 1000
     ) -> None:
-        if self.is_quantized:
-            if value_items is None:
-                value_items = list(self.value_items)
+        if self.is_quantized and value_items is None:
+            value_items = list(self.value_items)
 
+        if value_items:
             self.value = ValueScroller.scroll_values(value_items, self.value, go_next, rotate=False)
             return
 
@@ -144,6 +144,7 @@ class DeviceParameter(object):
         step = value_range / steps
         step *= factor  # used by accelerate decorator
         value = self.value + step if go_next else self.value - step
+
         self.value = clamp(value, self.min, self.max)
 
     def toggle(self) -> None:
