@@ -1,7 +1,6 @@
 from functools import partial
 from typing import Optional
 
-from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device.DeviceService import DeviceService
 from protocol0.domain.lom.device_parameter.DeviceParameterEnum import DeviceParameterEnum
@@ -11,7 +10,6 @@ from protocol0.domain.lom.instrument.instrument.InstrumentParameterEnum import (
 )
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.utils.concurrency import lock
-from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
@@ -100,25 +98,34 @@ class InstrumentService(object):
 
         return seq.done()
 
-    def toggle_octava_bassa(self, go_next: bool) -> None:
-        octava = Song.armed_or_selected_track().devices.get_one_from_name("Octava")
-        if octava is None:
-            Logger.warning("Cannot find Octava device")
-            return
+    @lock
+    def toggle_octava_bassa(self) -> Optional[Sequence]:
+        octava = Song.armed_or_selected_track().devices.get_one_from_enum(DeviceEnum.OCTAVA)
+
+        if not octava:
+            Song.armed_or_selected_track().select()
+            return self._device_service.load_device(DeviceEnum.OCTAVA.name)
 
         octava.toggle()
+        return None
 
-    def scroll_octava_bassa(self, go_next: bool) -> None:
-        octava = Song.armed_or_selected_track().devices.get_one_from_name("Octava")
-        if octava is None:
-            Logger.warning("Cannot find Octava device")
-            return
+    @lock
+    def scroll_octava_bassa(self, go_next: bool) -> Optional[Sequence]:
+        octava = Song.armed_or_selected_track().devices.get_one_from_enum(DeviceEnum.OCTAVA)
+
+        if not octava:
+            Song.armed_or_selected_track().select()
+            return self._device_service.load_device(DeviceEnum.OCTAVA.name)
 
         velocity = octava.get_parameter_by_name("Vel")
         velocity.scroll(go_next)
 
-        if velocity == 0 and not octava.is_enabled or velocity != 0 and not octava.is_enabled:
+        if (velocity.value == 0 and octava.is_enabled) or (
+            velocity.value != 0 and not octava.is_enabled
+        ):
             octava.toggle()
+
+        return None
 
     def scroll_reverb(self, go_next: bool) -> None:
         if self.scroll_param(InstrumentParameterEnum.REVERB, go_next):
@@ -144,19 +151,24 @@ class InstrumentService(object):
         if insert_delay:
             insert_delay.parameters[1].scroll(go_next)
 
-    def toggle_arp(self) -> None:
+    @lock
+    def toggle_arp(self) -> Optional[Sequence]:
         arp = Song.armed_or_selected_track().devices.get_one_from_enum(DeviceEnum.ARPEGGIATOR)
-        if arp is None:
-            Logger.warning("Cannot find arp device")
-            return
 
-        arp.get_parameter_by_name("Device On").toggle()
+        if not arp:
+            Song.armed_or_selected_track().select()
+            return self._device_service.load_device(DeviceEnum.ARPEGGIATOR.name)
 
-    def scroll_arp_style(self, go_next: bool) -> None:
+        arp.toggle()
+        return None
+
+    @lock
+    def scroll_arp_style(self, go_next: bool) -> Optional[Sequence]:
         arp = Song.armed_or_selected_track().devices.get_one_from_enum(DeviceEnum.ARPEGGIATOR)
-        if arp is None:
-            Logger.warning("Cannot find arp device")
-            return
+
+        if not arp:
+            Song.armed_or_selected_track().select()
+            return self._device_service.load_device(DeviceEnum.ARPEGGIATOR.name)
 
         allowed_values = [
             "Up",
@@ -183,35 +195,39 @@ class InstrumentService(object):
         value_items = [list(arp_style.value_items).index(value) for value in allowed_values]
         arp_style.scroll_slowed(go_next, value_items=value_items)
 
-    def scroll_arp_rate(self, go_next: bool) -> None:
-        arp = Song.armed_or_selected_track().devices.get_one_from_enum(DeviceEnum.ARPEGGIATOR)
-        if arp is None:
-            Logger.warning("Cannot find arp device")
-            return
-
-        arp.get_parameter_by_name("Rate").scroll(go_next, steps=200)
-
-    def scroll_arp_gate(self, go_next: bool) -> None:
-        arp = Song.armed_or_selected_track().devices.get_one_from_enum(DeviceEnum.ARPEGGIATOR)
-        if arp is None:
-            Logger.warning("Cannot find arp device")
-            return
-
-        arp.get_parameter_by_name("Gate").scroll(go_next)
+        return None
 
     @lock
-    def scroll_lfo_tool(self, go_next: bool) -> Sequence:
-        lfo_tool: Optional[Device] = find_if(
-            lambda d: d.enum == DeviceEnum.LFO_TOOL, Song.armed_or_selected_track().devices
-        )
+    def scroll_arp_rate(self, go_next: bool) -> Optional[Sequence]:
+        arp = Song.armed_or_selected_track().devices.get_one_from_enum(DeviceEnum.ARPEGGIATOR)
 
-        seq = Sequence()
+        if not arp:
+            Song.armed_or_selected_track().select()
+            return self._device_service.load_device(DeviceEnum.ARPEGGIATOR.name)
+
+        arp.get_parameter_by_name("Synced Rate").scroll_slowed(go_next, value_items=list(range(14)))
+
+        return None
+
+    @lock
+    def scroll_arp_gate(self, go_next: bool) -> Optional[Sequence]:
+        arp = Song.armed_or_selected_track().devices.get_one_from_enum(DeviceEnum.ARPEGGIATOR)
+
+        if not arp:
+            Song.armed_or_selected_track().select()
+            return self._device_service.load_device(DeviceEnum.ARPEGGIATOR.name)
+
+        arp.get_parameter_by_name("Gate").scroll(go_next)
+        return None
+
+    @lock
+    def scroll_lfo_tool(self, go_next: bool) -> Optional[Sequence]:
+        lfo_tool = Song.armed_or_selected_track().devices.get_one_from_enum(DeviceEnum.LFO_TOOL)
 
         if not lfo_tool:
             Song.armed_or_selected_track().select()
+            return self._device_service.load_device(DeviceEnum.LFO_TOOL.name)
 
-            seq.add(partial(self._device_service.load_device, DeviceEnum.LFO_TOOL.name))
-        else:
-            seq.add(partial(lfo_tool.parameters[1].scroll, go_next))
 
-        return seq.done()
+        lfo_tool.get_parameter_by_name(DeviceParameterEnum.LFO_TOOL_LFO_DEPTH).scroll(go_next)
+        return None

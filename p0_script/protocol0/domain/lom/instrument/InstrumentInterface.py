@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Optional, Type
+from typing import Optional, Type, Dict
 
 from _Framework.SubjectSlot import SlotManager
 
@@ -8,6 +8,8 @@ from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device.PluginDevice import PluginDevice
 from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.instrument.InstrumentColorEnum import InstrumentColorEnum
+from protocol0.domain.lom.instrument.instrument.InstrumentParameterEnum import \
+    InstrumentParameterEnum
 from protocol0.domain.lom.instrument.preset.InstrumentPreset import InstrumentPreset
 from protocol0.domain.lom.instrument.preset.InstrumentPresetList import InstrumentPresetList
 from protocol0.domain.lom.instrument.preset.PresetDisplayOptionEnum import PresetDisplayOptionEnum
@@ -60,7 +62,7 @@ class InstrumentInterface(SlotManager):
     PRESET_INITIALIZER: Type[PresetInitializerInterface] = PresetInitializerDevicePresetName
     INSTRUMENT_TRACK_NAME = ""
     IS_EXTERNAL_SYNTH = False
-    PARAMETER_NAMES = {}
+    PARAMETER_NAMES: Dict[InstrumentParameterEnum, str] = {}
 
     # noinspection PyInitNewSignature
     def __init__(self, device: Optional[Device], rack_device: Optional[RackDevice] = None) -> None:
