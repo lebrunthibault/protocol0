@@ -60,6 +60,7 @@ class InstrumentInterface(SlotManager):
     PRESET_INITIALIZER: Type[PresetInitializerInterface] = PresetInitializerDevicePresetName
     INSTRUMENT_TRACK_NAME = ""
     IS_EXTERNAL_SYNTH = False
+    PARAMETER_NAMES = {}
 
     # noinspection PyInitNewSignature
     def __init__(self, device: Optional[Device], rack_device: Optional[RackDevice] = None) -> None:

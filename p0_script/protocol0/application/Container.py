@@ -120,9 +120,9 @@ class Container(ContainerInterface):
         browser = control_surface.application().browser
         browser_service = BrowserService(browser, BrowserLoaderService(browser))
         device_display_service = DeviceDisplayService(browser_service)
-        instrument_service = InstrumentService()
         instrument_display_service = InstrumentDisplayService(device_display_service)
         device_service = DeviceService(track_crud_component, device_component, browser_service)
+        instrument_service = InstrumentService(device_service)
         drum_rack_service = DrumRackService(browser_service)
         drum_rack_sample_service = DrumRackSampleService()
         track_factory = TrackFactory(track_crud_component, browser_service, drum_rack_service)
