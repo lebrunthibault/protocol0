@@ -6,8 +6,9 @@ from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device.DeviceService import DeviceService
 from protocol0.domain.lom.device_parameter.DeviceParameterEnum import DeviceParameterEnum
 from protocol0.domain.lom.instrument.InstrumentLoadedEvent import InstrumentLoadedEvent
-from protocol0.domain.lom.instrument.instrument.InstrumentParameterEnum import \
-    InstrumentParameterEnum
+from protocol0.domain.lom.instrument.instrument.InstrumentParameterEnum import (
+    InstrumentParameterEnum,
+)
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.utils.concurrency import lock
 from protocol0.domain.shared.utils.list import find_if
@@ -182,7 +183,7 @@ class InstrumentService(object):
         value_items = [list(arp_style.value_items).index(value) for value in allowed_values]
         arp_style.scroll_slowed(go_next, value_items=value_items)
 
-    def scroll_arp_rate(self, go_next: bool):
+    def scroll_arp_rate(self, go_next: bool) -> None:
         arp = Song.armed_or_selected_track().devices.get_one_from_enum(DeviceEnum.ARPEGGIATOR)
         if arp is None:
             Logger.warning("Cannot find arp device")
@@ -190,7 +191,7 @@ class InstrumentService(object):
 
         arp.get_parameter_by_name("Rate").scroll(go_next, steps=200)
 
-    def scroll_arp_gate(self, go_next: bool):
+    def scroll_arp_gate(self, go_next: bool) -> None:
         arp = Song.armed_or_selected_track().devices.get_one_from_enum(DeviceEnum.ARPEGGIATOR)
         if arp is None:
             Logger.warning("Cannot find arp device")
