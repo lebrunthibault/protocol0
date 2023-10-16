@@ -146,6 +146,12 @@ class DeviceParameter(object):
         value = self.value + step if go_next else self.value - step
         self.value = clamp(value, self.min, self.max)
 
+    def toggle(self) -> None:
+        if self.value == self.min:
+            self.value = self.max
+        else:
+            self.value = self.min
+
     def reset(self) -> None:
         if self.name == "Device On":
             # we define arbitrarily that toggling a device always starts from disabled state

@@ -101,6 +101,9 @@ class Device(SlotManager):
     def is_enabled(self, on: bool) -> None:
         self.get_parameter_by_name(DeviceParameterEnum.DEVICE_ON).value = 1 if on else 0
 
+    def toggle(self) -> None:
+        self.is_enabled = not self.is_enabled
+
     @property
     def is_active(self) -> bool:
         """

@@ -11,6 +11,7 @@ from protocol0.shared.Config import Config
 
 class DeviceEnum(AbstractEnum):
     API_2500 = "API-2500 Stereo"
+    ARPEGGIATOR = "Arpeggiator"
     AUDIO_EFFECT_RACK = "Audio Effect Rack"
     AUTO_FILTER = "Auto Filter"
     AUTO_FILTER_HIGH_PASS = "Auto Filter High Pass"

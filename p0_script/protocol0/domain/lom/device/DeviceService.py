@@ -3,9 +3,6 @@ from typing import Optional
 
 import Live
 
-from protocol0.domain.lom.device_parameter.DeviceParameterEnum import DeviceParameterEnum
-from protocol0.domain.lom.track.group_track.TrackCategoryEnum import TrackCategoryEnum
-
 from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
@@ -13,6 +10,7 @@ from protocol0.domain.lom.device.DeviceLoadedEvent import DeviceLoadedEvent
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
 from protocol0.domain.lom.song.components.TrackComponent import get_track_by_name
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
+from protocol0.domain.lom.track.group_track.TrackCategoryEnum import TrackCategoryEnum
 from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import ExternalSynthTrack
 from protocol0.domain.lom.track.group_track.ext_track.SimpleMidiExtTrack import SimpleMidiExtTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
@@ -20,8 +18,6 @@ from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_tr
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.BrowserServiceInterface import BrowserServiceInterface
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
-from protocol0.domain.shared.utils.concurrency import lock
-from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.Song import Song
 from protocol0.shared.UndoFacade import UndoFacade
 from protocol0.shared.sequence.Sequence import Sequence
@@ -151,105 +147,3 @@ class DeviceService(object):
                 return device
 
         return None
-
-    def scroll_volume(self, go_next: bool) -> None:
-        rack_device = Song.armed_or_selected_track().instrument_rack_device
-        if rack_device:
-            volume = rack_device.get_parameter_by_name("Volume")
-            if volume:
-                volume.scroll(go_next)
-                return
-
-        Song.armed_or_selected_track().scroll_volume(go_next)
-
-    @lock
-    def scroll_low_pass_filter(self, go_next: bool) -> Optional[Sequence]:
-        rack_device = Song.armed_or_selected_track().instrument_rack_device
-        if rack_device:
-            filter_param = rack_device.get_parameter_by_name("Filter")
-            if filter_param:
-                filter_param.scroll(go_next)
-                return None
-
-        return self._scroll_eq_parameter(DeviceParameterEnum.EQ_EIGHT_FREQUENCY_8_A, go_next)
-
-    def toggle_eq(self) -> None:
-        eq_eight = Song.armed_or_selected_track().devices.get_one_from_enum(DeviceEnum.EQ_EIGHT)
-        if eq_eight:
-            eq_eight.is_enabled = not eq_eight.is_enabled
-
-    @lock
-    def scroll_high_pass_filter(self, go_next: bool) -> Sequence:
-        return self._scroll_eq_parameter(DeviceParameterEnum.EQ_EIGHT_FREQUENCY_1_A, go_next)
-
-    def _scroll_eq_parameter(self, param: DeviceParameterEnum, go_next: bool) -> Sequence:
-        eq_eight = Song.armed_or_selected_track().devices.get_one_from_enum(DeviceEnum.EQ_EIGHT)
-
-        seq = Sequence()
-
-        if not eq_eight:
-            Song.armed_or_selected_track().select()
-
-            seq.add(partial(self.load_device, DeviceEnum.EQ_EIGHT.name))
-        else:
-            eq_eight.is_enabled = True
-            frequency = eq_eight.get_parameter_by_name(param)
-            frequency.scroll(go_next)
-
-        return seq.done()
-
-    def scroll_release(self, go_next: bool) -> None:
-        rack_device = Song.armed_or_selected_track().instrument_rack_device
-        if rack_device:
-            release = rack_device.get_parameter_by_name("Release")
-            if release:
-                release.scroll(go_next)
-
-    def scroll_reverb(self, go_next: bool) -> None:
-        rack_device = Song.armed_or_selected_track().instrument_rack_device
-        if rack_device:
-            reverb = rack_device.get_parameter_by_name("Reverb")
-            if reverb:
-                reverb.scroll(go_next)
-                return
-
-        insert_reverb = Song.armed_or_selected_track().devices.get_one_from_enum(
-            DeviceEnum.INSERT_REVERB
-        )
-        if insert_reverb:
-            insert_reverb.parameters[1].scroll(go_next)
-        else:
-            sends = Song.armed_or_selected_track().devices.mixer_device.sends
-            if len(sends):
-                sends[-1].scroll(go_next)
-
-    def scroll_delay(self, go_next: bool) -> None:
-        rack_device = Song.armed_or_selected_track().instrument_rack_device
-        if rack_device:
-            delay = rack_device.get_parameter_by_name("Delay")
-            if delay:
-                delay.scroll(go_next)
-                return
-
-        insert_delay = Song.armed_or_selected_track().devices.get_one_from_enum(
-            DeviceEnum.INSERT_DELAY
-        )
-        if insert_delay:
-            insert_delay.parameters[1].scroll(go_next)
-
-    @lock
-    def scroll_lfo_tool(self, go_next: bool) -> Sequence:
-        lfo_tool: Optional[Device] = find_if(
-            lambda d: d.enum == DeviceEnum.LFO_TOOL, Song.armed_or_selected_track().devices
-        )
-
-        seq = Sequence()
-
-        if not lfo_tool:
-            Song.armed_or_selected_track().select()
-
-            seq.add(partial(self.load_device, DeviceEnum.LFO_TOOL.name))
-        else:
-            seq.add(partial(lfo_tool.parameters[1].scroll, go_next))
-
-        return seq.done()
