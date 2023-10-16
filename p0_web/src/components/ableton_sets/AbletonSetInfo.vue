@@ -5,8 +5,12 @@
   <div class="modal" id="setInfoModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
-        <div class="modal-header">
+        <div class="modal-header d-flex">
           <h5 class="modal-title">{{ abletonSet.path_info.name }} <small>({{ modifiedSince }})</small></h5>
+          <button v-if="!abletonSet.metadata?.stars || abletonSet.metadata?.stars < 3"
+                  @click="deleteSet" type="button" class="btn btn-lg btn-light">
+            <i class="fa-regular fa-trash-can" data-toggle="tooltip" data-placement="top" title="Move set to trash"></i>
+          </button>
         </div>
         <div class="modal-body">
           <ol class="list-group list-group-flush">
@@ -42,7 +46,8 @@
 
 import {defineComponent, PropType} from "vue";
 import moment from 'moment';
-import { basename } from '@/utils/utils'
+import {basename, notify} from '@/utils/utils'
+import {apiService} from "@/utils/apiService";
 
 
 export default defineComponent({
@@ -81,6 +86,10 @@ export default defineComponent({
     basename,
     timeStampToDate(ts: number): string {
       return (new Date(ts * 1000)).toLocaleString()
+    },
+    async deleteSet() {
+      await apiService.delete(`/set?path=${this.abletonSet?.path_info.filename}`)
+      notify("Set moved to trash")
     }
   }
 })

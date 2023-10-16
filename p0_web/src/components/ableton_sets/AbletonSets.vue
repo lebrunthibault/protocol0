@@ -14,9 +14,8 @@
         ></AbletonSetSceneData>
         <AbletonSetInfo :ableton-set="selectedSet"></AbletonSetInfo>
         <AbletonSetComment :ableton-set="selectedSet"></AbletonSetComment>
-        <button v-if="!selectedSet.metadata?.stars || selectedSet.metadata?.stars < 3"
-                @click="deleteSet" type="button" class="btn btn-lg btn-light">
-          <i class="fa-regular fa-trash-can" data-toggle="tooltip" data-placement="top" title="Move set to trash"></i>
+        <button @click="openSet" type="button" class="btn btn-lg btn-light">
+          <i class="fa-solid fa-up-right-from-square" data-toggle="tooltip" data-placement="top" title="Move set to trash"></i>
         </button>
       </div>
     </div>
@@ -133,8 +132,9 @@ export default defineComponent({
       this.selectedSet = abletonSet
       this.currentScene = this.selectedSet.metadata.scenes ? this.selectedSet.metadata.scenes[0] : null
     },
-    async openInExplorer() {
-      await apiService.get(`/open_in_explorer?path=${this.selectedSet?.path_info.filename}`)
+    async openSet() {
+      await apiService.get(`/set/open?path=${this.selectedSet?.path_info.filename}`)
+      notify("Opening set")
     },
     onSceneChange(sceneData: SceneData) {
       this.currentScene = sceneData
@@ -185,10 +185,6 @@ export default defineComponent({
 
       this.sortSets()
     },
-    async deleteSet() {
-      await apiService.delete(`/set?path=${this.selectedSet.path_info.filename}`)
-      notify("Set moved to trash")
-    }
   },
   async mounted() {
     await this.fetchSets()

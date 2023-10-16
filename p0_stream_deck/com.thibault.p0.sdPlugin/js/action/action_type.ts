@@ -27,6 +27,7 @@ const actionTypes = {
     LOAD_GROUPED_DEVICE: new ActionType(
         'load-grouped-device',
         ProfileNameEnum.DEVICE_GROUP,
+        // null,
         ProfileNameEnum.DEVICES,
         LoadDeviceActionSlot
     ),

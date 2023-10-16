@@ -6,6 +6,7 @@ import ProfileChangedEvent from '../profile/profile_changed_event'
 import ProfileNameEnum from '../profile/ProfileNameEnum'
 
 function selectOrLoadDevice (device: string | DeviceGroup) {
+    console.log(device)
     if (typeof device === 'string') {
         API.loadDevice(device)
     } else {
@@ -15,6 +16,7 @@ function selectOrLoadDevice (device: string | DeviceGroup) {
 
 function loadDevice (device: string | DeviceGroup) {
     if (typeof device === 'string') {
+        console.log('load', device)
         API.loadDeviceInNewTrack(device)
     } else {
         EventBus.emit(new ProfileChangedEvent(ProfileNameEnum.DEVICE_GROUP))
