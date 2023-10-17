@@ -210,7 +210,7 @@ class DeviceEnum(AbstractEnum):
                     DeviceEnum.AUTO_FILTER_LOW_PASS: DeviceParameterEnum.AUTO_FILTER_LOW_PASS_FREQUENCY,
                     DeviceEnum.AUTO_PAN: DeviceParameterEnum.AUTO_PAN_AMOUNT,
                     DeviceEnum.INSERT_DELAY: DeviceParameterEnum.INSERT_DELAY_INPUT,
-                    DeviceEnum.INSERT_REVERB: DeviceParameterEnum.INSERT_REVERB_INPUT,
+                    DeviceEnum.INSERT_REVERB: DeviceParameterEnum.INPUT,
                     DeviceEnum.LIMITER: DeviceParameterEnum.LIMITER_GAIN,
                     DeviceEnum.LFO_TOOL: DeviceParameterEnum.LFO_TOOL_LFO_DEPTH,
                     DeviceEnum.SATURATOR: DeviceParameterEnum.SATURATOR_DRIVE,
