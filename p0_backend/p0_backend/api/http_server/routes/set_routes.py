@@ -55,9 +55,6 @@ async def post_set(payload: PostSetPayload):
 @router.delete("")
 async def _delete_set(path: str):
     ableton_set = get_set(path)
-    from loguru import logger
-
-    logger.success(ableton_set)
     if not ableton_set:
         return
 
