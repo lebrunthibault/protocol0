@@ -209,10 +209,6 @@ def delete_set(ableton_set: AbletonSet):
         )
         shutil.move(filename, dest)
 
-    from loguru import logger
-
-    logger.success(ableton_set)
-    logger.success(ableton_set.has_own_folder)
     if ableton_set.has_own_folder:
         move_to_trash(dirname(str(ableton_set.path_info.filename)))
     else:

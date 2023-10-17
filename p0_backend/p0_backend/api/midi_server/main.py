@@ -116,9 +116,6 @@ def _execute_midi_message(message: Message):
     if method == "GET":
         requests.get(endpoint, params=params)
     elif method == "POST":
-        from loguru import logger
-
-        logger.success((endpoint, params))
         requests.post(endpoint, json=params)
     elif method == "DELETE":
         requests.delete(endpoint, params=params)
