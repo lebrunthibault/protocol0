@@ -2,6 +2,8 @@ from functools import partial
 
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
 from protocol0.domain.lom.clip.MidiClip import MidiClip
+from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
+from protocol0.domain.lom.device_parameter.DeviceParameterEnum import DeviceParameterEnum
 from protocol0.domain.lom.instrument.instrument.InstrumentService import InstrumentService
 from protocol0.domain.lom.set.MixingService import MixingService
 from protocol0.shared.Song import Song
@@ -22,12 +24,12 @@ class ActionGroupRack(ActionGroupInterface):
         self.add_encoder(
             identifier=2,
             name="scroll attack",
-            on_scroll=partial(instrument_service.scroll_param, "attack"),
+            on_scroll=partial(instrument_service.scroll_instrument_param, "attack"),
         )
         self.add_encoder(
             identifier=3,
             name="scroll release",
-            on_scroll=partial(instrument_service.scroll_param, "release"),
+            on_scroll=partial(instrument_service.scroll_instrument_param, "release"),
         )
         self.add_encoder(
             identifier=4,
@@ -37,29 +39,35 @@ class ActionGroupRack(ActionGroupInterface):
         self.add_encoder(
             identifier=5,
             name="scroll track high pass filter",
-            on_press=instrument_service.toggle_eq,
-            on_scroll=instrument_service.scroll_high_pass_filter,
+            on_press=partial(instrument_service.toggle_device, DeviceEnum.EQ_EIGHT),
+            on_scroll=partial(
+                instrument_service.scroll_eq_parameter, DeviceParameterEnum.EQ_EIGHT_FREQUENCY_1_A
+            ),
         )
         self.add_encoder(
             identifier=6,
             name="scroll 8va bassa",
-            on_press=instrument_service.toggle_octava_bassa,
-            on_scroll=instrument_service.scroll_octava_bassa,
+            on_press=partial(instrument_service.toggle_device, DeviceEnum.OCTAVA),
+            on_scroll=partial(
+                instrument_service.scroll_device_param, DeviceEnum.OCTAVA, "Vel", auto_enable=True
+            ),
         )
         self.add_encoder(
             identifier=7,
             name="scroll reverb",
+            on_press=partial(instrument_service.toggle_device, DeviceEnum.INSERT_REVERB),
             on_scroll=instrument_service.scroll_reverb,
         )
         self.add_encoder(
             identifier=8,
             name="scroll delay",
+            on_press=partial(instrument_service.toggle_device, DeviceEnum.INSERT_DELAY),
             on_scroll=instrument_service.scroll_delay,
         )
         self.add_encoder(
             identifier=9,
             name="scroll arp mode",
-            on_press=instrument_service.toggle_arp,
+            on_press=partial(instrument_service.toggle_device, DeviceEnum.ARPEGGIATOR),
             on_scroll=instrument_service.scroll_arp_style,
         )
         self.add_encoder(
@@ -70,12 +78,19 @@ class ActionGroupRack(ActionGroupInterface):
         self.add_encoder(
             identifier=11,
             name="scroll arp gate",
-            on_scroll=instrument_service.scroll_arp_gate,
+            on_scroll=partial(
+                instrument_service.scroll_device_param, DeviceEnum.ARPEGGIATOR, "Gate"
+            ),
         )
         self.add_encoder(
             identifier=12,
             name="scroll lfo tool",
-            on_scroll=instrument_service.scroll_lfo_tool,
+            on_press=partial(instrument_service.toggle_device, DeviceEnum.LFO_TOOL),
+            on_scroll=partial(
+                instrument_service.scroll_device_param,
+                DeviceEnum.LFO_TOOL,
+                DeviceParameterEnum.LFO_TOOL_LFO_DEPTH.parameter_name,
+            ),
         )
 
         # -----

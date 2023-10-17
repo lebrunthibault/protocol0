@@ -18,8 +18,8 @@ class DeviceParameterEnum(AbstractEnum):
     EQ_EIGHT_FREQUENCY_1_A = "EQ_EIGHT_FREQUENCY_1_A"
     EQ_EIGHT_FREQUENCY_8_A = "EQ_EIGHT_FREQUENCY_8_A"
     EQ_EIGHT_GAIN_4_A = "EQ_EIGHT_GAIN_4_A"
+    INPUT = "INPUT"
     INSERT_DELAY_INPUT = "INSERT_DELAY_INPUT"
-    INSERT_REVERB_INPUT = "INSERT_REVERB_INPUT"
     LFO_TOOL_LFO_DEPTH = "LFO_TOOL_LFO_DEPTH"
     LIMITER_GAIN = "LIMITER_GAIN"
     SATURATOR_DRIVE = "SATURATOR_DRIVE"
@@ -27,6 +27,7 @@ class DeviceParameterEnum(AbstractEnum):
     UTILITY_GAIN = "UTILITY_GAIN"
     UTILITY_SILENT_GAIN = "UTILITY_SILENT_GAIN"
     UTILITY_MID_SIDE = "UTILITY_MID_SIDE"
+    WET = "WET"
 
     @property
     def parameter_name(self) -> str:
@@ -42,8 +43,8 @@ class DeviceParameterEnum(AbstractEnum):
                 DeviceParameterEnum.EQ_EIGHT_FREQUENCY_1_A: "1 Frequency A",
                 DeviceParameterEnum.EQ_EIGHT_FREQUENCY_8_A: "8 Frequency A",
                 DeviceParameterEnum.EQ_EIGHT_GAIN_4_A: "4 Gain A",
+                DeviceParameterEnum.INPUT: "Input",
                 DeviceParameterEnum.INSERT_DELAY_INPUT: "Input",
-                DeviceParameterEnum.INSERT_REVERB_INPUT: "Input",
                 DeviceParameterEnum.LFO_TOOL_LFO_DEPTH: "LFO Depth",
                 DeviceParameterEnum.LIMITER_GAIN: "Gain",
                 DeviceParameterEnum.SATURATOR_DRIVE: "Drive",
@@ -51,6 +52,7 @@ class DeviceParameterEnum(AbstractEnum):
                 DeviceParameterEnum.UTILITY_GAIN: "Gain",
                 DeviceParameterEnum.UTILITY_SILENT_GAIN: "Gain",
                 DeviceParameterEnum.UTILITY_MID_SIDE: "Mid/Side Balance",
+                DeviceParameterEnum.WET: "Wet",
             }
         )
 

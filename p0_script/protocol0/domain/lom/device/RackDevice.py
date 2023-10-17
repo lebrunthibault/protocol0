@@ -48,6 +48,9 @@ class RackDevice(Device, Observable):
 
     @selected_variation_index.setter
     def selected_variation_index(self, selected_variation_index: int) -> None:
+        if selected_variation_index < 0:
+            return
+
         self._device.selected_variation_index = selected_variation_index
         self._device.recall_selected_variation()
 
