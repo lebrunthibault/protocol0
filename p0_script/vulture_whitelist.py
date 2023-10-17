@@ -87,7 +87,5 @@ _.capture_midi_validate  # unused method (protocol0\domain\track_recorder\Record
 _.export  # unused method (protocol0\domain\lom\set\AudioExportService.py:22)
 _.scroll_attack  # unused method (protocol0\domain\lom\instrument\instrument\InstrumentSerum.py:33)
 _.scroll_release  # unused method (protocol0\domain\lom\instrument\instrument\InstrumentSerum.py:37)
-_.toggle_macro_control  # unused method (protocol0\domain\lom\instrument\instrument\InstrumentService.py:33)
 _.scroll_attack  # unused method (protocol0\domain\lom\instrument\instrument\InstrumentSylenth1.py:42)
 _.scroll_release  # unused method (protocol0\domain\lom\instrument\instrument\InstrumentSylenth1.py:47)
-_.scroll_macro_control  # unused method (protocol0\domain\lom\instrument\instrument\InstrumentService.py:38)

@@ -41,7 +41,9 @@ class ActionGroupRack(ActionGroupInterface):
             name="scroll track high pass filter",
             on_press=partial(instrument_service.toggle_device, DeviceEnum.EQ_EIGHT),
             on_scroll=partial(
-                instrument_service.scroll_eq_parameter, DeviceParameterEnum.EQ_EIGHT_FREQUENCY_1_A
+                instrument_service.scroll_device_param,
+                DeviceEnum.EQ_EIGHT,
+                DeviceParameterEnum.EQ_EIGHT_FREQUENCY_1_A.parameter_name,
             ),
         )
         self.add_encoder(
@@ -73,7 +75,9 @@ class ActionGroupRack(ActionGroupInterface):
         self.add_encoder(
             identifier=10,
             name="scroll arp rate",
-            on_scroll=instrument_service.scroll_arp_rate,
+            on_scroll=partial(
+                instrument_service.scroll_device_param, DeviceEnum.ARPEGGIATOR, "Synced Rate", value_items=list(range(14))
+            ),
         )
         self.add_encoder(
             identifier=11,
