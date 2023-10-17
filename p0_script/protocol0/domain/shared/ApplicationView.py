@@ -1,5 +1,6 @@
-import Live
 from typing import Optional
+
+import Live
 
 from protocol0.domain.lom.song.components.RecordingComponent import RecordingComponent
 from protocol0.domain.shared.SessionServiceInterface import SessionServiceInterface
@@ -78,6 +79,13 @@ class ApplicationView(object):
         if not cls._INSTANCE._application_view.is_view_visible(view):
             cls._INSTANCE._application_view.show_view(view)
         cls._INSTANCE._application_view.focus_view(view)
+
+    @classmethod
+    def focus_device(cls) -> None:
+        """Hack to bring device into view."""
+        NAV_DIR = Live.Application.Application.View.NavDirection
+        cls._INSTANCE._application_view.scroll_view(NAV_DIR.right, 'Detail/DeviceChain', False)
+        cls._INSTANCE._application_view.scroll_view(NAV_DIR.left, 'Detail/DeviceChain', False)
 
     @classmethod
     def is_session_visible(cls) -> bool:

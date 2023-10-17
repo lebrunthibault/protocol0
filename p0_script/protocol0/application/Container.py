@@ -122,7 +122,7 @@ class Container(ContainerInterface):
         device_display_service = DeviceDisplayService(browser_service)
         instrument_display_service = InstrumentDisplayService(device_display_service)
         device_service = DeviceService(track_crud_component, device_component, browser_service)
-        instrument_service = InstrumentService(device_service)
+        instrument_service = InstrumentService(device_service, device_component)
         drum_rack_service = DrumRackService(browser_service)
         drum_rack_sample_service = DrumRackSampleService()
         track_factory = TrackFactory(track_crud_component, browser_service, drum_rack_service)

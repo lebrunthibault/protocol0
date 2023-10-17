@@ -1,8 +1,8 @@
 from functools import partial
+from typing import Optional
 
 import Live
 from _Framework.SubjectSlot import subject_slot, SlotManager
-from typing import Optional
 
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
@@ -52,4 +52,6 @@ class DeviceComponent(SlotManager):
         seq.add(partial(self._view.select_device, device._device))
         seq.add(ApplicationView.focus_detail)
         seq.add(ApplicationView.show_device)
+        seq.add(ApplicationView.focus_device)
+
         return seq.done()

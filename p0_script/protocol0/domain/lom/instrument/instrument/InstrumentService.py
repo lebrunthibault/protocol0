@@ -1,5 +1,4 @@
-from functools import partial
-from typing import Optional
+from typing import Optional, List
 
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device.DeviceService import DeviceService
@@ -8,6 +7,7 @@ from protocol0.domain.lom.instrument.InstrumentLoadedEvent import InstrumentLoad
 from protocol0.domain.lom.instrument.instrument.InstrumentParameterEnum import (
     InstrumentParameterEnum,
 )
+from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.utils.concurrency import lock
 from protocol0.shared.Song import Song
@@ -18,9 +18,10 @@ from protocol0.shared.sequence.Sequence import Sequence
 class InstrumentService(object):
     _DEBUG = True
 
-    def __init__(self, device_service: DeviceService) -> None:
+    def __init__(self, device_service: DeviceService, device_component: DeviceComponent) -> None:
         super(InstrumentService, self).__init__()
         self._device_service = device_service
+        self._device_component = device_component
         DomainEventBus.subscribe(InstrumentLoadedEvent, self._on_instrument_loaded_event)
 
     def _on_instrument_loaded_event(self, event: InstrumentLoadedEvent) -> None:
@@ -28,30 +29,16 @@ class InstrumentService(object):
         if instrument and instrument.device.enum == event.device_enum.instrument_enum:
             instrument.on_loaded(event.device_enum)
 
-    def toggle_macro_control(self, index: int) -> None:
-        rack_device = Song.armed_or_selected_track().instrument_rack_device
-        if rack_device:
-            rack_device.parameters[index].toggle()
-
-    def scroll_macro_control(self, index: int, go_next: bool, steps: int = 500) -> None:
-        rack_device = Song.armed_or_selected_track().instrument_rack_device
-        if rack_device is None:
-            return
-
-        param = rack_device.parameters[index]
-        if self._DEBUG:
-            Logger.info((param.min, param.max, param.value, param.is_quantized))
-
-        param.scroll(go_next, steps=steps)
-
     def scroll_instrument_param(self, name: InstrumentParameterEnum, go_next: bool) -> bool:
         instrument = Song.armed_or_selected_track().instrument
 
-        if instrument and name in instrument.PARAMETER_NAMES:
+        if instrument and instrument.device and name in instrument.PARAMETER_NAMES:
+            self._device_component.select_device(Song.armed_or_selected_track(), instrument.device)
             parameter = instrument.device.get_parameter_by_name(instrument.PARAMETER_NAMES[name])
             parameter.scroll(go_next)
             return True
-        elif instrument and callable(getattr(instrument, f"scroll_{name}", None)):
+        elif instrument and instrument.device and callable(getattr(instrument, f"scroll_{name}", None)):
+            self._device_component.select_device(Song.armed_or_selected_track(), instrument.device)
             getattr(instrument, f"scroll_{name}")(go_next)
             return True
         else:
@@ -60,15 +47,30 @@ class InstrumentService(object):
 
     @lock
     def scroll_device_param(
-        self, device_enum: DeviceEnum, param_name: str, go_next: bool, auto_enable: bool = False
+        self,
+        device_enum: DeviceEnum,
+        param_name: str,
+        go_next: bool,
+        auto_enable: bool = False,
+        value_items: List[int] = None,
     ) -> Optional[Sequence]:
         device = Song.armed_or_selected_track().devices.get_one_from_enum(device_enum)
         if not device:
             Song.armed_or_selected_track().select()
             return self._device_service.load_device(device_enum.name)
 
+        self._device_component.select_device(Song.armed_or_selected_track(), device)
+        device.is_enabled = True
         param = device.get_parameter_by_name(param_name)
-        param.scroll(go_next)
+
+        if param is None:
+            Logger.warning(f"Couldn't find {param_name} on {device}")
+            return None
+
+        if value_items:
+            param.scroll_slowed(go_next, value_items=value_items)
+        else:
+            param.scroll(go_next)
 
         # disable the device the the param reaches its minimum
         if auto_enable:
@@ -96,28 +98,13 @@ class InstrumentService(object):
         if not scrolled:
             Song.armed_or_selected_track().scroll_volume(go_next)
 
-    @lock
-    def scroll_eq_parameter(self, param: DeviceParameterEnum, go_next: bool) -> Sequence:
-        eq_eight = Song.armed_or_selected_track().devices.get_one_from_enum(DeviceEnum.EQ_EIGHT)
-
-        seq = Sequence()
-
-        if not eq_eight:
-            Song.armed_or_selected_track().select()
-
-            seq.add(partial(self._device_service.load_device, DeviceEnum.EQ_EIGHT.name))
-        else:
-            eq_eight.is_enabled = True
-            frequency = eq_eight.get_parameter_by_name(param)
-            frequency.scroll(go_next)
-
-        return seq.done()
-
     def scroll_low_pass_filter(self, go_next: bool) -> Optional[Sequence]:
         scrolled = self.scroll_instrument_param(InstrumentParameterEnum.FILTER, go_next)
 
         if not scrolled:
-            return self.scroll_eq_parameter(DeviceParameterEnum.EQ_EIGHT_FREQUENCY_8_A, go_next)
+            return self.scroll_device_param(
+                DeviceEnum.EQ_EIGHT, DeviceParameterEnum.EQ_EIGHT_FREQUENCY_8_A.parameter_name, go_next
+            )
 
         return None
 
@@ -127,6 +114,7 @@ class InstrumentService(object):
 
         reverb = Song.armed_or_selected_track().devices.get_one_from_enum(DeviceEnum.INSERT_REVERB)
         if reverb:
+            self._device_component.select_device(Song.armed_or_selected_track(), reverb)
             reverb.get_parameter_by_name(DeviceParameterEnum.WET).scroll(go_next)
         else:
             sends = Song.armed_or_selected_track().devices.mixer_device.sends
@@ -144,47 +132,24 @@ class InstrumentService(object):
 
     @lock
     def scroll_arp_style(self, go_next: bool) -> Optional[Sequence]:
-        arp = Song.armed_or_selected_track().devices.get_one_from_enum(DeviceEnum.ARPEGGIATOR)
-
-        if not arp:
-            Song.armed_or_selected_track().select()
-            return self._device_service.load_device(DeviceEnum.ARPEGGIATOR.name)
-
-        allowed_values = [
-            "Up",
-            "Down",
-            # "UpDown",
-            # "DownUp",
-            # "Up & Down",
-            # "Down & Up",
-            "Converge",
-            # "Diverge",
-            # "Con & Diverge",
-            "Pinky Up",
-            # "Pinky UpDown",
-            "Thumb Up",
-            # "Thumb UpDown",
-            # "Play Order",
-            "Chord Trigger",
-            # "Random",
-            # "Random Other",
-            # "Random Once",
+        value_items = [
+            0,  # "Up",
+            1,  # "Down",
+            # 2, "UpDown",
+            # 3, "DownUp",
+            # 4, "Up & Down",
+            # 5, "Down & Up",
+            6,  # "Converge",
+            # 7, "Diverge",
+            # 8, "Con & Diverge",
+            9,  # "Pinky Up",
+            # 10, "Pinky UpDown",
+            11,  # "Thumb Up",
+            # 12, "Thumb UpDown",
+            # 13, "Play Order",
+            14,  # "Chord Trigger",
+            # 15, "Random",
+            # 16, "Random Other",
+            # 17, "Random Once",
         ]
-
-        arp_style = arp.get_parameter_by_name("Style")
-        value_items = [list(arp_style.value_items).index(value) for value in allowed_values]
-        arp_style.scroll_slowed(go_next, value_items=value_items)
-
-        return None
-
-    @lock
-    def scroll_arp_rate(self, go_next: bool) -> Optional[Sequence]:
-        arp = Song.armed_or_selected_track().devices.get_one_from_enum(DeviceEnum.ARPEGGIATOR)
-
-        if not arp:
-            Song.armed_or_selected_track().select()
-            return self._device_service.load_device(DeviceEnum.ARPEGGIATOR.name)
-
-        arp.get_parameter_by_name("Synced Rate").scroll_slowed(go_next, value_items=list(range(14)))
-
-        return None
+        return self.scroll_device_param(DeviceEnum.ARPEGGIATOR, "Style", go_next, value_items=value_items)
