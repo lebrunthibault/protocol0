@@ -123,37 +123,7 @@
   ],
   "Profiles": [
     {
-      "Name": "profiles/Devices",
-      "ReadOnly": false,
-      "DeviceType": 2,
-      "DontAutoSwitchWhenInstalled": true
-    },
-    {
-      "Name": "profiles/DeviceGroup",
-      "ReadOnly": false,
-      "DeviceType": 2,
-      "DontAutoSwitchWhenInstalled": true
-    },
-    {
       "Name": "profiles/ClipLoop",
-      "ReadOnly": false,
-      "DeviceType": 2,
-      "DontAutoSwitchWhenInstalled": true
-    },
-    {
-      "Name": "profiles/Drums",
-      "ReadOnly": false,
-      "DeviceType": 2,
-      "DontAutoSwitchWhenInstalled": true
-    },
-    {
-      "Name": "profiles/Home",
-      "ReadOnly": false,
-      "DeviceType": 2,
-      "DontAutoSwitchWhenInstalled": true
-    },
-    {
-      "Name": "profiles/Vocals",
       "ReadOnly": false,
       "DeviceType": 2,
       "DontAutoSwitchWhenInstalled": true
