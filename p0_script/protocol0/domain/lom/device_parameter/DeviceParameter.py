@@ -2,7 +2,7 @@ from typing import Any, Optional, List
 
 import Live
 
-from protocol0.domain.lom.device_parameter.DeviceParameterEnum import DeviceParameterEnum
+from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
 from protocol0.domain.shared.ValueScroller import ValueScroller
 from protocol0.domain.shared.utils.timing import accelerate, slow_down
 from protocol0.domain.shared.utils.utils import clamp
@@ -13,7 +13,7 @@ class DeviceParameter(object):
     def __init__(
         self,
         device_parameter: Live.DeviceParameter.DeviceParameter,
-        enum: Optional[DeviceParameterEnum] = None,
+        enum: Optional[DeviceParamEnum] = None,
     ) -> None:
         self._device_parameter: Live.DeviceParameter.DeviceParameter = device_parameter
         self.device_name = ""
@@ -33,7 +33,7 @@ class DeviceParameter(object):
     def create_from_name(
         cls, device_name: str, device_parameter: Live.DeviceParameter.DeviceParameter
     ) -> "DeviceParameter":
-        enum = DeviceParameterEnum.from_name(device_name, device_parameter.name)
+        enum = DeviceParamEnum.from_name(device_name, device_parameter.name)
         param = cls(device_parameter, enum=enum)
         param.device_name = device_name
         return param

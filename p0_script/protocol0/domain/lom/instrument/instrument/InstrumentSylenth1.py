@@ -1,8 +1,8 @@
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.instrument.InstrumentColorEnum import InstrumentColorEnum
 from protocol0.domain.lom.instrument.InstrumentInterface import InstrumentInterface
-from protocol0.domain.lom.instrument.instrument.InstrumentParameterEnum import \
-    InstrumentParameterEnum
+from protocol0.domain.lom.instrument.instrument.InstrumentParamEnum import \
+    InstrumentParamEnum
 from protocol0.domain.lom.instrument.preset.PresetProgramSelectedEvent import (
     PresetProgramSelectedEvent,
 )
@@ -19,10 +19,10 @@ class InstrumentSylenth1(InstrumentInterface):
     TRACK_COLOR = InstrumentColorEnum.REV2
     PRESET_CHANGER = ProgramChangePresetChanger
     PARAMETER_NAMES = {
-        InstrumentParameterEnum.DELAY: "Delay Dry/Wet",
-        InstrumentParameterEnum.FILTER: "FilterCtl Cutoff",
-        InstrumentParameterEnum.REVERB: "Reverb Dry/Wet",
-        InstrumentParameterEnum.VOLUME: "Main Volume",
+        InstrumentParamEnum.DELAY: "Delay Dry/Wet",
+        InstrumentParamEnum.FILTER: "FilterCtl Cutoff",
+        InstrumentParamEnum.REVERB: "Reverb Dry/Wet",
+        InstrumentParamEnum.VOLUME: "Main Volume",
     }
 
     def on_loaded(self, device_enum: DeviceEnum) -> None:

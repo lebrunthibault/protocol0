@@ -11,6 +11,9 @@ class ClipAutomationEnvelope(object):
         self._envelope = envelope
         self._length = length
 
+    def __repr__(self) -> str:
+        return f"ClipAutomationEnvelope({self.hash})"
+
     @property
     def hash(self) -> float:
         """pick up to 10 values to generate a footprint of the automation"""

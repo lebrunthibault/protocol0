@@ -3,7 +3,16 @@ from functools import partial
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
 from protocol0.domain.lom.clip.MidiClip import MidiClip
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
-from protocol0.domain.lom.device_parameter.DeviceParameterEnum import DeviceParameterEnum
+from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
+from protocol0.domain.lom.instrument.XParam import (
+    XParam,
+    InstrumentParam,
+    DeviceParam,
+    TrackParam,
+)
+from protocol0.domain.lom.instrument.instrument.InstrumentParamEnum import (
+    InstrumentParamEnum,
+)
 from protocol0.domain.lom.instrument.instrument.InstrumentService import InstrumentService
 from protocol0.domain.lom.set.MixingService import MixingService
 from protocol0.shared.Song import Song
@@ -13,88 +22,91 @@ class ActionGroupRack(ActionGroupInterface):
     CHANNEL = 2
 
     def configure(self) -> None:
-        # RACK macro control encoders
         instrument_service = self._container.get(InstrumentService)
 
-        self.add_encoder(
-            identifier=1,
-            name="scroll filter",
-            on_scroll=instrument_service.scroll_low_pass_filter,
-        )
-        self.add_encoder(
-            identifier=2,
-            name="scroll attack",
-            on_scroll=partial(instrument_service.scroll_instrument_param, "attack"),
-        )
-        self.add_encoder(
-            identifier=3,
-            name="scroll release",
-            on_scroll=partial(instrument_service.scroll_instrument_param, "release"),
-        )
-        self.add_encoder(
-            identifier=4,
-            name="scroll volume",
-            on_scroll=instrument_service.scroll_volume,
-        )
-        self.add_encoder(
-            identifier=5,
-            name="scroll track high pass filter",
-            on_press=partial(instrument_service.toggle_device, DeviceEnum.EQ_EIGHT),
-            on_scroll=partial(
-                instrument_service.scroll_device_param,
-                DeviceEnum.EQ_EIGHT,
-                DeviceParameterEnum.EQ_EIGHT_FREQUENCY_1_A.parameter_name,
+        arp_styles = [
+            0,  # "Up",
+            1,  # "Down",
+            # 2, "UpDown",
+            # 3, "DownUp",
+            # 4, "Up & Down",
+            # 5, "Down & Up",
+            6,  # "Converge",
+            # 7, "Diverge",
+            # 8, "Con & Diverge",
+            9,  # "Pinky Up",
+            # 10, "Pinky UpDown",
+            11,  # "Thumb Up",
+            # 12, "Thumb UpDown",
+            # 13, "Play Order",
+            14,  # "Chord Trigger",
+            # 15, "Random",
+            # 16, "Random Other",
+            # 17, "Random Once",
+        ]
+
+        params = [
+            XParam(
+                [
+                    InstrumentParam(InstrumentParamEnum.FILTER),
+                    DeviceParam(DeviceEnum.EQ_EIGHT, DeviceParamEnum.EQ_EIGHT_FREQUENCY_8_A),
+                ]
             ),
-        )
-        self.add_encoder(
-            identifier=6,
-            name="scroll 8va bassa",
-            on_press=partial(instrument_service.toggle_device, DeviceEnum.OCTAVA),
-            on_scroll=partial(
-                instrument_service.scroll_device_param, DeviceEnum.OCTAVA, "Vel", auto_enable=True
+            XParam([InstrumentParam(InstrumentParamEnum.ATTACK)]),
+            XParam([InstrumentParam(InstrumentParamEnum.RELEASE)]),
+            XParam(
+                [
+                    InstrumentParam(InstrumentParamEnum.VOLUME, automatable=False),
+                    DeviceParam(DeviceEnum.UTILITY, DeviceParamEnum.UTILITY_GAIN),
+                    TrackParam(lambda t: t.devices.mixer_device.volume),
+                ],
             ),
-        )
+            XParam([DeviceParam(DeviceEnum.EQ_EIGHT, DeviceParamEnum.EQ_EIGHT_FREQUENCY_1_A)]),
+            XParam([DeviceParam(DeviceEnum.OCTAVA, DeviceParamEnum.OCTAVA_VEL, auto_disable=True)]),
+            None,  # Reverb
+            None,  # Delay
+            XParam(
+                [DeviceParam(DeviceEnum.ARPEGGIATOR, DeviceParamEnum.ARP_STYLE, automatable=False)],
+                value_items=arp_styles,
+            ),
+            XParam(
+                [DeviceParam(DeviceEnum.ARPEGGIATOR, DeviceParamEnum.ARP_RATE)],
+                value_items=list(range(14)),
+            ),
+            XParam([DeviceParam(DeviceEnum.ARPEGGIATOR, DeviceParamEnum.ARP_GATE)]),
+            XParam([DeviceParam(DeviceEnum.LFO_TOOL, DeviceParamEnum.LFO_TOOL_LFO_DEPTH)]),
+        ]
+
+        for index, param in enumerate(params):
+            if param is None:
+                continue
+
+            self.add_encoder(
+                identifier=index + 1,
+                name=f"control {param.name}",
+                on_press=partial(instrument_service.toggle_param, param),
+                on_long_press=partial(instrument_service.toggle_param_automation, param),
+                on_scroll=partial(instrument_service.scroll_param, param),
+            )
+
+        reverb_param = XParam([DeviceParam(DeviceEnum.INSERT_REVERB, DeviceParamEnum.INPUT)])
+
         self.add_encoder(
             identifier=7,
             name="scroll reverb",
-            on_press=partial(instrument_service.toggle_device, DeviceEnum.INSERT_REVERB),
+            on_press=partial(instrument_service.toggle_param, reverb_param),
+            on_long_press=partial(instrument_service.toggle_param_automation, reverb_param),
             on_scroll=instrument_service.scroll_reverb,
         )
+
+        delay_param = XParam([DeviceParam(DeviceEnum.INSERT_DELAY, DeviceParamEnum.INPUT)])
+
         self.add_encoder(
             identifier=8,
             name="scroll delay",
-            on_press=partial(instrument_service.toggle_device, DeviceEnum.INSERT_DELAY),
+            on_press=partial(instrument_service.toggle_param, delay_param),
+            on_long_press=partial(instrument_service.toggle_param_automation, delay_param),
             on_scroll=instrument_service.scroll_delay,
-        )
-        self.add_encoder(
-            identifier=9,
-            name="scroll arp mode",
-            on_press=partial(instrument_service.toggle_device, DeviceEnum.ARPEGGIATOR),
-            on_scroll=instrument_service.scroll_arp_style,
-        )
-        self.add_encoder(
-            identifier=10,
-            name="scroll arp rate",
-            on_scroll=partial(
-                instrument_service.scroll_device_param, DeviceEnum.ARPEGGIATOR, "Synced Rate", value_items=list(range(14))
-            ),
-        )
-        self.add_encoder(
-            identifier=11,
-            name="scroll arp gate",
-            on_scroll=partial(
-                instrument_service.scroll_device_param, DeviceEnum.ARPEGGIATOR, "Gate"
-            ),
-        )
-        self.add_encoder(
-            identifier=12,
-            name="scroll lfo tool",
-            on_press=partial(instrument_service.toggle_device, DeviceEnum.LFO_TOOL),
-            on_scroll=partial(
-                instrument_service.scroll_device_param,
-                DeviceEnum.LFO_TOOL,
-                DeviceParameterEnum.LFO_TOOL_LFO_DEPTH.parameter_name,
-            ),
         )
 
         # -----

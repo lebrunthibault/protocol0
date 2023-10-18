@@ -4,8 +4,8 @@ import Live
 from _Framework.SubjectSlot import SlotManager, subject_slot
 
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
+from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
-from protocol0.domain.lom.device_parameter.DeviceParameterEnum import DeviceParameterEnum
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.domain.shared.utils.string import smart_string
@@ -64,8 +64,10 @@ class Device(SlotManager):
             for parameter in self._device.parameters
         ]
 
-    def get_parameter_by_name(self, device_parameter_name: Union[DeviceParameterEnum, str]) -> Optional[DeviceParameter]:
-        if isinstance(device_parameter_name, DeviceParameterEnum):
+    def get_parameter_by_name(
+        self, device_parameter_name: Union[DeviceParamEnum, str]
+    ) -> Optional[DeviceParameter]:
+        if isinstance(device_parameter_name, DeviceParamEnum):
             device_parameter_name = device_parameter_name.parameter_name
         return find_if(lambda p: p.name.lower() == device_parameter_name.lower(), self.parameters)
 
@@ -95,11 +97,11 @@ class Device(SlotManager):
 
     @property
     def is_enabled(self) -> bool:
-        return self.get_parameter_by_name(DeviceParameterEnum.DEVICE_ON).value == 1
+        return self.get_parameter_by_name(DeviceParamEnum.DEVICE_ON).value == 1
 
     @is_enabled.setter
     def is_enabled(self, on: bool) -> None:
-        self.get_parameter_by_name(DeviceParameterEnum.DEVICE_ON).value = 1 if on else 0
+        self.get_parameter_by_name(DeviceParamEnum.DEVICE_ON).value = 1 if on else 0
 
     def toggle(self) -> None:
         self.is_enabled = not self.is_enabled

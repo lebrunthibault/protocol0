@@ -25,7 +25,7 @@ class UsamoTrack(SimpleMidiTrack):
 
     def __init__(self, *a: Any, **k: Any) -> None:
         super(UsamoTrack, self).__init__(*a, **k)
-        self._usamo_device = self.devices.get_one_from_enum(DeviceEnum.USAMO)
+        self._usamo_device = self.devices.get_one_from_enum(DeviceEnum.USAMO, all_devices=True)
         if self._usamo_device is None:
             raise Protocol0Error("Cannot find usamo device on usamo track")
 
