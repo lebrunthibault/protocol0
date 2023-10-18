@@ -51,7 +51,7 @@ class ClipPlayerService(object):
         if cs.clip.is_playing:
             cs.clip.stop(immediate=True)
             seq = Sequence()
-            seq.wait_for_event(BarChangedEvent)
+            seq.wait_for_event(BarChangedEvent, continue_on_song_stop=True)
             seq.add(partial(setattr, cs.clip, "muted", True))
             seq.done()
         else:
