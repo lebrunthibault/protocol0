@@ -64,9 +64,7 @@ class ClipAutomation(object):
     def create_envelope(self, parameter: DeviceParameter) -> ClipAutomationEnvelope:
         try:
             self._live_clip.create_automation_envelope(parameter._device_parameter)
-        except RuntimeError as e:
-            from protocol0.shared.logging.Logger import Logger
-            Logger.dev(e)
+        except RuntimeError:
             # envelope already exists
             pass
         return cast(ClipAutomationEnvelope, self.get_envelope(parameter))

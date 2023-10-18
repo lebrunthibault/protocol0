@@ -1,9 +1,6 @@
-from typing import Optional, Any, TYPE_CHECKING
+from typing import Optional, Any
 
 from protocol0.shared.AbstractEnum import AbstractEnum
-
-if TYPE_CHECKING:
-    pass
 
 
 class DeviceParamEnum(AbstractEnum):
@@ -17,18 +14,16 @@ class DeviceParamEnum(AbstractEnum):
     COMPRESSOR_OUTPUT_GAIN = "COMPRESSOR_OUTPUT_GAIN"
     COMPRESSOR_THRESHOLD = "COMPRESSOR_THRESHOLD"
     DEVICE_ON = "DEVICE_ON"
+    DRIVE = "DRIVE"
     EFFECTRIX_GLOBALWET = "EFFECTRIX_GLOBALWET"
-    EQ_EIGHT_FREQUENCY_1_A = "EQ_EIGHT_FREQUENCY_1_A"
-    EQ_EIGHT_FREQUENCY_8_A = "EQ_EIGHT_FREQUENCY_8_A"
-    EQ_EIGHT_GAIN_4_A = "EQ_EIGHT_GAIN_4_A"
+    FREQUENCY_1_A = "EQ_EIGHT_FREQUENCY_1_A"
+    FREQUENCY_8_A = "EQ_EIGHT_FREQUENCY_8_A"
+    GAIN = "GAIN"
+    GAIN_4_A = "EQ_EIGHT_GAIN_4_A"
     INPUT = "INPUT"
-    INSERT_DELAY_INPUT = "INSERT_DELAY_INPUT"
+    LENGTH = "LENGTH"
     LFO_TOOL_LFO_DEPTH = "LFO_TOOL_LFO_DEPTH"
-    LIMITER_GAIN = "LIMITER_GAIN"
     OCTAVA_VEL = "OCTAVA_VEL"
-    SATURATOR_DRIVE = "SATURATOR_DRIVE"
-    SATURATOR_OUTPUT = "SATURATOR_OUTPUT"
-    UTILITY_GAIN = "UTILITY_GAIN"
     UTILITY_SILENT_GAIN = "UTILITY_SILENT_GAIN"
     UTILITY_MID_SIDE = "UTILITY_MID_SIDE"
     WET = "WET"
@@ -47,17 +42,15 @@ class DeviceParamEnum(AbstractEnum):
                 DeviceParamEnum.COMPRESSOR_OUTPUT_GAIN: "Output Gain",
                 DeviceParamEnum.COMPRESSOR_THRESHOLD: "Threshold",
                 DeviceParamEnum.DEVICE_ON: "Device On",
-                DeviceParamEnum.EQ_EIGHT_FREQUENCY_1_A: "1 Frequency A",
-                DeviceParamEnum.EQ_EIGHT_FREQUENCY_8_A: "8 Frequency A",
-                DeviceParamEnum.EQ_EIGHT_GAIN_4_A: "4 Gain A",
+                DeviceParamEnum.DRIVE: "Drive",
+                DeviceParamEnum.FREQUENCY_1_A: "1 Frequency A",
+                DeviceParamEnum.FREQUENCY_8_A: "8 Frequency A",
+                DeviceParamEnum.GAIN: "Gain",
+                DeviceParamEnum.GAIN_4_A: "4 Gain A",
                 DeviceParamEnum.INPUT: "Input",
-                DeviceParamEnum.INSERT_DELAY_INPUT: "Input",
+                DeviceParamEnum.LENGTH: "Time Length",
                 DeviceParamEnum.LFO_TOOL_LFO_DEPTH: "LFO Depth",
-                DeviceParamEnum.LIMITER_GAIN: "Gain",
                 DeviceParamEnum.OCTAVA_VEL: "Vel",
-                DeviceParamEnum.SATURATOR_DRIVE: "Drive",
-                DeviceParamEnum.SATURATOR_OUTPUT: "Output",
-                DeviceParamEnum.UTILITY_GAIN: "Gain",
                 DeviceParamEnum.UTILITY_SILENT_GAIN: "Gain",
                 DeviceParamEnum.UTILITY_MID_SIDE: "Mid/Side Balance",
                 DeviceParamEnum.WET: "Wet",
