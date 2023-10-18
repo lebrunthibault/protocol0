@@ -57,14 +57,27 @@ class ActionGroupRack(ActionGroupInterface):
             XParam(
                 [
                     InstrumentParam(InstrumentParamEnum.VOLUME, automatable=False),
-                    DeviceParam(DeviceEnum.UTILITY, DeviceParamEnum.UTILITY_GAIN),
+                    DeviceParam(DeviceEnum.UTILITY, DeviceParamEnum.UTILITY_GAIN, scrollable=False),
                     TrackParam(lambda t: t.devices.mixer_device.volume),
                 ],
             ),
             XParam([DeviceParam(DeviceEnum.EQ_EIGHT, DeviceParamEnum.EQ_EIGHT_FREQUENCY_1_A)]),
             XParam([DeviceParam(DeviceEnum.OCTAVA, DeviceParamEnum.OCTAVA_VEL, auto_disable=True)]),
-            None,  # Reverb
-            None,  # Delay
+            XParam(
+                [
+                    DeviceParam(DeviceEnum.INSERT_REVERB, DeviceParamEnum.INPUT, scrollable=False),
+                    DeviceParam(DeviceEnum.INSERT_REVERB, DeviceParamEnum.WET, automatable=False),
+                    InstrumentParam(InstrumentParamEnum.REVERB),
+                    TrackParam(lambda t: t.devices.mixer_device.sends[-1]),
+                ]
+            ),
+            XParam(
+                [
+                    DeviceParam(DeviceEnum.INSERT_DELAY, DeviceParamEnum.INPUT, scrollable=False),
+                    DeviceParam(DeviceEnum.INSERT_DELAY, DeviceParamEnum.WET, automatable=False),
+                    InstrumentParam(InstrumentParamEnum.DELAY),
+                ]
+            ),
             XParam(
                 [DeviceParam(DeviceEnum.ARPEGGIATOR, DeviceParamEnum.ARP_STYLE, automatable=False)],
                 value_items=arp_styles,
@@ -78,9 +91,6 @@ class ActionGroupRack(ActionGroupInterface):
         ]
 
         for index, param in enumerate(params):
-            if param is None:
-                continue
-
             self.add_encoder(
                 identifier=index + 1,
                 name=f"control {param.name}",
@@ -88,26 +98,6 @@ class ActionGroupRack(ActionGroupInterface):
                 on_long_press=partial(instrument_service.toggle_param_automation, param),
                 on_scroll=partial(instrument_service.scroll_param, param),
             )
-
-        reverb_param = XParam([DeviceParam(DeviceEnum.INSERT_REVERB, DeviceParamEnum.INPUT)])
-
-        self.add_encoder(
-            identifier=7,
-            name="scroll reverb",
-            on_press=partial(instrument_service.toggle_param, reverb_param),
-            on_long_press=partial(instrument_service.toggle_param_automation, reverb_param),
-            on_scroll=instrument_service.scroll_reverb,
-        )
-
-        delay_param = XParam([DeviceParam(DeviceEnum.INSERT_DELAY, DeviceParamEnum.INPUT)])
-
-        self.add_encoder(
-            identifier=8,
-            name="scroll delay",
-            on_press=partial(instrument_service.toggle_param, delay_param),
-            on_long_press=partial(instrument_service.toggle_param_automation, delay_param),
-            on_scroll=instrument_service.scroll_delay,
-        )
 
         # -----
 

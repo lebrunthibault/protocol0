@@ -18,9 +18,7 @@ class ParamDevice:
     param: Union[DeviceParameter, Callable]
 
 
-@dataclass(frozen=True)
-class ParamDeviceNotCallable:
-    device: Optional[Device]
+class ParamDeviceNotCallable(ParamDevice):
     param: DeviceParameter
 
 
@@ -30,6 +28,7 @@ class DeviceParam:
     param_name: Union[DeviceParamEnum, str]
     auto_disable: bool = False
     automatable: bool = True
+    scrollable: bool = True
 
     def get_param_device(self) -> Optional[ParamDevice]:
         device = Song.armed_or_selected_track().devices.get_one_from_enum(self.device_enum)
@@ -42,7 +41,7 @@ class DeviceParam:
         if not param:
             return None
 
-        return ParamDevice(device, param, self)
+        return ParamDevice(device, param)
 
 
 @dataclass(frozen=True)
@@ -50,8 +49,14 @@ class TrackParam:
     callback: Callable[[SimpleTrack], DeviceParameter]
     automatable: bool = False
 
-    def get_param_device(self) -> ParamDevice:
-        return ParamDevice(None, self.callback(Song.armed_or_selected_track()), self)
+    def get_param_device(self) -> Optional[ParamDevice]:
+        try:
+            param = self.callback(Song.armed_or_selected_track())
+            return ParamDevice(None, param)
+        except IndexError:
+            pass
+
+        return None
 
 
 @dataclass(frozen=True)
@@ -76,7 +81,7 @@ class InstrumentParam:
         if param is None:
             return None
 
-        return ParamDevice(instrument.device, param, self)
+        return ParamDevice(instrument.device, param)
 
 
 ParamConf = Union[DeviceParam, InstrumentParam, TrackParam]
@@ -101,8 +106,11 @@ class XParam:
     def get_device_param(self, automatable: bool = False) -> Optional[ParamDeviceNotCallable]:
         for param_conf in self.param_configs:
             pd = param_conf.get_param_device()
-            if isinstance(pd.param, DeviceParameter) and (
-                not automatable or param_conf.automatable
+
+            if (
+                pd
+                and isinstance(pd.param, DeviceParameter)
+                and (not automatable or param_conf.automatable)
             ):
                 return cast(ParamDeviceNotCallable, pd)
 
@@ -112,7 +120,7 @@ class XParam:
         for param_conf in self.param_configs:
             pd = param_conf.get_param_device()
 
-            if pd:
+            if pd and (not isinstance(param_conf, DeviceParam) or param_conf.scrollable):
                 return param_conf, pd
 
         return None, None
