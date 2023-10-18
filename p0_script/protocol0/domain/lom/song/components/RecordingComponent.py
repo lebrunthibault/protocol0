@@ -1,5 +1,3 @@
-from functools import partial
-
 import Live
 
 from protocol0.domain.lom.clip.ClipEnvelopeShowedEvent import ClipEnvelopeShowedEvent

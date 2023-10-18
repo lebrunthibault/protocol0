@@ -2,7 +2,7 @@ from typing import Iterator, Tuple
 
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
-from protocol0.domain.lom.device_parameter.DeviceParameterEnum import DeviceParameterEnum
+from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.validation.ValidatorService import ValidatorService
 from protocol0.domain.shared.backend.Backend import Backend
@@ -51,10 +51,10 @@ class SetFixerService(object):
                 continue
 
             for track in Song.all_simple_tracks():
-                device = track.devices.get_one_from_enum(device_enum)
+                device = track.devices.get_one_from_enum(device_enum, all_devices=True)
                 if not device:
                     continue
-                device_on = device.get_parameter_by_name(DeviceParameterEnum.DEVICE_ON)
+                device_on = device.get_parameter_by_name(DeviceParamEnum.DEVICE_ON)
                 if device_on.value is False and not device_on.is_automated:
                     yield track, device
                 if all(

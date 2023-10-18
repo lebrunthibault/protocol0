@@ -2,12 +2,12 @@ from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:  # for python 3 import
     from protocol0.domain.lom.device.Device import Device
-from protocol0.domain.lom.device_parameter.DeviceParameterEnum import DeviceParameterEnum
+from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
 from protocol0.domain.shared.utils.utils import compare_values
 
 
 class DeviceParameterValue(object):
-    def __init__(self, device_parameter_enum: "DeviceParameterEnum", value: Any) -> None:
+    def __init__(self, device_parameter_enum: "DeviceParamEnum", value: Any) -> None:
         self._device_parameter_enum = device_parameter_enum
         self._value = value
 

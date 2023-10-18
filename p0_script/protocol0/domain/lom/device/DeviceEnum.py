@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import List, Optional, Union, Any
 
 from protocol0.domain.lom.device.DeviceEnumGroup import DeviceEnumGroup
-from protocol0.domain.lom.device_parameter.DeviceParameterEnum import DeviceParameterEnum
+from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
 from protocol0.domain.lom.device_parameter.DeviceParameterValue import DeviceParameterValue
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.shared.AbstractEnum import AbstractEnum
@@ -178,43 +178,43 @@ class DeviceEnum(AbstractEnum):
         return self.get_value_from_mapping(
             {
                 DeviceEnum.COMPRESSOR: [
-                    DeviceParameterValue(DeviceParameterEnum.COMPRESSOR_OUTPUT_GAIN, 0),
+                    DeviceParameterValue(DeviceParamEnum.COMPRESSOR_OUTPUT_GAIN, 0),
                     DeviceParameterValue(
-                        DeviceParameterEnum.COMPRESSOR_THRESHOLD, Config.ZERO_VOLUME
+                        DeviceParamEnum.COMPRESSOR_THRESHOLD, Config.ZERO_VOLUME
                     ),  # 0db
                 ],
                 DeviceEnum.EQ_EIGHT: [
                     DeviceParameterValue(
-                        DeviceParameterEnum.EQ_EIGHT_FREQUENCY_1_A, 0.285494267941
+                        DeviceParamEnum.EQ_EIGHT_FREQUENCY_1_A, 0.285494267941
                     ),
-                    DeviceParameterValue(DeviceParameterEnum.EQ_EIGHT_GAIN_4_A, 0),
-                    DeviceParameterValue(DeviceParameterEnum.EQ_EIGHT_FREQUENCY_8_A, 1),
+                    DeviceParameterValue(DeviceParamEnum.EQ_EIGHT_GAIN_4_A, 0),
+                    DeviceParameterValue(DeviceParamEnum.EQ_EIGHT_FREQUENCY_8_A, 1),
                 ],  # 90 Hz
                 DeviceEnum.LFO_TOOL: [
-                    DeviceParameterValue(DeviceParameterEnum.LFO_TOOL_LFO_DEPTH, 0),
+                    DeviceParameterValue(DeviceParamEnum.LFO_TOOL_LFO_DEPTH, 0),
                 ],
                 DeviceEnum.UTILITY: [
-                    DeviceParameterValue(DeviceParameterEnum.UTILITY_GAIN, 0),
-                    DeviceParameterValue(DeviceParameterEnum.UTILITY_MID_SIDE, 1),
+                    DeviceParameterValue(DeviceParamEnum.UTILITY_GAIN, 0),
+                    DeviceParameterValue(DeviceParamEnum.UTILITY_MID_SIDE, 1),
                 ],
             }
         )
 
     @property
-    def default_parameter(self) -> Optional[DeviceParameterEnum]:
+    def default_parameter(self) -> Optional[DeviceParamEnum]:
         """Represents the main parameter for a specific device. We want to make it easily accessible"""
         try:
             return self.get_value_from_mapping(
                 {
-                    DeviceEnum.AUTO_FILTER_HIGH_PASS: DeviceParameterEnum.AUTO_FILTER_HIGH_PASS_FREQUENCY,
-                    DeviceEnum.AUTO_FILTER_LOW_PASS: DeviceParameterEnum.AUTO_FILTER_LOW_PASS_FREQUENCY,
-                    DeviceEnum.AUTO_PAN: DeviceParameterEnum.AUTO_PAN_AMOUNT,
-                    DeviceEnum.INSERT_DELAY: DeviceParameterEnum.INSERT_DELAY_INPUT,
-                    DeviceEnum.INSERT_REVERB: DeviceParameterEnum.INPUT,
-                    DeviceEnum.LIMITER: DeviceParameterEnum.LIMITER_GAIN,
-                    DeviceEnum.LFO_TOOL: DeviceParameterEnum.LFO_TOOL_LFO_DEPTH,
-                    DeviceEnum.SATURATOR: DeviceParameterEnum.SATURATOR_DRIVE,
-                    DeviceEnum.UTILITY: DeviceParameterEnum.UTILITY_GAIN,
+                    DeviceEnum.AUTO_FILTER_HIGH_PASS: DeviceParamEnum.AUTO_FILTER_HIGH_PASS_FREQUENCY,
+                    DeviceEnum.AUTO_FILTER_LOW_PASS: DeviceParamEnum.AUTO_FILTER_LOW_PASS_FREQUENCY,
+                    DeviceEnum.AUTO_PAN: DeviceParamEnum.AUTO_PAN_AMOUNT,
+                    DeviceEnum.INSERT_DELAY: DeviceParamEnum.INSERT_DELAY_INPUT,
+                    DeviceEnum.INSERT_REVERB: DeviceParamEnum.INPUT,
+                    DeviceEnum.LIMITER: DeviceParamEnum.LIMITER_GAIN,
+                    DeviceEnum.LFO_TOOL: DeviceParamEnum.LFO_TOOL_LFO_DEPTH,
+                    DeviceEnum.SATURATOR: DeviceParamEnum.SATURATOR_DRIVE,
+                    DeviceEnum.UTILITY: DeviceParamEnum.UTILITY_GAIN,
                 }
             )
         except Protocol0Error:

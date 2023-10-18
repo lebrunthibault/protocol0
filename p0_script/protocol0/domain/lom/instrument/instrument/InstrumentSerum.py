@@ -1,8 +1,8 @@
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.instrument.InstrumentColorEnum import InstrumentColorEnum
 from protocol0.domain.lom.instrument.InstrumentInterface import InstrumentInterface
-from protocol0.domain.lom.instrument.instrument.InstrumentParameterEnum import \
-    InstrumentParameterEnum
+from protocol0.domain.lom.instrument.instrument.InstrumentParamEnum import \
+    InstrumentParamEnum
 from protocol0.domain.lom.instrument.preset.preset_changer.SerumCCPresetChanger import (
     SerumCCPresetChanger,
 )
@@ -18,10 +18,10 @@ class InstrumentSerum(InstrumentInterface):
     )
     PRESET_CHANGER = SerumCCPresetChanger
     PARAMETER_NAMES = {
-        InstrumentParameterEnum.DELAY: "Dly_Wet",
-        InstrumentParameterEnum.FILTER: "Fil Cutoff",
-        InstrumentParameterEnum.REVERB: "Verb Wet",
-        InstrumentParameterEnum.VOLUME: "MasterVol",
+        InstrumentParamEnum.DELAY: "Dly_Wet",
+        InstrumentParamEnum.FILTER: "Fil Cutoff",
+        InstrumentParamEnum.REVERB: "Verb Wet",
+        InstrumentParamEnum.VOLUME: "MasterVol",
     }
 
     def on_loaded(self, device_enum: DeviceEnum) -> None:
