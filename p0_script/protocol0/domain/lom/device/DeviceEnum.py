@@ -51,6 +51,7 @@ class DeviceEnum(AbstractEnum):
     L1_ULTRAMAXIMIZER = "L1+ Ultramaximizer Stereo"
     LIMITER = "Limiter"
     MASTERING_RACK = "Mastering Rack"
+    NOTE_LENGTH = "Note Length"
     OCTAVA = "Octava.adg"
     OPUS = "Opus"
     OPUS_VIOLINS = "Opus Violins.vstpreset"
@@ -184,17 +185,15 @@ class DeviceEnum(AbstractEnum):
                     ),  # 0db
                 ],
                 DeviceEnum.EQ_EIGHT: [
-                    DeviceParameterValue(
-                        DeviceParamEnum.EQ_EIGHT_FREQUENCY_1_A, 0.285494267941
-                    ),
-                    DeviceParameterValue(DeviceParamEnum.EQ_EIGHT_GAIN_4_A, 0),
-                    DeviceParameterValue(DeviceParamEnum.EQ_EIGHT_FREQUENCY_8_A, 1),
+                    DeviceParameterValue(DeviceParamEnum.FREQUENCY_1_A, 0.285494267941),
+                    DeviceParameterValue(DeviceParamEnum.GAIN_4_A, 0),
+                    DeviceParameterValue(DeviceParamEnum.FREQUENCY_8_A, 1),
                 ],  # 90 Hz
                 DeviceEnum.LFO_TOOL: [
                     DeviceParameterValue(DeviceParamEnum.LFO_TOOL_LFO_DEPTH, 0),
                 ],
                 DeviceEnum.UTILITY: [
-                    DeviceParameterValue(DeviceParamEnum.UTILITY_GAIN, 0),
+                    DeviceParameterValue(DeviceParamEnum.GAIN, 0),
                     DeviceParameterValue(DeviceParamEnum.UTILITY_MID_SIDE, 1),
                 ],
             }
@@ -209,12 +208,12 @@ class DeviceEnum(AbstractEnum):
                     DeviceEnum.AUTO_FILTER_HIGH_PASS: DeviceParamEnum.AUTO_FILTER_HIGH_PASS_FREQUENCY,
                     DeviceEnum.AUTO_FILTER_LOW_PASS: DeviceParamEnum.AUTO_FILTER_LOW_PASS_FREQUENCY,
                     DeviceEnum.AUTO_PAN: DeviceParamEnum.AUTO_PAN_AMOUNT,
-                    DeviceEnum.INSERT_DELAY: DeviceParamEnum.INSERT_DELAY_INPUT,
+                    DeviceEnum.INSERT_DELAY: DeviceParamEnum.INPUT,
                     DeviceEnum.INSERT_REVERB: DeviceParamEnum.INPUT,
-                    DeviceEnum.LIMITER: DeviceParamEnum.LIMITER_GAIN,
+                    DeviceEnum.LIMITER: DeviceParamEnum.GAIN,
                     DeviceEnum.LFO_TOOL: DeviceParamEnum.LFO_TOOL_LFO_DEPTH,
-                    DeviceEnum.SATURATOR: DeviceParamEnum.SATURATOR_DRIVE,
-                    DeviceEnum.UTILITY: DeviceParamEnum.UTILITY_GAIN,
+                    DeviceEnum.SATURATOR: DeviceParamEnum.DRIVE,
+                    DeviceEnum.UTILITY: DeviceParamEnum.GAIN,
                 }
             )
         except Protocol0Error:

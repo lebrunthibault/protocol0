@@ -49,7 +49,7 @@ class ActionGroupRack(ActionGroupInterface):
             XParam(
                 [
                     InstrumentParam(InstrumentParamEnum.FILTER),
-                    DeviceParam(DeviceEnum.EQ_EIGHT, DeviceParamEnum.EQ_EIGHT_FREQUENCY_8_A),
+                    DeviceParam(DeviceEnum.EQ_EIGHT, DeviceParamEnum.FREQUENCY_8_A),
                 ]
             ),
             XParam([InstrumentParam(InstrumentParamEnum.ATTACK)]),
@@ -57,11 +57,11 @@ class ActionGroupRack(ActionGroupInterface):
             XParam(
                 [
                     InstrumentParam(InstrumentParamEnum.VOLUME, automatable=False),
-                    DeviceParam(DeviceEnum.UTILITY, DeviceParamEnum.UTILITY_GAIN, scrollable=False),
+                    DeviceParam(DeviceEnum.UTILITY, DeviceParamEnum.GAIN, scrollable=False),
                     TrackParam(lambda t: t.devices.mixer_device.volume),
                 ],
             ),
-            XParam([DeviceParam(DeviceEnum.EQ_EIGHT, DeviceParamEnum.EQ_EIGHT_FREQUENCY_1_A)]),
+            XParam([DeviceParam(DeviceEnum.EQ_EIGHT, DeviceParamEnum.FREQUENCY_1_A)]),
             XParam([DeviceParam(DeviceEnum.OCTAVA, DeviceParamEnum.OCTAVA_VEL, auto_disable=True)]),
             XParam(
                 [
@@ -86,7 +86,12 @@ class ActionGroupRack(ActionGroupInterface):
                 [DeviceParam(DeviceEnum.ARPEGGIATOR, DeviceParamEnum.ARP_RATE)],
                 value_items=list(range(14)),
             ),
-            XParam([DeviceParam(DeviceEnum.ARPEGGIATOR, DeviceParamEnum.ARP_GATE)]),
+            XParam(
+                [
+                    DeviceParam(DeviceEnum.NOTE_LENGTH, DeviceParamEnum.LENGTH),
+                    DeviceParam(DeviceEnum.ARPEGGIATOR, DeviceParamEnum.ARP_GATE),
+                ]
+            ),
             XParam([DeviceParam(DeviceEnum.LFO_TOOL, DeviceParamEnum.LFO_TOOL_LFO_DEPTH)]),
         ]
 

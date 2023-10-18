@@ -41,6 +41,7 @@ class InstrumentService(object):
         if pd.device:
             if auto_enable:
                 pd.device.is_enabled = True
+                pd.device.is_collapsed = False
             self._device_component.select_device(Song.armed_or_selected_track(), pd.device)
 
             return pd.device
@@ -75,11 +76,13 @@ class InstrumentService(object):
         pd = param.get_device_param(automatable=True)
 
         if not pd:
+            pd = param.get_device_param()
+
             device = self._get_device(param, pd)
             if not isinstance(device, Device):
                 return device
 
-            if device.is_instrument:
+            if not device.is_instrument:
                 device.toggle()
 
             return None
