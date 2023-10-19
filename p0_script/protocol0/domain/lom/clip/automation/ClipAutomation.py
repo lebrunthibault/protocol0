@@ -67,6 +67,7 @@ class ClipAutomation(object):
         except RuntimeError:
             # envelope already exists
             pass
+        self.show_envelope()
         return cast(ClipAutomationEnvelope, self.get_envelope(parameter))
 
     def clear_envelope(self, parameter: DeviceParameter) -> None:

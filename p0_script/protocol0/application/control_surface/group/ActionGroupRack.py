@@ -67,6 +67,7 @@ class ActionGroupRack(ActionGroupInterface):
                 [
                     DeviceParam(DeviceEnum.INSERT_REVERB, DeviceParamEnum.INPUT, scrollable=False),
                     DeviceParam(DeviceEnum.INSERT_REVERB, DeviceParamEnum.WET, automatable=False),
+                    DeviceParam(DeviceEnum.REVERB, DeviceParamEnum.MIX),
                     InstrumentParam(InstrumentParamEnum.REVERB),
                     TrackParam(lambda t: t.devices.mixer_device.sends[-1]),
                 ]

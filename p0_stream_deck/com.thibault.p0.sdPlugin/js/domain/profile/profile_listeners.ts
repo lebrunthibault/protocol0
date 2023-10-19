@@ -28,12 +28,12 @@ class ProfileListeners {
     private onActionPressedEvent (event: ActionPressedEvent) {
         const actionType = actionTypes.fromName(event.context.name)
 
-        if (actionType.profileAutoSwitch) {
-            this.switchProfile(actionType.profileAutoSwitch)
-        } else if (actionType.name === BACK_TO_PREVIOUS_PROFILE) {
+        if (actionType.profileAutoSwitch === 'back' || actionType.name === BACK_TO_PREVIOUS_PROFILE) {
             this.switchProfile(this.db.profileHistory.getPrevious() || ProfileNameEnum.HOME)
 
             this.db.profileHistory.clear()
+        } else if (actionType.profileAutoSwitch) {
+            this.switchProfile(actionType.profileAutoSwitch)
         }
     }
 

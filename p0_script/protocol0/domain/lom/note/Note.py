@@ -45,7 +45,11 @@ class Note(object):
     @classmethod
     def from_midi_note(cls, note: Live.Clip.MidiNote) -> "Note":
         return Note(
-            pitch=note.pitch, start=note.start_time, duration=note.duration, velocity=note.velocity
+            pitch=note.pitch,
+            start=note.start_time,
+            duration=note.duration,
+            velocity=note.velocity,
+            muted=note.mute,
         )
 
     def to_data(self) -> Tuple[int, float, float, int, bool]:
