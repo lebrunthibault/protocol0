@@ -1,3 +1,4 @@
+from functools import partial
 from typing import Optional, Union
 
 from protocol0.domain.lom.clip.Clip import Clip
@@ -109,7 +110,19 @@ class InstrumentService(object):
         if env:
             clip.automation.clear_envelope(pd.param)
         else:
-            clip.automation.create_envelope(pd.param)
+            env = clip.automation.create_envelope(pd.param)
+
+            # hack to have only one start and one end points
+            param_value = pd.param.value
+            pd.param.value = pd.param.min
+
+            seq = Sequence().defer()
+            seq.add(partial(env.create_start_and_end_points, param_value))
+            seq.defer()
+            seq.add(partial(setattr, pd.param, "value", param_value))
+            seq.done()
+
+        clip.automation.show_parameter_envelope(pd.param)
 
         return None
 

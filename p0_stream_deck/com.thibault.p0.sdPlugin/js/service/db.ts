@@ -12,7 +12,7 @@ class ProfileHistory {
     }
 
     getPrevious (): ProfileNameEnum | null {
-        return this.history[0] || null
+        return this.history[1] || null
     }
 
     clear () {

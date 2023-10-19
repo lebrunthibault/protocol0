@@ -53,14 +53,8 @@ class ActionGroupRack(ActionGroupInterface):
                 ]
             ),
             XParam([InstrumentParam(InstrumentParamEnum.ATTACK)]),
+            XParam([InstrumentParam(InstrumentParamEnum.DECAY)]),
             XParam([InstrumentParam(InstrumentParamEnum.RELEASE)]),
-            XParam(
-                [
-                    InstrumentParam(InstrumentParamEnum.VOLUME, automatable=False),
-                    DeviceParam(DeviceEnum.UTILITY, DeviceParamEnum.GAIN, scrollable=False),
-                    TrackParam(lambda t: t.devices.mixer_device.volume),
-                ],
-            ),
             XParam([DeviceParam(DeviceEnum.EQ_EIGHT, DeviceParamEnum.FREQUENCY_1_A)]),
             XParam([DeviceParam(DeviceEnum.OCTAVA, DeviceParamEnum.OCTAVA_VEL, auto_disable=True)]),
             XParam(
@@ -94,6 +88,13 @@ class ActionGroupRack(ActionGroupInterface):
                 ]
             ),
             XParam([DeviceParam(DeviceEnum.LFO_TOOL, DeviceParamEnum.LFO_TOOL_LFO_DEPTH)]),
+            XParam(
+                [
+                    InstrumentParam(InstrumentParamEnum.VOLUME, automatable=False),
+                    DeviceParam(DeviceEnum.UTILITY, DeviceParamEnum.GAIN, scrollable=False),
+                    TrackParam(lambda t: t.devices.mixer_device.volume),
+                ],
+            ),
         ]
 
         for index, param in enumerate(params):
