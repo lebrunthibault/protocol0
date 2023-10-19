@@ -31,12 +31,17 @@ class ClipAutomationEnvelope(object):
     def insert_step(self, start_beat: float, beat_length: float, value: float) -> None:
         self._envelope.insert_step(start_beat, beat_length, value)
 
-    def create_start_and_end_points(self) -> None:
+    def create_start_and_end_points(self, value: float = None) -> None:
         """we need to emulate an automation value at the beginning and the end of the clip
         so that doing ctrl-a will select the automation on the whole clip duration
         """
-        self.insert_step(0, 0, self.value_at_time(0))
-        self.insert_step(self._length, 0, self.value_at_time(self._length))
+        from protocol0.shared.logging.Logger import Logger
+        Logger.dev((value, self._length, self.value_at_time(0), self.value_at_time(self._length)))
+        if value:
+            self.insert_step(0, self._length, value)
+        else:
+            self.insert_step(0, 0, self.value_at_time(0))
+            self.insert_step(self._length, 0, 0)
 
     def copy(self) -> None:
         self.create_start_and_end_points()
