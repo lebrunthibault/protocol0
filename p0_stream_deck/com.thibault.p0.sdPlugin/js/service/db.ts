@@ -8,14 +8,11 @@ class ProfileHistory {
     private history : ProfileNameEnum[] = []
 
     push (profile: ProfileNameEnum) {
-        if (this.history[0] !== profile) {
-            this.history.unshift(profile)
-            this.history.length = 2
-        }
+        this.history.unshift(profile)
     }
 
     getPrevious (): ProfileNameEnum | null {
-        return this.history[1] || null
+        return this.history[0] || null
     }
 
     clear () {
