@@ -109,8 +109,7 @@ class InstrumentService(object):
         if env:
             clip.automation.clear_envelope(pd.param)
         else:
-            env = clip.automation.create_envelope(pd.param)
-            env.create_start_and_end_points()
+            clip.automation.create_envelope(pd.param)
 
         return None
 
