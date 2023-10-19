@@ -23,6 +23,7 @@ class DeviceParamEnum(AbstractEnum):
     INPUT = "INPUT"
     LENGTH = "LENGTH"
     LFO_TOOL_LFO_DEPTH = "LFO_TOOL_LFO_DEPTH"
+    MIX = "MIX"
     OCTAVA_VEL = "OCTAVA_VEL"
     UTILITY_SILENT_GAIN = "UTILITY_SILENT_GAIN"
     UTILITY_MID_SIDE = "UTILITY_MID_SIDE"
@@ -50,6 +51,7 @@ class DeviceParamEnum(AbstractEnum):
                 DeviceParamEnum.INPUT: "Input",
                 DeviceParamEnum.LENGTH: "Time Length",
                 DeviceParamEnum.LFO_TOOL_LFO_DEPTH: "LFO Depth",
+                DeviceParamEnum.MIX: "Mix",
                 DeviceParamEnum.OCTAVA_VEL: "Vel",
                 DeviceParamEnum.UTILITY_SILENT_GAIN: "Gain",
                 DeviceParamEnum.UTILITY_MID_SIDE: "Mid/Side Balance",

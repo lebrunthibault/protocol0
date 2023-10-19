@@ -6,7 +6,6 @@ import ProfileChangedEvent from '../profile/profile_changed_event'
 import ProfileNameEnum from '../profile/ProfileNameEnum'
 
 function selectOrLoadDevice (device: string | DeviceGroup) {
-    console.log(device)
     if (typeof device === 'string') {
         API.loadDevice(device)
     } else {
