@@ -7,7 +7,7 @@ from protocol0.domain.lom.scene.PlayingSceneChangedEvent import PlayingSceneChan
 from protocol0.domain.lom.scene.SceneLastBarPassedEvent import SceneLastBarPassedEvent
 from protocol0.domain.lom.song.SongStoppedEvent import SongStoppedEvent
 from protocol0.domain.shared.backend.Backend import Backend
-from protocol0.domain.shared.errors.error_handler import handle_error
+from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.scheduler.BarChangedEvent import BarChangedEvent
 from protocol0.domain.shared.scheduler.BarEndingEvent import BarEndingEvent
 from protocol0.domain.shared.scheduler.Last16thPassedEvent import Last16thPassedEvent
@@ -79,7 +79,7 @@ class DomainEventBus(object):
             cls._registry[domain_event].remove(subscriber)
 
     @classmethod
-    @handle_error
+    @handle_errors()
     def emit(cls, domain_event: object) -> "Sequence":
         if cls._DEBUG and type(domain_event) not in cls._SILENT_EVENTS:
             Logger.info("Event emitted: %s" % domain_event.__class__.__name__)

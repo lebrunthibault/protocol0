@@ -7,6 +7,7 @@ class ScrollPresetsCommandHandler(CommandHandlerInterface):
     def handle(self, command: ScrollPresetsCommand) -> None:
         track = Song.selected_track()
         if track.instrument:
-            if track.solo and Song.armed_or_selected_track() != track:
+            if not track.arm_state.is_armed:
                 track.arm_state.arm()
+
             Song.selected_track().instrument.preset_list.scroll(command.go_next)

@@ -16,7 +16,7 @@ from protocol0.application.command.ToggleSceneLoopCommand import ToggleSceneLoop
 from protocol0.application.command_handler.CommandHandlerInterface import CommandHandlerInterface
 from protocol0.domain.lom.set.AbletonSet import AbletonSet
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
-from protocol0.domain.shared.errors.error_handler import handle_error
+from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.utils.utils import import_package
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
@@ -75,7 +75,7 @@ class CommandBus(object):
             # call this as a regular method
             return cls._INSTANCE._dispatch_command(command)
 
-    @handle_error
+    @handle_errors()
     def _dispatch_command(self, command: SerializableCommand) -> Optional[Sequence]:
         start_at = time.time()
 

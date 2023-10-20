@@ -20,7 +20,7 @@ from protocol0.domain.lom.track.simple_track.audio.SimpleReturnTrack import Simp
 from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
 from protocol0.domain.lom.track.simple_track.audio.special.ReferenceTrack import ReferenceTrack
 from protocol0.domain.shared.backend.Backend import Backend
-from protocol0.domain.shared.errors.error_handler import handle_error
+from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.Song import Song
@@ -47,7 +47,7 @@ class TrackMapperService(SlotManager):
         DomainEventBus.subscribe(SimpleTrackCreatedEvent, self._on_simple_track_created_event)
 
     @subject_slot("tracks")
-    @handle_error
+    @handle_errors()
     def tracks_listener(self) -> None:
         self._clean_tracks()
 
