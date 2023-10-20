@@ -14,7 +14,7 @@ from protocol0.domain.lom.song.components.SceneCrudComponent import SceneCrudCom
 from protocol0.domain.lom.track.TrackAddedEvent import TrackAddedEvent
 from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
 from protocol0.domain.shared.backend.Backend import Backend
-from protocol0.domain.shared.errors.error_handler import handle_error
+from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.list import find_if
@@ -71,7 +71,7 @@ class SceneService(SlotManager):
         return current_scene
 
     @subject_slot("scenes")
-    @handle_error
+    @handle_errors()
     def scenes_listener(self) -> None:
         previous_live_scenes_ids = self._live_scene_id_to_scene.keys()
 
@@ -85,7 +85,7 @@ class SceneService(SlotManager):
         Logger.info("mapped scenes")
 
     @subject_slot("selected_scene")
-    @handle_error
+    @handle_errors()
     @debounce(duration=20)
     def _selected_scene_listener(self) -> None:
         """

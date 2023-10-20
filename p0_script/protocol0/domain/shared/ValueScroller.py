@@ -15,7 +15,9 @@ class ValueScroller(Generic[T]):
         return self.__class__.__name__
 
     @classmethod
-    def scroll_values(cls, items: Iterable[T], current_value: Optional[T], go_next: bool, rotate: bool = True) -> T:
+    def scroll_values(
+        cls, items: Iterable[T], current_value: Optional[T], go_next: bool, rotate: bool = True
+    ) -> T:
         values: List[T] = list(items)
         if len(values) == 0:
             raise Protocol0Warning("empty list handed to scroll_values")
@@ -44,8 +46,12 @@ class ValueScroller(Generic[T]):
         return self._current_value
 
     def scroll(self, go_next: bool) -> None:
+        values = self._get_values()
+        if len(values) == 0:
+            return None
+
         self._current_value = self.scroll_values(
-            self._get_values(), self._get_initial_value(go_next), go_next=go_next
+            values, self._get_initial_value(go_next), go_next=go_next
         )
         self._value_scrolled()
 

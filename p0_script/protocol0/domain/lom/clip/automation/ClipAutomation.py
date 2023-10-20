@@ -6,7 +6,7 @@ from protocol0.domain.lom.clip.ClipLoop import ClipLoop
 from protocol0.domain.lom.clip.automation.ClipAutomationEnvelope import ClipAutomationEnvelope
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
 from protocol0.domain.shared.ApplicationView import ApplicationView
-from protocol0.domain.shared.errors.error_handler import handle_error
+from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 
 
@@ -78,12 +78,12 @@ class ClipAutomation(object):
         if self._live_clip:
             return self._live_clip.clear_all_envelopes()
 
-    @handle_error
+    @handle_errors()
     def show_envelope(self) -> None:
         self.hide_envelope()  # necessary
         self._live_clip.view.show_loop()  # this before seem to work better
         self._live_clip.view.show_envelope()
 
-    @handle_error
+    @handle_errors()
     def hide_envelope(self) -> None:
         self._live_clip.view.hide_envelope()

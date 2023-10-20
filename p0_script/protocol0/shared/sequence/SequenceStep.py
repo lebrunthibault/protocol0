@@ -2,7 +2,7 @@ import traceback
 
 from typing import Any, Callable, Optional
 
-from protocol0.domain.shared.errors.error_handler import handle_error
+from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.utils.func import get_callable_repr
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.observer.Observable import Observable
@@ -29,7 +29,7 @@ class SequenceStep(Observable):
                 self._terminate(observable.res)
                 observable.remove_observer(self)
 
-    @handle_error
+    @handle_errors()
     def start(self) -> None:
         self.state.change_to(SequenceStateEnum.STARTED)
         # noinspection PyBroadException

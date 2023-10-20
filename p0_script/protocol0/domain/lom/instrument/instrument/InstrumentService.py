@@ -7,6 +7,7 @@ from protocol0.domain.lom.device.DeviceService import DeviceService
 from protocol0.domain.lom.instrument.InstrumentLoadedEvent import InstrumentLoadedEvent
 from protocol0.domain.lom.instrument.XParam import XParam, DeviceParam, ParamDevice
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
+from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.utils.concurrency import lock
 from protocol0.domain.shared.utils.list import find_if
@@ -74,6 +75,7 @@ class InstrumentService(object):
 
     @lock
     def toggle_param(self, param: XParam) -> Optional[Sequence]:
+        Song.selected_track().arm_state.arm()
         pd = param.get_device_param(automatable=True)
 
         if not pd:
@@ -97,6 +99,7 @@ class InstrumentService(object):
 
     @lock
     def toggle_param_automation(self, param: XParam) -> Optional[Sequence]:
+        Song.selected_track().arm_state.arm()
         pd = param.get_device_param(automatable=True)
 
         if not pd:
@@ -127,6 +130,7 @@ class InstrumentService(object):
         return None
 
     @lock
+    @handle_errors(reset=False)
     def scroll_param(self, param: XParam, go_next: bool) -> Optional[Sequence]:
         param_conf, pd = param.get_scrollable()
         auto_enable = not isinstance(param_conf, DeviceParam) or param_conf.auto_disable is False

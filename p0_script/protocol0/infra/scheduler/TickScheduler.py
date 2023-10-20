@@ -1,7 +1,7 @@
 import Live
 from typing import List, Callable, Optional
 
-from protocol0.domain.shared.errors.error_handler import handle_error
+from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.scheduler.TickSchedulerEventInterface import (
     TickSchedulerEventInterface,
 )
@@ -34,7 +34,7 @@ class TickScheduler(TickSchedulerInterface):
         # noinspection PyArgumentList
         self._live_timer.start()
 
-    @handle_error
+    @handle_errors()
     def _on_tick(self) -> None:
         # noinspection PyBroadException
         try:

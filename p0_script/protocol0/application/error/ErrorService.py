@@ -10,7 +10,7 @@ from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.backend.BackendEvent import BackendEvent
 from protocol0.domain.shared.errors.ErrorRaisedEvent import ErrorRaisedEvent
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
-from protocol0.domain.shared.errors.error_handler import handle_error
+from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.shared.Config import Config
 from protocol0.shared.UndoFacade import UndoFacade
@@ -35,7 +35,8 @@ class ErrorService(object):
         DomainEventBus.subscribe(BackendEvent, self._on_backend_event)
 
     def _on_error_raised_event(self, event: ErrorRaisedEvent) -> None:
-        UndoFacade.end_undo_step()
+        if event.reset:
+            UndoFacade.end_undo_step()
         exc_type, exc_value, tb = sys.exc_info()
         assert exc_type and exc_value and tb, "cannot determine exception type and value"
         if issubclass(exc_type, Protocol0Warning) or issubclass(exc_type, AssertionError):
@@ -44,13 +45,15 @@ class ErrorService(object):
                 error_message = "Unknown assertion error"
             Backend.client().show_error(error_message)
         else:
-            self._handle_exception(exc_type, exc_value, tb, event.context)
+            self._handle_exception(exc_type, exc_value, tb, event.context, event.reset)
 
     def _on_backend_event(self, event: BackendEvent) -> None:
         if event.event == "error":
             self._restart()
 
-    def _handle_uncaught_exception(self, exc_type: Type[BaseException], exc_value: BaseException, tb: TracebackType) -> None:
+    def _handle_uncaught_exception(
+        self, exc_type: Type[BaseException], exc_value: BaseException, tb: TracebackType
+    ) -> None:
         if any([string in str(exc_value) for string in self._IGNORED_ERROR_STRINGS]):
             pass
         Logger.error("unhandled exception caught")
@@ -60,28 +63,38 @@ class ErrorService(object):
     def log_stack_trace(cls) -> None:
         """This will be logged and displayed nicely by the Service"""
 
-        @handle_error
+        @handle_errors()
         def raise_exception() -> None:
             raise RuntimeError("debug stack trace")
 
         raise_exception()
 
-    def _handle_exception(self, exc_type: Type[BaseException], exc_value: BaseException, tb: TracebackType, context: Optional[str] = None) -> None:
+    def _handle_exception(
+        self,
+        exc_type: Type[BaseException],
+        exc_value: BaseException,
+        tb: TracebackType,
+        context: Optional[str] = None,
+        reset: bool = True,
+    ) -> None:
         entries = [fs for fs in extract_tb(tb) if self._log_file(fs[0])]
         if self._DEBUG:
             entries = extract_tb(tb)
-        error_message = "  %s  \n\n" % exc_value
-        error_message += "Exception: %s\n\n" % exc_type.__name__
+        error_message = "  %s  \n" % exc_value
+        error_message += "Exception: %s\n" % exc_type.__name__
         if context:
             error_message += str(context) + "\n"
         error_message += "at " + "".join(self._format_list(entries[-1:], print_line=False)).strip()
-        error_message += "\n\n"
-        error_message += "----- traceback -----\n"
-        error_message += "".join(self._format_list(entries))
 
-        self._restart()
+        if reset:
+            error_message += "\n\n"
+            error_message += "----- traceback -----\n"
+            error_message += "".join(self._format_list(entries))
 
         self._log_error(error_message)
+
+        if reset:
+            self._restart()
 
     def _restart(self) -> None:
         Sequence.reset()
