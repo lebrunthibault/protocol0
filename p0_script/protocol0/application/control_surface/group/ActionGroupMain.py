@@ -3,6 +3,7 @@ from typing import Optional
 
 from protocol0.application.ScriptResetActivatedEvent import ScriptResetActivatedEvent
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
+from protocol0.domain.lom.set.MixingService import MixingService
 from protocol0.domain.lom.song.components.TempoComponent import TempoComponent
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.track_recorder.RecordService import RecordService
@@ -54,3 +55,18 @@ class ActionGroupMain(ActionGroupInterface):
             on_press=lambda: partial(record_track, RecordTypeEnum.MIDI),
             on_long_press=lambda: partial(record_track, RecordTypeEnum.MIDI_UNLIMITED),
         )
+
+
+        self.add_encoder(
+            identifier=13, name="test", on_press=self.action_test
+        )
+
+        # VOLume encoder
+        self.add_encoder(
+            identifier=16,
+            name="volume",
+            on_scroll=self._container.get(MixingService).scroll_all_tracks_volume,
+        )
+
+    def action_test(self) -> None:
+        pass

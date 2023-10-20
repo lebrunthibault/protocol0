@@ -329,6 +329,10 @@ class Song(object):
         return cls._INSTANCE._playback_component.is_playing
 
     @classmethod
+    def session_record(cls) -> bool:
+        return cls._INSTANCE._recording_component.session_record
+
+    @classmethod
     def is_track_recording(cls) -> bool:
         return cls._INSTANCE._track_recorder_service.is_recording
 

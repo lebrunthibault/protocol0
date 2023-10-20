@@ -47,18 +47,16 @@ class SimpleAudioTrack(SimpleTrack):
 
         clip = self.clip_slots[list(self._track.clip_slots).index(clip_slot)].clip
 
-        if (
-            any(isinstance(track, DrumsTrack) for track in self.group_tracks) and not clip.warping
-        ):
+        if any(isinstance(track, DrumsTrack) for track in self.group_tracks) and not clip.warping:
+
             def make_clip_loop() -> None:
                 clip.warping = True
-                clip.loop.start = - Song.scenes()[clip.index].length
+                clip.loop.start = -Song.scenes()[clip.index].length
                 clip.loop.end = 0
                 clip.looping = True
                 clip.show_loop()
 
             Scheduler.defer(make_clip_loop)
-
 
     def load_full_track(self) -> Sequence:
         assert isinstance(Song.current_track(), SimpleAudioTrack), "Track already loaded"
@@ -106,22 +104,6 @@ class SimpleAudioTrack(SimpleTrack):
                 file_path = source_cs.clip.file_path
 
             return dest_cs.replace_clip_sample(None, file_path)
-
-    def back_to_previous_clip_file_path(self, clip: AudioClip) -> Sequence:
-        clip_slot = self.clip_slots[clip.index]
-        previous_file_path = clip.previous_file_path
-
-        if previous_file_path is None:
-            raise Protocol0Warning("No previous file path")
-        elif previous_file_path == clip.file_path:
-            raise Protocol0Warning("file path didn't not change")
-
-        seq = Sequence()
-        seq.add(partial(self.replace_clip_sample, clip_slot, file_path=previous_file_path))
-        seq.add(Backend.client().close_samples_windows)
-        seq.add(partial(Backend.client().show_success, "file path restored"))
-
-        return seq.done()
 
     def disconnect(self) -> None:
         self._data.save()

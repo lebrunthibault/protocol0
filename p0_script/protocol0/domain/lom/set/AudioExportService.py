@@ -4,6 +4,7 @@ from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.backend.Backend import Backend
+from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
 
@@ -23,7 +24,7 @@ class AudioExportService(object):
         self._set_fixer_service.fix_set()
         self._song_stats_service.export_song_structure()
         self._bounce_session_to_arrangement()
-        Backend.client().export_audio()
+        Scheduler.wait_ms(500, Backend.client().export_audio)
 
     def _bounce_session_to_arrangement(self) -> None:
         sound_id_device = Song.master_track().devices.get_one_from_enum(

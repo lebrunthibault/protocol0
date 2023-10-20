@@ -44,7 +44,8 @@ class InstrumentService(object):
             if auto_enable:
                 pd.device.is_enabled = True
                 pd.device.is_collapsed = False
-            self._device_component.select_device(Song.armed_or_selected_track(), pd.device)
+            if not Song.session_record():
+                self._device_component.select_device(Song.armed_or_selected_track(), pd.device)
 
             return pd.device
 
