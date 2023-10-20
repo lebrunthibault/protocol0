@@ -8,6 +8,7 @@ from protocol0.domain.lom.instrument.preset.preset_changer.PresetChangerInterfac
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.ValueScroller import ValueScroller
 from protocol0.shared.Song import Song
+from protocol0.shared.logging.Logger import Logger
 
 
 class ClipNotePresetChanger(PresetChangerInterface):
@@ -24,8 +25,6 @@ class ClipNotePresetChanger(PresetChangerInterface):
 
         notes = clip.get_notes()
         clip_pitches = list(set([note.pitch for note in notes if not note.muted]))
-        from protocol0.shared.logging.Logger import Logger
-        Logger.dev((notes, clip_pitches))
         if len(clip_pitches) != 1:
             Logger.warning("Multiple pitches detected in clip")
             ApplicationView.show_clip()

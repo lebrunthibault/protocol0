@@ -409,6 +409,36 @@ class SimpleTrack(AbstractTrack):
 
         return seq.done()
 
+    def link_automation(self) -> None:
+        clip = self.clip_slots[Song.selected_scene().index].clip
+        if not clip or len(self.clip_slots) <= clip.index + 1:
+            return None
+        next_clip = self.clip_slots[clip.index + 1].clip
+        if not next_clip:
+            return
+
+        clip_parameters = clip.automation.get_automated_parameters(self.devices.parameters)
+        next_clip_parameters = next_clip.automation.get_automated_parameters(
+            self.devices.parameters
+        )
+
+        common_parameters = [p for p in clip_parameters if p in next_clip_parameters]
+
+        for parameter in common_parameters:
+            clip_env = clip.automation.get_envelope(parameter)
+            next_clip_env = next_clip.automation.get_envelope(parameter)
+            if not next_clip_env.is_linear:
+                Logger.info(f"{next_clip_env} is not linear")
+                continue
+
+            end = next_clip_env.end
+            next_clip.automation.clear_envelope(parameter)
+            next_clip_env = next_clip.automation.create_envelope(parameter)
+            next_clip_env.insert_step(0, 0, clip_env.value_at_time(clip.length))
+            next_clip_env.insert_step(next_clip.length, 0, end)
+
+        return None
+
     @property
     def load_time(self) -> int:
         return self.devices.load_time

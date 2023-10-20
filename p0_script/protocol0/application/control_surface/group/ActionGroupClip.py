@@ -1,9 +1,5 @@
-from functools import partial
-
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
-from protocol0.domain.lom.clip.AudioClip import AudioClip
 from protocol0.domain.lom.clip.MidiClip import MidiClip
-from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
 from protocol0.shared.Song import Song
 
@@ -27,8 +23,9 @@ class ActionGroupClip(ActionGroupInterface):
         )
 
         # midi clip to MONO
+        # todo: remove
         self.add_encoder(
             identifier=13,
-            name="link midi clips automation",
-            on_press=lambda: Song.selected_clip(MidiClip).to_mono,
+            name="link clips automation",
+            on_press=lambda: Song.selected_track().link_automation,
         )
