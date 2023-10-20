@@ -65,12 +65,18 @@ class InstrumentParam:
     automatable: bool = True
 
     def get_param_device(self) -> Optional[ParamDevice]:
-        instrument = Song.armed_or_selected_track().instrument
+        track = Song.armed_or_selected_track()
+        instrument = track.instrument
 
         if not instrument or not instrument.device:
             return None
-
         param = None
+
+        if track.instrument_rack_device:
+            param = track.instrument_rack_device.get_parameter_by_name(self.param_name.name.lower())
+            if param:
+                return ParamDevice(track.instrument_rack_device, param)
+
         if self.param_name in instrument.PARAMETER_NAMES:
             param = instrument.device.get_parameter_by_name(
                 instrument.PARAMETER_NAMES[self.param_name]
