@@ -18,12 +18,31 @@ class ClipAutomationEnvelope(object):
     def hash(self) -> float:
         """pick up to 10 values to generate a footprint of the automation"""
         values = [
-            self.value_at_time(i)
+            round(self.value_at_time(i), 4)
             for i in float_seq(0, int(self._length), self._length / self._FOOTPRINT_MEASURES)
         ]
         values.append(self.value_at_time(self._length))
 
         return hash(tuple(values))
+
+    @property
+    def start(self) -> float:
+        return self.value_at_time(0)
+
+    @property
+    def end(self) -> float:
+        return self.value_at_time(self._length)
+
+    @property
+    def is_linear(self) -> bool:
+        start = self.start
+        end = self.end
+        values = []
+        for i in range(self._FOOTPRINT_MEASURES + 1):
+            val = start + (i * (end - start) / self._FOOTPRINT_MEASURES)
+            values.append(round(val, 4))
+
+        return hash(tuple(values)) == self.hash
 
     def value_at_time(self, beat_length: float) -> float:
         return self._envelope.value_at_time(beat_length)
@@ -35,12 +54,10 @@ class ClipAutomationEnvelope(object):
         """we need to emulate an automation value at the beginning and the end of the clip
         so that doing ctrl-a will select the automation on the whole clip duration
         """
-        from protocol0.shared.logging.Logger import Logger
-        Logger.dev((value, self._length, self.value_at_time(0), self.value_at_time(self._length)))
         if value:
             self.insert_step(0, self._length, value)
         else:
-            self.insert_step(0, 0, self.value_at_time(0))
+            self.insert_step(0, 0, self.start)
             self.insert_step(self._length, 0, 0)
 
     def copy(self) -> None:
