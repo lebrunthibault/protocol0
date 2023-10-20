@@ -26,12 +26,9 @@ class ActionGroupClip(ActionGroupInterface):
             on_press=lambda: Song.selected_clip(MidiClip).to_mono,
         )
 
-        # BACK to previous file path
+        # midi clip to MONO
         self.add_encoder(
             identifier=13,
-            name="set clip previous file path",
-            on_press=lambda: partial(
-                Song.selected_track(SimpleAudioTrack).back_to_previous_clip_file_path,
-                Song.selected_clip(AudioClip),
-            ),
+            name="link midi clips automation",
+            on_press=lambda: Song.selected_clip(MidiClip).to_mono,
         )

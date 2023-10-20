@@ -14,7 +14,6 @@ from protocol0.domain.lom.instrument.instrument.InstrumentParamEnum import (
     InstrumentParamEnum,
 )
 from protocol0.domain.lom.instrument.instrument.InstrumentService import InstrumentService
-from protocol0.domain.lom.set.MixingService import MixingService
 from protocol0.shared.Song import Song
 
 
@@ -70,6 +69,7 @@ class ActionGroupRack(ActionGroupInterface):
                 [
                     DeviceParam(DeviceEnum.INSERT_DELAY, DeviceParamEnum.INPUT, scrollable=False),
                     DeviceParam(DeviceEnum.INSERT_DELAY, DeviceParamEnum.WET, automatable=False),
+                    DeviceParam(DeviceEnum.DELAY, DeviceParamEnum.WET, automatable=False),
                     InstrumentParam(InstrumentParamEnum.DELAY),
                 ]
             ),
@@ -88,25 +88,19 @@ class ActionGroupRack(ActionGroupInterface):
                 ]
             ),
             XParam([DeviceParam(DeviceEnum.LFO_TOOL, DeviceParamEnum.LFO_TOOL_LFO_DEPTH)]),
-            XParam(
-                [
-                    InstrumentParam(InstrumentParamEnum.VOLUME, automatable=False),
-                    DeviceParam(DeviceEnum.UTILITY, DeviceParamEnum.GAIN, scrollable=False),
-                    TrackParam(lambda t: t.devices.mixer_device.volume),
-                ],
-            ),
         ]
 
-        for index, param in enumerate(params):
+        def add_x_param_encoder(identifier: int, x_param: XParam) -> None:
             self.add_encoder(
-                identifier=index + 1,
-                name=f"control {param.name}",
-                on_press=partial(instrument_service.toggle_param, param),
-                on_long_press=partial(instrument_service.toggle_param_automation, param),
-                on_scroll=partial(instrument_service.scroll_param, param),
+                identifier=identifier,
+                name=f"control {x_param.name}",
+                on_press=partial(instrument_service.toggle_param, x_param),
+                on_long_press=partial(instrument_service.toggle_param_automation, x_param),
+                on_scroll=partial(instrument_service.scroll_param, x_param),
             )
 
-        # -----
+        for index, param in enumerate(params):
+            add_x_param_encoder(index + 1, param)
 
         # VELO encoder
         self.add_encoder(
@@ -114,9 +108,14 @@ class ActionGroupRack(ActionGroupInterface):
             name="smooth selected clip velocities",
             on_scroll=lambda: Song.selected_clip(MidiClip).scale_velocities,
         )
-        # VOLume encoder
-        self.add_encoder(
-            identifier=16,
-            name="volume",
-            on_scroll=self._container.get(MixingService).scroll_all_tracks_volume,
+
+        add_x_param_encoder(
+            16,
+            XParam(
+                [
+                    InstrumentParam(InstrumentParamEnum.VOLUME, automatable=False),
+                    DeviceParam(DeviceEnum.UTILITY, DeviceParamEnum.GAIN, scrollable=False),
+                    TrackParam(lambda t: t.devices.mixer_device.volume),
+                ],
+            ),
         )

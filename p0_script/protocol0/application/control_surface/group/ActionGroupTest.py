@@ -4,7 +4,6 @@ from protocol0.application.control_surface.ActionGroupInterface import ActionGro
 from protocol0.domain.audit.AudioLatencyAnalyzerService import AudioLatencyAnalyzerService
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.shared.Song import Song
-from protocol0.shared.logging.Logger import Logger
 
 
 class ActionGroupTest(ActionGroupInterface):
@@ -22,9 +21,6 @@ class ActionGroupTest(ActionGroupInterface):
             name="start set launch time profiling",
             on_press=Backend.client().start_set_profiling,
         )
-
-        # CLR encoder
-        self.add_encoder(identifier=3, name="clear logs", on_press=Logger.clear)
 
         # USAMo encoder
         self.add_encoder(
