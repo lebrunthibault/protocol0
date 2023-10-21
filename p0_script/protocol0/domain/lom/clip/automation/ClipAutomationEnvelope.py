@@ -54,7 +54,7 @@ class ClipAutomationEnvelope(object):
         """we need to emulate an automation value at the beginning and the end of the clip
         so that doing ctrl-a will select the automation on the whole clip duration
         """
-        if value:
+        if value is not None:
             self.insert_step(0, self._length, value)
         else:
             self.insert_step(0, 0, self.start)

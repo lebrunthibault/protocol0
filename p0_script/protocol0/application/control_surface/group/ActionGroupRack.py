@@ -1,4 +1,5 @@
 from functools import partial
+from typing import Callable, Any
 
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
 from protocol0.domain.lom.clip.MidiClip import MidiClip
@@ -14,6 +15,7 @@ from protocol0.domain.lom.instrument.instrument.InstrumentParamEnum import (
     InstrumentParamEnum,
 )
 from protocol0.domain.lom.instrument.instrument.InstrumentService import InstrumentService
+from protocol0.domain.shared.utils.utils import db_to_volume
 from protocol0.shared.Song import Song
 
 
@@ -91,12 +93,16 @@ class ActionGroupRack(ActionGroupInterface):
         ]
 
         def add_x_param_encoder(identifier: int, x_param: XParam) -> None:
+            def execute_x_param(method: Callable[[XParam], None], **k: Any) -> None:
+                x_param.track = Song.selected_or_soloed_track()
+                method(x_param, **k)
+
             self.add_encoder(
                 identifier=identifier,
                 name=f"control {x_param.name}",
-                on_press=partial(instrument_service.toggle_param, x_param),
-                on_long_press=partial(instrument_service.toggle_param_automation, x_param),
-                on_scroll=partial(instrument_service.scroll_param, x_param),
+                on_press=partial(execute_x_param, instrument_service.toggle_param),
+                on_long_press=partial(execute_x_param, instrument_service.toggle_param_automation),
+                on_scroll=partial(execute_x_param, instrument_service.scroll_param),
             )
 
         for index, param in enumerate(params):
@@ -113,9 +119,12 @@ class ActionGroupRack(ActionGroupInterface):
             16,
             XParam(
                 [
+                    TrackParam(
+                        lambda t: t.devices.mixer_device.volume,
+                        limits=(db_to_volume(-10), db_to_volume(0)),
+                    ),
                     InstrumentParam(InstrumentParamEnum.VOLUME, automatable=False),
                     DeviceParam(DeviceEnum.UTILITY, DeviceParamEnum.GAIN, scrollable=False),
-                    TrackParam(lambda t: t.devices.mixer_device.volume),
                 ],
             ),
         )

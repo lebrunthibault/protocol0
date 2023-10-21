@@ -107,6 +107,23 @@ class Song(object):
         return track
 
     @classmethod
+    def selected_or_soloed_track(cls) -> Union[T, "SimpleTrack"]:
+        soloed_tracks = [t for t in Song.simple_tracks() if t.solo]
+        track = Song.selected_track()
+
+        if len(soloed_tracks) == 1:
+            track = soloed_tracks[0]
+            track.select()
+        elif len(soloed_tracks) > 1:
+            cls._INSTANCE._track_component.un_focus_all_tracks()
+            track.solo = True
+
+        # focus other playing track ?
+
+        track.arm_state.arm()
+        return track
+
+    @classmethod
     def current_track(cls) -> "AbstractTrack":
         return cls.selected_track().abstract_track
 
@@ -120,21 +137,6 @@ class Song(object):
             return cast(ExternalSynthTrack, Song.current_track())
         else:
             raise Protocol0Warning("current track is not an ExternalSynthTrack")
-
-    @classmethod
-    def armed_or_selected_track(cls) -> "SimpleTrack":
-        armed_track = next(cls.armed_tracks(), None)
-        if armed_track and armed_track != cls.selected_track():
-            if cls.selected_track().solo and not armed_track.solo:
-                cls.selected_track().arm_state.arm()
-                return cls.selected_track()
-            elif cls.selected_track().is_playing and not armed_track.base_track.is_playing:
-                cls.selected_track().arm_state.arm()
-                return cls.selected_track()
-            else:
-                return armed_track.base_track
-        else:
-            return cls.selected_track()
 
     @classmethod
     def abstract_tracks(cls) -> Iterator["AbstractTrack"]:
@@ -164,7 +166,9 @@ class Song(object):
             return None
 
     @classmethod
-    def simple_tracks(cls, track_cls: Optional[Type[T]] = None) -> Iterator[Union[T, "SimpleTrack"]]:
+    def simple_tracks(
+        cls, track_cls: Optional[Type[T]] = None
+    ) -> Iterator[Union[T, "SimpleTrack"]]:
         from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 
         track_cls = track_cls or SimpleTrack
