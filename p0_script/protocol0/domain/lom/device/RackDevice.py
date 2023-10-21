@@ -25,13 +25,8 @@ class RackDevice(Device, Observable):
 
 
     def on_added(self) -> None:
-        from protocol0.shared.logging.Logger import Logger
-        Logger.dev(self)
-        Logger.dev(self.has_macro_mappings)
         # show only one macro
         if not self.has_macro_mappings:
-            from protocol0.shared.logging.Logger import Logger
-            Logger.dev("remove !")
             self.remove_macro()
             self.remove_macro()
             self.remove_macro()
@@ -59,9 +54,7 @@ class RackDevice(Device, Observable):
     def remove_macro(self) -> None:
         try:
             self._device.remove_macro()
-        except RuntimeError as e:
-            from protocol0.shared.logging.Logger import Logger
-            Logger.dev(str(e))
+        except RuntimeError:
             pass
 
     @property
