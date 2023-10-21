@@ -23,6 +23,20 @@ class RackDevice(Device, Observable):
         if isinstance(observable, DeviceChain):
             self.notify_observers()
 
+
+    def on_added(self) -> None:
+        from protocol0.shared.logging.Logger import Logger
+        Logger.dev(self)
+        Logger.dev(self.has_macro_mappings)
+        # show only one macro
+        if not self.has_macro_mappings:
+            from protocol0.shared.logging.Logger import Logger
+            Logger.dev("remove !")
+            self.remove_macro()
+            self.remove_macro()
+            self.remove_macro()
+            self.remove_macro()
+
     @subject_slot("chains")
     def _chains_listener(self) -> None:
         self.chains = [DeviceChain(chain, index) for index, chain in enumerate(self._device.chains)]
@@ -37,6 +51,18 @@ class RackDevice(Device, Observable):
     @selected_chain.setter
     def selected_chain(self, selected_chain: DeviceChain) -> None:
         self._view.selected_chain = selected_chain._chain
+
+    @property
+    def has_macro_mappings(self) -> bool:
+        return self._device.has_macro_mappings and set(self._device.macros_mapped) == {False}
+
+    def remove_macro(self) -> None:
+        try:
+            self._device.remove_macro()
+        except RuntimeError as e:
+            from protocol0.shared.logging.Logger import Logger
+            Logger.dev(str(e))
+            pass
 
     @property
     def variation_count(self) -> int:

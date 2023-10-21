@@ -11,6 +11,7 @@ from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
 from protocol0.domain.shared.LiveObjectMapping import LiveObjectMapping
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
+from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.observer.Observable import Observable
 
@@ -44,6 +45,10 @@ class SimpleTrackDevices(SlotManager, Observable):
             device.disconnect()
 
         self._devices_mapping.build(self._track.devices)
+        for added_device in self._devices_mapping.added:
+            Scheduler.defer(added_device.on_added)   # type: ignore[attr-defined]
+        from protocol0.shared.logging.Logger import Logger
+        Logger.dev(self._devices_mapping.added)
         self._devices = cast(List[Device], self._devices_mapping.all)
         self._all_devices = self._find_all_devices(self._devices)
         for device in self._all_devices:

@@ -69,4 +69,5 @@ class ActionGroupMain(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        pass
+        device = Song.selected_device()
+        device.is_collapsed = not device.is_collapsed
