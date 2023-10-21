@@ -35,7 +35,7 @@ class InstrumentService(object):
         if not pd:
             device_to_load = param.get_device_to_load()
             if device_to_load:
-                Song.armed_or_selected_track().select()
+                param.track.select()
                 return self._device_service.load_device(device_to_load.name)
             else:
                 return None
@@ -45,7 +45,7 @@ class InstrumentService(object):
                 pd.device.is_enabled = True
                 pd.device.is_collapsed = False
             if not Song.session_record():
-                self._device_component.select_device(Song.armed_or_selected_track(), pd.device)
+                self._device_component.select_device(param.track, pd.device)
 
             return pd.device
 
@@ -65,7 +65,7 @@ class InstrumentService(object):
         if not pd:
             return None
 
-        clip = Song.armed_or_selected_track().clip_slots[Song.selected_scene().index].clip
+        clip = param.track.clip_slots[Song.selected_scene().index].clip
         if not clip:
             return None
 
@@ -76,7 +76,6 @@ class InstrumentService(object):
 
     @lock
     def toggle_param(self, param: XParam) -> Optional[Sequence]:
-        Song.selected_track().arm_state.arm()
         pd = param.get_device_param(automatable=True)
 
         if not pd:
@@ -100,7 +99,6 @@ class InstrumentService(object):
 
     @lock
     def toggle_param_automation(self, param: XParam) -> Optional[Sequence]:
-        Song.selected_track().arm_state.arm()
         pd = param.get_device_param(automatable=True)
 
         if not pd:
@@ -133,7 +131,7 @@ class InstrumentService(object):
     @lock
     @handle_errors(reset=False)
     def scroll_param(self, param: XParam, go_next: bool) -> Optional[Sequence]:
-        param_conf, pd = param.get_scrollable()
+        param_conf, pd = param.get_scrollable(go_next)
         auto_enable = not isinstance(param_conf, DeviceParam) or param_conf.auto_disable is False
 
         res = self._setup_device_and_clip(param, pd, select_clip=False, auto_enable=auto_enable)

@@ -9,7 +9,6 @@ from protocol0.domain.lom.instrument.instrument.InstrumentParamEnum import (
     InstrumentParamEnum,
 )
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
-from protocol0.shared.Song import Song
 
 
 @dataclass(frozen=True)
@@ -30,8 +29,8 @@ class DeviceParam:
     automatable: bool = True
     scrollable: bool = True
 
-    def get_param_device(self) -> Optional[ParamDevice]:
-        device = Song.armed_or_selected_track().devices.get_one_from_enum(self.device_enum)
+    def get_param_device(self, track: SimpleTrack) -> Optional[ParamDevice]:
+        device = track.devices.get_one_from_enum(self.device_enum)
 
         if not device:
             return None
@@ -48,10 +47,11 @@ class DeviceParam:
 class TrackParam:
     callback: Callable[[SimpleTrack], DeviceParameter]
     automatable: bool = False
+    limits: Optional[Tuple] = None
 
-    def get_param_device(self) -> Optional[ParamDevice]:
+    def get_param_device(self, track: SimpleTrack) -> Optional[ParamDevice]:
         try:
-            param = self.callback(Song.armed_or_selected_track())
+            param = self.callback(track)
             return ParamDevice(None, param)
         except IndexError:
             pass
@@ -64,8 +64,7 @@ class InstrumentParam:
     param_name: InstrumentParamEnum
     automatable: bool = True
 
-    def get_param_device(self) -> Optional[ParamDevice]:
-        track = Song.armed_or_selected_track()
+    def get_param_device(self, track: SimpleTrack) -> Optional[ParamDevice]:
         instrument = track.instrument
 
         if not instrument or not instrument.device:
@@ -91,12 +90,14 @@ class InstrumentParam:
 
 
 ParamConf = Union[DeviceParam, InstrumentParam, TrackParam]
+ParamConfAndPD = Tuple[Optional[ParamConf], Optional[ParamDevice]]
 
 
-@dataclass(frozen=True)
+@dataclass()
 class XParam:
     param_configs: List[ParamConf] = field(default_factory=lambda: [])
     value_items: Optional[List[int]] = None
+    track: SimpleTrack = None  # type: ignore[assignment]
 
     @property
     def name(self) -> str:
@@ -111,10 +112,11 @@ class XParam:
 
     def get_device_param(self, automatable: bool = False) -> Optional[ParamDeviceNotCallable]:
         for param_conf in self.param_configs:
-            pd = param_conf.get_param_device()
+            pd = param_conf.get_param_device(self.track)
 
             if (
                 pd
+                and not isinstance(param_conf, TrackParam)
                 and isinstance(pd.param, DeviceParameter)
                 and (not automatable or param_conf.automatable)
             ):
@@ -122,11 +124,25 @@ class XParam:
 
         return None
 
-    def get_scrollable(self) -> Tuple[Optional[ParamConf], Optional[ParamDevice]]:
+    def get_scrollable(self, go_next: bool) -> ParamConfAndPD:
+        track_params: Optional[ParamConfAndPD] = None
+
         for param_conf in self.param_configs:
-            pd = param_conf.get_param_device()
+            pd = param_conf.get_param_device(self.track)
+
 
             if pd and (not isinstance(param_conf, DeviceParam) or param_conf.scrollable):
+                if isinstance(param_conf, TrackParam) and param_conf.limits:
+                    param_value = param_conf.get_param_device(self.track).param.value
+                    p_min, p_max = param_conf.limits
+                    if (param_value <= p_min and not go_next) or (param_value >= p_max and go_next):
+                        track_params = param_conf, pd
+                        continue
+
                 return param_conf, pd
+
+        # in case there is no foldback parameter return the track param and go over limits
+        if track_params:
+            return track_params
 
         return None, None
