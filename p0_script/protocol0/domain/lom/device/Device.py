@@ -50,6 +50,9 @@ class Device(SlotManager):
     def make(cls, device: Live.Device.Device) -> "Device":
         return Device._get_class(device)(device=device)
 
+    def on_added(self) -> None:
+        pass
+
     @property
     def enum(self) -> Optional[DeviceEnum]:
         try:
