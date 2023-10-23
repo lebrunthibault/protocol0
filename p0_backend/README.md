@@ -26,7 +26,6 @@ calling the script by dispatching script RPC commands.
 - most commands I run from the terminal are gathered here (starting processes, sdk generation, tests and lint)
 
 ### Start the backend
-- `make celery`
 - `make midi_server`
 - `make http_server`
 

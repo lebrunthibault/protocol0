@@ -12,8 +12,8 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse
 from starlette.staticfiles import StaticFiles
+from win11toast import toast_async
 
-from p0_backend.lib.notification.notification.notification_factory import NotificationFactory
 from p0_backend.settings import Settings
 
 load_dotenv()
@@ -58,10 +58,8 @@ async def _catch_protocol0_errors(request: Request, call_next):
         traceback.print_tb(e.__traceback__)
         logger.error(e)
 
-        # if isinstance(e, (Protocol0Error, AssertionError)):
-        #     notification_level = NotificationEnum.WARNING
         if request.method != "PUT":
-            await NotificationFactory.show_error(str(e))
+            await toast_async(str(e))
 
         return PlainTextResponse(str(e), status_code=500)
 

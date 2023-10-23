@@ -1,14 +1,14 @@
+from enum import Enum
 from typing import Tuple
 
 from p0_backend.settings import Settings
-from p0_backend.lib.enum.abstract_enum import AbstractEnum
 
 RGBColor = Tuple[int, int, int]
 
 settings = Settings()
 
 
-class PixelColorEnum(AbstractEnum):
+class PixelColorEnum(Enum):
     """used when doing pixel color detection"""
 
     BUTTON_ACTIVATED = "FFA608"
@@ -49,7 +49,7 @@ class PixelColorEnum(AbstractEnum):
 
     @classmethod
     def hex_to_rgb(cls, color: str) -> RGBColor:
-        return (int(color[0:2], 16), int(color[2:4], 16), int(color[4:6], 16))
+        return int(color[0:2], 16), int(color[2:4], 16), int(color[4:6], 16)
 
     @property
     def rgb(self) -> RGBColor:

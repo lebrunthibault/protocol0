@@ -10,7 +10,7 @@ from typing import Optional, Dict, List
 from loguru import logger
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.celery.celery import notification_window
+from p0_backend.lib.notification import notification_window
 from p0_backend.lib.ableton.ableton import is_ableton_focused
 from p0_backend.lib.ableton.ableton_set.ableton_set import AbletonSet, PathInfo
 from p0_backend.lib.ableton.get_set import (
@@ -108,7 +108,7 @@ def _check_track_name_change(existing_set: AbletonSet, new_set: AbletonSet):
         and existing_current_track.type == "SimpleAudioTrack"
         and existing_current_track.name in existing_set.saved_track_names
     ):
-        notification_window.delay("You updated a saved track", NotificationEnum.WARNING)
+        notification_window("You updated a saved track", NotificationEnum.WARNING)
         show_saved_tracks()
 
 

@@ -9,7 +9,7 @@ from loguru import logger
 from mido import Message
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.celery.celery import notification_window
+from p0_backend.lib.notification import notification_window
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.midi.mido import _get_input_port
 from p0_backend.lib.utils import (
@@ -61,7 +61,7 @@ def _poll_midi_port(midi_port):
                 message += traceback.format_exc()
                 logger.error(log_string(message))
                 logger.error(log_string(traceback.format_exc()))
-                notification_window.delay(message, NotificationEnum.ERROR)
+                notification_window(message, NotificationEnum.ERROR)
         else:
             break
 
