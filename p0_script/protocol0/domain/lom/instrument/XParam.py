@@ -95,13 +95,10 @@ ParamConfAndPD = Tuple[Optional[ParamConf], Optional[ParamDevice]]
 
 @dataclass()
 class XParam:
+    name: str
     param_configs: List[ParamConf] = field(default_factory=lambda: [])
     value_items: Optional[List[int]] = None
     track: SimpleTrack = None  # type: ignore[assignment]
-
-    @property
-    def name(self) -> str:
-        return str(self.param_configs)
 
     def get_device_to_load(self) -> Optional[DeviceEnum]:
         for param_conf in self.param_configs:

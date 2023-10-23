@@ -34,7 +34,6 @@ class AbletonSetManager:
         if cls.DEBUG:
             logger.info(f"registering set {ableton_set}")
 
-        logger.success(get_launched_set_path())
         try:
             ableton_set.path_info = PathInfo.create(get_launched_set_path())
         except AssertionError:

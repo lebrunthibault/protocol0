@@ -166,6 +166,19 @@ files = [
 ]
 
 [[package]]
+name = "dacite"
+version = "1.8.1"
+description = "Simple creation of data classes from dictionaries."
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "dacite-1.8.1-py3-none-any.whl", hash = "sha256:cc31ad6fdea1f49962ea42db9421772afe01ac5442380d9a99fcf3d188c61afe"},
+]
+
+[package.extras]
+dev = ["black", "coveralls", "mypy", "pre-commit", "pylint", "pytest (>=5)", "pytest-benchmark", "pytest-cov"]
+
+[[package]]
 name = "easyprocess"
 version = "1.1"
 description = "Easy to use Python subprocess interface."
@@ -4214,4 +4227,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "3.11.3"
-content-hash = "677928d1a5a82268dccf73d3198b699ac07ef5ad3ba173b83d6096ccc3960485"
+content-hash = "f9f13c066f2cac60a670ae663bf4e9abb2e54b740436903af1a3a9f891336184"

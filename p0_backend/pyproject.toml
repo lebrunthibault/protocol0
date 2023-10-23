@@ -44,6 +44,7 @@ win10toast = "^0.9"
 winotify = "^1.1.0"
 win11toast = "^0.32"
 pydantic-settings = "^2.0.3"
+dacite = "^1.8.1"
 
 [tool.poetry.dev-dependencies]
 flake8 = "*"
