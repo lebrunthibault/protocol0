@@ -62,6 +62,11 @@ export default defineComponent({
     abletonSet() {
       this.name = this.abletonSet?.path_info.name
       this.stage = this.abletonSet?.metadata?.stage
+    },
+    async stage() {
+      await apiService.put(`/set/${encodeURI(this.abletonSet?.path_info.filename)}`, {stage: this.stage})
+      this.abletonSet.metadata.stage = this.stage
+      notify("Set saved")
     }
   },
   computed: {
@@ -93,9 +98,8 @@ export default defineComponent({
       $('#setInfoModal').modal('show')
     },
     async submit() {
-      await apiService.put(`/set/${encodeURI(this.abletonSet?.path_info.filename)}`, {name: this.name, stage: this.stage})
+      await apiService.put(`/set/${encodeURI(this.abletonSet?.path_info.filename)}`, {name: this.name})
       this.abletonSet.path_info.name = this.name
-      this.abletonSet.metadata.stage = this.stage
       notify("Set saved")
       $('#setInfoModal').modal('hide')
     },
