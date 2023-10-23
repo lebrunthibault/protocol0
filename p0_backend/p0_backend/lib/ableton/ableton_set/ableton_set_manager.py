@@ -10,13 +10,11 @@ from typing import Optional, Dict, List
 from loguru import logger
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.lib.notification import notification_window
 from p0_backend.lib.ableton.ableton import is_ableton_focused
 from p0_backend.lib.ableton.ableton_set.ableton_set import AbletonSet, PathInfo
 from p0_backend.lib.ableton.get_set import (
     get_launched_set_path,
 )
-from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.window.window import get_focused_window_title
 from p0_backend.settings import Settings
@@ -41,16 +39,11 @@ class AbletonSetManager:
         except AssertionError:
             ableton_set.path_info = PathInfo.create(settings.ableton_test_set_path)
 
-        logger.success(ableton_set)
-
         # deduplicate on set title
         existing_set = cls._ACTIVE_SET
         if existing_set is not None:
             if existing_set.path_info.filename != ableton_set.path_info.filename:
-                logger.warning(f"overwriting active set: {existing_set}")
-                # return
-
-            _check_track_name_change(existing_set, ableton_set)
+                logger.info(f"overwriting active set: {existing_set}")
 
         if existing_set == ableton_set:
             logger.info("No change")
@@ -92,24 +85,6 @@ class AbletonSetManager:
     @classmethod
     def has_active_set(cls) -> bool:
         return cls._ACTIVE_SET is not None
-
-
-def _check_track_name_change(existing_set: AbletonSet, new_set: AbletonSet):
-    if not existing_set.current_state or not new_set.current_state:
-        return
-
-    existing_current_track = existing_set.current_state.current_track
-    new_current_track = new_set.current_state.current_track
-
-    if (
-        existing_set.current_state.track_count == new_set.current_state.track_count
-        and existing_current_track.index == new_current_track.index
-        and existing_current_track.name != new_current_track.name
-        and existing_current_track.type == "SimpleAudioTrack"
-        and existing_current_track.name in existing_set.saved_track_names
-    ):
-        notification_window("You updated a saved track", NotificationEnum.WARNING)
-        show_saved_tracks()
 
 
 def _get_focused_set_title() -> Optional[str]:
@@ -175,10 +150,6 @@ def get_set(path: str) -> Optional[AbletonSet]:
     ableton_sets = list(chain.from_iterable(list_sets().values()))
 
     return next(s for s in ableton_sets if s.path_info.filename == path)
-
-
-def show_saved_tracks():
-    os.startfile(AbletonSetManager.active().path_info.tracks_folder)
 
 
 def delete_saved_track(track_name: str):

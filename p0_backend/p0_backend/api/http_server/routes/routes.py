@@ -4,7 +4,6 @@ from fastapi import APIRouter
 from win11toast import toast_async
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.lib.notification import notification_window
 from p0_backend.lib.ableton.ableton import (
     reload_ableton,
     hide_plugins,
@@ -12,7 +11,6 @@ from p0_backend.lib.ableton.ableton import (
 )
 from p0_backend.lib.ableton.ableton_set.ableton_set_manager import (
     AbletonSetManager,
-    show_saved_tracks,
     delete_saved_track,
 )
 from p0_backend.lib.ableton.ableton_set.server_state import ServerState
@@ -36,6 +34,7 @@ from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.explorer import close_samples_windows, close_explorer_window, open_explorer
 from p0_backend.lib.keys import send_keys
 from p0_backend.lib.mouse.mouse import click, click_vertical_zone, move_to
+from p0_backend.lib.notification import notification_window
 from p0_backend.lib.process import execute_powershell_command
 from p0_backend.lib.window.find_window import find_window_handle_by_enum
 from p0_backend.lib.window.window import focus_window
@@ -313,11 +312,6 @@ async def _log_selected():
 @router.get("/log_song_stats")
 async def _log_song_stats():
     p0_script_client().dispatch(LogSongStatsCommand())
-
-
-@router.get("/show_saved_tracks")
-async def _show_saved_tracks():
-    show_saved_tracks()
 
 
 @router.get("/delete_saved_track")
