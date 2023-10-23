@@ -62,7 +62,6 @@ class AudioInfo(BaseModel):
 
 class AbletonTrack(BaseModel):
     name: str
-    type: str
     index: int
 
 
@@ -85,7 +84,6 @@ class AbletonSetCurrentState(BaseModel):
     selected_scene: AbletonScene
     current_track: AbletonTrack
     selected_track: AbletonTrack
-    track_count: int
     drum_rack_visible: bool
 
 
@@ -177,17 +175,10 @@ class AbletonSet(BaseModel):
 
 
 def set_scene_stats(scene_stats: List[SceneStat]):
-    from loguru import logger
-
-    logger.success(scene_stats)
     ableton_set = AbletonSet.create(get_launched_set_path())
-    from loguru import logger
-
-    logger.success(ableton_set)
 
     ableton_set.metadata.scenes = scene_stats
-    logger.success(ableton_set.path_info)
-    logger.success(ableton_set.metadata)
+
     ableton_set.save()
 
 

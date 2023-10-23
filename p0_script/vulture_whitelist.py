@@ -73,7 +73,6 @@ _.select_or_sync_automation  # unused method (protocol0\domain\lom\track\TrackAu
 _.color_clip_with_automation  # unused method (protocol0\domain\lom\track\TrackAutomationService.py:119)
 ActionGroupLaunchControl  # unused class (protocol0\application\control_surface\group\ActionGroupLaunchControl.py:7)
 _.on_set_save  # unused method (protocol0\domain\lom\track\simple_track\SimpleTrack.py:424)
-track_count  # unused variable (protocol0\domain\lom\set\AbletonSet.py:31)
 drum_rack_visible  # unused variable (protocol0\domain\lom\set\AbletonSet.py:32)
 drums  # unused variable (protocol0\domain\lom\set\AbletonSet.py:28)
 harmony  # unused variable (protocol0\domain\lom\set\AbletonSet.py:29)
