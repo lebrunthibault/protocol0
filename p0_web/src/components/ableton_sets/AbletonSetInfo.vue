@@ -12,7 +12,7 @@
             <i class="fa-regular fa-trash-can" data-toggle="tooltip" data-placement="top" title="Move set to trash"></i>
           </button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body my-2">
           <form action="" @submit.prevent="submit">
             <div class="btn-group" role="group">
               <input type="radio" class="btn-check" name="stage_draft" id="stage_draft" autocomplete="off"
@@ -27,11 +27,11 @@
                      v-model="stage" value="RELEASE" :checked="stage === 'RELEASE'">
               <label class="btn btn-outline-primary" for="stage_release">Release</label>
             </div>
-            <div class="form-group">
+            <div class="form-group mt-3">
               <label for="name">Set name</label>
               <input v-model="name" type="text" class="form-control" id="name">
             </div>
-            <button type="submit" class="btn btn-primary mt-2">Ok</button>
+            <button type="submit" class="btn btn-primary mt-4">Ok</button>
           </form>
         </div>
       </div>
