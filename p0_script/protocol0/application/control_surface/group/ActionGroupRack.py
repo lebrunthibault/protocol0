@@ -48,48 +48,59 @@ class ActionGroupRack(ActionGroupInterface):
 
         params = [
             XParam(
+                "Filter",
                 [
                     InstrumentParam(InstrumentParamEnum.FILTER),
                     DeviceParam(DeviceEnum.EQ_EIGHT, DeviceParamEnum.FREQUENCY_8_A),
-                ]
+                ],
             ),
-            XParam([InstrumentParam(InstrumentParamEnum.ATTACK)]),
-            XParam([InstrumentParam(InstrumentParamEnum.DECAY)]),
-            XParam([InstrumentParam(InstrumentParamEnum.RELEASE)]),
-            XParam([DeviceParam(DeviceEnum.EQ_EIGHT, DeviceParamEnum.FREQUENCY_1_A)]),
-            XParam([DeviceParam(DeviceEnum.OCTAVA, DeviceParamEnum.OCTAVA_VEL, auto_disable=True)]),
+            XParam("Attack", [InstrumentParam(InstrumentParamEnum.ATTACK)]),
+            XParam("Decay", [InstrumentParam(InstrumentParamEnum.DECAY)]),
+            XParam("Release", [InstrumentParam(InstrumentParamEnum.RELEASE)]),
+            XParam("HPF", [DeviceParam(DeviceEnum.EQ_EIGHT, DeviceParamEnum.FREQUENCY_1_A)]),
             XParam(
+                "Octava",
+                [DeviceParam(DeviceEnum.OCTAVA, DeviceParamEnum.OCTAVA_VEL, auto_disable=True)],
+            ),
+            XParam(
+                "Reverb",
                 [
                     DeviceParam(DeviceEnum.INSERT_REVERB, DeviceParamEnum.INPUT, scrollable=False),
                     DeviceParam(DeviceEnum.INSERT_REVERB, DeviceParamEnum.WET, automatable=False),
                     DeviceParam(DeviceEnum.VALHALLA_VINTAGE_VERB, DeviceParamEnum.MIX),
                     InstrumentParam(InstrumentParamEnum.REVERB),
                     TrackParam(lambda t: t.devices.mixer_device.sends[-1]),
-                ]
+                ],
             ),
             XParam(
+                "Delay",
                 [
                     DeviceParam(DeviceEnum.INSERT_DELAY, DeviceParamEnum.INPUT, scrollable=False),
                     DeviceParam(DeviceEnum.INSERT_DELAY, DeviceParamEnum.WET, automatable=False),
                     DeviceParam(DeviceEnum.DELAY, DeviceParamEnum.WET, automatable=False),
                     InstrumentParam(InstrumentParamEnum.DELAY),
-                ]
+                ],
             ),
             XParam(
+                "Arp",
                 [DeviceParam(DeviceEnum.ARPEGGIATOR, DeviceParamEnum.ARP_STYLE, automatable=False)],
                 value_items=arp_styles,
             ),
             XParam(
+                "Arp rate",
                 [DeviceParam(DeviceEnum.ARPEGGIATOR, DeviceParamEnum.ARP_RATE)],
                 value_items=list(range(14)),
             ),
             XParam(
+                "Length",
                 [
                     DeviceParam(DeviceEnum.NOTE_LENGTH, DeviceParamEnum.LENGTH),
                     DeviceParam(DeviceEnum.ARPEGGIATOR, DeviceParamEnum.ARP_GATE),
-                ]
+                ],
             ),
-            XParam([DeviceParam(DeviceEnum.LFO_TOOL, DeviceParamEnum.LFO_TOOL_LFO_DEPTH)]),
+            XParam(
+                "LFOTool", [DeviceParam(DeviceEnum.LFO_TOOL, DeviceParamEnum.LFO_TOOL_LFO_DEPTH)]
+            ),
         ]
 
         def add_x_param_encoder(identifier: int, x_param: XParam) -> None:
@@ -99,7 +110,7 @@ class ActionGroupRack(ActionGroupInterface):
 
             self.add_encoder(
                 identifier=identifier,
-                name=f"control {x_param.name}",
+                name=x_param.name,
                 on_press=partial(execute_x_param, instrument_service.toggle_param),
                 on_long_press=partial(execute_x_param, instrument_service.toggle_param_automation),
                 on_scroll=partial(execute_x_param, instrument_service.scroll_param),
@@ -118,6 +129,7 @@ class ActionGroupRack(ActionGroupInterface):
         add_x_param_encoder(
             16,
             XParam(
+                "Volume",
                 [
                     TrackParam(
                         lambda t: t.devices.mixer_device.volume,
