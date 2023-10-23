@@ -1,3 +1,5 @@
+import {notify} from "@/utils/utils";
+
 function getOptions(method: string, body: Object | null = null) {
   const options: any = {
       method: method,
@@ -23,11 +25,15 @@ class APIService {
     return await response.json()
   }
 
-  async post(path: string, data: Object) {
+  async put(path: string, data: Object) {
     const url = `${this.baseURL}${path}`
-    const response = await fetch(url, getOptions("POST", data))
-
-    return await response.json()
+    try {
+      const response = await fetch(url, getOptions("PUT", data))
+      return await response.json()
+    } catch (e: any) {
+      notify(e)
+      throw e
+    }
   }
 
   async delete(path: string) {

@@ -16,10 +16,6 @@ class TaskCache:
     def __init__(self):
         self._cache = database
 
-    def clear(self):
-        for key in list(TaskCacheKey):
-            self._cache.delete(key.value)
-
     def get_tasks(self, task_type: TaskCacheKey) -> List[TaskId]:
         return self._get_list(task_type)
 

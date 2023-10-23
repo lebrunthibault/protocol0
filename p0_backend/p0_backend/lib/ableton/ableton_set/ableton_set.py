@@ -1,8 +1,10 @@
 import glob
 import json
 import os.path
+import shutil
 import time
-from os.path import basename, dirname
+from json import JSONDecodeError
+from os.path import basename, dirname, exists
 from pathlib import Path
 from typing import List, Optional
 
@@ -14,10 +16,10 @@ from p0_backend.settings import Settings
 settings = Settings()
 
 
-class AbletonSetPath(BaseModel):
-    filename: Optional[str]
-    name: Optional[str]
-    saved_at: Optional[float]
+class PathInfo(BaseModel):
+    filename: str
+    name: str
+    saved_at: Optional[float] = 0
 
     @property
     def tracks_folder(self):
@@ -33,15 +35,10 @@ class AbletonSetPath(BaseModel):
         return self.filename.replace(".als", ".wav")
 
     @classmethod
-    def create(cls, filename: str) -> "AbletonSetPath":
+    def create(cls, filename: str) -> "PathInfo":
         path = Path(filename)
 
         return cls(filename=filename, name=path.stem, saved_at=path.stat().st_mtime)
-
-
-class MetadataFileInfo(BaseModel):
-    filename: str
-    saved_at: float
 
 
 class SceneStat(BaseModel):
@@ -52,16 +49,14 @@ class SceneStat(BaseModel):
 
 
 class AbletonSetMetadata(BaseModel):
-    path_info: Optional[MetadataFileInfo]
+    path_info: Optional[PathInfo] = None
     scenes: List[SceneStat] = []
     stars: int = 0
     comment: str = ""
 
 
-class AudioFileInfo(BaseModel):
-    filename: str
+class AudioInfo(BaseModel):
     url: str
-    saved_at: float
     outdated: bool
 
 
@@ -96,23 +91,22 @@ class AbletonSetCurrentState(BaseModel):
 
 class AbletonSet(BaseModel):
     def __repr__(self):
-        return f"AbletonSet('{self.path_info.name}')"
+        return f"AbletonSet('{self.path_info.name if self.path_info else ''}')"
 
     def __str__(self):
         return self.__repr__()
 
-    path_info: AbletonSetPath
-    audio_info: Optional[AudioFileInfo]
-    metadata: Optional[AbletonSetMetadata]
-    current_state: Optional[AbletonSetCurrentState]
-
-    @property
-    def is_untitled(self):
-        return self.path_info.filename is None or Path(self.path_info.filename).stem == "None"
+    path_info: Optional[PathInfo] = None
+    audio: Optional[AudioInfo] = None
+    metadata: Optional[AbletonSetMetadata] = None
+    current_state: Optional[AbletonSetCurrentState] = None
 
     @property
     def has_own_folder(self) -> bool:
-        return basename(dirname(str(self.path_info.filename))).lower().strip() == self.path_info.name
+        return (
+            basename(dirname(str(self.path_info.filename))).lower().strip()
+            == self.path_info.name.lower().strip()
+        )
 
     @classmethod
     def all_tracks_folder(cls) -> List[str]:
@@ -146,25 +140,23 @@ class AbletonSet(BaseModel):
 
     @classmethod
     def create(cls, set_filename: str) -> "AbletonSet":
-        set_path = AbletonSetPath.create(set_filename)
+        ableton_set = AbletonSet(path_info=PathInfo.create(set_filename))
+        ableton_set.metadata = AbletonSetMetadata()
 
-        # handle metadata
-        if os.path.exists(set_path.metadata_filename):
-            with open(set_path.metadata_filename, "r") as f:
-                ableton_set = AbletonSet(**json.load(f))
-                ableton_set.path_info = set_path
+        # restore from file
+        if os.path.exists(ableton_set.path_info.metadata_filename):
+            with open(ableton_set.path_info.metadata_filename, "r") as f:
+                try:
+                    data = json.load(f)
+                    ableton_set.metadata = AbletonSetMetadata(
+                        **data,
+                        path_info=PathInfo.create(ableton_set.path_info.metadata_filename),
+                    )
+                except JSONDecodeError as e:
+                    from loguru import logger
 
-                metadata_path = AbletonSetPath(
-                    filename=set_path.metadata_filename,
-                    saved_at=os.path.getmtime(set_path.metadata_filename),
-                )
-                ableton_set.metadata = ableton_set.metadata or AbletonSetMetadata(
-                    path_info=metadata_path
-                )
-                ableton_set.metadata.path_info = metadata_path
-        else:
-            ableton_set = AbletonSet(path_info=set_path)
-            ableton_set.metadata = AbletonSetMetadata()
+                    logger.error(e)
+                    pass
 
         # handle audio info
         if os.path.exists(ableton_set.path_info.audio_filename):
@@ -172,9 +164,7 @@ class AbletonSet(BaseModel):
 
             audio_saved_at = os.path.getmtime(ableton_set.path_info.audio_filename)
             assert ableton_set.path_info.saved_at, "saved_at not computed"
-            ableton_set.audio_info = AudioFileInfo(
-                filename=ableton_set.path_info.audio_filename,
-                saved_at=audio_saved_at,
+            ableton_set.audio = AudioInfo(
                 url=audio_url,
                 outdated=ableton_set.path_info.saved_at - audio_saved_at > 30 * 60,  # 30 min
             )
@@ -183,25 +173,83 @@ class AbletonSet(BaseModel):
 
     def save(self):
         with open(self.path_info.metadata_filename, "w") as f:
-            f.write(self.json())
+            f.write(self.metadata.model_dump_json(exclude={"path_info"}))
 
 
 def set_scene_stats(scene_stats: List[SceneStat]):
+    from loguru import logger
+
+    logger.success(scene_stats)
     ableton_set = AbletonSet.create(get_launched_set_path())
+    from loguru import logger
+
+    logger.success(ableton_set)
 
     ableton_set.metadata.scenes = scene_stats
+    logger.success(ableton_set.path_info)
+    logger.success(ableton_set.metadata)
     ableton_set.save()
 
 
-def set_stars(filename: str, stars: int):
+class SetPayload(BaseModel):
+    name: Optional[str] = None
+    stars: Optional[int] = None
+    comment: Optional[str] = None
+
+
+def update_set(filename: str, payload: SetPayload):
     ableton_set = AbletonSet.create(filename)
 
-    ableton_set.metadata.stars = stars
+    if payload.name:
+        rename_set(ableton_set, payload.name)
+        return
+
+    if payload.stars is not None:
+        ableton_set.metadata.stars = payload.stars
+    if payload.comment is not None:
+        ableton_set.metadata.comment = payload.comment
+
     ableton_set.save()
 
 
-def set_comment(filename: str, comment: str):
-    ableton_set = AbletonSet.create(filename)
+def rename_set(ableton_set: AbletonSet, name: str):
+    def rename(filename: str) -> None:
+        if not exists(filename):
+            return
 
-    ableton_set.metadata.comment = comment
-    ableton_set.save()
+        directory, base_name = os.path.split(filename)
+        new_name = os.path.join(directory, name)
+
+        if Path(base_name).suffix:
+            new_name += f".{'.'.join(base_name.split('.')[1:])}"
+
+        os.rename(filename, new_name)
+
+    assert ableton_set.path_info.filename
+
+    rename(ableton_set.path_info.filename)
+    rename(ableton_set.path_info.metadata_filename)
+    rename(ableton_set.path_info.audio_filename)
+    rename(f"{ableton_set.path_info.audio_filename}.asd")
+
+    if ableton_set.has_own_folder:
+        rename(dirname(str(ableton_set.path_info.filename)))
+
+
+def delete_set(ableton_set: AbletonSet):
+    def move_to_trash(filename):
+        if not exists(filename):
+            return
+
+        dest = filename.replace(
+            settings.ableton_set_directory, settings.ableton_set_trash_directory
+        )
+        shutil.move(filename, dest)
+
+    if ableton_set.has_own_folder:
+        move_to_trash(dirname(str(ableton_set.path_info.filename)))
+    else:
+        move_to_trash(ableton_set.path_info.filename)
+        move_to_trash(ableton_set.path_info.metadata_filename)
+        move_to_trash(ableton_set.path_info.audio_filename)
+        move_to_trash(f"{ableton_set.path_info.audio_filename}.asd")

@@ -31,7 +31,7 @@ def get_launched_set_path() -> str:
 
     assert (
         len(file_paths) <= 1
-    ), f"Duplicate sets found : '{filename}' in {settings.ableton_set_directory}"
+    ), f"Duplicate sets found : '{filename}' : {file_paths}"
     assert len(file_paths) == 1, f"Couldn't find '{filename}' in {settings.ableton_set_directory}"
 
     return file_paths[0]

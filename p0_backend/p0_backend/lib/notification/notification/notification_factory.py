@@ -1,10 +1,10 @@
 from typing import Optional
 
-from loguru import logger
+from win11toast import toast_async
 
+from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.notification.notification.notification import Notification
 from p0_backend.lib.notification.window_factory import WindowFactory
-from p0_backend.lib.enum.notification_enum import NotificationEnum
 
 
 class NotificationFactory(WindowFactory):
@@ -31,8 +31,5 @@ class NotificationFactory(WindowFactory):
         )
 
     @classmethod
-    def show_error(cls, message: str):
-        try:
-            cls.createWindow(message=message, notification_enum=NotificationEnum.ERROR).display()
-        except RuntimeError as e:
-            logger.error(str(e))
+    async def show_error(cls, message: str):
+        await toast_async(message)

@@ -49,7 +49,7 @@ export default defineComponent({
       return null
     },
     loadWaveform() {
-      if (!this.abletonSet?.audio_info?.url) {
+      if (!this.abletonSet?.audio?.url) {
         return
       }
 
@@ -57,7 +57,7 @@ export default defineComponent({
 
       this.wavesurfer = WaveSurfer.create({
         container: '#waveform',
-        url: this.abletonSet?.audio_info?.url,
+        url: this.abletonSet?.audio?.url,
         waveColor: '#227DD8',
         progressColor: '#0B2E50',
         barHeight: 1,
@@ -106,8 +106,9 @@ export default defineComponent({
   },
   mounted() {
     this.loadWaveform()
+    const modalShown = () => $('#setCommentModal.show').length || $('#setInfoModal.show').length
     onKeyStroke(' ', (e: any) => {
-      if ($('#setCommentModal.show').length) {
+      if (modalShown()) {
         return
       }
       e.preventDefault()
@@ -115,7 +116,7 @@ export default defineComponent({
     }, {passive: false})
 
     onKeyStroke('ArrowLeft', (e: any) => {
-      if ($('#setCommentModal.show').length) {
+      if (modalShown()) {
         return
       }
       if (e.altKey) {
@@ -125,7 +126,7 @@ export default defineComponent({
     })
 
     onKeyStroke('ArrowRight', (e: any) => {
-      if ($('#setCommentModal.show').length) {
+      if (modalShown()) {
         return
       }
       e.preventDefault()

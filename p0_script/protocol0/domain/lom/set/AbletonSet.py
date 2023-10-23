@@ -27,7 +27,7 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 @dataclass
-class AbletonSetPath:
+class PathInfo:
     filename: str
     name: str
 
@@ -67,13 +67,13 @@ class AbletonSetCurrentState:
 
 @dataclass
 class AbletonSetModel:
-    path_info: AbletonSetPath
     current_state: AbletonSetCurrentState
 
 
 class AbletonSet(object):
     def __init__(self) -> None:
-        self._model: Optional[AbletonSetModel] = None
+        self._model_cached: Optional[AbletonSetModel] = None
+        self._path_info: Optional[PathInfo] = None
 
         DomainEventBus.subscribe(ScriptDisconnectedEvent, lambda _: self._disconnect())
 
@@ -98,20 +98,14 @@ class AbletonSet(object):
 
     @property
     def filename(self) -> Optional[str]:
-        return self._model.path_info.filename if self._model else None
+        return self._path_info.filename if self._path_info else None
 
     @property
     def title(self) -> Optional[str]:
-        return self._model.path_info.name if self._model else None
+        return self._path_info.name if self._path_info else None
 
     def to_model(self) -> AbletonSetModel:
-        if self._model:
-            path_info = self._model.path_info
-        else:
-            path_info = AbletonSetPath(filename="", name="")
-
-        ableton_set = AbletonSetModel(
-            path_info=path_info,
+        return AbletonSetModel(
             current_state=AbletonSetCurrentState(
                 selected_scene=Song.selected_scene().to_scene_state(),
                 current_track=AbletonTrack(**Song.current_track().to_dict()),
@@ -121,32 +115,29 @@ class AbletonSet(object):
             ),
         )
 
-        return ableton_set
-
     @debounce(duration=20)
     def notify(self, force: bool = False) -> None:
         model = self.to_model()
 
-        if self._model != model or force:
+        if self._model_cached != model or force:
             seq = Sequence()
             seq.add(partial(Backend.client().post_set, asdict(model)))
 
-            def update_model(data: Dict) -> None:
-                ableton_set: AbletonSetModel = from_dict(data_class=AbletonSetModel, data=data)
-                model.path_info = ableton_set.path_info
+            def update_path_info(data: Dict) -> None:
+                self._path_info = from_dict(data_class=PathInfo, data=data)
 
             if self.title is None:
                 seq.wait_for_backend_event("set_updated")
-                seq.add(lambda: update_model(seq.res))  # type: ignore[arg-type]
+                seq.add(lambda: update_path_info(seq.res))  # type: ignore[arg-type]
 
             seq.done()
 
-        self._model = model
+        self._model_cached = model
 
     def loop_notify_selected_scene(self) -> None:
         if (
-            self._model
-            and self._model.current_state.selected_scene != Song.selected_scene().to_scene_state()
+            self._model_cached
+            and self._model_cached.current_state.selected_scene != Song.selected_scene().to_scene_state()
         ):
             self.notify()
 

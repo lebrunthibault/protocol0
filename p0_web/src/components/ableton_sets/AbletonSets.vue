@@ -15,7 +15,7 @@
         <AbletonSetInfo :ableton-set="selectedSet"></AbletonSetInfo>
         <AbletonSetComment :ableton-set="selectedSet"></AbletonSetComment>
         <button @click="openSet" type="button" class="btn btn-lg btn-light">
-          <i class="fa-solid fa-up-right-from-square" data-toggle="tooltip" data-placement="top" title="Move set to trash"></i>
+          <i class="fa-solid fa-up-right-from-square" data-toggle="tooltip" data-placement="top" title="Open in Ableton"></i>
         </button>
       </div>
     </div>
@@ -58,9 +58,9 @@
             </div>
             <div style="width: 45px">
               <span @click="selectSet(abletonSet)" class="badge rounded-pill mx-1"
-                    :class="{'bg-success': !abletonSet.audio_info?.outdated, 'bg-warning': abletonSet.audio_info?.outdated}"
+                    :class="{'bg-success': !abletonSet.audio?.outdated, 'bg-warning': abletonSet.audio?.outdated}"
               >
-                <i class="fa-solid fa-volume-high" v-if="abletonSet.audio_info"></i>
+                <i class="fa-solid fa-volume-high" v-if="abletonSet.audio"></i>
               </span>
             </div>
           </div>
@@ -133,8 +133,8 @@ export default defineComponent({
       this.currentScene = this.selectedSet.metadata.scenes ? this.selectedSet.metadata.scenes[0] : null
     },
     async openSet() {
-      await apiService.get(`/set/open?path=${this.selectedSet?.path_info.filename}`)
       notify("Opening set")
+      await apiService.get(`/set/open?path=${this.selectedSet?.path_info.filename}`)
     },
     onSceneChange(sceneData: SceneData) {
       this.currentScene = sceneData

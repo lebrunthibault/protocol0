@@ -55,16 +55,14 @@ async def _catch_protocol0_errors(request: Request, call_next):
     try:
         return await call_next(request)
     except Exception as e:
-        logger.error(e)
         traceback.print_tb(e.__traceback__)
+        logger.error(e)
 
         # if isinstance(e, (Protocol0Error, AssertionError)):
         #     notification_level = NotificationEnum.WARNING
+        if request.method != "PUT":
+            await NotificationFactory.show_error(str(e))
 
-        NotificationFactory.show_error(str(e))
-        # notification_window.delay(str(e), notification_level)
-
-        # p0_script_client().dispatch(EmitBackendEventCommand("error"))
         return PlainTextResponse(str(e), status_code=500)
 
 
