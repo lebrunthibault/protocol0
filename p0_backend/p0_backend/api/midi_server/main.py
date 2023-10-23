@@ -9,12 +9,9 @@ from loguru import logger
 from mido import Message
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.celery.celery import check_celery_worker_status, notification_window
+from p0_backend.celery.celery import notification_window
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.midi.mido import _get_input_port
-from p0_backend.lib.notification.notification.notification_factory import NotificationFactory
-from p0_backend.lib.task_cache import TaskCache
-from p0_backend.lib.timer import start_timer
 from p0_backend.lib.utils import (
     log_string,
     make_dict_from_sysex_message,
@@ -28,8 +25,6 @@ settings = Settings()
 
 
 def start():
-    system_check()
-
     midi_port_backend_loopback = mido.open_input(
         _get_input_port(settings.p0_backend_loopback_name), autoreset=False
     )
@@ -44,28 +39,6 @@ def start():
         _poll_midi_port(midi_port=midi_port_backend_loopback)
 
         time.sleep(0.005)  # release cpu
-
-
-def system_check():
-    system_up = True
-
-    if not check_celery_worker_status():
-        start_timer(8, check_celery)
-
-    try:
-        requests.get(f"{settings.http_api_url}/")
-    except requests.exceptions.ConnectionError:
-        # NotificationFactory.show_error("HTTP server is not up")
-        system_up = False
-
-    if system_up:
-        logger.info("System is up")
-
-
-def check_celery():
-    TaskCache().clear()
-    if not check_celery_worker_status():
-        NotificationFactory.show_error("Celery is not up")
 
 
 def signal_handler(*_):

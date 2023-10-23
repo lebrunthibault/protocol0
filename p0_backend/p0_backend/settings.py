@@ -1,6 +1,6 @@
 from os.path import dirname
 
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 LEFT_BBOX = (0, 0, 1100, 1080)
 RIGHT_BBOX = (960, 0, 1920, 1080)
@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     def log_file(self) -> str:
         return f"{self.user_home}\\AppData\\Roaming\\Ableton\\Live {self.ableton_version}\\Preferences\\Log.txt"
 
-    project_directory = dirname(dirname(__file__))
+    project_directory: str = dirname(dirname(__file__))
 
     @property
     def ableton_exe(self) -> str:
@@ -52,19 +52,19 @@ class Settings(BaseSettings):
     def ableton_set_trash_directory(self) -> str:
         return f"{self.ableton_set_directory}\\_other\\trash"
 
-    icons_directory = "C:\\Users\\thiba\\OneDrive\\Images\\icons"
+    icons_directory: str = "C:\\Users\\thiba\\OneDrive\\Images\\icons"
 
-    http_api_url = "http://127.0.0.1:8000"
+    http_api_url: str = "http://127.0.0.1:8000"
 
-    rev2_editor_window_title = "REV2Editor/m"
-    instrument_tracks_folder = "_other\\instruments\\default"
-    log_window_title = "Protocol0 logs"
+    rev2_editor_window_title: str = "REV2Editor/m"
+    instrument_tracks_folder: str = "_other\\instruments\\default"
+    log_window_title: str = "Protocol0 logs"
 
     # Midi port names are relative to the Protocol0 script and not this midi backend
-    p0_output_port_name = "P0_OUT"
-    p0_input_port_name = "P0_IN_MIDI"
-    p0_input_from_http_port_name = "P0_IN_HTTP"
-    p0_backend_loopback_name = "P0_BACKEND_LOOPBACK"
+    p0_output_port_name: str = "P0_OUT"
+    p0_input_port_name: str = "P0_IN_MIDI"
+    p0_input_from_http_port_name: str = "P0_IN_HTTP"
+    p0_backend_loopback_name: str = "P0_BACKEND_LOOPBACK"
 
     # 1 is 1080p, 2 is 4K
-    display_resolution_factor = 1
+    display_resolution_factor: int = 1

@@ -13,29 +13,13 @@
           </button>
         </div>
         <div class="modal-body">
-          <ol class="list-group list-group-flush">
-            <li class="list-group-item">
-              <i class="fa-solid fa-info ms-1" style="width: 22px"></i>
-              {{ basename(abletonSet.path_info.filename) }} : {{ timeStampToDate(abletonSet.path_info.saved_at) }}
-            </li>
-            <li class="list-group-item">
-              <i class="fa-solid fa-volume-low" style="width: 30px"></i>
-              <span v-if="abletonSet.audio_info">
-                {{
-                  basename(abletonSet.audio_info.filename)
-                }} : {{ timeStampToDate(abletonSet.audio_info.saved_at) }}
-                <span class="badge bg-warning float-right ms-3" v-if="abletonSet.audio_info.outdated">Outdated</span>
-              </span>
-              <span v-else>No Audio</span>
-            </li>
-            <li class="list-group-item">
-              <i class="fa-solid fa-bars" style="width: 30px"></i>
-              <span v-if="abletonSet.metadata.path_info">{{
-                  basename(abletonSet.metadata.path_info.filename)
-                }} : {{ timeStampToDate(abletonSet.metadata.path_info.saved_at) }}</span>
-              <span v-else>No metadata</span>
-            </li>
-          </ol>
+          <form action="" @submit.prevent="submit">
+            <div class="form-group">
+              <label for="name">Set name</label>
+              <input v-model="name" type="text" class="form-control" id="name">
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Ok</button>
+          </form>
         </div>
       </div>
     </div>
@@ -54,6 +38,16 @@ export default defineComponent({
   name: 'AbletonSetInfo',
   props: {
     abletonSet: Object as PropType<AbletonSet>,
+  },
+  data() {
+    return {
+      name: this.abletonSet?.path_info.name
+    }
+  },
+  watch: {
+    abletonSet() {
+      this.name = this.abletonSet?.path_info.name
+    }
   },
   computed: {
     modifiedSince(): string {
@@ -82,6 +76,12 @@ export default defineComponent({
   methods: {
     showSetInfo() {
       $('#setInfoModal').modal('show')
+    },
+    async submit() {
+      await apiService.put(`/set/${encodeURI(this.abletonSet?.path_info.filename)}`, {name: this.name})
+      this.abletonSet.path_info.name = this.name
+      notify("Set renamed")
+      // $('#setInfoModal').modal('hide')
     },
     basename,
     timeStampToDate(ts: number): string {

@@ -34,8 +34,8 @@ export default defineComponent({
   },
   methods: {
     async save() {
+      await apiService.put(`/set/${encodeURI(this.abletonSet?.path_info.filename)}`, {stars: this.stars})
       this.abletonSet.metadata.stars = this.stars
-      await apiService.post(`/set/${encodeURI(this.abletonSet?.path_info.filename)}/stars`, {stars: this.stars})
       notify("Set saved")
       this.$emit("update")
     }

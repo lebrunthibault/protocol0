@@ -28,7 +28,6 @@ class SetFixerService(object):
                 invalid_objects.append(obj)
 
         if len(invalid_objects) == 0:
-            Backend.client().show_success("Set is valid")
             self._refresh_objects_appearance()
         else:
             Backend.client().show_warning("Invalid set: fixing")

@@ -1,10 +1,9 @@
 import glob
 import os.path
 import re
-import shutil
 import time
 from itertools import chain
-from os.path import basename, dirname, exists
+from os.path import basename, dirname
 from pathlib import Path
 from typing import Optional, Dict, List
 
@@ -13,9 +12,8 @@ from loguru import logger
 from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.celery.celery import notification_window
 from p0_backend.lib.ableton.ableton import is_ableton_focused
-from p0_backend.lib.ableton.ableton_set.ableton_set import AbletonSet, AbletonSetPath
+from p0_backend.lib.ableton.ableton_set.ableton_set import AbletonSet, PathInfo
 from p0_backend.lib.ableton.get_set import (
-    get_ableton_window_titles,
     get_launched_set_path,
 )
 from p0_backend.lib.enum.notification_enum import NotificationEnum
@@ -38,18 +36,12 @@ class AbletonSetManager:
         if cls.DEBUG:
             logger.info(f"registering set {ableton_set}")
 
-        set_title = _get_ableton_set_title()
+        try:
+            ableton_set.path_info = PathInfo.create(get_launched_set_path())
+        except AssertionError:
+            ableton_set.path_info = PathInfo.create(settings.ableton_test_set_path)
 
-        if ableton_set.is_untitled and set_title.startswith("Untitled"):
-            ableton_set.path_info = AbletonSetPath.create(settings.ableton_test_set_path)
-        elif ableton_set.is_untitled and set_title.startswith("Default"):
-            ableton_set.path_info = AbletonSetPath.create(
-                f"{settings.ableton_set_directory}\\Default.als"
-            )
-
-        ableton_set.path_info = AbletonSetPath.create(
-            ableton_set.path_info.filename or get_launched_set_path()
-        )
+        logger.success(ableton_set)
 
         # deduplicate on set title
         existing_set = cls._ACTIVE_SET
@@ -77,7 +69,7 @@ class AbletonSetManager:
 
         # update backend
         time.sleep(0.5)  # fix too fast backend ..?
-        command = EmitBackendEventCommand("set_updated", data=ableton_set.dict())
+        command = EmitBackendEventCommand("set_updated", data=ableton_set.path_info.model_dump())
         command.set_id = ableton_set.path_info.filename
         p0_script_client().dispatch(command, log=False)
 
@@ -118,20 +110,6 @@ def _check_track_name_change(existing_set: AbletonSet, new_set: AbletonSet):
     ):
         notification_window.delay("You updated a saved track", NotificationEnum.WARNING)
         show_saved_tracks()
-
-
-def _get_ableton_set_title() -> Optional[str]:
-    launched_sets = [title for title in get_ableton_window_titles() if title]
-    if len(launched_sets) == 0:
-        logger.warning("No ableton window")
-        return None
-
-    set_title = re.match(r"([^*]*)", launched_sets[0]).group(1).split(" [")[0].strip()
-    if not set_title:
-        logger.warning(f"Couldn't find set title in launched sets: {launched_sets}")
-        return None
-
-    return set_title
 
 
 def _get_focused_set_title() -> Optional[str]:
@@ -197,25 +175,6 @@ def get_set(path: str) -> Optional[AbletonSet]:
     ableton_sets = list(chain.from_iterable(list_sets().values()))
 
     return next(s for s in ableton_sets if s.path_info.filename == path)
-
-
-def delete_set(ableton_set: AbletonSet):
-    def move_to_trash(filename):
-        if not exists(filename):
-            return
-
-        dest = filename.replace(
-            settings.ableton_set_directory, settings.ableton_set_trash_directory
-        )
-        shutil.move(filename, dest)
-
-    if ableton_set.has_own_folder:
-        move_to_trash(dirname(str(ableton_set.path_info.filename)))
-    else:
-        move_to_trash(ableton_set.path_info.filename)
-        move_to_trash(ableton_set.path_info.metadata_filename)
-        move_to_trash(ableton_set.path_info.audio_filename)
-        move_to_trash(f"{ableton_set.path_info.audio_filename}.asd")
 
 
 def show_saved_tracks():

@@ -225,8 +225,8 @@ def show_warning(message: str):
 
 
 @router.get("/show_error")
-def show_error(message: str):
-    NotificationFactory.show_error(message)
+async def show_error(message: str):
+    await NotificationFactory.show_error(message)
 
 
 @router.get("/reload_script")

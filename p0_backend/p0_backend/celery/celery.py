@@ -1,10 +1,12 @@
+from win11toast import notify
+
 from p0_backend.lib.enum.notification_enum import NotificationEnum
-from p0_backend.lib.notification.toast import show_notification
+from p0_backend.settings import Settings
 
 
 class NotificationWindowTask:
     def delay(self, title: str, level: NotificationEnum = NotificationEnum.INFO, body: str = ""):
-        show_notification(title, body, level)
+        notify(title, body, icon=f"{Settings().icons_directory}\\{level.icon}", duration="short")
 
 
 notification_window = NotificationWindowTask()
@@ -12,7 +14,3 @@ notification_window = NotificationWindowTask()
 
 def create_app():
     pass
-
-
-def check_celery_worker_status():
-    return True
