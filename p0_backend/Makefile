@@ -16,10 +16,6 @@ http_server:
 	@poetry run http-server
 .PHONY: http_server
 
-celery:
-	@poetry run celery -A p0_backend.celery.celery.celery_app worker --events --concurrency=10 --without-heartbeat --without-gossip --without-mingle --loglevel=INFO
-.PHONY: celery
-
 logs:
 	powershell -c "Get-Content -Path 'C:\Users\thiba\AppData\Roaming\Ableton\Live 11.3.4\Preferences\Log.txt' -Wait -Tail 50"
 .PHONY: logs

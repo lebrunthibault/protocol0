@@ -1,9 +1,10 @@
 from time import sleep
 
 from fastapi import APIRouter
+from win11toast import toast_async
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.celery.celery import notification_window, create_app
+from p0_backend.lib.notification import notification_window
 from p0_backend.lib.ableton.ableton import (
     reload_ableton,
     hide_plugins,
@@ -35,7 +36,6 @@ from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.explorer import close_samples_windows, close_explorer_window, open_explorer
 from p0_backend.lib.keys import send_keys
 from p0_backend.lib.mouse.mouse import click, click_vertical_zone, move_to
-from p0_backend.lib.notification.notification.notification_factory import NotificationFactory
 from p0_backend.lib.process import execute_powershell_command
 from p0_backend.lib.window.find_window import find_window_handle_by_enum
 from p0_backend.lib.window.window import focus_window
@@ -208,25 +208,22 @@ def _close_explorer_window(title: str):
 
 @router.get("/show_info")
 def show_info(message: str, body: str = ""):
-    create_app()
-    notification_window.delay(message, NotificationEnum.INFO, body=body)
+    notification_window(message, NotificationEnum.INFO, body=body)
 
 
 @router.get("/show_success")
 def show_success(message: str):
-    create_app()
-    notification_window.delay(message, NotificationEnum.SUCCESS)
+    notification_window(message, NotificationEnum.SUCCESS)
 
 
 @router.get("/show_warning")
 def show_warning(message: str):
-    create_app()
-    notification_window.delay(message, NotificationEnum.WARNING)
+    notification_window(message, NotificationEnum.WARNING)
 
 
 @router.get("/show_error")
 async def show_error(message: str):
-    await NotificationFactory.show_error(message)
+    await toast_async(message)
 
 
 @router.get("/reload_script")
