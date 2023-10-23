@@ -3,6 +3,7 @@ import json
 import os.path
 import shutil
 import time
+from enum import Enum
 from json import JSONDecodeError
 from os.path import basename, dirname, exists
 from pathlib import Path
@@ -34,6 +35,10 @@ class PathInfo(BaseModel):
     def audio_filename(self) -> str:
         return self.filename.replace(".als", ".wav")
 
+    @property
+    def mp3_filename(self) -> str:
+        return self.filename.replace(".als", ".mp3")
+
     @classmethod
     def create(cls, filename: str) -> "PathInfo":
         path = Path(filename)
@@ -48,11 +53,18 @@ class SceneStat(BaseModel):
     track_names: List[str]
 
 
+class SetStage(Enum):
+    DRAFT = "DRAFT"
+    BETA = "BETA"
+    RELEASE = "RELEASE"
+
+
 class AbletonSetMetadata(BaseModel):
     path_info: Optional[PathInfo] = None
     scenes: List[SceneStat] = []
     stars: int = 0
     comment: str = ""
+    stage: SetStage = SetStage.DRAFT
 
 
 class AudioInfo(BaseModel):
@@ -186,21 +198,23 @@ class SetPayload(BaseModel):
     name: Optional[str] = None
     stars: Optional[int] = None
     comment: Optional[str] = None
+    stage: Optional[SetStage] = None
 
 
 def update_set(filename: str, payload: SetPayload):
     ableton_set = AbletonSet.create(filename)
 
-    if payload.name:
-        rename_set(ableton_set, payload.name)
-        return
-
     if payload.stars is not None:
         ableton_set.metadata.stars = payload.stars
     if payload.comment is not None:
         ableton_set.metadata.comment = payload.comment
+    if payload.stage is not None:
+        ableton_set.metadata.stage = payload.stage
 
     ableton_set.save()
+
+    if payload.name and payload.name != ableton_set.path_info.name:
+        rename_set(ableton_set, payload.name)
 
 
 def rename_set(ableton_set: AbletonSet, name: str):
@@ -222,6 +236,8 @@ def rename_set(ableton_set: AbletonSet, name: str):
     rename(ableton_set.path_info.metadata_filename)
     rename(ableton_set.path_info.audio_filename)
     rename(f"{ableton_set.path_info.audio_filename}.asd")
+    rename(ableton_set.path_info.mp3_filename)
+    rename(f"{ableton_set.path_info.mp3_filename}.asd")
 
     if ableton_set.has_own_folder:
         rename(dirname(str(ableton_set.path_info.filename)))

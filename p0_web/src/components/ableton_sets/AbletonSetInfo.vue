@@ -14,6 +14,19 @@
         </div>
         <div class="modal-body">
           <form action="" @submit.prevent="submit">
+            <div class="btn-group" role="group">
+              <input type="radio" class="btn-check" name="stage_draft" id="stage_draft" autocomplete="off"
+                     v-model="stage" value="DRAFT" :checked="stage === 'DRAFT'">
+              <label class="btn btn-outline-primary" for="stage_draft">Draft</label>
+
+              <input type="radio" class="btn-check" name="stage_beta" id="stage_beta" autocomplete="off"
+                     v-model="stage" value="BETA" :checked="stage === 'BETA'">
+              <label class="btn btn-outline-primary" for="stage_beta">Beta</label>
+
+              <input type="radio" class="btn-check" name="stage_release" id="stage_release" autocomplete="off"
+                     v-model="stage" value="RELEASE" :checked="stage === 'RELEASE'">
+              <label class="btn btn-outline-primary" for="stage_release">Release</label>
+            </div>
             <div class="form-group">
               <label for="name">Set name</label>
               <input v-model="name" type="text" class="form-control" id="name">
@@ -41,12 +54,14 @@ export default defineComponent({
   },
   data() {
     return {
-      name: this.abletonSet?.path_info.name
+      name: this.abletonSet?.path_info.name,
+      stage: this.abletonSet?.metadata?.stage
     }
   },
   watch: {
     abletonSet() {
       this.name = this.abletonSet?.path_info.name
+      this.stage = this.abletonSet?.metadata?.stage
     }
   },
   computed: {
@@ -78,15 +93,13 @@ export default defineComponent({
       $('#setInfoModal').modal('show')
     },
     async submit() {
-      await apiService.put(`/set/${encodeURI(this.abletonSet?.path_info.filename)}`, {name: this.name})
+      await apiService.put(`/set/${encodeURI(this.abletonSet?.path_info.filename)}`, {name: this.name, stage: this.stage})
       this.abletonSet.path_info.name = this.name
-      notify("Set renamed")
-      // $('#setInfoModal').modal('hide')
+      this.abletonSet.metadata.stage = this.stage
+      notify("Set saved")
+      $('#setInfoModal').modal('hide')
     },
     basename,
-    timeStampToDate(ts: number): string {
-      return (new Date(ts * 1000)).toLocaleString()
-    },
     async deleteSet() {
       await apiService.delete(`/set?path=${this.abletonSet?.path_info.filename}`)
       notify("Set moved to trash")

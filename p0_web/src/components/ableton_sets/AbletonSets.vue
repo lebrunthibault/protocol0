@@ -22,7 +22,7 @@
       <AbletonSetPlayer :ableton-set="selectedSet" @sceneChange="onSceneChange" :time="playerTime"></AbletonSetPlayer>
   </div>
   <div class="row" style="margin-top: 50px">
-    <div class="col-sm" style="position: absolute; width: 200px">
+    <div class="col-sm" style="position: absolute; width: 150px">
       <select class="form-select" v-model="filterType">
         <option selected>Filter sets by</option>
         <option value="name">Name</option>
@@ -30,10 +30,10 @@
         <option value="stars">Stars</option>
       </select>
     </div>
-    <div v-for="(setFolder, i) in setFolders" :key="i" class="col-sm px-5">
+    <div v-for="(setFolder, i) in ['Draft', 'Beta', 'Release']" :key="i" class="col-sm px-5">
       <h2 class="text-center mb-4">{{ setFolder }}</h2>
       <div class="list-group list-group-flush">
-        <div v-for="(abletonSet, j) in getSetsFromFolder(setFolder)" :key="j"
+        <div v-for="(abletonSet, j) in abletonSets[setFolder.toUpperCase()]" :key="j"
              class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
         >
           <div @click="selectSet(abletonSet)" class="flex-grow-1 btn" style="text-align: left">
@@ -96,16 +96,9 @@ export default defineComponent({
     selectedSet: null as AbletonSet | null,
     currentScene: null as SceneData | null,
     playerTime: 0,
-    filterType: "recent"
+    filterType: "recent",
   }),
   computed: {
-    setFolders() {
-        if (this.showArchives) {
-          return ['_released', 'paused']
-        } else {
-          return ['drafts', 'tracks']
-        }
-    },
     showArchives(): boolean {
       return Boolean(this.$route.query.archive)
     }
@@ -119,15 +112,6 @@ export default defineComponent({
     }
   },
   methods: {
-    getSetsFromFolder(category: string): AbletonSet[] {
-      const isSetValid = (abletonSet: AbletonSet) => {
-        return !["test", "tests"].includes(abletonSet?.path_info.name.toLowerCase().trim())
-      }
-
-      const sets = this.abletonSets[category]
-      
-      return sets ? this.abletonSets[category].filter(isSetValid) : []
-    },
     selectSet(abletonSet: AbletonSet) {
       this.selectedSet = abletonSet
       this.currentScene = this.selectedSet.metadata.scenes ? this.selectedSet.metadata.scenes[0] : null
@@ -172,7 +156,11 @@ export default defineComponent({
       if (this.showArchives) {
         url += "?archive=true"
       }
-      this.abletonSets = await apiService.get(url)
+      const abletonSets = await apiService.get(url)
+      const abletonSetsFlat = Object.values(abletonSets)
+          .flat()
+          .filter((set: AbletonSet) => !["test", "tests"].includes(set?.path_info.name.toLowerCase().trim()))
+      this.abletonSets = Object.groupBy(abletonSetsFlat, (set: AbletonSet) => set.metadata.stage)
 
       // add index to scenes
       for (const abletonSet of Object.values(this.abletonSets).flat()) {

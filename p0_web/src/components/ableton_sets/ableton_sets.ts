@@ -18,11 +18,18 @@ interface SceneStats {
     scenes: SceneData[]
 }
 
+enum SetStage {
+  DRAFT = "DRAFT",
+  BETA = "BEAT",
+  RELEASE = "RELEASE"
+}
+
 interface AbletonSetMetadata {
     path_info: PathInfo
     scenes: SceneStats[]
     stars: number
     comment: string
+    stage: SetStage
 }
 
 interface AudioInfo {
