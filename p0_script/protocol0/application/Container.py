@@ -20,7 +20,7 @@ from protocol0.domain.lom.instrument.instrument.InstrumentService import Instrum
 from protocol0.domain.lom.instrument.preset.InstrumentPresetScrollerService import (
     InstrumentPresetScrollerService,
 )
-from protocol0.domain.lom.scene.PlayingSceneFacade import PlayingSceneFacade
+from protocol0.domain.lom.scene.PlayingScene import PlayingScene
 from protocol0.domain.lom.scene.ScenePlaybackService import ScenePlaybackService
 from protocol0.domain.lom.scene.SceneService import SceneService
 from protocol0.domain.lom.set.AbletonSet import AbletonSet
@@ -62,7 +62,7 @@ from protocol0.infra.persistence.SongDataService import SongDataService
 from protocol0.infra.scheduler.BeatScheduler import BeatScheduler
 from protocol0.infra.scheduler.TickScheduler import TickScheduler
 from protocol0.shared.Song import Song
-from protocol0.shared.UndoFacade import UndoFacade
+from protocol0.shared.Undo import Undo
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.logging.StatusBar import StatusBar
 from protocol0.shared.types import T
@@ -79,7 +79,7 @@ class Container(ContainerInterface):
         live_song: Live.Song.Song = control_surface.song()
 
         Logger(LoggerService())
-        UndoFacade(live_song.begin_undo_step, live_song.end_undo_step)
+        Undo(live_song.begin_undo_step, live_song.end_undo_step)
         StatusBar(control_surface.show_message)
         Backend(control_surface._send_midi)
         ErrorService(live_song)
@@ -133,7 +133,7 @@ class Container(ContainerInterface):
         matching_track_service = MatchingTrackService(track_crud_component)
         scene_playback_service = ScenePlaybackService(playback_component)
         scene_service = SceneService(live_song, scene_crud_component, scene_playback_service)
-        PlayingSceneFacade(scene_component)
+        PlayingScene(scene_component)
         track_recorder_service = RecordService(
             playback_component, scene_crud_component, quantization_component, scene_playback_service
         )

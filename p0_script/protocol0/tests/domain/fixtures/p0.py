@@ -18,7 +18,7 @@ from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.func import nop
 from protocol0.infra.logging.LoggerService import LoggerService
 from protocol0.infra.scheduler.BeatScheduler import BeatScheduler
-from protocol0.shared.UndoFacade import UndoFacade
+from protocol0.shared.Undo import Undo
 from protocol0.shared.logging.Logger import Logger
 from protocol0.tests.domain.fixtures.song import AbletonSong
 from protocol0.domain.lom.instrument.InstrumentDisplayService import InstrumentDisplayService
@@ -45,7 +45,7 @@ def monkey_patch_static():
     Logger.warning = classmethod(nop)
 
     Backend(nop)
-    UndoFacade(nop, nop)
+    Undo(nop, nop)
     AbletonSet.notify = nop
     SimpleTrack.click = nop
     # noinspection PyTypeChecker

@@ -46,8 +46,8 @@ def plugins_shown() -> bool:
     )
 
 
-def show_plugins() -> None:
-    if not plugins_shown():
+def show_plugins(force: bool = False) -> None:
+    if force or not plugins_shown():
         keyboard.press_and_release("ctrl+alt+p")
 
 

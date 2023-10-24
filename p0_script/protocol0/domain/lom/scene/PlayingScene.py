@@ -11,11 +11,11 @@ if TYPE_CHECKING:
     from protocol0.domain.lom.scene.Scene import Scene
 
 
-class PlayingSceneFacade(object):
-    _INSTANCE: Optional["PlayingSceneFacade"] = None
+class PlayingScene(object):
+    _INSTANCE: Optional["PlayingScene"] = None
 
     def __init__(self, scene_component: "SceneComponent") -> None:
-        PlayingSceneFacade._INSTANCE = self
+        PlayingScene._INSTANCE = self
 
         self._scene_component = scene_component
         self._last_playing_scenes: List[Optional[Scene]] = [None] * 5
