@@ -1,6 +1,6 @@
 from functools import partial
 
-from protocol0.domain.lom.scene.PlayingSceneFacade import PlayingSceneFacade
+from protocol0.domain.lom.scene.PlayingScene import PlayingScene
 from protocol0.domain.lom.track.simple_track.SimpleTrackClipSlots import SimpleTrackClipSlots
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.BarChangedEvent import BarChangedEvent
@@ -25,7 +25,7 @@ class ClipTail(object):
         if clip is None:
             return
 
-        playing_scene = PlayingSceneFacade.get()
+        playing_scene = PlayingScene.get()
 
         if playing_scene is None:
             return

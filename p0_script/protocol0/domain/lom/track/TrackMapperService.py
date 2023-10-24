@@ -24,7 +24,7 @@ from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.Song import Song
-from protocol0.shared.UndoFacade import UndoFacade
+from protocol0.shared.Undo import Undo
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
 
@@ -112,7 +112,7 @@ class TrackMapperService(SlotManager):
     def _on_track_added(self) -> Optional[Sequence]:
         if not Song.selected_track().IS_ACTIVE:
             return None
-        UndoFacade.begin_undo_step()  # Live crashes on undo without this
+        Undo.begin_undo_step()  # Live crashes on undo without this
         seq = Sequence()
         added_track = Song.selected_track()
         if Song.selected_track() == Song.current_track().base_track:
@@ -127,7 +127,7 @@ class TrackMapperService(SlotManager):
         seq.add(added_track.on_added)
         seq.add(Song.current_track().arm_state.arm)
 
-        seq.add(UndoFacade.end_undo_step)
+        seq.add(Undo.end_undo_step)
         return seq.done()
 
     def _on_simple_track_created_event(self, event: SimpleTrackCreatedEvent) -> None:

@@ -6,7 +6,7 @@ from typing import Optional, List, Any, Callable
 from protocol0.application.control_surface.EncoderMoveEnum import EncoderMoveEnum
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.utils.func import get_callable_repr, is_lambda
-from protocol0.shared.UndoFacade import UndoFacade
+from protocol0.shared.Undo import Undo
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
 
@@ -30,7 +30,7 @@ class EncoderAction(object):
         NB : Here lambda is just a way to act on the right objects at runtime
             like this we can display the function name
         """
-        UndoFacade.begin_undo_step()
+        Undo.begin_undo_step()
         if is_lambda(self.func):
             func = self.func()  # allows delaying property lookup until execution time
         else:
@@ -46,7 +46,7 @@ class EncoderAction(object):
         start_at = time.time()
         seq = Sequence()
         seq.add(partial(func, *a, **k))
-        seq.add(UndoFacade.end_undo_step)
+        seq.add(Undo.end_undo_step)
 
         if self.move_type != EncoderMoveEnum.SCROLL:
             seq.add(lambda: Logger.info("%s : took %.3fs" % (func_name, time.time() - start_at)))

@@ -134,6 +134,15 @@ def select_and_paste():
     send_keys("^v")
 
 
+@router.get("/un_group")
+async def un_group():
+    hide_plugins()
+    send_keys("+{TAB}")
+    send_keys("+{TAB}")
+    send_keys("^+g")
+    show_plugins(force=True)
+
+
 @router.get("/analyze_test_audio_clip_jitter")
 def _analyze_test_audio_clip_jitter(clip_path: str):
     analyze_test_audio_clip_jitter(clip_path=clip_path)

@@ -4,7 +4,7 @@ from functools import partial
 from _Framework.SubjectSlot import SlotManager
 from typing import Optional, Dict
 
-from protocol0.domain.lom.scene.PlayingSceneFacade import PlayingSceneFacade
+from protocol0.domain.lom.scene.PlayingScene import PlayingScene
 from protocol0.domain.lom.scene.Scene import Scene
 from protocol0.domain.lom.scene.SceneFiredEvent import SceneFiredEvent
 from protocol0.domain.lom.scene.ScenePositionScrolledEvent import ScenePositionScrolledEvent
@@ -103,7 +103,7 @@ class ScenePlaybackService(SlotManager):
         seq = Sequence()
         if Song.is_playing():
             seq.wait_for_event(BarChangedEvent, continue_on_song_stop=True)
-        seq.add(partial(PlayingSceneFacade.set, fired_scene))
+        seq.add(partial(PlayingScene.set, fired_scene))
         seq.done()
 
     def _stop_previous_playing_scene(self) -> None:
@@ -112,5 +112,5 @@ class ScenePlaybackService(SlotManager):
         else on play
         tracks with tail from the previous scene are going to play again
         """
-        if PlayingSceneFacade.get_previous() is not None:
-            PlayingSceneFacade.get_previous().stop(immediate=True)
+        if PlayingScene.get_previous() is not None:
+            PlayingScene.get_previous().stop(immediate=True)

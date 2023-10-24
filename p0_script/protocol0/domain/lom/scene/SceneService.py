@@ -6,7 +6,7 @@ import Live
 from _Framework.SubjectSlot import subject_slot, SlotManager
 from typing import List, Iterator, Dict
 
-from protocol0.domain.lom.scene.PlayingSceneFacade import PlayingSceneFacade
+from protocol0.domain.lom.scene.PlayingScene import PlayingScene
 from protocol0.domain.lom.scene.Scene import Scene
 from protocol0.domain.lom.scene.ScenePlaybackService import ScenePlaybackService
 from protocol0.domain.lom.scene.ScenesMappedEvent import ScenesMappedEvent
@@ -115,7 +115,7 @@ class SceneService(SlotManager):
         # restore playing scene
         if playing_live_scene is not None:
             playing_scene = find_if(lambda s: s._scene == playing_live_scene, Song.scenes())
-            PlayingSceneFacade.set(playing_scene)
+            PlayingScene.set(playing_scene)
 
     def _clean_deleted_scenes(self) -> None:
         """cleaning all scenes always"""
@@ -132,7 +132,7 @@ class SceneService(SlotManager):
 
             scene.disconnect()
             if scene == Song.playing_scene():
-                PlayingSceneFacade.set(None)
+                PlayingScene.set(None)
 
     def generate_scene(self, live_scene: Live.Scene.Scene, index: int) -> None:
         # switching to full remap because of persisting mapping problems when moving scenes

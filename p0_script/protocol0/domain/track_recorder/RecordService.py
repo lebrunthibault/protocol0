@@ -4,7 +4,7 @@ from typing import Optional
 import Live
 
 from protocol0.domain.lom.clip.MidiClip import MidiClip
-from protocol0.domain.lom.scene.PlayingSceneFacade import PlayingSceneFacade
+from protocol0.domain.lom.scene.PlayingScene import PlayingScene
 from protocol0.domain.lom.scene.ScenePlaybackService import ScenePlaybackService
 from protocol0.domain.lom.song.SongStoppedEvent import SongStoppedEvent
 from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
@@ -121,7 +121,7 @@ class RecordService(object):
         processors: RecordProcessors,
     ) -> Optional[Sequence]:
         # this will stop the previous playing scene on playback stop
-        PlayingSceneFacade.set(config.recording_scene)
+        PlayingScene.set(config.recording_scene)
         DomainEventBus.once(ErrorRaisedEvent, self._on_error_raised_event)
 
         seq = Sequence()

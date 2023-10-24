@@ -15,7 +15,7 @@ from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParamete
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.forward_to import ForwardTo
 from protocol0.shared.Song import Song
-from protocol0.shared.UndoFacade import UndoFacade
+from protocol0.shared.Undo import Undo
 from protocol0.shared.observer.Observable import Observable
 from protocol0.shared.sequence.Sequence import Sequence
 
@@ -149,7 +149,7 @@ class Clip(SlotManager, Observable):
 
     def quantize(self, depth: float = 1) -> None:
         if self._clip:
-            UndoFacade.begin_undo_step()
+            Undo.begin_undo_step()
 
             midi_quantization = Song.midi_recording_quantization()
             if midi_quantization == Live.Song.RecordingQuantization.rec_q_no_q:
@@ -158,7 +158,7 @@ class Clip(SlotManager, Observable):
             record_quantization_index = self._QUANTIZATION_OPTIONS.index(midi_quantization)
             if record_quantization_index:
                 self._clip.quantize(record_quantization_index, depth)
-            UndoFacade.end_undo_step()
+            Undo.end_undo_step()
 
     @property
     def has_tail(self) -> bool:

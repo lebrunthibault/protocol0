@@ -141,7 +141,7 @@ class Scene(SlotManager):
         - on click
         - and when the song stars playing
 
-        We activate this only in the first case by checking PlayingSceneFacade
+        We activate this only in the first case by checking PlayingScene
         This doesn't execute (duplicated) when the scene was fired from a command
 
         It is there to handle manual launches (direct click on scene)

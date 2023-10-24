@@ -1,11 +1,11 @@
 from typing import Callable, Optional
 
 
-class UndoFacade(object):
-    _INSTANCE: Optional["UndoFacade"] = None
+class Undo(object):
+    _INSTANCE: Optional["Undo"] = None
 
     def __init__(self, begin_undo_step: Callable, end_undo_step: Callable) -> None:
-        UndoFacade._INSTANCE = self
+        Undo._INSTANCE = self
         self._begin_undo_step = begin_undo_step
         self._end_undo_step = end_undo_step
 

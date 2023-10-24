@@ -13,7 +13,7 @@ from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.shared.Config import Config
-from protocol0.shared.UndoFacade import UndoFacade
+from protocol0.shared.Undo import Undo
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
 
@@ -36,7 +36,7 @@ class ErrorService(object):
 
     def _on_error_raised_event(self, event: ErrorRaisedEvent) -> None:
         if event.reset:
-            UndoFacade.end_undo_step()
+            Undo.end_undo_step()
         exc_type, exc_value, tb = sys.exc_info()
         assert exc_type and exc_value and tb, "cannot determine exception type and value"
         if issubclass(exc_type, Protocol0Warning) or issubclass(exc_type, AssertionError):

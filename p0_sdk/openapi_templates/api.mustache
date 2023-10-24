@@ -28,7 +28,7 @@ class {{custom_classname}}(object):
         self._send_midi(tuple(b))
 {{#operation}}
 
-    def {{operationId}}(self, {{#sortParamsByRequiredFlag}}{{#allParams}}{{#required}}{{paramName}}, {{/required}}{{/allParams}}{{/sortParamsByRequiredFlag}}{{#optionalParams}}{{paramName}}={{{defaultValue}}}{{^-last}}, {{/-last}}{{/optionalParams}}):  # noqa: E501
+    def {{operationId}}(self, {{#sortParamsByRequiredFlag}}{{#allParams}}{{#required}}{{paramName}}, {{/required}}{{/allParams}}{{/sortParamsByRequiredFlag}}{{#optionalParams}}{{paramName}}{{^-last}}, {{/-last}}{{/optionalParams}}):  # noqa: E501
         # type: ({{#sortParamsByRequiredFlag}}{{#allParams}}{{#required}}{{dataType}}, {{/required}}{{/allParams}}{{/sortParamsByRequiredFlag}}{{#optionalParams}}{{dataType}}, {{/optionalParams}}) -> None
         """
             {{#summary}}{{{.}}}{{/summary}}{{^summary}}{{operationId}}{{/summary}}  # noqa: E501

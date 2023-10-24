@@ -17,9 +17,10 @@ from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_track
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.BrowserServiceInterface import BrowserServiceInterface
+from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.shared.Song import Song
-from protocol0.shared.UndoFacade import UndoFacade
+from protocol0.shared.Undo import Undo
 from protocol0.shared.sequence.Sequence import Sequence
 
 
@@ -36,7 +37,7 @@ class DeviceService(object):
         DomainEventBus.subscribe(DeviceLoadedEvent, self._on_device_loaded_event)
 
     def load_device(self, enum_name: str, create_track: bool = False) -> Sequence:
-        UndoFacade.begin_undo_step()
+        Undo.begin_undo_step()
         device_enum = DeviceEnum[enum_name]
         track = Song.selected_track()
         is_clip_view_visible = ApplicationView.is_clip_view_visible()
@@ -68,7 +69,8 @@ class DeviceService(object):
         ):
             seq.add(partial(self._show_default_automation, Song.selected_clip()))
 
-        seq.add(UndoFacade.end_undo_step)
+        seq.add(Backend.client().un_group)
+        seq.add(Undo.end_undo_step)
         return seq.done()
 
     def _get_instrument_track(self, device_enum: DeviceEnum) -> SimpleTrack:

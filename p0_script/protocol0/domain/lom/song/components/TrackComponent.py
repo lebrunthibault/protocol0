@@ -59,7 +59,7 @@ class TrackComponent(SlotManager):
         )
         DomainEventBus.subscribe(AbstractTrackSelectedEvent, self._on_abstract_track_selected_event)
         DomainEventBus.subscribe(SimpleTrackArmedEvent, self._on_simple_track_armed_event)
-        self._selected_track_listener.subject = self._song_view  # SongFacade is not hydrated
+        self._selected_track_listener.subject = self._song_view  # Song is not hydrated
 
     @subject_slot("selected_track")
     def _selected_track_listener(self) -> None:

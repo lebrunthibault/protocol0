@@ -51,5 +51,4 @@ class ActionGroupExt(ActionGroupInterface):
             name="monitor",
             filter_active_tracks=True,
             on_press=switch_monitoring,
-            # on_press=lambda: SongFacade.current_track().monitoring_state.switch,
         )
