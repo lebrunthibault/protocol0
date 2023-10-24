@@ -16,30 +16,54 @@ function getOptions(method: string, body: Object | null = null) {
     return options
 }
 
-class APIService {
-  private readonly baseURL = 'http://localhost:8000'
+const baseURL = 'http://localhost:8000'
 
-  async get(path: string) {
-    const url = `${this.baseURL}${path}`
-    const response = await fetch(url)
-    return await response.json()
-  }
-
-  async put(path: string, data: Object) {
-    const url = `${this.baseURL}${path}`
+const makeRequest = async (path: string, method: string, data: Object | null = null) => {
+    const url = `${baseURL}${path}`
+    let response = null;
     try {
-      const response = await fetch(url, getOptions("PUT", data))
-      return await response.json()
+      response = await fetch(url, getOptions(method, data))
     } catch (e: any) {
       notify(e)
       throw e
     }
+
+    const r = response.clone()
+    try {
+        data = await response.json()
+    } catch (e) {
+
+        const error = await r.text()
+          notify(r.statusText,{body: error, badge: url})
+          throw new Error(error)
+    }
+
+    if (!response.ok) {
+      notify(response.statusText)
+      throw new Error(response.statusText)
+    } else {
+      return data
+    }
+}
+
+class APIService {
+  async get(path: string) {
+    return await makeRequest(path, "GET")
+    // const url = `${this.baseURL}${path}`
+    // const response = await fetch(url)
+    // return await response.json()
+  }
+
+  async post(path: string, data: Object) {
+    return await makeRequest(path, "POST", data)
+  }
+
+  async put(path: string, data: Object) {
+    return await makeRequest(path, "PUT", data)
   }
 
   async delete(path: string) {
-    const url = `${this.baseURL}${path}`
-    const response = await fetch(url, getOptions("DELETE"))
-    return await response.json()
+    return await makeRequest(path, "DELETE")
   }
 }
 

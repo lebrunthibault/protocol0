@@ -18,6 +18,11 @@ interface SceneStats {
     scenes: SceneData[]
 }
 
+enum AbletonSetPlace {
+    TRACKS= "TRACKS",
+    ARCHIVE = "ARCHIVE",
+}
+
 enum SetStage {
   DRAFT = "DRAFT",
   BETA = "BEAT",
@@ -39,7 +44,10 @@ interface AudioInfo {
 
 // @ts-ignore
 interface AbletonSet {
+    place: AbletonSetPlace
     path_info: PathInfo
     metadata: AbletonSetMetadata
     audio?: AudioInfo
 }
+
+export {AbletonSetPlace}

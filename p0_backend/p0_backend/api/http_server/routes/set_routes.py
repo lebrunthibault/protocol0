@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional
+from typing import List
 
 from fastapi import APIRouter
 from loguru import logger
@@ -16,12 +16,13 @@ from p0_backend.lib.ableton.ableton_set.ableton_set import (
     AbletonSet,
     set_scene_stats,
     SceneStat,
-    SetPayload, update_set, delete_set,
-)
+    SetPayload,
+    update_set,
+    move_set, )
 from p0_backend.lib.ableton.ableton_set.ableton_set_manager import (
     AbletonSetManager,
     list_sets,
-    get_set,
+    AbletonSetPlace,
 )
 from p0_backend.settings import Settings
 from protocol0.application.command.SaveSongCommand import SaveSongCommand
@@ -32,13 +33,8 @@ settings = Settings()
 
 
 @router.get("/all")
-async def sets(archive: bool = False) -> Dict[str, List[AbletonSet]]:
-    return list_sets(archive)
-
-
-@router.get("")
-async def _get_set(path: str) -> Optional[AbletonSet]:
-    return get_set(path)
+async def sets(place: AbletonSetPlace = AbletonSetPlace.TRACKS) -> List[AbletonSet]:
+    return list_sets(place)
 
 
 class PostSetPayload(BaseModel):
@@ -93,10 +89,16 @@ async def close_set(filename: str):
     await ws_manager.broadcast_server_state()
 
 
+@router.post("/archive")
+async def _archive_set(path: str):
+    move_set(path, AbletonSetPlace.ARCHIVE)
+
+
+@router.post("/un_archive")
+async def _un_archive_set(path: str):
+    move_set(path, AbletonSetPlace.TRACKS)
+
+
 @router.delete("")
 async def _delete_set(path: str):
-    ableton_set = get_set(path)
-    if not ableton_set:
-        return
-
-    delete_set(ableton_set)
+    move_set(path, AbletonSetPlace.TRASH)

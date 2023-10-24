@@ -10,10 +10,15 @@ function basename(filename: string): string {
   return filename.split('/').reverse()[0].split("\\").reverse()[0]
 }
 
-function notify(message: string) {
+function notify(message: string, options: NotificationOptions = {}) {
   Notification.requestPermission().then(function (result) {
-    const notification = new Notification(message)
-    setTimeout(() => notification.close(), 2000)
+    if (options.body) {
+      options.requireInteraction = true
+    }
+    const notification = new Notification(message, options)
+    if (!options.body) {
+      setTimeout(() => notification.close(), 2000)
+    }
   });
 }
 

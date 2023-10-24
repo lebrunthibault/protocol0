@@ -12,6 +12,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 from p0_backend.lib.ableton.get_set import get_launched_set_path
+from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.settings import Settings
 
 settings = Settings()
@@ -53,10 +54,37 @@ class SceneStat(BaseModel):
     track_names: List[str]
 
 
-class SetStage(Enum):
+class AbletonSetStage(Enum):
     DRAFT = "DRAFT"
     BETA = "BETA"
     RELEASE = "RELEASE"
+
+
+class AbletonSetPlace(Enum):
+    TRACKS = "TRACKS"
+    ARCHIVE = "ARCHIVE"
+    RELEASED = "RELEASED"
+    TRASH = "TRASH"
+
+    @property
+    def folder_name(self) -> str:
+        return {
+            self.TRACKS: "tracks",
+            self.ARCHIVE: "_other\\archive",
+            self.RELEASED: "_other\\released",
+            self.TRASH: "_other\\trash",
+        }[
+            self  # type: ignore[index]
+        ]
+
+    @classmethod
+    def from_directory(cls, directory: str) -> "AbletonSetPlace":
+        parent_dir = dirname(directory)
+        for place in AbletonSetPlace:
+            if directory.endswith(place.folder_name) or parent_dir.endswith(place.folder_name):
+                return place
+
+        raise Protocol0Error(f"Cannot find AbletonSetPlace for {directory}")
 
 
 class AbletonSetMetadata(BaseModel):
@@ -64,7 +92,7 @@ class AbletonSetMetadata(BaseModel):
     scenes: List[SceneStat] = []
     stars: int = 0
     comment: str = ""
-    stage: SetStage = SetStage.DRAFT
+    stage: AbletonSetStage = AbletonSetStage.DRAFT
 
 
 class AudioInfo(BaseModel):
@@ -106,6 +134,7 @@ class AbletonSet(BaseModel):
     def __str__(self):
         return self.__repr__()
 
+    place: AbletonSetPlace
     path_info: Optional[PathInfo] = None
     audio: Optional[AudioInfo] = None
     metadata: Optional[AbletonSetMetadata] = None
@@ -132,10 +161,6 @@ class AbletonSet(BaseModel):
         return glob.glob(f"{self.path_info.tracks_folder}\\*.als")
 
     @property
-    def saved_track_names(self) -> List[str]:
-        return [basename(t).split(".")[0] for t in self.saved_tracks]
-
-    @property
     def is_current_track_saved(self) -> bool:
         saved_track = self.saved_temp_track
         if saved_track is None:
@@ -149,8 +174,11 @@ class AbletonSet(BaseModel):
         return True
 
     @classmethod
-    def create(cls, set_filename: str) -> "AbletonSet":
-        ableton_set = AbletonSet(path_info=PathInfo.create(set_filename))
+    def create(cls, set_filename: str, set_place: AbletonSetPlace = None) -> "AbletonSet":
+        ableton_set = AbletonSet(
+            place=set_place or AbletonSetPlace.from_directory(dirname(set_filename)),
+            path_info=PathInfo.create(set_filename),
+        )
         ableton_set.metadata = AbletonSetMetadata()
 
         # restore from file
@@ -198,7 +226,7 @@ class SetPayload(BaseModel):
     name: Optional[str] = None
     stars: Optional[int] = None
     comment: Optional[str] = None
-    stage: Optional[SetStage] = None
+    stage: Optional[AbletonSetStage] = None
 
 
 def update_set(filename: str, payload: SetPayload):
@@ -243,20 +271,24 @@ def rename_set(ableton_set: AbletonSet, name: str):
         rename(dirname(str(ableton_set.path_info.filename)))
 
 
-def delete_set(ableton_set: AbletonSet):
-    def move_to_trash(filename):
+def move_set(path: str, set_place: AbletonSetPlace):
+    ableton_set = AbletonSet.create(path.replace("\\\\", "\\"))
+    if not ableton_set:
+        return
+
+    def move_file(filename):
         if not exists(filename):
             return
 
-        dest = filename.replace(
-            settings.ableton_set_directory, settings.ableton_set_trash_directory
-        )
+        dest = filename.replace(ableton_set.place.folder_name, set_place.folder_name)
         shutil.move(filename, dest)
 
     if ableton_set.has_own_folder:
-        move_to_trash(dirname(str(ableton_set.path_info.filename)))
+        move_file(dirname(str(ableton_set.path_info.filename)))
     else:
-        move_to_trash(ableton_set.path_info.filename)
-        move_to_trash(ableton_set.path_info.metadata_filename)
-        move_to_trash(ableton_set.path_info.audio_filename)
-        move_to_trash(f"{ableton_set.path_info.audio_filename}.asd")
+        move_file(ableton_set.path_info.filename)
+        move_file(ableton_set.path_info.metadata_filename)
+        move_file(ableton_set.path_info.audio_filename)
+        move_file(f"{ableton_set.path_info.audio_filename}.asd")
+        move_file(f"{ableton_set.path_info.mp3_filename}")
+        move_file(f"{ableton_set.path_info.mp3_filename}.mp3.asd")
