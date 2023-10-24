@@ -12,7 +12,7 @@
             :ableton-set="selectedSet"  :scene-data="currentScene" v-if="currentScene"
             @scene-skip="onSceneSkip"
         ></AbletonSetSceneData>
-        <AbletonSetInfo :ableton-set="selectedSet"></AbletonSetInfo>
+        <AbletonSetInfo :ableton-set="selectedSet" @set-moved="hideSet"></AbletonSetInfo>
         <AbletonSetComment :ableton-set="selectedSet"></AbletonSetComment>
         <button @click="openSet" type="button" class="btn btn-lg btn-light">
           <i class="fa-solid fa-up-right-from-square" data-toggle="tooltip" data-placement="top" title="Open in Ableton"></i>
@@ -99,18 +99,18 @@ export default defineComponent({
     filterType: "recent",
   }),
   computed: {
-    showArchives(): boolean {
-      return Boolean(this.$route.query.archive)
-    },
     abletonSetsByStage() {
       return Object.groupBy(this.abletonSets, (set: AbletonSet) => set.metadata.stage)
+    },
+    setPlace(): string | null {
+      return this.$route.query.place ? this.$route.query.place.toUpperCase(): null
     }
   },
   watch: {
     filterType() {
       this.sortSets()
     },
-    async showArchives() {
+    async setPlace() {
       await this.fetchSets()
     }
   },
@@ -155,17 +155,13 @@ export default defineComponent({
     },
     async fetchSets() {
       let url = '/set/all'
-      if (this.showArchives) {
-        url += "?archive=true"
+      if (this.setPlace) {
+        url += `?place=${this.setPlace}`
       }
-      const abletonSets = await apiService.get(url)
-      const abletonSetsFlat = Object.values(abletonSets)
-          .flat()
-          .filter((set: AbletonSet) => !["test", "tests"].includes(set?.path_info.name.toLowerCase().trim()))
-      this.abletonSets = abletonSetsFlat
+      this.abletonSets = await apiService.get(url)
 
       // add index to scenes
-      for (const abletonSet of abletonSetsFlat) {
+      for (const abletonSet of this.abletonSets) {
         if (abletonSet.metadata.scenes) {
           for (const i in abletonSet.metadata.scenes) {
             abletonSet.metadata.scenes[i].index = parseInt(i)
@@ -175,6 +171,9 @@ export default defineComponent({
 
       this.sortSets()
     },
+    hideSet(abletonSet: AbletonSet) {
+      this.abletonSets.splice(this.abletonSets.indexOf(abletonSet), 1)
+    }
   },
   async mounted() {
     await this.fetchSets()

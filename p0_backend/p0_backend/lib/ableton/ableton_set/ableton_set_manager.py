@@ -2,16 +2,13 @@ import glob
 import os.path
 import re
 import time
-from itertools import chain
-from os.path import basename, dirname
-from pathlib import Path
-from typing import Optional, Dict, List
+from typing import Optional, List
 
 from loguru import logger
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.lib.ableton.ableton import is_ableton_focused
-from p0_backend.lib.ableton.ableton_set.ableton_set import AbletonSet, PathInfo
+from p0_backend.lib.ableton.ableton_set.ableton_set import AbletonSet, PathInfo, AbletonSetPlace
 from p0_backend.lib.ableton.get_set import (
     get_launched_set_path,
 )
@@ -87,7 +84,7 @@ class AbletonSetManager:
         return cls._ACTIVE_SET is not None
 
 
-def _get_focused_set_title() -> Optional[str]:
+def get_focused_set() -> Optional[AbletonSet]:
     if not is_ableton_focused():
         return None
 
@@ -98,15 +95,10 @@ def _get_focused_set_title() -> Optional[str]:
     if match is None:
         return None
 
-    return match.group(1).strip()
-
-
-def get_focused_set() -> Optional[AbletonSet]:
-    set_title = _get_focused_set_title()
+    set_title = match.group(1).strip()
 
     if (
-        set_title is not None
-        and AbletonSetManager.has_active_set()
+        AbletonSetManager.has_active_set()
         and AbletonSetManager.active().path_info.name == set_title
     ):
         return AbletonSetManager.active()
@@ -114,48 +106,29 @@ def get_focused_set() -> Optional[AbletonSet]:
     return None
 
 
-def list_sets(archive=False) -> Dict[str, List[AbletonSet]]:
-    if archive:
-        top_folders = ["_released", "paused"]
-    else:
-        top_folders = ["drafts", "tracks"]
+def list_sets(set_place: AbletonSetPlace = None) -> List[AbletonSet]:
+    excluded_sets = ["Dancing Feet", "Backup", "test", "tests"]
+    ableton_sets = []
 
-    excluded_sets = ["Dancing Feet", "Backup"]
-    ableton_sets = {}
+    top_folder_path = os.path.join(settings.ableton_set_directory, set_place.folder_name)
 
-    for top_folder in top_folders:
-        top_folder_path = os.path.join(settings.ableton_set_directory, top_folder)
-        ableton_sets[top_folder] = []
+    assert os.path.exists(top_folder_path) and os.path.isdir(
+        top_folder_path
+    ), f"{top_folder_path} does not exist"
+    als_files = glob.glob(os.path.join(top_folder_path, "**\\*.als"), recursive=True)
 
-        assert os.path.exists(top_folder_path) and os.path.isdir(
-            top_folder_path
-        ), f"{top_folder} does not exist"
-        als_files = glob.glob(os.path.join(top_folder_path, "**\\*.als"), recursive=True)
+    for als_file in als_files:
+        if any(word in als_file for word in excluded_sets):
+            continue
 
-        for als_file in als_files:
-            if any(word in als_file for word in excluded_sets):
-                continue
+        # skip set sub tracks
+        if "tracks\\" in als_file.replace(top_folder_path, ""):
+            continue
 
-            if top_folder not in ("drafts",) and Path(als_file).stem != basename(dirname(als_file)):
-                continue
+        # skip mastering sets
+        if als_file.endswith("master.als"):
+            continue
 
-            ableton_sets[top_folder].append(AbletonSet.create(als_file))
+        ableton_sets.append(AbletonSet.create(als_file, set_place))
 
     return ableton_sets
-
-
-def get_set(path: str) -> Optional[AbletonSet]:
-    path = path.replace("\\\\", "\\")
-
-    ableton_sets = list(chain.from_iterable(list_sets().values()))
-
-    return next(s for s in ableton_sets if s.path_info.filename == path)
-
-
-def delete_saved_track(track_name: str):
-    active_set = AbletonSetManager.active()
-    assert track_name in active_set.saved_track_names
-
-    track_path = f"{active_set.path_info.tracks_folder}\\{track_name}.als"
-
-    os.unlink(track_path)

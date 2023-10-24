@@ -7,10 +7,20 @@
       <div class="modal-content">
         <div class="modal-header d-flex">
           <h5 class="modal-title">{{ abletonSet.path_info.name }} <small>({{ modifiedSince }})</small></h5>
-          <button v-if="!abletonSet.metadata?.stars || abletonSet.metadata?.stars < 3"
-                  @click="deleteSet" type="button" class="btn btn-lg btn-light">
-            <i class="fa-regular fa-trash-can" data-toggle="tooltip" data-placement="top" title="Move set to trash"></i>
-          </button>
+          <div>
+            <button v-if="canArchive"
+                    @click="archiveSet" type="button" class="btn btn-lg btn-light mx-2">
+              <i class="fa-solid fa-box-archive" data-toggle="tooltip" data-placement="top" title="Archive set"></i>
+            </button>
+            <button v-if="canUnArchive"
+                    @click="unArchiveSet" type="button" class="btn btn-lg btn-light mx-2">
+              <i class="fa-solid fa-trash-arrow-up" data-toggle="tooltip" data-placement="top" title="Restore set"></i>
+            </button>
+            <button v-if="canDelete"
+                    @click="deleteSet" type="button" class="btn btn-lg btn-outline-danger mx-2">
+              <i class="fa-regular fa-trash-can" data-toggle="tooltip" data-placement="top" title="Delete set"></i>
+            </button>
+          </div>
         </div>
         <div class="modal-body my-2">
           <form action="" @submit.prevent="submit">
@@ -45,6 +55,8 @@ import {defineComponent, PropType} from "vue";
 import moment from 'moment';
 import {basename, notify} from '@/utils/utils'
 import {apiService} from "@/utils/apiService";
+import { AbletonSetPlace } from '@/components/ableton_sets/ableton_sets';
+
 
 
 export default defineComponent({
@@ -52,6 +64,7 @@ export default defineComponent({
   props: {
     abletonSet: Object as PropType<AbletonSet>,
   },
+  emits: ['setMoved'],
   data() {
     return {
       name: this.abletonSet?.path_info.name,
@@ -70,6 +83,15 @@ export default defineComponent({
     }
   },
   computed: {
+    canArchive(): boolean {
+      return this.abletonSet.place == AbletonSetPlace.TRACKS && (this.abletonSet.metadata.stars < 4)
+    },
+    canUnArchive(): boolean {
+      return this.abletonSet.place == AbletonSetPlace.ARCHIVE && (this.abletonSet.metadata.stars < 4)
+    },
+    canDelete(): boolean {
+      return this.abletonSet.place == AbletonSetPlace.ARCHIVE && (this.abletonSet.metadata.stars < 4)
+    },
     modifiedSince(): string {
       const savedAt = moment(this.abletonSet?.path_info.saved_at * 1000)
 
@@ -104,9 +126,23 @@ export default defineComponent({
       $('#setInfoModal').modal('hide')
     },
     basename,
+    async archiveSet() {
+      await apiService.post(`/set/archive?path=${this.abletonSet?.path_info.filename}`)
+      this.$emit('setMoved', this.abletonSet)
+      notify("Set archived")
+      $('#setInfoModal').modal('hide')
+    },
+    async unArchiveSet() {
+      await apiService.post(`/set/un_archive?path=${this.abletonSet?.path_info.filename}`)
+      this.$emit('setMoved', this.abletonSet)
+      notify("Set restored")
+      $('#setInfoModal').modal('hide')
+    },
     async deleteSet() {
       await apiService.delete(`/set?path=${this.abletonSet?.path_info.filename}`)
+      this.$emit('setMoved', this.abletonSet)
       notify("Set moved to trash")
+      $('#setInfoModal').modal('hide')
     }
   }
 })

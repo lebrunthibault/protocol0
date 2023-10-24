@@ -11,7 +11,6 @@ from p0_backend.lib.ableton.ableton import (
 )
 from p0_backend.lib.ableton.ableton_set.ableton_set_manager import (
     AbletonSetManager,
-    delete_saved_track,
 )
 from p0_backend.lib.ableton.ableton_set.server_state import ServerState
 from p0_backend.lib.ableton.analyze_clip_jitter import analyze_test_audio_clip_jitter
@@ -312,11 +311,6 @@ async def _log_selected():
 @router.get("/log_song_stats")
 async def _log_song_stats():
     p0_script_client().dispatch(LogSongStatsCommand())
-
-
-@router.get("/delete_saved_track")
-async def _delete_saved_track(track_name: str):
-    delete_saved_track(track_name)
 
 
 @router.get("/drum_rack_to_simpler")
