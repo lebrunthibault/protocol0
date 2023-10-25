@@ -12,6 +12,7 @@ from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.utils.concurrency import lock
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.Song import Song
+from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
 
 
@@ -30,12 +31,12 @@ class InstrumentService(object):
             instrument.on_loaded(event.device_enum)
 
     def _get_device(
-        self, param: XParam, pd: Optional[ParamDevice], auto_enable: bool = False
+        self, x_param: XParam, pd: Optional[ParamDevice], auto_enable: bool = False
     ) -> Union[None, Device, Sequence]:
         if not pd:
-            device_to_load = param.get_device_to_load()
+            device_to_load = x_param.get_device_to_load()
             if device_to_load:
-                param.track.select()
+                x_param.track.select()
                 return self._device_service.load_device(device_to_load.name)
             else:
                 return None
@@ -45,7 +46,7 @@ class InstrumentService(object):
                 pd.device.is_enabled = True
                 pd.device.is_collapsed = False
             if not Song.session_record():
-                self._device_component.select_device(param.track, pd.device)
+                self._device_component.select_device(x_param.track, pd.device)
 
             return pd.device
 
@@ -53,20 +54,21 @@ class InstrumentService(object):
 
     def _setup_device_and_clip(
         self,
-        param: XParam,
+        x_param: XParam,
         pd: Optional[ParamDevice],
         select_clip: bool = True,
         auto_enable: bool = True,
     ) -> Union[None, Clip, Sequence]:
-        device = self._get_device(param, pd, auto_enable)
+        device = self._get_device(x_param, pd, auto_enable)
         if isinstance(device, Sequence):
             return device
 
         if not pd:
             return None
 
-        clip = param.track.clip_slots[Song.selected_scene().index].clip
+        clip = x_param.track.clip_slots[Song.selected_scene().index].clip
         if not clip:
+            Logger.warning("No selected clip")
             return None
 
         if select_clip:
@@ -75,13 +77,11 @@ class InstrumentService(object):
         return clip
 
     @lock
-    def toggle_param(self, param: XParam) -> Optional[Sequence]:
-        pd = param.get_device_param(automatable=True)
+    def toggle_param(self, x_param: XParam) -> Optional[Sequence]:
+        pd = x_param.get_device_param(automatable=True)
 
         if not pd:
-            pd = param.get_device_param()
-
-            device = self._get_device(param, pd)
+            device = self._get_device(x_param, pd)
             if not isinstance(device, Device):
                 return device
 
@@ -90,7 +90,7 @@ class InstrumentService(object):
 
             return None
 
-        clip = self._setup_device_and_clip(param, pd)
+        clip = self._setup_device_and_clip(x_param, pd)
         if not isinstance(clip, Clip):
             return clip
 
@@ -98,13 +98,13 @@ class InstrumentService(object):
         return None
 
     @lock
-    def toggle_param_automation(self, param: XParam) -> Optional[Sequence]:
-        pd = param.get_device_param(automatable=True)
+    def toggle_param_automation(self, x_param: XParam) -> Optional[Sequence]:
+        pd = x_param.get_device_param(automatable=True)
 
         if not pd:
             return None
 
-        clip = self._setup_device_and_clip(param, pd)
+        clip = self._setup_device_and_clip(x_param, pd)
         if not isinstance(clip, Clip):
             return clip
 

@@ -108,9 +108,6 @@ class ActionGroupRack(ActionGroupInterface):
                 x_param.track = Song.selected_or_soloed_track()
                 method(x_param, **k)
 
-            from protocol0.shared.logging.Logger import Logger
-            Logger.dev(x_param.name)
-
             self.add_encoder(
                 identifier=identifier,
                 name=x_param.name,

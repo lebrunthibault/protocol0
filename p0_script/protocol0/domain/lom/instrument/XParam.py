@@ -127,7 +127,6 @@ class XParam:
         for param_conf in self.param_configs:
             pd = param_conf.get_param_device(self.track)
 
-
             if pd and (not isinstance(param_conf, DeviceParam) or param_conf.scrollable):
                 if isinstance(param_conf, TrackParam) and param_conf.limits:
                     param_value = param_conf.get_param_device(self.track).param.value
