@@ -34,6 +34,11 @@ router = APIRouter()
 settings = Settings()
 
 
+@router.get("/active")
+async def active_set() -> AbletonSet:
+    return AbletonSetManager.active()
+
+
 @router.get("/all")
 async def sets(place: AbletonSetPlace = AbletonSetPlace.TRACKS) -> List[AbletonSet]:
     return list_sets(place)
@@ -93,7 +98,7 @@ async def open_set_by_type(name: str):
 @router.get("/close")
 async def close_set(filename: str):
     await AbletonSetManager.remove(filename)
-    await ws_manager.broadcast_server_state()
+    await ws_manager.broadcast_active_set()
 
 
 @router.post("/archive")

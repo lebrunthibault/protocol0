@@ -56,7 +56,7 @@ class AbletonSetManager:
             and existing_set.current_state.selected_scene
             != ableton_set.current_state.selected_scene
         ):
-            await ws_manager.broadcast_server_state()
+            await ws_manager.broadcast_active_set()
 
     @classmethod
     async def remove(cls, filename: str):
@@ -68,7 +68,7 @@ class AbletonSetManager:
             cls._ACTIVE_SET = None
 
     @classmethod
-    def active(cls) -> Optional[AbletonSet]:
+    def active(cls) -> AbletonSet:
         if cls._ACTIVE_SET is None:
             raise Protocol0Error("no active set")
 
