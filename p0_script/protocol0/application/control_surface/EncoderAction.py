@@ -49,7 +49,7 @@ class EncoderAction(object):
         seq.add(Undo.end_undo_step)
 
         if self.move_type != EncoderMoveEnum.SCROLL:
-            seq.add(lambda: Logger.info("%s : took %.3fs" % (func_name, time.time() - start_at)))
+            seq.add(lambda: Logger.info(f"{encoder_name}.{self.move_type} : took {time.time() - start_at:.3f}s"))
 
         return seq.done()
 
