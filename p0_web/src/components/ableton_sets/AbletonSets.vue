@@ -19,7 +19,8 @@
         </button>
       </div>
     </div>
-      <AbletonSetPlayer :ableton-set="selectedSet" @sceneChange="onSceneChange" :time="playerTime"></AbletonSetPlayer>
+      <AbletonSetPlayer v-if="selectedSet.audio" :ableton-set="selectedSet" @sceneChange="onSceneChange" :time="playerTime"></AbletonSetPlayer>
+      <h3 v-else class="text-center alert alert-warning">No audio <i class="px-3 fa-solid fa-volume-xmark"></i></h3>
   </div>
   <div class="row" style="margin-top: 50px">
     <div class="col-sm" style="position: absolute; width: 150px">
@@ -131,6 +132,9 @@ export default defineComponent({
       this.playerTime = this.currentScene?.start_time
     },
     sortSets() {
+      if (!this.filterType) {
+        return
+      }
       const getProp = (filterType: string): Function => {
         switch (filterType) {
           case "name":

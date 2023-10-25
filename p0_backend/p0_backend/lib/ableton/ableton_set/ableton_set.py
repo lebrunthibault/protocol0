@@ -9,10 +9,10 @@ from os.path import basename, dirname, exists
 from pathlib import Path
 from typing import List, Optional
 
+from loguru import logger
 from pydantic import BaseModel
 
 from p0_backend.lib.ableton.get_set import get_launched_set_path
-from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.settings import Settings
 
 settings = Settings()
@@ -54,7 +54,7 @@ class SceneStat(BaseModel):
     track_names: List[str]
 
 
-class AbletonSetStage(Enum):
+class AbletonSetStage(str, Enum):
     DRAFT = "DRAFT"
     BETA = "BETA"
     RELEASE = "RELEASE"
@@ -78,13 +78,15 @@ class AbletonSetPlace(Enum):
         ]
 
     @classmethod
-    def from_directory(cls, directory: str) -> "AbletonSetPlace":
+    def from_directory(cls, directory: str) -> Optional["AbletonSetPlace"]:
         parent_dir = dirname(directory)
         for place in AbletonSetPlace:
             if directory.endswith(place.folder_name) or parent_dir.endswith(place.folder_name):
                 return place
 
-        raise Protocol0Error(f"Cannot find AbletonSetPlace for {directory}")
+        logger.warning(f"Cannot find AbletonSetPlace for {directory}")
+
+        return None
 
 
 class AbletonSetMetadata(BaseModel):
@@ -134,7 +136,7 @@ class AbletonSet(BaseModel):
     def __str__(self):
         return self.__repr__()
 
-    place: AbletonSetPlace
+    place: Optional[AbletonSetPlace]
     path_info: Optional[PathInfo] = None
     audio: Optional[AudioInfo] = None
     metadata: Optional[AbletonSetMetadata] = None

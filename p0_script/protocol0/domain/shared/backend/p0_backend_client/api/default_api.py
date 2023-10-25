@@ -836,6 +836,22 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
+    def post_current_state(self, post_current_state_payload, ):  # noqa: E501
+        # type: (PostCurrentStatePayload, ) -> None
+        """
+            Post Current State  # noqa: E501
+        """
+
+        payload = {
+            "method": "POST",
+            "path": "/set/current_state",
+            "params": {
+                "post_current_state_payload": post_current_state_payload, 
+            }
+        }
+
+        self._send_dict_as_midi(payload)
+
     def post_scene_stats(self, post_scene_stats_payload, ):  # noqa: E501
         # type: (PostSceneStatsPayload, ) -> None
         """
@@ -847,22 +863,6 @@ class P0BackendClient(object):
             "path": "/set/scene_stats",
             "params": {
                 "post_scene_stats_payload": post_scene_stats_payload, 
-            }
-        }
-
-        self._send_dict_as_midi(payload)
-
-    def post_set(self, post_set_payload, ):  # noqa: E501
-        # type: (PostSetPayload, ) -> None
-        """
-            Post Set  # noqa: E501
-        """
-
-        payload = {
-            "method": "POST",
-            "path": "/set",
-            "params": {
-                "post_set_payload": post_set_payload, 
             }
         }
 

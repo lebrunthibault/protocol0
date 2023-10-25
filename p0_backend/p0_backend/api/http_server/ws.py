@@ -38,7 +38,7 @@ class WebSocketManager:
     async def broadcast_server_state(self):
         for connection in self._active_connections:
             await connection.send_text(
-                json.dumps({"type": "SERVER_STATE", "data": ServerState.create().dict()})
+                json.dumps({"type": "SERVER_STATE", "data": ServerState.create().model_dump()})
             )
 
 

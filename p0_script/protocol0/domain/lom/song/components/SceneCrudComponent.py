@@ -1,9 +1,6 @@
 from functools import partial
-
 from typing import Optional, Callable
 
-from protocol0.application.CommandBus import CommandBus
-from protocol0.application.command.FireSelectedSceneCommand import FireSelectedSceneCommand
 from protocol0.domain.lom.scene.Scene import Scene
 from protocol0.domain.lom.scene.SceneWindow import SceneWindow
 from protocol0.domain.lom.scene.ScenesMappedEvent import ScenesMappedEvent
