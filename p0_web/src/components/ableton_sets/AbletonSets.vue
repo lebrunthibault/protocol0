@@ -81,6 +81,7 @@ import AbletonSetComment from "@/components/ableton_sets/AbletonSetComment.vue";
 import AbletonSetInfo from "@/components/ableton_sets/AbletonSetInfo.vue";
 import AbletonSetStars from "@/components/ableton_sets/AbletonSetStars.vue";
 import {notify} from "@/utils/utils";
+import {AbletonSet, SceneData} from "@/components/ableton_sets/ableton_sets";
 
 
 export default defineComponent({
@@ -129,7 +130,9 @@ export default defineComponent({
     },
     onSceneSkip(increment: number) {
       this.currentScene = this.selectedSet?.metadata.scenes[this.currentScene.index + increment]
-      this.playerTime = this.currentScene?.start_time
+      if (this.abletonSet.metadata.tempo) {
+        this.playerTime = this.currentScene?.start * (60 / this.abletonSet.metadata.tempo)
+      }
     },
     sortSets() {
       if (!this.filterType) {

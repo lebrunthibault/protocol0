@@ -48,13 +48,18 @@ async def post_current_state(payload: PostCurrentStatePayload):
     await AbletonSetManager.create_from_current_state(payload.post_current_state_payload)
 
 
+class SceneStatsPayload(BaseModel):
+    tempo: float
+    scenes: List[SceneStat]
+
+
 class PostSceneStatsPayload(BaseModel):
-    post_scene_stats_payload: List[SceneStat]
+    post_scene_stats_payload: SceneStatsPayload
 
 
 @router.post("/scene_stats")
 async def post_scene_stats(payload: PostSceneStatsPayload):
-    set_scene_stats(payload.post_scene_stats_payload)
+    set_scene_stats(payload.post_scene_stats_payload.tempo, payload.post_scene_stats_payload.scenes)
 
 
 @router.put("/{filename}")

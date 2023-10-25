@@ -9,7 +9,7 @@
           <h5 class="modal-title">{{ sceneData.name }}</h5>
           <div>
             <i v-if="hasPrev" @click="$emit('sceneSkip', -1)" class="fa-solid fa-arrow-left"></i>
-            <small class="mx-3">{{ toTime(sceneData.start_time) }} : {{ toTime(sceneData.end_time )}}</small>
+            <small class="mx-3">{{ toTime(sceneData.start) }} : {{ toTime(sceneData.end) }}</small>
             <i v-if="hasNext" @click="$emit('sceneSkip', 1)" class="fa-solid fa-arrow-right"></i>
           </div>
         </div>
@@ -80,8 +80,12 @@ export default defineComponent({
     sceneSkip() {
       this.$emit('sceneSkip', 1)
     },
-    toTime(seconds: number) {
-      return new Date(seconds * 1000).toISOString().substring(14, 19)
+    toTime(barLength: number): string {
+      if (!this.abletonSet.metadata.tempo) {
+        return ""
+      }
+      const beat_duration = 60 / this.abletonSet.metadata.tempo
+      return new Date((barLength * beat_duration) * 1000).toISOString().substring(14, 19)
     },
   }
 })

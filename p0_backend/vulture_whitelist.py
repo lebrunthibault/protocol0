@@ -57,8 +57,6 @@ audio_info  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py
 _.metadata_info  # unused attribute (p0_backend\lib\ableton\ableton_set\ableton_set.py:131)
 _.audio  # unused attribute (p0_backend\lib\ableton\ableton_set\ableton_set.py:142)
 write_scene_stats  # unused function (p0_backend\lib\ableton\ableton_set\ableton_set.py:156)
-start_time  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py:49)
-end_time  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py:50)
 track_names  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py:51)
 scenes  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py:56)
 _.scenes  # unused attribute (p0_backend\lib\ableton\ableton_set\ableton_set.py:170)

@@ -7,8 +7,8 @@ interface PathInfo {
 interface SceneData {
     name: string
     index: number
-    start_time: number
-    end_time: number
+    start: number
+    end: number
     track_names: string[]
 }
 
@@ -42,7 +42,6 @@ interface AudioInfo {
     outdated: boolean
 }
 
-// @ts-ignore
 interface AbletonSet {
     place: AbletonSetPlace
     path_info: PathInfo
@@ -50,4 +49,4 @@ interface AbletonSet {
     audio?: AudioInfo
 }
 
-export {AbletonSetPlace}
+export {AbletonSet, AbletonSetPlace, SceneData}

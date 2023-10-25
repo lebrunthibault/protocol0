@@ -9,13 +9,9 @@ from protocol0.shared.Song import Song
 
 class SceneStat(object):
     def __init__(self, scene: Scene, start_bar_length: int) -> None:
-        beat_duration = float(60) / Song.tempo()
-
         self._name = scene.name
-        self._start_time = start_bar_length * Song.signature_numerator() * beat_duration
-        self._end_time = (
-            (start_bar_length + scene.bar_length) * Song.signature_numerator() * beat_duration
-        )
+        self._start = start_bar_length * Song.signature_numerator()
+        self._end = (start_bar_length + scene.bar_length) * Song.signature_numerator()
 
         self._track_names = []
 
@@ -31,8 +27,8 @@ class SceneStat(object):
     def to_dict(self) -> Dict:
         output: Dict[str, Any] = collections.OrderedDict()
         output["name"] = self._name
-        output["start_time"] = self._start_time
-        output["end_time"] = self._end_time
+        output["start"] = self._start
+        output["end"] = self._end
         output["track_names"] = self._track_names
 
         return output
