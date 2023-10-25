@@ -79,7 +79,6 @@ export default defineComponent({
     async stage() {
       await apiService.put(`/set/${encodeURI(this.abletonSet?.path_info.filename)}`, {stage: this.stage})
       this.abletonSet.metadata.stage = this.stage
-      notify("Set saved")
     }
   },
   computed: {
@@ -123,7 +122,6 @@ export default defineComponent({
       await apiService.put(`/set/${encodeURI(this.abletonSet?.path_info.filename)}`, {name: this.name})
       this.abletonSet.path_info.filename = this.abletonSet.path_info.filename.replace(this.abletonSet.path_info.name, this.name)
       this.abletonSet.path_info.name = this.name
-      notify("Set saved")
       $('#setInfoModal').modal('hide')
     },
     basename,

@@ -73,14 +73,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { apiService } from '@/utils/apiService'
+import {defineComponent} from 'vue'
+import {apiService} from '@/utils/apiService'
 import AbletonSetPlayer from "@/components/ableton_sets/AbletonSetPlayer.vue";
 import AbletonSetSceneData from "@/components/ableton_sets/AbletonSetSceneData.vue";
 import AbletonSetComment from "@/components/ableton_sets/AbletonSetComment.vue";
 import AbletonSetInfo from "@/components/ableton_sets/AbletonSetInfo.vue";
 import AbletonSetStars from "@/components/ableton_sets/AbletonSetStars.vue";
-import {notify} from "@/utils/utils";
 import {AbletonSet, SceneData} from "@/components/ableton_sets/ableton_sets";
 
 
@@ -122,7 +121,6 @@ export default defineComponent({
       this.currentScene = this.selectedSet.metadata.scenes ? this.selectedSet.metadata.scenes[0] : null
     },
     async openSet() {
-      notify("Opening set")
       await apiService.get(`/set/open?path=${this.selectedSet?.path_info.filename}`)
     },
     onSceneChange(sceneData: SceneData) {
