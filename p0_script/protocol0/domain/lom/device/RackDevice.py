@@ -49,7 +49,7 @@ class RackDevice(Device, Observable):
 
     @property
     def has_macro_mappings(self) -> bool:
-        return self._device.has_macro_mappings and set(self._device.macros_mapped) == {False}
+        return self._device.has_macro_mappings and set(self._device.macros_mapped) != {False}
 
     def remove_macro(self) -> None:
         try:
