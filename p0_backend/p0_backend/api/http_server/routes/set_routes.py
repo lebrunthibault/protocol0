@@ -18,7 +18,9 @@ from p0_backend.lib.ableton.ableton_set.ableton_set import (
     SceneStat,
     SetPayload,
     update_set,
-    move_set, )
+    move_set,
+    AbletonSetCurrentState,
+)
 from p0_backend.lib.ableton.ableton_set.ableton_set_manager import (
     AbletonSetManager,
     list_sets,
@@ -37,27 +39,27 @@ async def sets(place: AbletonSetPlace = AbletonSetPlace.TRACKS) -> List[AbletonS
     return list_sets(place)
 
 
-class PostSetPayload(BaseModel):
-    ableton_set: AbletonSet
+class PostCurrentStatePayload(BaseModel):
+    post_current_state_payload: AbletonSetCurrentState
 
 
-@router.post("")
-async def post_set(payload: PostSetPayload):
-    await AbletonSetManager.register(payload.ableton_set)
+@router.post("/current_state")
+async def post_current_state(payload: PostCurrentStatePayload):
+    await AbletonSetManager.create_from_current_state(payload.post_current_state_payload)
+
+
+class PostSceneStatsPayload(BaseModel):
+    post_scene_stats_payload: List[SceneStat]
+
+
+@router.post("/scene_stats")
+async def post_scene_stats(payload: PostSceneStatsPayload):
+    set_scene_stats(payload.post_scene_stats_payload)
 
 
 @router.put("/{filename}")
 async def put_set(filename: str, payload: SetPayload):
     update_set(filename, payload)
-
-
-class PostSceneStatsPayload(BaseModel):
-    scene_stat: List[SceneStat]
-
-
-@router.post("/scene_stats")
-async def post_scene_stats(payload: PostSceneStatsPayload):
-    set_scene_stats(payload.scene_stat)
 
 
 @router.get("/save_as_template")

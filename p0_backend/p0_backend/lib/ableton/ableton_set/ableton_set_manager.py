@@ -1,23 +1,22 @@
 import glob
 import os.path
 import re
-import time
 from typing import Optional, List
 
 from loguru import logger
 
-from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.lib.ableton.ableton import is_ableton_focused
-from p0_backend.lib.ableton.ableton_set.ableton_set import AbletonSet, PathInfo, AbletonSetPlace
+from p0_backend.lib.ableton.ableton_set.ableton_set import (
+    AbletonSet,
+    AbletonSetPlace,
+    AbletonSetCurrentState,
+)
 from p0_backend.lib.ableton.get_set import (
     get_launched_set_path,
 )
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.window.window import get_focused_window_title
 from p0_backend.settings import Settings
-from protocol0.application.command.EmitBackendEventCommand import (
-    EmitBackendEventCommand,
-)
 
 settings = Settings()
 
@@ -27,14 +26,16 @@ class AbletonSetManager:
     _ACTIVE_SET: Optional[AbletonSet] = None
 
     @classmethod
-    async def register(cls, ableton_set: AbletonSet) -> None:
+    async def create_from_current_state(cls, current_state: AbletonSetCurrentState) -> None:
         if cls.DEBUG:
-            logger.info(f"registering set {ableton_set}")
+            logger.info("registering current state")
 
         try:
-            ableton_set.path_info = PathInfo.create(get_launched_set_path())
+            ableton_set = AbletonSet.create(get_launched_set_path())
         except AssertionError:
-            ableton_set.path_info = PathInfo.create(settings.ableton_test_set_path)
+            ableton_set = AbletonSet.create(settings.ableton_test_set_path)
+
+        ableton_set.current_state = current_state
 
         # deduplicate on set title
         existing_set = cls._ACTIVE_SET
@@ -42,9 +43,9 @@ class AbletonSetManager:
             if existing_set.path_info.filename != ableton_set.path_info.filename:
                 logger.info(f"overwriting active set: {existing_set}")
 
-        if existing_set == ableton_set:
-            logger.info("No change")
-            return
+            if existing_set.current_state == ableton_set.current_state:
+                logger.info("No change")
+                return
 
         cls._ACTIVE_SET = ableton_set
 
@@ -56,12 +57,6 @@ class AbletonSetManager:
             != ableton_set.current_state.selected_scene
         ):
             await ws_manager.broadcast_server_state()
-
-        # update backend
-        time.sleep(0.5)  # fix too fast backend ..?
-        command = EmitBackendEventCommand("set_updated", data=ableton_set.path_info.model_dump())
-        command.set_id = ableton_set.path_info.filename
-        p0_script_client().dispatch(command, log=False)
 
     @classmethod
     async def remove(cls, filename: str):

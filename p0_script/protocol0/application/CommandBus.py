@@ -1,18 +1,12 @@
 import time
 from functools import partial
-
 from typing import Dict, Type, Optional
 
 import protocol0.application.command as command_package
 import protocol0.application.command_handler as command_handler_package
 from protocol0.application.CommandBusHistory import CommandBusHistory
 from protocol0.application.ContainerInterface import ContainerInterface
-from protocol0.application.command.FireSceneToPositionCommand import FireSceneToPositionCommand
-from protocol0.application.command.FireSelectedSceneCommand import FireSelectedSceneCommand
-from protocol0.application.command.GetSetStateCommand import GetSetStateCommand
-from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongCommand
 from protocol0.application.command.SerializableCommand import SerializableCommand
-from protocol0.application.command.ToggleSceneLoopCommand import ToggleSceneLoopCommand
 from protocol0.application.command_handler.CommandHandlerInterface import CommandHandlerInterface
 from protocol0.domain.lom.set.AbletonSet import AbletonSet
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
@@ -24,13 +18,13 @@ from protocol0.shared.types import T
 
 CommandMapping = Dict[Type[SerializableCommand], Type[CommandHandlerInterface]]
 
-broadcast_commands = [
-    GetSetStateCommand,
-    FireSceneToPositionCommand,
-    FireSelectedSceneCommand,
-    PlayPauseSongCommand,
-    ToggleSceneLoopCommand,
-]
+# broadcast_commands = [
+#     GetSetStateCommand,
+#     FireSceneToPositionCommand,
+#     FireSelectedSceneCommand,
+#     PlayPauseSongCommand,
+#     ToggleSceneLoopCommand,
+# ]
 
 
 class CommandBus(object):
@@ -78,13 +72,6 @@ class CommandBus(object):
     @handle_errors()
     def _dispatch_command(self, command: SerializableCommand) -> Optional[Sequence]:
         start_at = time.time()
-
-        if (
-            type(command) not in broadcast_commands
-            and command.set_id is not None
-            and command.set_id != self._ableton_set.filename
-        ):
-            pass  # for now
 
         self._history.push(command)
 

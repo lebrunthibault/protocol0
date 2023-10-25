@@ -1,11 +1,7 @@
 from dataclasses import dataclass, asdict, field
 from functools import partial
-from typing import Dict, Optional, List
+from typing import Optional, List
 
-# noinspection PyUnresolvedReferences
-from dacite import from_dict
-
-from protocol0.application.ScriptDisconnectedEvent import ScriptDisconnectedEvent
 from protocol0.domain.lom.clip_slot.ClipSlotPlayingStatusUpdatedEvent import (
     ClipSlotPlayingStatusUpdatedEvent,
 )
@@ -23,13 +19,6 @@ from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.timing import debounce
 from protocol0.infra.interface.session.SessionUpdatedEvent import SessionUpdatedEvent
 from protocol0.shared.Song import Song
-from protocol0.shared.sequence.Sequence import Sequence
-
-
-@dataclass
-class PathInfo:
-    filename: str
-    name: str
 
 
 @dataclass
@@ -64,17 +53,9 @@ class AbletonSetCurrentState:
     drum_rack_visible: bool
 
 
-@dataclass
-class AbletonSetModel:
-    current_state: AbletonSetCurrentState
-
-
 class AbletonSet(object):
     def __init__(self) -> None:
-        self._model_cached: Optional[AbletonSetModel] = None
-        self._path_info: Optional[PathInfo] = None
-
-        DomainEventBus.subscribe(ScriptDisconnectedEvent, lambda _: self._disconnect())
+        self._model_cached: Optional[AbletonSetCurrentState] = None
 
         listened_events = [
             AbstractTrackNameUpdatedEvent,
@@ -93,24 +74,14 @@ class AbletonSet(object):
             Scheduler.wait(2, partial(DomainEventBus.subscribe, event, lambda _: self.notify()))
 
     def __repr__(self) -> str:
-        return f"AbletonSet('{self.title}')"
+        return "AbletonSet"
 
-    @property
-    def filename(self) -> Optional[str]:
-        return self._path_info.filename if self._path_info else None
-
-    @property
-    def title(self) -> Optional[str]:
-        return self._path_info.name if self._path_info else None
-
-    def to_model(self) -> AbletonSetModel:
-        return AbletonSetModel(
-            current_state=AbletonSetCurrentState(
-                selected_scene=Song.selected_scene().to_scene_state(),
-                current_track=AbletonTrack(**Song.current_track().to_dict()),
-                selected_track=AbletonTrack(**Song.selected_track().to_dict()),
-                drum_rack_visible=isinstance(Song.selected_track().instrument, InstrumentDrumRack),
-            ),
+    def to_model(self) -> AbletonSetCurrentState:
+        return AbletonSetCurrentState(
+            selected_scene=Song.selected_scene().to_scene_state(),
+            current_track=AbletonTrack(**Song.current_track().to_dict()),
+            selected_track=AbletonTrack(**Song.selected_track().to_dict()),
+            drum_rack_visible=isinstance(Song.selected_track().instrument, InstrumentDrumRack),
         )
 
     @debounce(duration=20)
@@ -118,28 +89,15 @@ class AbletonSet(object):
         model = self.to_model()
 
         if self._model_cached != model or force:
-            seq = Sequence()
-            seq.add(partial(Backend.client().post_set, asdict(model)))
-
-            def update_path_info(data: Dict) -> None:
-                self._path_info = from_dict(data_class=PathInfo, data=data)
-
-            if self.title is None:
-                seq.wait_for_backend_event("set_updated")
-                seq.add(lambda: update_path_info(seq.res))  # type: ignore[arg-type]
-
-            seq.done()
+            Backend.client().post_current_state(asdict(model))
 
         self._model_cached = model
 
     def loop_notify_selected_scene(self) -> None:
         if (
             self._model_cached
-            and self._model_cached.current_state.selected_scene != Song.selected_scene().to_scene_state()
+            and self._model_cached.selected_scene != Song.selected_scene().to_scene_state()
         ):
             self.notify()
 
         Scheduler.wait_ms(1000, self.loop_notify_selected_scene)
-
-    def _disconnect(self) -> None:
-        Backend.client().close_set(self.filename)
