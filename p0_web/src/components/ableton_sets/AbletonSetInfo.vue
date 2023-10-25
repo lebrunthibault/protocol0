@@ -55,7 +55,7 @@ import {defineComponent, PropType} from "vue";
 import moment from 'moment';
 import {basename, notify} from '@/utils/utils'
 import {apiService} from "@/utils/apiService";
-import { AbletonSetPlace } from '@/components/ableton_sets/ableton_sets';
+import {AbletonSet, AbletonSetPlace} from '@/components/ableton_sets/ableton_sets';
 
 
 

@@ -37,4 +37,6 @@ class SongStatsService(object):
             StatusBar.show_message("Scenes are not named")
 
         scene_stats = SceneStats()
-        Backend.client().post_scene_stats(scene_stats.to_full_dict()["scenes"])
+        Backend.client().post_scene_stats(
+            {"scenes": scene_stats.to_full_dict()["scenes"], "tempo": Song.tempo()}
+        )

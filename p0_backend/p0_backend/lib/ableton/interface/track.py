@@ -5,7 +5,7 @@ import pyautogui
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.settings import Settings, DOWN_BBOX
-from p0_backend.lib.notification import notification_window
+from p0_backend.lib.notification import notify
 from p0_backend.lib.ableton.get_set import get_ableton_window_titles
 from p0_backend.lib.ableton.interface.coords import Coords
 from p0_backend.lib.ableton.interface.pixel import (
@@ -53,7 +53,7 @@ def click_context_menu(track_coords: Coords, y_offsets: Union[int, List[int]]) -
     separator_coords = get_pixel_having_color(separator_coords_list, is_black=True, debug=False)
 
     if separator_coords is None:
-        notification_window(
+        notify(
             "context menu not detected (separator)",
             NotificationEnum.WARNING
         )
@@ -63,7 +63,7 @@ def click_context_menu(track_coords: Coords, y_offsets: Union[int, List[int]]) -
     menu_coords = (x_separator, y_separator + 10)
 
     if get_pixel_color_at(menu_coords) != PixelColorEnum.context_menu_background():
-        notification_window(
+        notify(
             "context menu not detected (background)",
             NotificationEnum.WARNING,
         )

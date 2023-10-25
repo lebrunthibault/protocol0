@@ -6,7 +6,7 @@ import keyboard
 import win32gui  # noqa
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.lib.notification import notification_window
+from p0_backend.lib.notification import notify
 from p0_backend.lib.ableton.interface.pixel import get_pixel_color_at
 from p0_backend.lib.ableton.interface.pixel_color_enum import PixelColorEnum
 from p0_backend.lib.desktop.desktop import go_to_desktop
@@ -81,11 +81,11 @@ def open_set(filename: str, confirm_dialog=True):
         filename = f"{settings.ableton_set_directory}\\{filename}"
 
     if not os.path.exists(filename):
-        notification_window(f"fichier introuvable : {filename}", NotificationEnum.ERROR)
+        notify(f"fichier introuvable : {filename}", NotificationEnum.ERROR)
         return
 
     relative_path = filename.replace(f"{settings.ableton_set_directory}\\", "").replace("//", "\\")
-    notification_window(f"Opening '{relative_path}'")
+    notify(f"Opening '{relative_path}'")
 
     go_to_desktop(0)
     execute_powershell_command(f'& "{settings.ableton_exe}" "{filename}"', minimized=True)
@@ -109,7 +109,7 @@ def export_audio():
 @keep_mouse_position
 def save_set_as_template():
     if settings.is_ableton_11:
-        notification_window("Not available in live 11", NotificationEnum.WARNING)
+        notify("Not available in live 11", NotificationEnum.WARNING)
         return
 
     p0_script_client().dispatch(ResetPlaybackCommand())

@@ -33,7 +33,7 @@ from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.explorer import close_samples_windows, close_explorer_window, open_explorer
 from p0_backend.lib.keys import send_keys
 from p0_backend.lib.mouse.mouse import click, click_vertical_zone, move_to
-from p0_backend.lib.notification import notification_window
+from p0_backend.lib.notification import notify
 from p0_backend.lib.process import execute_powershell_command
 from p0_backend.lib.window.find_window import find_window_handle_by_enum
 from p0_backend.lib.window.window import focus_window
@@ -215,17 +215,17 @@ def _close_explorer_window(title: str):
 
 @router.get("/show_info")
 def show_info(message: str, body: str = ""):
-    notification_window(message, NotificationEnum.INFO, body=body)
+    notify(message, NotificationEnum.INFO, body=body)
 
 
 @router.get("/show_success")
 def show_success(message: str):
-    notification_window(message, NotificationEnum.SUCCESS)
+    notify(message, NotificationEnum.SUCCESS)
 
 
 @router.get("/show_warning")
 def show_warning(message: str):
-    notification_window(message, NotificationEnum.WARNING)
+    notify(message, NotificationEnum.WARNING)
 
 
 @router.get("/show_error")

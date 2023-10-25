@@ -29,6 +29,7 @@
 import {defineComponent, PropType} from "vue";
 import {notify} from '@/utils/utils'
 import {apiService} from "@/utils/apiService";
+import {AbletonSet} from "@/components/ableton_sets/ableton_sets";
 
 
 export default defineComponent({
