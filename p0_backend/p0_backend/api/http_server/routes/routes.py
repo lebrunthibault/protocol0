@@ -12,7 +12,6 @@ from p0_backend.lib.ableton.ableton import (
 from p0_backend.lib.ableton.ableton_set.ableton_set_manager import (
     AbletonSetManager,
 )
-from p0_backend.lib.ableton.ableton_set.server_state import ServerState
 from p0_backend.lib.ableton.analyze_clip_jitter import analyze_test_audio_clip_jitter
 from p0_backend.lib.ableton.automation import edit_automation_value
 from p0_backend.lib.ableton.automation import set_envelope_loop_length
@@ -236,11 +235,6 @@ async def show_error(message: str):
 @router.get("/reload_script")
 async def _reload_script():
     p0_script_client().dispatch(ReloadScriptCommand())
-
-
-@router.get("/server_state")
-async def server_state() -> ServerState:
-    return ServerState.create()
 
 
 @router.get("/tail_logs")

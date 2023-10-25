@@ -22,13 +22,9 @@ const AbletonSetCurrentStateSchema = z.object({
     drum_rack_visible: z.boolean()
 })
 
-const AbletonSetSchema = z.object({
-    current_state: AbletonSetCurrentStateSchema
-})
-
 // extract the inferred type
-type AbletonSet = z.infer<typeof AbletonSetSchema>;
+type AbletonSetCurrentState = z.infer<typeof AbletonSetCurrentStateSchema>;
 type SceneTrackState = z.infer<typeof SceneTrackStateSchema>;
 
-export type { AbletonSet, SceneTrackState }
-export default AbletonSetSchema
+export type { AbletonSetCurrentState, SceneTrackState }
+export default AbletonSetCurrentStateSchema
