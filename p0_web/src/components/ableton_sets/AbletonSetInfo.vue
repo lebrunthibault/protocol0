@@ -122,6 +122,7 @@ export default defineComponent({
     async submit() {
       await apiService.put(`/set/${encodeURI(this.abletonSet?.path_info.filename)}`, {name: this.name})
       this.abletonSet.path_info.name = this.name
+      // this.abletonSet.path_info.name = this.name
       notify("Set saved")
       $('#setInfoModal').modal('hide')
     },

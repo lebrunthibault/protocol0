@@ -3,6 +3,7 @@ from typing import Optional
 
 from protocol0.application.ScriptResetActivatedEvent import ScriptResetActivatedEvent
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
+from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.set.MixingService import MixingService
 from protocol0.domain.lom.song.components.TempoComponent import TempoComponent
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
@@ -56,10 +57,7 @@ class ActionGroupMain(ActionGroupInterface):
             on_long_press=lambda: partial(record_track, RecordTypeEnum.MIDI_UNLIMITED),
         )
 
-
-        self.add_encoder(
-            identifier=13, name="test", on_press=self.action_test
-        )
+        self.add_encoder(identifier=13, name="test", on_press=self.action_test)
 
         # VOLume encoder
         self.add_encoder(
@@ -69,5 +67,4 @@ class ActionGroupMain(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        device = Song.selected_device()
-        device.is_collapsed = not device.is_collapsed
+        pass
