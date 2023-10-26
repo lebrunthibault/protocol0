@@ -8,6 +8,7 @@ from protocol0.domain.lom.clip.MidiClip import MidiClip
 from protocol0.domain.lom.clip_slot.MidiClipSlot import MidiClipSlot
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.track.group_track.DrumsTrack import DrumsTrack
+from protocol0.domain.lom.track.group_track.VocalsTrack import VocalsTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
@@ -29,7 +30,10 @@ class SimpleMidiTrack(SimpleTrack):
     def on_added(self) -> Optional[Sequence]:
         super(SimpleMidiTrack, self).on_added()
 
-        if any(isinstance(track, DrumsTrack) for track in self.group_tracks) and len(list(self.devices)) == 0:
+        if (
+            any(isinstance(track, (DrumsTrack, VocalsTrack)) for track in self.group_tracks)
+            and len(list(self.devices)) == 0
+        ):
             CommandBus.dispatch(LoadDeviceCommand(DeviceEnum.DRUM_RACK.name))
 
         return None

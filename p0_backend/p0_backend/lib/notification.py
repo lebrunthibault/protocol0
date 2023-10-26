@@ -27,7 +27,7 @@ def notify(title: str, level: NotificationEnum = None, body: str = ""):
 
     last_notification = Notification(title)
 
-    if level:
+    if level and level == NotificationEnum.ERROR:
         win11toast_notify(
             title, body, icon=f"{Settings().icons_directory}\\{level.icon}", duration="short"
         )
