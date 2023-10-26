@@ -142,7 +142,10 @@ class InstrumentService(object):
             return None
 
         if callable(pd.param):
-            pd.param(go_next)
+            try:
+                pd.param(go_next)
+            except AttributeError:
+                return None
         else:
             if param.value_items:
                 pd.param.scroll_slowed(go_next, value_items=param.value_items)
