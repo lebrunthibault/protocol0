@@ -4,6 +4,7 @@ from os.path import isabs
 
 import keyboard
 import win32gui  # noqa
+from ratelimit import limits
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.lib.notification import notify
@@ -97,13 +98,14 @@ def open_set(filename: str, confirm_dialog=True):
             send_keys("{ENTER}")
             time.sleep(0.5)
 
-
+@limits(calls=1, period=5)
 def export_audio():
+    send_keys("%u")  # adjust height
+    send_keys("%u")
+    time.sleep(0.1)
+    send_keys("w")  # adjust width
+    time.sleep(0.1)
     send_keys("^+r")
-    # send_keys("{ENTER}")
-    # send_keys("{ENTER}")
-    # send_keys("{LEFT}")
-    # send_keys("{ENTER}")
 
 
 @keep_mouse_position

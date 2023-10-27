@@ -3758,6 +3758,16 @@ files = [
 ]
 
 [[package]]
+name = "ratelimit"
+version = "2.2.1"
+description = "API rate limit decorator"
+optional = false
+python-versions = "*"
+files = [
+    {file = "ratelimit-2.2.1.tar.gz", hash = "sha256:af8a9b64b821529aca09ebaf6d8d279100d766f19e90b5059ac6a718ca6dee42"},
+]
+
+[[package]]
 name = "requests"
 version = "2.31.0"
 description = "Python HTTP for Humans."
@@ -4227,4 +4237,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "3.11.3"
-content-hash = "f9f13c066f2cac60a670ae663bf4e9abb2e54b740436903af1a3a9f891336184"
+content-hash = "0a55420c8f3de5c653c0762de8f8aa298ced3dd40501c684a44f69c7b1e68686"

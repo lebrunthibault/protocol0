@@ -71,6 +71,7 @@ class DeviceService(object):
 
         if device_enum.is_instrument:
             seq.add(Backend.client().un_group)
+
         seq.add(Undo.end_undo_step)
         return seq.done()
 

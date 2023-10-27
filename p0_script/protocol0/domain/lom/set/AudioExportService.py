@@ -1,12 +1,14 @@
+from functools import partial
+
 from protocol0.domain.audit.SetFixerService import SetFixerService
 from protocol0.domain.audit.SongStatsService import SongStatsService
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.backend.Backend import Backend
-from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
+from protocol0.shared.sequence.Sequence import Sequence
 
 
 class AudioExportService(object):
@@ -24,7 +26,21 @@ class AudioExportService(object):
         self._set_fixer_service.fix_set()
         self._song_stats_service.export_song_structure()
         self._bounce_session_to_arrangement()
-        Scheduler.wait_ms(500, Backend.client().export_audio)
+
+        self._playback_component.reset()
+        ApplicationView.show_arrangement()
+
+        # hack to show 1.1.1 in the arrangement
+        Song.view().follow_song = True
+        self._playback_component.start_playing()
+
+        seq = Sequence()
+        seq.wait_ms(50)
+        seq.add(self._playback_component.reset)
+        seq.add(partial(setattr, Song.view(), "follow_song", False))
+        seq.wait_ms(200)
+        seq.add(Backend.client().export_audio)
+        seq.done()
 
     def _bounce_session_to_arrangement(self) -> None:
         sound_id_device = Song.master_track().devices.get_one_from_enum(
@@ -64,6 +80,3 @@ class AudioExportService(object):
                     clip.loop.end = loop_end
 
             time = scene_end
-
-        self._playback_component.reset()
-        ApplicationView.show_arrangement()

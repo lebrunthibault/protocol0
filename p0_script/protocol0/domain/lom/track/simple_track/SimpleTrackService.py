@@ -1,3 +1,5 @@
+import re
+
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrackFlattenedEvent import (
     SimpleTrackFlattenedEvent,
@@ -8,19 +10,15 @@ from protocol0.shared.Song import Song
 
 
 def rename_track(track: SimpleTrack, name: str) -> None:
+    """Rename track with duplicate names by numbering them"""
     track_names = [track.name.lower().strip() for track in Song.simple_tracks()]
 
-    if name.lower().strip() not in track_names:
-        track.name = name
-        return
-
     count = 2
-    new_name = name
-    while new_name.lower().strip() in track_names:
-        new_name = f"{name} {count}"
+    while name.lower().strip() in track_names:
+        name = re.sub(r'\s\d$', '', name) + f" {count}"
         count += 1
 
-    track.name = new_name
+    track.name = name
 
 
 class SimpleTrackService(object):
