@@ -8,6 +8,7 @@ from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.shared.types import T
 
 if TYPE_CHECKING:
+    from protocol0.shared.sequence.Sequence import Sequence
     from protocol0.domain.lom.song.components.ClipComponent import ClipComponent
     from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
     from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
@@ -362,5 +363,9 @@ class Song(object):
         cls._live_song().capture_midi()
 
     @classmethod
-    def follow_song(cls) -> None:
-        cls._live_song().follow_song()
+    def set_or_delete_cue(cls, time: float) -> "Sequence":
+        from protocol0.shared.sequence.Sequence import Sequence
+
+        cls._live_song().current_song_time = time
+
+        return Sequence().defer().add(cls._live_song().set_or_delete_cue).done()

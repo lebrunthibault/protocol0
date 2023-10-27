@@ -88,7 +88,7 @@ def open_set(filename: str, confirm_dialog=True):
     relative_path = filename.replace(f"{settings.ableton_set_directory}\\", "").replace("//", "\\")
     notify(f"Opening '{relative_path}'")
 
-    go_to_desktop(0)
+    go_to_desktop(1)
     execute_powershell_command(f'& "{settings.ableton_exe}" "{filename}"', minimized=True)
     time.sleep(2)
 
