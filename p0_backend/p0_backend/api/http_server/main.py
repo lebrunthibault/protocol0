@@ -8,12 +8,13 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
 from loguru import logger
+from ratelimit import RateLimitException
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse
 from starlette.staticfiles import StaticFiles
-from win11toast import toast_async
 
+from p0_backend.lib.notification import notify
 from p0_backend.settings import Settings
 
 load_dotenv()
@@ -55,11 +56,12 @@ async def _catch_protocol0_errors(request: Request, call_next):
     try:
         return await call_next(request)
     except Exception as e:
-        traceback.print_tb(e.__traceback__)
-        logger.error(e)
+        if not isinstance(e, RateLimitException):
+            traceback.print_tb(e.__traceback__)
+            logger.error(e)
 
-        if request.method != "PUT":
-            await toast_async(str(e))
+            if request.method != "PUT":
+                notify(str(e))
 
         return PlainTextResponse(str(e), status_code=500)
 

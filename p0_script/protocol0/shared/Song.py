@@ -360,3 +360,7 @@ class Song(object):
     @classmethod
     def capture_midi(cls) -> None:
         cls._live_song().capture_midi()
+
+    @classmethod
+    def follow_song(cls) -> None:
+        cls._live_song().follow_song()

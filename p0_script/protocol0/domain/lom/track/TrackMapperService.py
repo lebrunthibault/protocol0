@@ -16,6 +16,7 @@ from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import 
 )
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrackCreatedEvent import SimpleTrackCreatedEvent
+from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_track
 from protocol0.domain.lom.track.simple_track.audio.SimpleReturnTrack import SimpleReturnTrack
 from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
 from protocol0.domain.lom.track.simple_track.audio.special.ReferenceTrack import ReferenceTrack
@@ -122,7 +123,7 @@ class TrackMapperService(SlotManager):
 
         previous_abstract_track = list(Song.simple_tracks())[added_track.index - 1].abstract_track
         if previous_abstract_track.group_track == added_track.group_track and previous_abstract_track.name == added_track.name:
-            seq.add(partial(setattr, added_track, "name", added_track.name + " - copy"))
+            seq.add(partial(rename_track, added_track, added_track.name))
 
         seq.add(added_track.on_added)
         seq.add(Song.current_track().arm_state.arm)

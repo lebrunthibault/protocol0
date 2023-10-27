@@ -3,7 +3,6 @@ from typing import Optional
 
 from protocol0.application.ScriptResetActivatedEvent import ScriptResetActivatedEvent
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
-from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.set.MixingService import MixingService
 from protocol0.domain.lom.song.components.TempoComponent import TempoComponent
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
