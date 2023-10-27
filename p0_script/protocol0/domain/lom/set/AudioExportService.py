@@ -35,6 +35,7 @@ class AudioExportService(object):
         self._playback_component.start_playing()
 
         seq = Sequence()
+        seq.add(self._create_cue_points)
         seq.wait_ms(50)
         seq.add(self._playback_component.reset)
         seq.add(partial(setattr, Song.view(), "follow_song", False))
@@ -53,17 +54,17 @@ class AudioExportService(object):
         for track in Song.simple_tracks():
             track.clear_arrangement()
 
-        time = 0.0
-        for scene in Song.scenes():
-            scene_start = time
-            scene_end = time + scene.length
+        song_time = 0.0
+        for scene in Song.active_scenes():
+            scene_start = song_time
+            scene_end = song_time + scene.length
 
             for scene_cs in scene.clips.clip_slot_tracks:
                 clip = scene_cs.clip
                 if not clip:
                     continue
 
-                time = scene_start
+                song_time = scene_start
 
                 # emulate the session handling of tails
                 has_tail = clip.loop.end != clip.loop.end_marker
@@ -71,12 +72,27 @@ class AudioExportService(object):
                 if has_tail:
                     clip.loop.end = clip.loop.end_marker
 
-                while time < scene_end:
-                    scene_cs.track.duplicate_clip_to_arrangement(clip, time)
-                    time += clip.length
+                while song_time < scene_end:
+                    scene_cs.track.duplicate_clip_to_arrangement(clip, song_time)
+                    song_time += clip.length
 
                 # restore session loop
                 if has_tail:
                     clip.loop.end = loop_end
 
-            time = scene_end
+            song_time = scene_end
+
+    def _create_cue_points(self) -> Sequence:
+        song_time = 0.0
+
+        seq = Sequence()
+
+        for scene in Song.active_scenes():
+            Logger.dev(scene.scene_name.get_base_name())
+            if scene.scene_name.get_base_name():
+                seq.add(partial(Song.set_or_delete_cue, song_time))
+
+            song_time += scene.length
+
+
+        return seq.done()

@@ -90,3 +90,4 @@ _.scroll_attack  # unused method (protocol0\domain\lom\instrument\instrument\Ins
 _.scroll_release  # unused method (protocol0\domain\lom\instrument\instrument\InstrumentSylenth1.py:47)
 _.scroll_decay  # unused method (protocol0\domain\lom\instrument\instrument\InstrumentSerum.py:37)
 DRY_WET  # unused variable (protocol0\domain\lom\device_parameter\DeviceParamEnum.py:18)
+_.follow_song  # unused attribute (protocol0\domain\lom\set\AudioExportService.py:34)
