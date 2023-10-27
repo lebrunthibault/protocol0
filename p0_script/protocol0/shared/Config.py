@@ -35,3 +35,5 @@ class Config(object):
     CLIPPING_TRACK_VOLUME = 0.91
 
     DUMMY_CLIP_NAME = "dummy clip"
+
+    FX_TRACK_NAMES = ("riser", "exhaust", "transition", "roll")

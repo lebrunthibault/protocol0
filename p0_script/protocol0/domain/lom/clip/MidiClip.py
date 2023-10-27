@@ -1,9 +1,10 @@
 from __future__ import division
 
 from functools import partial
+from typing import List, Optional, Iterator, Any
 
 import Live
-from typing import List, Optional, Iterator, Any
+from _Framework.SubjectSlot import subject_slot
 
 from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
@@ -14,6 +15,7 @@ from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.domain.shared.utils.utils import clamp
+from protocol0.shared.Config import Config
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
@@ -23,6 +25,7 @@ class MidiClip(Clip):
     def __init__(self, *a: Any, **k: Any) -> None:
         super(MidiClip, self).__init__(*a, **k)
         self._cached_notes: List[Note] = []
+        self._muted_listener.subject = self._clip
 
         # select when a new midi clip is recorded
         if self.is_recording:
@@ -93,6 +96,17 @@ class MidiClip(Clip):
             seq.wait(10)
 
         return seq.done()
+
+    @subject_slot("muted")
+    def _muted_listener(self) -> None:
+        if not self.muted and Song.selected_track().name.lower() in Config.FX_TRACK_NAMES:
+            def update_loop_length() -> None:
+                length_diff = Song.selected_scene().length - self.length
+                self.loop.start_marker -= length_diff
+                self.loop.start -= length_diff
+
+            if self.length < Song.selected_scene().length:
+                Scheduler.defer(update_loop_length)
 
     def generate_base_notes(self) -> Optional[Sequence]:
         self.show_loop()
