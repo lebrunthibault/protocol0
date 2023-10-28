@@ -40,7 +40,9 @@ class OnRecordEndClipTail(RecordProcessorInterface):
 
         return track.audio_track.output_meter_left < output_meter_left_threshold
 
-    def _wait_for_tail_clip_end(self, track: ExternalSynthTrack, config: RecordConfig) -> Optional[Sequence]:
+    def _wait_for_tail_clip_end(
+        self, track: ExternalSynthTrack, config: RecordConfig
+    ) -> Optional[Sequence]:
         """wait for clip tail end and temporarily disable midi input"""
         audio_clip = track.audio_track.clip_slots[config.scene_index].clip
 

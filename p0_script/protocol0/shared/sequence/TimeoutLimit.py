@@ -9,7 +9,13 @@ from protocol0.shared.logging.Logger import Logger
 class TimeoutLimit(object):
     TICKS_COUNT = 100  # around 1.7s
 
-    def __init__(self, func: Callable, timeout_limit: int, awaited_listener: Callable = None, on_timeout: Callable = None) -> None:
+    def __init__(
+        self,
+        func: Callable,
+        timeout_limit: int,
+        awaited_listener: Callable = None,
+        on_timeout: Callable = None,
+    ) -> None:
         """timeout_limit in ms"""
         super(TimeoutLimit, self).__init__()
         self.func = func

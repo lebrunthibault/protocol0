@@ -100,6 +100,7 @@ class MidiClip(Clip):
     @subject_slot("muted")
     def _muted_listener(self) -> None:
         if not self.muted and Song.selected_track().name.lower() in Config.FX_TRACK_NAMES:
+
             def update_loop_length() -> None:
                 length_diff = Song.selected_scene().length - self.length
                 self.loop.start_marker -= length_diff
@@ -153,7 +154,6 @@ class MidiClip(Clip):
 
         if len(notes) < 2:
             return None
-
 
         notes[0].start = self.loop.start
         notes[-1].end = self.loop.end

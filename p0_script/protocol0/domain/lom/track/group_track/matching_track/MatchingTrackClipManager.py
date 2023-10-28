@@ -15,7 +15,9 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class MatchingTrackClipManager(object):
-    def __init__(self, router: MatchingTrackRouter, base_track: SimpleTrack, audio_track: SimpleAudioTrack) -> None:
+    def __init__(
+        self, router: MatchingTrackRouter, base_track: SimpleTrack, audio_track: SimpleAudioTrack
+    ) -> None:
         self._router = router
         self._base_track = base_track
         self._audio_track = audio_track
@@ -26,7 +28,9 @@ class MatchingTrackClipManager(object):
             self._audio_track.clip_mapping.update(self._base_track.clip_mapping)
             self._base_track.clip_mapping = self._audio_track.clip_mapping
 
-    def broadcast_clips(self, flattened_track: SimpleAudioTrack, clip_infos: List[ClipInfo]) -> Optional[Sequence]:
+    def broadcast_clips(
+        self, flattened_track: SimpleAudioTrack, clip_infos: List[ClipInfo]
+    ) -> Optional[Sequence]:
         audio_track = self._audio_track
 
         seq = Sequence()
@@ -54,7 +58,9 @@ class MatchingTrackClipManager(object):
 
         return seq.done()
 
-    def _broadcast_clip(self, clip_info: ClipInfo, source_track: SimpleAudioTrack) -> Optional[Sequence]:
+    def _broadcast_clip(
+        self, clip_info: ClipInfo, source_track: SimpleAudioTrack
+    ) -> Optional[Sequence]:
         source_cs = source_track.clip_slots[clip_info.index]
         assert source_cs.clip is not None, "Couldn't find clip at index %s" % clip_info.index
 

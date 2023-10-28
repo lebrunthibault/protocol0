@@ -25,7 +25,9 @@ class DeviceDisplayService(object):
     def __init__(self, browser_service: BrowserServiceInterface) -> None:
         self._browser_service = browser_service
 
-    def toggle_plugin_window(self, track: SimpleTrack, device: Device, activate: bool = True) -> Optional[Sequence]:
+    def toggle_plugin_window(
+        self, track: SimpleTrack, device: Device, activate: bool = True
+    ) -> Optional[Sequence]:
         """handles only one level of grouping in racks. Should be enough for now"""
         if device.enum is None:
             return None
@@ -56,7 +58,9 @@ class DeviceDisplayService(object):
 
         return seq.done()
 
-    def _make_top_device_window_showable(self, track: SimpleTrack, device: Device, activate: bool) -> Sequence:
+    def _make_top_device_window_showable(
+        self, track: SimpleTrack, device: Device, activate: bool
+    ) -> Sequence:
         devices_to_collapse = [d for d in track.devices if not d.is_collapsed]
         for d in devices_to_collapse:
             d.is_collapsed = True
@@ -71,7 +75,9 @@ class DeviceDisplayService(object):
 
         return seq.done()
 
-    def _make_nested_device_window_showable(self, track: SimpleTrack, device: Device, parent_rack: RackDevice, activate: bool) -> Sequence:
+    def _make_nested_device_window_showable(
+        self, track: SimpleTrack, device: Device, parent_rack: RackDevice, activate: bool
+    ) -> Sequence:
         devices_to_un_collapse: List[Device] = []
 
         for d in track.devices:
@@ -104,7 +110,9 @@ class DeviceDisplayService(object):
         for d in devices_to_un_collapse:
             d.is_collapsed = False
 
-    def _get_device_show_button_click_coordinates(self, track: SimpleTrack, device: Device, rack_device: RackDevice = None) -> Tuple[int, int]:
+    def _get_device_show_button_click_coordinates(
+        self, track: SimpleTrack, device: Device, rack_device: RackDevice = None
+    ) -> Tuple[int, int]:
         """one grouping level only : expects all devices to be folded and macro controls hidden"""
         if device.enum.can_be_saved:
             y = self.SHOW_HIDE_SAVABLE_PLUGIN_BUTTON_PIXEL_HEIGHT
@@ -126,7 +134,9 @@ class DeviceDisplayService(object):
             y - 2,
         )  # we click not exactly in the center so as to know if the button is activated or not
 
-    def _get_rack_show_macros_button_click_coordinates(self, track: SimpleTrack, rack_device: Device) -> Tuple[int, int]:
+    def _get_rack_show_macros_button_click_coordinates(
+        self, track: SimpleTrack, rack_device: Device
+    ) -> Tuple[int, int]:
         """top racks only : expects all devices to be folded"""
         parent_rack_position = list(track.devices).index(rack_device) + 1
         x = self._get_device_click_x_position(parent_rack_position)

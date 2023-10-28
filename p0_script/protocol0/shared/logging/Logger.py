@@ -41,7 +41,9 @@ class Logger(object):
             StatusBar.show_message(message)
 
     @classmethod
-    def _log(cls, message: Any = "", level: LogLevelEnum = LogLevelEnum.INFO, debug: bool = False) -> None:
+    def _log(
+        cls, message: Any = "", level: LogLevelEnum = LogLevelEnum.INFO, debug: bool = False
+    ) -> None:
         if not message:
             debug = False
 

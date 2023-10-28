@@ -55,7 +55,9 @@ class DomainEventBus(object):
         cls.subscribe(domain_event, execute)
 
     @classmethod
-    def subscribe(cls, domain_event: Type, subscriber: Callable, unique_method: bool = False) -> None:
+    def subscribe(
+        cls, domain_event: Type, subscriber: Callable, unique_method: bool = False
+    ) -> None:
         if domain_event not in cls._registry:
             cls._registry[domain_event] = []
 

@@ -9,7 +9,13 @@ from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import Simpl
 
 
 class MatchingTrackClipColorManager(object):
-    def __init__(self, router: MatchingTrackRouter, clip_track: SimpleTrack, audio_track: SimpleAudioTrack, audio_track_2: Optional[SimpleAudioTrack] = None) -> None:
+    def __init__(
+        self,
+        router: MatchingTrackRouter,
+        clip_track: SimpleTrack,
+        audio_track: SimpleAudioTrack,
+        audio_track_2: Optional[SimpleAudioTrack] = None,
+    ) -> None:
         self._router = router
         self._clip_track = clip_track
         self._audio_track = audio_track

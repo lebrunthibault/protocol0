@@ -29,4 +29,6 @@ class NotificationEnum(Enum):
             self.SUCCESS: "success.ico",
             self.WARNING: "warning.ico",
             self.ERROR: "error.ico",
-        }[self]  # type: ignore[index]
+        }[
+            self  # type: ignore[index]
+        ]

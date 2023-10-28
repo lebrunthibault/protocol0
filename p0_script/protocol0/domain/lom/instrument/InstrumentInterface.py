@@ -8,8 +8,7 @@ from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device.PluginDevice import PluginDevice
 from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.instrument.InstrumentColorEnum import InstrumentColorEnum
-from protocol0.domain.lom.instrument.instrument.InstrumentParamEnum import \
-    InstrumentParamEnum
+from protocol0.domain.lom.instrument.instrument.InstrumentParamEnum import InstrumentParamEnum
 from protocol0.domain.lom.instrument.preset.InstrumentPreset import InstrumentPreset
 from protocol0.domain.lom.instrument.preset.InstrumentPresetList import InstrumentPresetList
 from protocol0.domain.lom.instrument.preset.PresetDisplayOptionEnum import PresetDisplayOptionEnum

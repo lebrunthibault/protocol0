@@ -141,7 +141,12 @@ class BrowserLoaderService(object):
                 getattr(self._browser, category), self._cached_browser_items[category]
             )
 
-    def _get_children_for_item(self, item: Live.Browser.BrowserItem, i_dict: Dict[str, Live.Browser.BrowserItem], is_drum_rack: bool = False) -> None:
+    def _get_children_for_item(
+        self,
+        item: Live.Browser.BrowserItem,
+        i_dict: Dict[str, Live.Browser.BrowserItem],
+        is_drum_rack: bool = False,
+    ) -> None:
         """Recursively builds dict of children items for the given item. This is needed
         to deal with children that are folders. If is_drum_rack, will only deal with
         racks in the root (not drum hits)."""

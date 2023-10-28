@@ -64,7 +64,6 @@ class SceneLength(object):
 
             clip = scene_cs.clip
 
-
             if isinstance(scene_cs.track, MixBusTrack):
                 continue
 

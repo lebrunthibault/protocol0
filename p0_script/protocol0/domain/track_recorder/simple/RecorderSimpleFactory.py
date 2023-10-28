@@ -14,7 +14,9 @@ from protocol0.shared.Song import Song
 
 
 class TrackRecorderSimpleFactory(AbstractTrackRecorderFactory):
-    def get_record_config(self, track: SimpleTrack, record_type: RecordTypeEnum, recording_bar_length: int) -> RecordConfig:
+    def get_record_config(
+        self, track: SimpleTrack, record_type: RecordTypeEnum, recording_bar_length: int
+    ) -> RecordConfig:
         return RecordConfig(
             record_name=record_type.value,
             tracks=[track],

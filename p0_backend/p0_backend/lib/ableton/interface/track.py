@@ -53,10 +53,7 @@ def click_context_menu(track_coords: Coords, y_offsets: Union[int, List[int]]) -
     separator_coords = get_pixel_having_color(separator_coords_list, is_black=True, debug=False)
 
     if separator_coords is None:
-        notify(
-            "context menu not detected (separator)",
-            NotificationEnum.WARNING
-        )
+        notify("context menu not detected (separator)", NotificationEnum.WARNING)
         return 0, 0
 
     x_separator, y_separator = separator_coords

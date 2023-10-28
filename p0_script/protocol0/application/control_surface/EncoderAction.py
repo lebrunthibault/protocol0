@@ -49,13 +49,22 @@ class EncoderAction(object):
         seq.add(Undo.end_undo_step)
 
         if self.move_type != EncoderMoveEnum.SCROLL:
-            seq.add(lambda: Logger.info(f"{encoder_name}.{self.move_type} : took {time.time() - start_at:.3f}s"))
+            seq.add(
+                lambda: Logger.info(
+                    f"{encoder_name}.{self.move_type} : took {time.time() - start_at:.3f}s"
+                )
+            )
 
         return seq.done()
 
     @classmethod
-    def make_actions(cls, name: str, on_press: Optional[Callable], on_long_press: Optional[Callable], on_scroll: Optional[Callable]) -> List["EncoderAction"]:
-
+    def make_actions(
+        cls,
+        name: str,
+        on_press: Optional[Callable],
+        on_long_press: Optional[Callable],
+        on_scroll: Optional[Callable],
+    ) -> List["EncoderAction"]:
         actions: List[EncoderAction] = []
         if on_press:
             actions.append(EncoderAction(on_press, move_type=EncoderMoveEnum.PRESS, name=name))

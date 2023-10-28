@@ -10,7 +10,9 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class SimpleTrackHasDeviceValidator(ValidatorInterface):
-    def __init__(self, track: SimpleTrack, device_enum: DeviceEnum, browser_service: BrowserServiceInterface) -> None:
+    def __init__(
+        self, track: SimpleTrack, device_enum: DeviceEnum, browser_service: BrowserServiceInterface
+    ) -> None:
         self._track = track
         self._device_enum = device_enum
         self._browser_service = browser_service
@@ -24,7 +26,6 @@ class SimpleTrackHasDeviceValidator(ValidatorInterface):
         return self._track.devices.get_one_from_enum(self._device_enum) is not None
 
     def fix(self) -> Sequence:
-
         seq = Sequence()
         seq.add(self._track.select)
         seq.add(partial(self._browser_service.load_device_from_enum, self._device_enum))

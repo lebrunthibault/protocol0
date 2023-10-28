@@ -35,7 +35,9 @@ class ClipNotePresetChanger(PresetChangerInterface):
 
         pad_pitches = [pad.note for pad in drum_rack.filled_drum_pads]
 
-        next_pitch = ValueScroller.scroll_values(pad_pitches, clip_pitches[0], go_next, rotate=False)
+        next_pitch = ValueScroller.scroll_values(
+            pad_pitches, clip_pitches[0], go_next, rotate=False
+        )
 
         for note in notes:
             if not note.muted:

@@ -7,7 +7,9 @@ from protocol0.domain.lom.validation.sub_validators.CallbackValidator import Cal
 
 
 class SimpleAudioTrackValidator(AggregateValidator):
-    def __init__(self, track: SimpleAudioTrack, validators: Optional[List[ValidatorInterface]] = None) -> None:
+    def __init__(
+        self, track: SimpleAudioTrack, validators: Optional[List[ValidatorInterface]] = None
+    ) -> None:
         self._track = track
 
         if validators is None:

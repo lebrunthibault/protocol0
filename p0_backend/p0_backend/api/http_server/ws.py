@@ -49,7 +49,8 @@ class WebSocketManager:
     async def broadcast_active_set(self):
         if AbletonSetManager.has_active_set():
             await self._broadcast_data(
-                WebSocketPayloadType.ACTIVE_SET, AbletonSetManager.active().current_state.model_dump_json()
+                WebSocketPayloadType.ACTIVE_SET,
+                AbletonSetManager.active().current_state.model_dump_json(),
             )
 
     async def _broadcast_data(self, payload_type: WebSocketPayloadType, data_json: str):

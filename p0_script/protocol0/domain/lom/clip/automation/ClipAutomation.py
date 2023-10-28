@@ -24,7 +24,9 @@ class ClipAutomation(object):
     def has_automation(self, device_parameters: List[DeviceParameter]) -> bool:
         return len(self.get_automated_parameters(device_parameters)) != 0
 
-    def get_automated_parameters(self, device_parameters: List[DeviceParameter]) -> List[DeviceParameter]:
+    def get_automated_parameters(
+        self, device_parameters: List[DeviceParameter]
+    ) -> List[DeviceParameter]:
         automated_parameters = []
         for parameter in device_parameters:
             # ignore rev2 b layer (we edit only A)

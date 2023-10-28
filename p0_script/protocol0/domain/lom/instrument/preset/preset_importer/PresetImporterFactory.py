@@ -28,7 +28,9 @@ from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 
 class PresetImporterFactory(object):
     @classmethod
-    def create_importer(cls, device: Optional[Device], preset_path: str, preset_extension: str) -> PresetImportInterface:
+    def create_importer(
+        cls, device: Optional[Device], preset_path: str, preset_extension: str
+    ) -> PresetImportInterface:
         if not preset_path or not preset_extension:
             return NullPresetImporter()
         elif isinstance(device, RackDevice):

@@ -25,7 +25,9 @@ class CommandBusHistory(object):
         # rotate history
         self._history = self._history[-20:]
 
-    def get_recent_command(self, command_class: Type[T], delay: float, except_current: bool) -> Optional[T]:
+    def get_recent_command(
+        self, command_class: Type[T], delay: float, except_current: bool
+    ) -> Optional[T]:
         """Delay in ms"""
         time_limit = time.time() - delay
 

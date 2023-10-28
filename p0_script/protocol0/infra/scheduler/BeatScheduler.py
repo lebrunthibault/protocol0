@@ -87,7 +87,9 @@ class BeatScheduler(SlotManager, BeatSchedulerInterface):
         for event in events:
             DomainEventBus.emit(event)
 
-    def wait_beats(self, beats_offset: float, callback: Callable, execute_on_song_stop: bool) -> None:
+    def wait_beats(
+        self, beats_offset: float, callback: Callable, execute_on_song_stop: bool
+    ) -> None:
         """
         NB : the system internally relies on the Live timer's tick (every 17ms)
         So we cannot have precise execution

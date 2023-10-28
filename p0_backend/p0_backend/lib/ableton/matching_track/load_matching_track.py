@@ -11,7 +11,9 @@ from protocol0.application.command.EmitBackendEventCommand import (
 
 @keep_mouse_position
 def drag_matching_track(ableton_set: AbletonSet):
-    track_path = f"{ableton_set.path_info.tracks_folder}\\{ableton_set.current_state.current_track.name}.als"
+    track_path = (
+        f"{ableton_set.path_info.tracks_folder}\\{ableton_set.current_state.current_track.name}.als"
+    )
     drag_file_to(
         track_path,
         get_focused_track_coords(),

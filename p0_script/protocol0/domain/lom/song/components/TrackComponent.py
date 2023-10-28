@@ -40,7 +40,8 @@ def find_top_group_sub_tracks(group_name: str) -> List[SimpleTrack]:
 
 def get_track_by_name(track_name: str, foldable: bool = False) -> Optional[SimpleTrack]:
     track = find_if(
-        lambda t: t.is_foldable is foldable and t.name.lower() == track_name.lower(), Song.simple_tracks()
+        lambda t: t.is_foldable is foldable and t.name.lower() == track_name.lower(),
+        Song.simple_tracks(),
     )
 
     if track is None:

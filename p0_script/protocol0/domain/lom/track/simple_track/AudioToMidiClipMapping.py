@@ -19,7 +19,9 @@ class AudioToMidiClipMapping(object):
 
     _DEBUG = False
 
-    def __init__(self, track_data: "TrackData", file_path_mapping: Dict[str, List[int]] = None) -> None:
+    def __init__(
+        self, track_data: "TrackData", file_path_mapping: Dict[str, List[int]] = None
+    ) -> None:
         self._track_data = track_data
         self._file_path_mapping: Dict[str, List[int]] = file_path_mapping or {}
 

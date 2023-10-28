@@ -19,8 +19,9 @@ class SongDataService(object):
 
     _DEBUG = False
 
-    def __init__(self, get_data: Callable, set_data: Callable, scene_component: SceneComponent) -> None:
-
+    def __init__(
+        self, get_data: Callable, set_data: Callable, scene_component: SceneComponent
+    ) -> None:
         self._set_data = set_data
         self._get_data = get_data
         self._scene_component = scene_component

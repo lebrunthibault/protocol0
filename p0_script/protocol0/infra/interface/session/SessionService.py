@@ -10,7 +10,9 @@ from protocol0.shared.Song import Song
 
 
 class SessionService(SessionServiceInterface):
-    def __init__(self, component_guard: Callable, set_highlighting_session_component: Callable) -> None:
+    def __init__(
+        self, component_guard: Callable, set_highlighting_session_component: Callable
+    ) -> None:
         super(SessionService, self).__init__()
         self._component_guard = component_guard
         self._set_highlighting_session_component = set_highlighting_session_component

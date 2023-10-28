@@ -16,7 +16,14 @@ from protocol0.shared.Song import Song
 class MultiEncoder(SlotManager):
     LONG_PRESS_THRESHOLD = 0.25  # maximum time in seconds we consider a simple press
 
-    def __init__(self, channel: int, identifier: int, name: str, filter_active_tracks: bool, component_guard: Callable) -> None:
+    def __init__(
+        self,
+        channel: int,
+        identifier: int,
+        name: str,
+        filter_active_tracks: bool,
+        component_guard: Callable,
+    ) -> None:
         """
         Actions are triggered at the end of the press not the start. Allows press vs long_press (Note) vs scroll (CC)
         NB : for press actions the action is triggered on button release (allowing long_press)
@@ -70,7 +77,9 @@ class MultiEncoder(SlotManager):
     def _scroll_listener(self, value: int) -> None:
         self._find_and_execute_action(move_type=EncoderMoveEnum.SCROLL, go_next=value == 1)
 
-    def _find_and_execute_action(self, move_type: EncoderMoveEnum, go_next: Optional[bool] = None) -> None:
+    def _find_and_execute_action(
+        self, move_type: EncoderMoveEnum, go_next: Optional[bool] = None
+    ) -> None:
         # noinspection PyBroadException
         try:
             action = self._find_matching_action(move_type=move_type)

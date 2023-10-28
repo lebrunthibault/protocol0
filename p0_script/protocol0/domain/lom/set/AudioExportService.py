@@ -94,5 +94,4 @@ class AudioExportService(object):
 
             song_time += scene.length
 
-
         return seq.done()

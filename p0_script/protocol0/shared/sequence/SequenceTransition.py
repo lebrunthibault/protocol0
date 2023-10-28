@@ -13,7 +13,9 @@ class SequenceStateEnum(AbstractEnum):
 
 
 class SequenceTransition(object):
-    def __init__(self, enum: SequenceStateEnum, allowed_transitions: List["SequenceTransition"]) -> None:
+    def __init__(
+        self, enum: SequenceStateEnum, allowed_transitions: List["SequenceTransition"]
+    ) -> None:
         self.enum = enum
         self._allowed_transitions = allowed_transitions
 
