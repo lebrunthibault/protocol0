@@ -16,7 +16,7 @@ from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import 
 )
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrackCreatedEvent import SimpleTrackCreatedEvent
-from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_track
+from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_tracks
 from protocol0.domain.lom.track.simple_track.audio.SimpleReturnTrack import SimpleReturnTrack
 from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
 from protocol0.domain.lom.track.simple_track.audio.special.ReferenceTrack import ReferenceTrack
@@ -36,9 +36,7 @@ class TrackMapperService(SlotManager):
         self._live_song = live_song
         self._track_factory = track_factory
 
-        self._live_track_id_to_simple_track: Dict[int, SimpleTrack] = (
-            collections.OrderedDict()
-        )
+        self._live_track_id_to_simple_track: Dict[int, SimpleTrack] = collections.OrderedDict()
         self._drums_track: Optional[DrumsTrack] = None
         self._vocals_track: Optional[VocalsTrack] = None
         self._reference_track: Optional[ReferenceTrack] = None
@@ -121,9 +119,8 @@ class TrackMapperService(SlotManager):
 
         seq.defer()
 
-        previous_abstract_track = list(Song.simple_tracks())[added_track.index - 1].abstract_track
-        if previous_abstract_track.group_track == added_track.group_track and previous_abstract_track.name == added_track.name:
-            seq.add(partial(rename_track, added_track, added_track.name))
+        if added_track.group_track:
+            seq.add(partial(rename_tracks, added_track.group_track, added_track.name))
 
         seq.add(added_track.on_added)
         seq.add(Song.current_track().arm_state.arm)
@@ -140,7 +137,9 @@ class TrackMapperService(SlotManager):
 
         self._live_track_id_to_simple_track[event.track.live_id] = event.track
 
-    def _replace_simple_track(self, previous_simple_track: SimpleTrack, new_simple_track: SimpleTrack) -> None:
+    def _replace_simple_track(
+        self, previous_simple_track: SimpleTrack, new_simple_track: SimpleTrack
+    ) -> None:
         """disconnecting and removing from SimpleTrack group track and abstract_group_track"""
         new_simple_track._index = previous_simple_track._index
         previous_simple_track.disconnect()

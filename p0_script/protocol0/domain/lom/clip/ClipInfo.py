@@ -18,7 +18,12 @@ if TYPE_CHECKING:
 class ClipInfo(object):
     _DEBUG = False
 
-    def __init__(self, clip: Clip, device_parameters: List[DeviceParameter], duplicate_clips: Optional[List[Clip]] = None) -> None:
+    def __init__(
+        self,
+        clip: Clip,
+        device_parameters: List[DeviceParameter],
+        duplicate_clips: Optional[List[Clip]] = None,
+    ) -> None:
         duplicate_clips = duplicate_clips or []
 
         self.index = clip.index
@@ -36,7 +41,12 @@ class ClipInfo(object):
         )
 
     @classmethod
-    def create_from_clips(cls, clips: List[Clip], device_parameters: List[DeviceParameter], clean_duplicates: bool = False) -> List["ClipInfo"]:
+    def create_from_clips(
+        cls,
+        clips: List[Clip],
+        device_parameters: List[DeviceParameter],
+        clean_duplicates: bool = False,
+    ) -> List["ClipInfo"]:
         unique_clips_by_hash: Dict[float, List[Clip]] = {}
 
         for clip in clips:
@@ -62,8 +72,12 @@ class ClipInfo(object):
     def already_bounced_to(self, track: "SimpleAudioTrack") -> bool:
         return len(self.matching_clip_slots(track, exact=True)) > 0
 
-    def matching_clip_slots(self, track: "SimpleAudioTrack", exact: bool = False) -> List[AudioClipSlot]:
-        def matches_clip_slot(dest_track: SimpleAudioTrack, dest_cs: AudioClipSlot, exact_match: bool) -> bool:
+    def matching_clip_slots(
+        self, track: "SimpleAudioTrack", exact: bool = False
+    ) -> List[AudioClipSlot]:
+        def matches_clip_slot(
+            dest_track: SimpleAudioTrack, dest_cs: AudioClipSlot, exact_match: bool
+        ) -> bool:
             dest_clip = dest_cs.clip
 
             if dest_clip is None:

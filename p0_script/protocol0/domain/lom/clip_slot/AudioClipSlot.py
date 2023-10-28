@@ -22,7 +22,9 @@ class AudioClipSlot(ClipSlot):
         seq.add(clip_slot.notify_observers)
         return seq.done()
 
-    def replace_clip_sample(self, source_cs: Optional["AudioClipSlot"] = None, file_path: Optional[str] = None) -> Optional[Sequence]:
+    def replace_clip_sample(
+        self, source_cs: Optional["AudioClipSlot"] = None, file_path: Optional[str] = None
+    ) -> Optional[Sequence]:
         if not self._clip_slot:
             return None
 

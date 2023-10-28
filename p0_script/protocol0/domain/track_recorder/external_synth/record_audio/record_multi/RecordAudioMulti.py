@@ -26,7 +26,9 @@ class RecordAudioMulti(RecordProcessorInterface):
         seq.add(self._launch_record_on_next_scene)
         return seq.done()
 
-    def _launch_record_on_next_scene(self, track: ExternalSynthTrack, config: RecordConfig) -> Optional[Sequence]:
+    def _launch_record_on_next_scene(
+        self, track: ExternalSynthTrack, config: RecordConfig
+    ) -> Optional[Sequence]:
         next_scene = config.recording_scene.next_scene
         audio_clip = track.audio_track.clip_slots[config.recording_scene].clip
 

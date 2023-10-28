@@ -14,7 +14,6 @@ from protocol0.domain.lom.track.group_track.TrackCategoryEnum import TrackCatego
 from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import ExternalSynthTrack
 from protocol0.domain.lom.track.group_track.ext_track.SimpleMidiExtTrack import SimpleMidiExtTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
-from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_track
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.BrowserServiceInterface import BrowserServiceInterface
 from protocol0.domain.shared.backend.Backend import Backend
@@ -49,7 +48,7 @@ class DeviceService(object):
         if device_enum.is_instrument:
             if create_track:
                 seq.add(self._track_crud_component.create_midi_track)
-                seq.add(lambda: rename_track(Song.selected_track(), device_enum.track_name))
+                seq.add(lambda: setattr(Song.selected_track(), "name", device_enum.track_name))
 
                 # if selected track is empty, delete it to make some room
                 if len(track.clips) == 0 and not track.has_category(TrackCategoryEnum.BASS):

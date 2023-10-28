@@ -9,8 +9,9 @@ from protocol0.domain.lom.clip.ClipConfig import ClipConfig
 from protocol0.domain.lom.clip.ClipCreatedOrDeletedEvent import ClipCreatedOrDeletedEvent
 from protocol0.domain.lom.clip.ClipSlotSelectedEvent import ClipSlotSelectedEvent
 from protocol0.domain.lom.clip_slot.ClipSlotAppearance import ClipSlotAppearance
-from protocol0.domain.lom.clip_slot.ClipSlotPlayingStatusUpdatedEvent import \
-    ClipSlotPlayingStatusUpdatedEvent
+from protocol0.domain.lom.clip_slot.ClipSlotPlayingStatusUpdatedEvent import (
+    ClipSlotPlayingStatusUpdatedEvent,
+)
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
@@ -22,7 +23,9 @@ from protocol0.shared.sequence.Sequence import Sequence
 class ClipSlot(SlotManager, Observable):
     CLIP_CLASS: Type[Clip] = Clip
 
-    def __init__(self, live_clip_slot: Live.ClipSlot.ClipSlot, index: int, clip_config: ClipConfig) -> None:
+    def __init__(
+        self, live_clip_slot: Live.ClipSlot.ClipSlot, index: int, clip_config: ClipConfig
+    ) -> None:
         super(ClipSlot, self).__init__()
         self._clip_slot = live_clip_slot
         self._index = index

@@ -141,6 +141,4 @@ class TrackAutomationService(object):
         else:
             parameters_name = ["%s: %s" % (d.name, p.name) for d, p in set(device_parameters)]
 
-            Backend.client().show_info(
-                "- {}".format("\n  - ".join(parameters_name))
-            )
+            Backend.client().show_info("- {}".format("\n  - ".join(parameters_name)))

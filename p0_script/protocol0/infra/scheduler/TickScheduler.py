@@ -55,7 +55,9 @@ class TickScheduler(TickSchedulerInterface):
             else:
                 scheduled_event.decrement_timeout()
 
-    def schedule(self, tick_count: int, callback: Callable, unique: bool = False) -> TickSchedulerEventInterface:
+    def schedule(
+        self, tick_count: int, callback: Callable, unique: bool = False
+    ) -> TickSchedulerEventInterface:
         assert callable(callback), "callback is not callable"
         assert tick_count > 0, "ticks_count is <= 0"
 

@@ -92,7 +92,9 @@ class MatchingTrackService(object):
 
         return None
 
-    def _create_matching_track_creator(self, track: AbstractTrack) -> Optional[MatchingTrackCreatorInterface]:
+    def _create_matching_track_creator(
+        self, track: AbstractTrack
+    ) -> Optional[MatchingTrackCreatorInterface]:
         if isinstance(track, SimpleTrack):
             return SimpleMatchingTrackCreator(self._track_crud_component, track)
         elif isinstance(track, ExternalSynthTrack):
@@ -102,7 +104,9 @@ class MatchingTrackService(object):
 
         return None
 
-    def _on_simple_track_flattened_event(self, event: SimpleTrackFlattenedEvent) -> Optional[Sequence]:
+    def _on_simple_track_flattened_event(
+        self, event: SimpleTrackFlattenedEvent
+    ) -> Optional[Sequence]:
         clip_infos = event.clip_infos
         flattened_track = Song.selected_track(SimpleAudioTrack)
 

@@ -12,7 +12,12 @@ from protocol0.shared.logging.Logger import Logger
 
 
 class LogService(object):
-    def __init__(self, ableton_set: AbletonSet, track_mapper_service: TrackMapperService, matching_track_service: MatchingTrackService) -> None:
+    def __init__(
+        self,
+        ableton_set: AbletonSet,
+        track_mapper_service: TrackMapperService,
+        matching_track_service: MatchingTrackService,
+    ) -> None:
         self._ableton_set = ableton_set
         self._track_mapper_service = track_mapper_service
         self._matching_track_service = matching_track_service

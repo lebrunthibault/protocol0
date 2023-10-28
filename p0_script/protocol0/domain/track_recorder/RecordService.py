@@ -54,7 +54,7 @@ class RecordService(object):
         playback_component: PlaybackComponent,
         scene_crud_component: SceneCrudComponent,
         quantization_component: QuantizationComponent,
-        scene_playback_service: ScenePlaybackService
+        scene_playback_service: ScenePlaybackService,
     ) -> None:
         self._playback_component = playback_component
         self._scene_crud_component = scene_crud_component

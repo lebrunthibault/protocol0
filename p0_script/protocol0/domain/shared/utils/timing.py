@@ -49,6 +49,7 @@ def debounce(duration: int = 100) -> Func:
 
     return wrap
 
+
 def slow_down(factor: int = 2) -> Func:
     """Make the function be called factor times less"""
 

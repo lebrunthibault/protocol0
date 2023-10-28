@@ -11,7 +11,12 @@ if TYPE_CHECKING:
 
 
 class SimpleTrackClips(object):
-    def __init__(self, clip_slots: "SimpleTrackClipSlots", track_devices: SimpleTrackDevices, track_color: int) -> None:
+    def __init__(
+        self,
+        clip_slots: "SimpleTrackClipSlots",
+        track_devices: SimpleTrackDevices,
+        track_color: int,
+    ) -> None:
         self._clip_slots = clip_slots
         self.clip_color_manager = SimpleTrackClipColorManager(self, track_devices, track_color)
 

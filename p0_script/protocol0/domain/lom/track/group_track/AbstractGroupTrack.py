@@ -66,7 +66,12 @@ class AbstractGroupTrack(AbstractTrack):
         for track in self.sub_tracks:
             track.fire(scene_index)
 
-    def stop(self, scene_index: Optional[int] = None, next_scene_index: Optional[int] = None, immediate: bool = False) -> None:
+    def stop(
+        self,
+        scene_index: Optional[int] = None,
+        next_scene_index: Optional[int] = None,
+        immediate: bool = False,
+    ) -> None:
         for track in self.sub_tracks:
             track.stop(scene_index, next_scene_index, immediate)
 

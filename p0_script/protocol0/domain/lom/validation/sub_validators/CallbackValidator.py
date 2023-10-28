@@ -5,7 +5,13 @@ from protocol0.domain.lom.validation.ValidatorInterface import ValidatorInterfac
 
 
 class CallbackValidator(ValidatorInterface):
-    def __init__(self, obj: Any, callback_validator: Callable, callback_fixer: Optional[Callable] = None, error_message: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        obj: Any,
+        callback_validator: Callable,
+        callback_fixer: Optional[Callable] = None,
+        error_message: Optional[str] = None,
+    ) -> None:
         self._obj = obj
         self._callback_validator = callback_validator
         self._callback_fixer = callback_fixer

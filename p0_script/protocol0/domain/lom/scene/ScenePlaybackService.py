@@ -68,9 +68,9 @@ class ScenePlaybackService(SlotManager):
             Logger.info("Firing %s to bar_length %s" % (scene, bar_length))
 
         # if bar_length != 0:
-            # removing click when changing position
-            # (created by playing shortly the scene beginning)
-            # Song.master_track().mute_for(150)
+        # removing click when changing position
+        # (created by playing shortly the scene beginning)
+        # Song.master_track().mute_for(150)
 
         seq = Sequence()
         seq.add(self._playback_component.stop)

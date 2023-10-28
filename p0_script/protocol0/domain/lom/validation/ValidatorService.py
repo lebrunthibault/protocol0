@@ -7,7 +7,9 @@ from protocol0.shared.logging.Logger import Logger
 
 
 class ValidatorService(object):
-    def __init__(self, validator_factory: ValidatorFactory, drum_rack_service: DrumRackService) -> None:
+    def __init__(
+        self, validator_factory: ValidatorFactory, drum_rack_service: DrumRackService
+    ) -> None:
         self._validator_factory = validator_factory
         self._drum_rack_service = drum_rack_service
 

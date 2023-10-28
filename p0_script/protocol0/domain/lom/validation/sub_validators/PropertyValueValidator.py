@@ -6,7 +6,14 @@ from protocol0.domain.shared.utils.utils import compare_values
 
 
 class PropertyValueValidator(ValidatorInterface):
-    def __init__(self, obj: Any, attribute: str, expected_value: Any, name: Optional[str] = None, fix: bool = True) -> None:
+    def __init__(
+        self,
+        obj: Any,
+        attribute: str,
+        expected_value: Any,
+        name: Optional[str] = None,
+        fix: bool = True,
+    ) -> None:
         self._obj = obj
         self._attr = attribute
         self._expected_value = expected_value

@@ -1,4 +1,6 @@
-from protocol0.application.command.ColorClipWithAutomationCommand import ColorClipWithAutomationCommand
+from protocol0.application.command.ColorClipWithAutomationCommand import (
+    ColorClipWithAutomationCommand,
+)
 from protocol0.application.command_handler.CommandHandlerInterface import CommandHandlerInterface
 from protocol0.domain.lom.track.TrackAutomationService import TrackAutomationService
 

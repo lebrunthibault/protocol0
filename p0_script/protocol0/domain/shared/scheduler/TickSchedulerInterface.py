@@ -6,7 +6,9 @@ from protocol0.domain.shared.scheduler.TickSchedulerEventInterface import (
 
 
 class TickSchedulerInterface(object):
-    def schedule(self, tick_count: int, callback: Callable, unique: bool = False) -> TickSchedulerEventInterface:
+    def schedule(
+        self, tick_count: int, callback: Callable, unique: bool = False
+    ) -> TickSchedulerEventInterface:
         """timeout_duration in ms"""
         raise NotImplementedError
 

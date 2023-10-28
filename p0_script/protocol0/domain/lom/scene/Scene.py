@@ -223,7 +223,7 @@ class Scene(SlotManager):
                         group_name=group_name,
                         has_clip=clip is not None,
                         is_playing=clip is not None and clip.is_playing,
-                        is_armed=track.arm_state.is_armed
+                        is_armed=track.arm_state.is_armed,
                     )
                 )
 

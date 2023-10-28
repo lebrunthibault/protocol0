@@ -2,7 +2,7 @@
   "name": "@p0/p0_backend",
   "private": true,
   "scripts": {
-    "lint": "flake8 . && mypy . && vulture .",
+    "lint": "black . && flake8 . && mypy . && vulture .",
     "format": "black ."
   },
   "dependencies": {

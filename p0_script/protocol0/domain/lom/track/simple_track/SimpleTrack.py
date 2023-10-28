@@ -94,6 +94,7 @@ class SimpleTrack(AbstractTrack):
         self.arm_state = SimpleTrackArmState(live_track)
         self.arm_state.register_observer(self)
 
+        self._name_listener.subject = live_track
         self._output_meter_level_listener.subject = None
 
         self.devices.build()
@@ -148,6 +149,13 @@ class SimpleTrack(AbstractTrack):
             self._data.save()
         elif isinstance(observable, SimpleTrackArmState) and self.arm_state.is_armed:
             DomainEventBus.emit(SimpleTrackArmedEvent(self._track))
+
+    @subject_slot("name")
+    def _name_listener(self) -> None:
+        from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_tracks
+
+        if self.group_track:
+            Scheduler.defer(partial(rename_tracks, self.group_track, self.name))
 
     @subject_slot("output_meter_level")
     def _output_meter_level_listener(self) -> None:
@@ -449,6 +457,11 @@ class SimpleTrack(AbstractTrack):
             self.instrument_rack_device.notify_observers()
 
     def disconnect(self) -> None:
+        from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_tracks
+
+        if self.group_track:
+            Scheduler.defer(partial(rename_tracks, self.group_track, self.name))
+
         super(SimpleTrack, self).disconnect()
         self.devices.disconnect()
         self._clip_slots.disconnect()

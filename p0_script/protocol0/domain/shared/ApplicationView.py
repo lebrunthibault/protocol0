@@ -14,7 +14,12 @@ class ApplicationView(object):
 
     _INSTANCE: Optional["ApplicationView"] = None
 
-    def __init__(self, recording_component: RecordingComponent, application_view: Live.Application.Application.View, session_service: SessionServiceInterface) -> None:
+    def __init__(
+        self,
+        recording_component: RecordingComponent,
+        application_view: Live.Application.Application.View,
+        session_service: SessionServiceInterface,
+    ) -> None:
         ApplicationView._INSTANCE = self
         self._recording_component = recording_component
         self._application_view = application_view
@@ -84,8 +89,8 @@ class ApplicationView(object):
     def focus_device(cls) -> None:
         """Hack to bring device into view."""
         NAV_DIR = Live.Application.Application.View.NavDirection
-        cls._INSTANCE._application_view.scroll_view(NAV_DIR.right, 'Detail/DeviceChain', False)
-        cls._INSTANCE._application_view.scroll_view(NAV_DIR.left, 'Detail/DeviceChain', False)
+        cls._INSTANCE._application_view.scroll_view(NAV_DIR.right, "Detail/DeviceChain", False)
+        cls._INSTANCE._application_view.scroll_view(NAV_DIR.left, "Detail/DeviceChain", False)
 
     @classmethod
     def is_session_visible(cls) -> bool:

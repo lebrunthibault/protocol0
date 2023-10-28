@@ -11,6 +11,7 @@ class SlotManager:
     def register_slot(self, *a, **k):
         pass
 
+
 class Subject:
     def __call__(self, *a, **k):
         return self
@@ -28,7 +29,7 @@ def subject_slot(*_, **__):
 
 
 def instance_decorator(decorator):
-    u"""
+    """
     Meta-decorator to define decorators that decorate a method in a
     concrete instance. The decorator method will be passed the
     object instance as first argument and the unbound decorated method
@@ -39,11 +40,10 @@ def instance_decorator(decorator):
     """
 
     class Decorator(object):
-
         def __init__(self, func=nop, *args, **kws):
             self.__name__ = func.__name__
             self.__doc__ = func.__doc__
-            self._data_name = u'%s_%d_decorated_instance' % (func.__name__, id(self))
+            self._data_name = "%s_%d_decorated_instance" % (func.__name__, id(self))
             self._func = func
             self._args = args
             self._kws = kws
@@ -60,5 +60,6 @@ def instance_decorator(decorator):
                 return decorated
 
     return Decorator
+
 
 subject_slot_group = Mock()

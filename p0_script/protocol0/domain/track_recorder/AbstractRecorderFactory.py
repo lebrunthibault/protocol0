@@ -5,7 +5,9 @@ from protocol0.domain.track_recorder.config.RecordProcessors import RecordProces
 
 
 class AbstractTrackRecorderFactory(object):
-    def get_record_config(self, track: AbstractTrack, record_type: RecordTypeEnum, recording_bar_length: int) -> RecordConfig:
+    def get_record_config(
+        self, track: AbstractTrack, record_type: RecordTypeEnum, recording_bar_length: int
+    ) -> RecordConfig:
         raise NotImplementedError
 
     def get_processors(self, record_type: RecordTypeEnum) -> RecordProcessors:

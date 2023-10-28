@@ -3,8 +3,9 @@ from typing import Optional, Tuple, Callable
 
 from protocol0.application.CommandBus import CommandBus
 from protocol0.application.command.SerializableCommand import SerializableCommand
-from protocol0.domain.lom.instrument.preset.PresetProgramScrolledEvent import \
-    PresetProgramScrolledEvent
+from protocol0.domain.lom.instrument.preset.PresetProgramScrolledEvent import (
+    PresetProgramScrolledEvent,
+)
 from protocol0.domain.lom.instrument.preset.PresetProgramSelectedEvent import (
     PresetProgramSelectedEvent,
 )
@@ -44,7 +45,9 @@ class MidiService(object):
 
         Scheduler.defer(send_127)
 
-    def _send_formatted_midi_message(self, message_type: str, channel: int, value: int, value2: Optional[int] = None) -> None:
+    def _send_formatted_midi_message(
+        self, message_type: str, channel: int, value: int, value2: Optional[int] = None
+    ) -> None:
         status = self._MIDI_STATUS_BYTES[message_type]
         status += channel
         msg = [status, value]

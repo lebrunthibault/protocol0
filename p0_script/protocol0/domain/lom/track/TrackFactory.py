@@ -26,12 +26,19 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class TrackFactory(object):
-    def __init__(self, track_crud_component: TrackCrudComponent, browser_service: BrowserServiceInterface, drum_rack_service: DrumRackService) -> None:
+    def __init__(
+        self,
+        track_crud_component: TrackCrudComponent,
+        browser_service: BrowserServiceInterface,
+        drum_rack_service: DrumRackService,
+    ) -> None:
         self._track_crud_component = track_crud_component
         self._browser_service = browser_service
         self._drum_rack_service = drum_rack_service
 
-    def create_simple_track(self, track: Live.Track.Track, index: int, cls: Optional[Type[SimpleTrack]] = None) -> SimpleTrack:
+    def create_simple_track(
+        self, track: Live.Track.Track, index: int, cls: Optional[Type[SimpleTrack]] = None
+    ) -> SimpleTrack:
         # checking first on existing tracks
         existing_simple_track = Song.optional_simple_track_from_live_track(track)
         if existing_simple_track and (cls is None or isinstance(existing_simple_track, cls)):

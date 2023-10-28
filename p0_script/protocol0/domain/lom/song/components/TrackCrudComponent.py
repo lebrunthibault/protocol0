@@ -8,7 +8,13 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class TrackCrudComponent(object):
-    def __init__(self, create_midi_track: Callable, create_audio_track: Callable, duplicate_track: Callable, delete_track: Callable) -> None:
+    def __init__(
+        self,
+        create_midi_track: Callable,
+        create_audio_track: Callable,
+        duplicate_track: Callable,
+        delete_track: Callable,
+    ) -> None:
         self._create_midi_track = create_midi_track
         self._create_audio_track = create_audio_track
         self._duplicate_track = duplicate_track

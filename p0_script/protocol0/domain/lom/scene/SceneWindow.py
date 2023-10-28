@@ -41,7 +41,9 @@ class SceneWindow(object):
             clip.crop()
 
     @classmethod
-    def create_from_split(cls, scene_length: float, split_bar_length: int) -> Tuple["SceneWindow", "SceneWindow"]:
+    def create_from_split(
+        cls, scene_length: float, split_bar_length: int
+    ) -> Tuple["SceneWindow", "SceneWindow"]:
         cls._validate_scene(scene_length, split_bar_length)
         crop_length = Song.signature_numerator() * split_bar_length
 
@@ -51,7 +53,9 @@ class SceneWindow(object):
             return cls._create_from_split_length(scene_length, int(scene_length) + crop_length)
 
     @classmethod
-    def _create_from_split_length(cls, scene_length: float, split_length: int) -> Tuple["SceneWindow", "SceneWindow"]:
+    def _create_from_split_length(
+        cls, scene_length: float, split_length: int
+    ) -> Tuple["SceneWindow", "SceneWindow"]:
         return cls(0, split_length, False), cls(split_length, scene_length, True)
 
     @classmethod

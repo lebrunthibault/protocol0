@@ -20,7 +20,13 @@ from protocol0.shared.observer.Observable import Observable
 
 class SimpleTrackClipSlots(SlotManager, Observable):
     # noinspection PyInitNewSignature
-    def __init__(self, live_track: Live.Track.Track, clip_slot_class: Type[ClipSlot], clip_config: ClipConfig, track_devices: SimpleTrackDevices) -> None:
+    def __init__(
+        self,
+        live_track: Live.Track.Track,
+        clip_slot_class: Type[ClipSlot],
+        clip_config: ClipConfig,
+        track_devices: SimpleTrackDevices,
+    ) -> None:
         super(SimpleTrackClipSlots, self).__init__()
         self._live_track = live_track
         self._clip_slot_class = clip_slot_class

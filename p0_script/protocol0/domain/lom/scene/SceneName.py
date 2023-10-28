@@ -17,7 +17,12 @@ from protocol0.shared.logging.Logger import Logger
 
 
 class SceneName(SlotManager):
-    def __init__(self, scene: Live.Scene.Scene, scene_length: SceneLength, scene_playing_state: ScenePlayingState) -> None:
+    def __init__(
+        self,
+        scene: Live.Scene.Scene,
+        scene_length: SceneLength,
+        scene_playing_state: ScenePlayingState,
+    ) -> None:
         super(SceneName, self).__init__()
         self._scene = scene
         self._scene_length = scene_length

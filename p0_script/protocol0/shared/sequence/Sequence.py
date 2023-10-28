@@ -49,7 +49,12 @@ class Sequence(Observable):
     def __repr__(self, **k: Any) -> str:
         return self.name
 
-    def add(self, func: Union[Iterable, Callable, object] = nop, name: str = None, notify_terminated: bool = True) -> "Sequence":
+    def add(
+        self,
+        func: Union[Iterable, Callable, object] = nop,
+        name: str = None,
+        notify_terminated: bool = True,
+    ) -> "Sequence":
         """callback can be a callable or a list of callable (will execute in parallel)"""
         assert callable(func) or isinstance(
             func, Iterable
@@ -145,7 +150,9 @@ class Sequence(Observable):
             partial(Scheduler.wait_ms, ms, self._execute_next_step), notify_terminated=False
         )
 
-    def wait_bars(self, bars: float, wait_for_song_start: bool = False, continue_on_song_stop: bool = False) -> "Sequence":
+    def wait_bars(
+        self, bars: float, wait_for_song_start: bool = False, continue_on_song_stop: bool = False
+    ) -> "Sequence":
         if not Song.is_playing() and wait_for_song_start:
             self.wait_for_event(SongStartedEvent)
 
@@ -170,7 +177,12 @@ class Sequence(Observable):
 
         return self.add(execute, notify_terminated=False)
 
-    def wait_for_event(self, event_class: Type[object], expected_emitter: object = None, continue_on_song_stop: bool = False) -> "Sequence":
+    def wait_for_event(
+        self,
+        event_class: Type[object],
+        expected_emitter: object = None,
+        continue_on_song_stop: bool = False,
+    ) -> "Sequence":
         """
         Will continue the sequence after an event of type event_class is fired
 

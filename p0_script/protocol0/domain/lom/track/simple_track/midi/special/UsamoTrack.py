@@ -57,5 +57,7 @@ class UsamoTrack(SimpleMidiTrack):
         else:
             self._inactivate()
 
-    def _on_external_synth_audio_recording_started_event(self, _: ExtAudioRecordingStartedEvent) -> None:
+    def _on_external_synth_audio_recording_started_event(
+        self, _: ExtAudioRecordingStartedEvent
+    ) -> None:
         self._activate()

@@ -34,9 +34,7 @@ class Clip(SlotManager, Observable):
         self.appearance = ClipAppearance(live_clip, self.clip_name, config.color)
         self.loop: ClipLoop = ClipLoop(live_clip)
         self.automation: ClipAutomation = ClipAutomation(live_clip, self.loop)
-        self.playing_position: ClipPlayingPosition = ClipPlayingPosition(
-            live_clip, self.loop
-        )
+        self.playing_position: ClipPlayingPosition = ClipPlayingPosition(live_clip, self.loop)
 
         self.loop.register_observer(self)
         self._notes_shown = True

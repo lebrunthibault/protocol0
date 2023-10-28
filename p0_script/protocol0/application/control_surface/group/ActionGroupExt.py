@@ -27,7 +27,6 @@ class ActionGroupExt(ActionGroupInterface):
             on_long_press=lambda: partial(record_track, RecordTypeEnum.AUDIO_FULL),
         )
 
-
         # RECord normal encoder
         self.add_encoder(
             identifier=2,
@@ -37,7 +36,6 @@ class ActionGroupExt(ActionGroupInterface):
             on_press=lambda: partial(record_track, RecordTypeEnum.MIDI),
             on_long_press=lambda: partial(record_track, RecordTypeEnum.MIDI_UNLIMITED),
         )
-
 
         def switch_monitoring() -> None:
             assert hasattr(

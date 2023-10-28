@@ -29,7 +29,8 @@ def focus_window(
     retry: bool = True,
 ) -> int:
     handle = find_window_handle_by_enum(name=name, search_type=search_type)
-    assert handle, f"No window '{name}'"
+    if not handle:
+        raise Protocol0Error(f"No window '{name}'")
 
     # noinspection PyUnresolvedReferences
     pythoncom.CoInitialize()  # needed

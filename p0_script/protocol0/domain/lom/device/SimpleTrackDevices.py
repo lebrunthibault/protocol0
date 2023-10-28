@@ -46,7 +46,7 @@ class SimpleTrackDevices(SlotManager, Observable):
 
         self._devices_mapping.build(self._track.devices)
         for added_device in self._devices_mapping.added:
-            Scheduler.defer(added_device.on_added)   # type: ignore[attr-defined]
+            Scheduler.defer(added_device.on_added)  # type: ignore[attr-defined]
         self._devices = cast(List[Device], self._devices_mapping.all)
         self._all_devices = self._find_all_devices(self._devices)
         for device in self._all_devices:
@@ -77,7 +77,9 @@ class SimpleTrackDevices(SlotManager, Observable):
         else:
             return None
 
-    def get_one_from_enum(self, device_enum: DeviceEnum, all_devices: bool = False) -> Optional[Device]:
+    def get_one_from_enum(
+        self, device_enum: DeviceEnum, all_devices: bool = False
+    ) -> Optional[Device]:
         if all_devices:
             return find_if(lambda d: d.enum == device_enum, self._all_devices)
         else:

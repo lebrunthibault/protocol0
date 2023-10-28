@@ -52,8 +52,8 @@ class TrackData(object):
                 self._track.instrument_rack_device
             ), f"cannot find instrument rack device on {self._track}"
             try:
-                self._track.instrument_rack_device.selected_variation_index = (
-                    int(selected_variation_index)
+                self._track.instrument_rack_device.selected_variation_index = int(
+                    selected_variation_index
                 )
             except RuntimeError as e:
                 Logger.warning(e)

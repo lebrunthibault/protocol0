@@ -1,5 +1,6 @@
-from protocol0.domain.lom.instrument.preset.PresetProgramScrolledEvent import \
-    PresetProgramScrolledEvent
+from protocol0.domain.lom.instrument.preset.PresetProgramScrolledEvent import (
+    PresetProgramScrolledEvent,
+)
 from protocol0.domain.lom.instrument.preset.preset_changer.PresetChangerInterface import (
     PresetChangerInterface,
 )

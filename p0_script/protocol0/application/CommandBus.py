@@ -90,5 +90,7 @@ class CommandBus(object):
         return seq.done()
 
     @classmethod
-    def get_recent_command(cls, command_class: Type[T], delay: float, except_current: bool = False) -> Optional[T]:
+    def get_recent_command(
+        cls, command_class: Type[T], delay: float, except_current: bool = False
+    ) -> Optional[T]:
         return cls._INSTANCE._history.get_recent_command(command_class, delay, except_current)  # type: ignore[type-var]

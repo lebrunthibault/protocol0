@@ -7,15 +7,14 @@ import win32gui  # noqa
 from ratelimit import limits
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.lib.notification import notify
 from p0_backend.lib.ableton.interface.pixel import get_pixel_color_at
 from p0_backend.lib.ableton.interface.pixel_color_enum import PixelColorEnum
-from p0_backend.lib.desktop.desktop import go_to_desktop
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.keys import send_keys
 from p0_backend.lib.keys import send_right
 from p0_backend.lib.mouse.mouse import click, keep_mouse_position
+from p0_backend.lib.notification import notify
 from p0_backend.lib.process import execute_powershell_command, kill_window_by_criteria
 from p0_backend.lib.window.find_window import find_window_handle_by_enum, SearchTypeEnum
 from p0_backend.lib.window.window import (
@@ -88,15 +87,23 @@ def open_set(filename: str, confirm_dialog=True):
     relative_path = filename.replace(f"{settings.ableton_set_directory}\\", "").replace("//", "\\")
     notify(f"Opening '{relative_path}'")
 
-    go_to_desktop(1)
+    from loguru import logger
+
+    logger.success("hello")
+    try:
+        focus_ableton()
+    except Protocol0Error:
+        pass
+
     execute_powershell_command(f'& "{settings.ableton_exe}" "{filename}"', minimized=True)
-    time.sleep(2)
+    time.sleep(1.5)
 
     if confirm_dialog:
         for _ in range(6):
             send_right()
             send_keys("{ENTER}")
             time.sleep(0.5)
+
 
 @limits(calls=1, period=5)
 def export_audio():

@@ -61,7 +61,9 @@ class InstrumentDisplayService(object):
 
         return seq.done()
 
-    def _on_simple_track_save_started_event(self, _: SimpleTrackSaveStartedEvent) -> Optional[Sequence]:
+    def _on_simple_track_save_started_event(
+        self, _: SimpleTrackSaveStartedEvent
+    ) -> Optional[Sequence]:
         """Hide the plugin window so it does not reappear while freezing"""
         track = Song.selected_track()
         if track.instrument is None:  # e.g. minitaur
@@ -76,7 +78,9 @@ class InstrumentDisplayService(object):
     def _on_instrument_selected_event(self, _: InstrumentSelectedEvent) -> Optional[Sequence]:
         return self.show_instrument(Song.current_track())
 
-    def activate_plugin_window(self, track: SimpleTrack, force_activate: bool = False) -> Optional[Sequence]:
+    def activate_plugin_window(
+        self, track: SimpleTrack, force_activate: bool = False
+    ) -> Optional[Sequence]:
         seq = Sequence()
         instrument = track.instrument
         if instrument is None:

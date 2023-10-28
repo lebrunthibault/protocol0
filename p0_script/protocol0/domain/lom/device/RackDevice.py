@@ -11,9 +11,7 @@ from protocol0.shared.observer.Observable import Observable
 class RackDevice(Device, Observable):
     def __init__(self, *a: Any, **k: Any) -> None:
         super(RackDevice, self).__init__(*a, **k)
-        self._device: Live.RackDevice.RackDevice = cast(
-            Live.RackDevice.RackDevice, self._device
-        )
+        self._device: Live.RackDevice.RackDevice = cast(Live.RackDevice.RackDevice, self._device)
         self.chains: List[DeviceChain] = []
         self._view: Live.RackDevice.RackDevice.View = self._device.view
         self._chains_listener.subject = self._device
@@ -22,7 +20,6 @@ class RackDevice(Device, Observable):
     def update(self, observable: Observable) -> None:
         if isinstance(observable, DeviceChain):
             self.notify_observers()
-
 
     def on_added(self) -> None:
         # show only one macro
