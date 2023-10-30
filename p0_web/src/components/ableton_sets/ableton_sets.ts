@@ -35,6 +35,7 @@ interface AbletonSetMetadata {
     stars: number
     comment: string
     stage: SetStage
+    tempo: number
 }
 
 interface AudioInfo {

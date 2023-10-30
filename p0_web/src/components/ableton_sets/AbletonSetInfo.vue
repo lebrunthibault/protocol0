@@ -22,8 +22,11 @@
             </button>
           </div>
         </div>
-        <div class="modal-body my-2">
+        <div class="modal-body my-1">
           <form action="" @submit.prevent="submit">
+            <div v-if="abletonSet.metadata" class="mb-3">
+              {{ abletonSet.metadata.tempo }} BPM, {{ barLength }} bars
+            </div>
             <div class="btn-group" role="group">
               <input type="radio" class="btn-check" name="stage_draft" id="stage_draft" autocomplete="off"
                      v-model="stage" value="DRAFT" :checked="stage === 'DRAFT'">
@@ -82,6 +85,13 @@ export default defineComponent({
     }
   },
   computed: {
+    barLength(): number {
+        if (!this.abletonSet.metadata) {
+          return 0
+        }
+
+        return this.abletonSet.metadata.scenes.at(-1).end / 4
+    },
     canArchive(): boolean {
       return this.abletonSet.place == AbletonSetPlace.TRACKS && (this.abletonSet.metadata.stars < 4)
     },
