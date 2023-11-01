@@ -86,9 +86,11 @@ export default defineComponent({
   },
   computed: {
     barLength(): number {
-        if (!this.abletonSet.metadata) {
+        if (!this.abletonSet.metadata || !this.abletonSet.metadata?.scenes.length) {
           return 0
         }
+
+        console.log(this.abletonSet.metadata?.scenes)
 
         return this.abletonSet.metadata.scenes.at(-1).end / 4
     },

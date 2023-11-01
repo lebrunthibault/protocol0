@@ -23,7 +23,7 @@ def rename_tracks(group_track: SimpleTrack, track_name: str) -> None:
     if len(duplicate_tracks) > 1:
         for index, track in enumerate(duplicate_tracks):
             track.name = title(f"{base_name(track.name)} {index + 1}")
-    else:
+    elif len(duplicate_tracks) == 1:
         duplicate_tracks[0].name = title(base_name(track_name))
 
 

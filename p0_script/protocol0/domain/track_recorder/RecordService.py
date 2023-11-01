@@ -108,7 +108,7 @@ class RecordService(object):
             Logger.info("recorder_config: %s" % config)
             Logger.info("processors: %s" % processors)
 
-        Backend.client().show_info("Rec: %s (%d bars)" % (config.record_name, config.bar_length))
+        Backend.client().show_info(f"Rec: {config.record_name} ({config.bar_length} bars)")
 
         seq.add(partial(self._start_recording, track, record_type, config, processors))
         return seq.done()
