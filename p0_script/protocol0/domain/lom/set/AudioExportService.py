@@ -31,15 +31,15 @@ class AudioExportService(object):
         ApplicationView.show_arrangement()
 
         # hack to show 1.1.1 in the arrangement
-        Song.view().follow_song = True
-        self._playback_component.start_playing()
+        # Song.view().follow_song = True
+        # self._playback_component.start_playing()
 
         seq = Sequence()
         seq.add(self._create_cue_points)
         seq.wait_ms(50)
         seq.add(self._playback_component.reset)
-        seq.add(partial(setattr, Song.view(), "follow_song", False))
-        seq.wait_ms(200)
+        # seq.add(partial(setattr, Song.view(), "follow_song", False))
+        # seq.wait_ms(200)
         seq.add(Backend.client().export_audio)
         seq.done()
 

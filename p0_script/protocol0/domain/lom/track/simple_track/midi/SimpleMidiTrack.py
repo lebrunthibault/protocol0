@@ -50,7 +50,7 @@ class SimpleMidiTrack(SimpleTrack):
             if c.clip and c.clip.matches(clip, self.devices.parameters) and c.clip is not clip
         ]
 
-        Backend.client().show_info("Copying to %s clips" % len(matching_clip_slots))
+        Backend.client().show_info(f"Copying to {len(matching_clip_slots)} clips")
         seq = Sequence()
         seq.add([partial(selected_cs.duplicate_clip_to, cs) for cs in matching_clip_slots])
         return seq.done()

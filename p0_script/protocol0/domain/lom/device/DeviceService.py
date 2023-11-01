@@ -142,9 +142,15 @@ class DeviceService(object):
         if len(list(track.devices)) == 0:
             return None
 
+        from protocol0.shared.logging.Logger import Logger
+        Logger.dev(device_enum)
+
         for device in track.devices:
             if device.is_instrument or not device.enum:
                 continue
+
+            from protocol0.shared.logging.Logger import Logger
+            Logger.dev((device, device.enum.device_group_position, device_enum.device_group_position))
 
             if device.enum.device_group_position > device_enum.device_group_position:
                 return device
