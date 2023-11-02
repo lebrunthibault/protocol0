@@ -13,6 +13,7 @@ from protocol0.domain.lom.scene.ScenesMappedEvent import ScenesMappedEvent
 from protocol0.domain.lom.song.components.SceneCrudComponent import SceneCrudComponent
 from protocol0.domain.lom.track.TrackAddedEvent import TrackAddedEvent
 from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
+from protocol0.domain.lom.track.simple_track.midi.special.UsamoTrack import UsamoTrack
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
@@ -58,7 +59,10 @@ class SceneService(SlotManager):
 
         while current_scene.next_scene and current_scene.next_scene != current_scene:
             current_scene = current_scene.next_scene
-            active_scenes.append(current_scene)
+            if len(current_scene.clips.tracks) != 1 or not isinstance(
+                current_scene.clips.tracks[0], UsamoTrack
+            ):
+                active_scenes.append(current_scene)
 
         return active_scenes
 
