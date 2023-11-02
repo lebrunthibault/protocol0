@@ -13,8 +13,12 @@ from protocol0.shared.Song import Song
 def rename_tracks(group_track: SimpleTrack, track_name: str) -> None:
     """Rename track with duplicate names by numbering them"""
 
-    def base_name(name: str) -> str:
-        return re.sub(r"\s\d$", "", name.strip().lower())
+    def base_name(name: str, to_lower: bool = True) -> str:
+        basename = re.sub(r"\s\d$", "", name.strip())
+        if to_lower:
+            return basename.lower()
+        else:
+            return basename
 
     duplicate_tracks = [
         t for t in group_track.sub_tracks if base_name(t.name) == base_name(track_name)
@@ -22,9 +26,9 @@ def rename_tracks(group_track: SimpleTrack, track_name: str) -> None:
 
     if len(duplicate_tracks) > 1:
         for index, track in enumerate(duplicate_tracks):
-            track.name = title(f"{base_name(track.name)} {index + 1}")
+            track.name = title(f"{base_name(track.name, to_lower=False)} {index + 1}")
     elif len(duplicate_tracks) == 1:
-        duplicate_tracks[0].name = title(base_name(track_name))
+        duplicate_tracks[0].name = title(base_name(track_name, to_lower=False))
 
 
 class SimpleTrackService(object):
