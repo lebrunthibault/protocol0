@@ -94,6 +94,10 @@ class Device(SlotManager):
         return self._device.type == Live.Device.DeviceType.instrument
 
     @property
+    def is_midi(self) -> bool:
+        return self._device.type == Live.Device.DeviceType.midi_effect
+
+    @property
     def preset_name(self) -> Optional[str]:
         """overridden"""
         return None

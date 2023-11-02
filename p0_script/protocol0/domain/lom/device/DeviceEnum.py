@@ -370,12 +370,11 @@ class DeviceEnum(AbstractEnum):
             lambda d: d.is_fx,
         ]
 
-        index = 0
         for index, predicate in enumerate(predicates):
             if predicate(self):  # type: ignore[no-untyped-call]
                 return index
 
-        return index  # last by default
+        return 0
 
     @property
     def is_instrument(self) -> bool:
