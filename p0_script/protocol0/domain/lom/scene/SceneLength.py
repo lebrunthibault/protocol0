@@ -5,7 +5,6 @@ from protocol0.domain.lom.scene.SceneClips import SceneClips
 from protocol0.domain.lom.track.group_track.MixBusTrack import MixBusTrack
 from protocol0.domain.shared.utils.utils import previous_power_of_2
 from protocol0.shared.Song import Song
-from protocol0.shared.logging.Logger import Logger
 
 
 class SceneLength(object):
@@ -40,9 +39,6 @@ class SceneLength(object):
 
     @property
     def bar_length(self) -> int:
-        if self.length % Song.signature_numerator() != 0:
-            # can happen when changing the longest clip length
-            Logger.warning("%s invalid length: %s" % (self, self.length))
         return int(self.length / Song.signature_numerator())
 
     def get_longest_clip(self, is_playing: bool = False) -> Optional[Clip]:

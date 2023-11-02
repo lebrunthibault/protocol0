@@ -133,6 +133,12 @@ def select_and_paste():
     send_keys("^v")
 
 
+@router.get("/select_and_delete")
+def select_and_delete():
+    send_keys("^a")
+    send_keys("{DELETE}")
+
+
 @router.get("/un_group")
 async def un_group():
     hide_plugins()
