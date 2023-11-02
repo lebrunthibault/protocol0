@@ -12,7 +12,7 @@ class ActionGroupClip(ActionGroupInterface):
         self.add_encoder(
             identifier=1,
             name="duplicate clip",
-            on_press=lambda: Song.selected_track(SimpleMidiTrack).broadcast_selected_clip,
+            on_press=lambda: Song.selected_track().broadcast_selected_clip,
         )
 
         # midi clip to MONO
