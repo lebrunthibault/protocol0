@@ -23,6 +23,9 @@ class MixBusTrack(SimpleAudioTrack):
             return
 
         def set_clip_length() -> None:
-            clip.loop.length = Song.scenes()[clip.index].length
+            clip.loop.start = clip.loop.start_marker = 0
+            clip.loop.end = clip.loop.end_marker = Song.scenes()[clip.index].length
+            clip.show_loop()
 
         Scheduler.defer(set_clip_length)
+        Scheduler.wait_ms(50, set_clip_length)  # hack to make the loop start on 1.1.1
