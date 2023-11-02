@@ -5,6 +5,7 @@ import Live
 
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
+from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.types import T
 
 if TYPE_CHECKING:
@@ -363,8 +364,13 @@ class Song(object):
         cls._live_song().capture_midi()
 
     @classmethod
-    def set_or_delete_cue(cls, time: float) -> "Sequence":
+    def set_or_delete_cue(cls, time: float) -> Optional["Sequence"]:
         from protocol0.shared.sequence.Sequence import Sequence
+
+        cue_points = cls._live_song().cue_points
+
+        if find_if(lambda c: c.time == time, cue_points):
+            return None
 
         cls._live_song().current_song_time = time
 

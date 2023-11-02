@@ -14,6 +14,7 @@ from protocol0.domain.lom.clip.automation.ClipAutomation import ClipAutomation
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.forward_to import ForwardTo
+from protocol0.domain.shared.utils.utils import previous_power_of_2
 from protocol0.shared.Song import Song
 from protocol0.shared.Undo import Undo
 from protocol0.shared.observer.Observable import Observable
@@ -160,7 +161,19 @@ class Clip(SlotManager, Observable):
 
     @property
     def has_tail(self) -> bool:
-        return self.loop.end_marker > self.loop.end
+        """
+        Checks if the clip has a regular length
+        or has a tail that should play after the end of the scene
+        """
+        if self.loop.end_marker > self.loop.end:
+            return True
+
+        if (self.length / Song.signature_numerator()) != self.bar_length:
+            return True
+        if self.bar_length != previous_power_of_2(int(self.bar_length)):
+            return True
+
+        return False
 
     def remove_tail(self) -> None:
         self.loop.end = self.loop.end
