@@ -142,10 +142,6 @@ class DeviceService(object):
         if len(list(track.devices)) == 0:
             return None
 
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(device_enum)
-
         for device in track.devices:
             if not device.enum or device.is_instrument or device.is_midi:
                 continue

@@ -88,7 +88,6 @@ class AudioExportService(object):
         seq = Sequence()
 
         for scene in Song.active_scenes():
-            Logger.dev(scene.scene_name.get_base_name())
             if scene.scene_name.get_base_name():
                 seq.add(partial(Song.set_or_delete_cue, song_time))
 
