@@ -1053,6 +1053,18 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
+    def select_and_delete(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Select And Delete  # noqa: E501
+        """
+
+        payload = {"method": "GET", "path": "/select_and_delete", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
     def select_and_paste(
         self,
     ):  # noqa: E501
