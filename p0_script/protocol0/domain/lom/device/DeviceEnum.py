@@ -73,6 +73,7 @@ class DeviceEnum(AbstractEnum):
     SAMPLE_PITCH_RACK = "Sample Pitch Rack"
     SATURATOR = "Saturator"
     SATURN_2 = "Saturn 2"
+    SAUSAGE_FATTENER = "Sausage Fattener"
     SERUM = "Serum_x64"
     SERUM_RACK = "Serum Rack.adg"
     SERUM_BASS = "Serum Bass.adg"
@@ -233,7 +234,14 @@ class DeviceEnum(AbstractEnum):
             [
                 DeviceEnumGroup("Comp", [cls.H_COMP, cls.COMPRESSOR, cls.SSL_COMP, cls.VCOMP]),
                 DeviceEnumGroup(
-                    "Sat", [cls.BLACK_BOX, cls.SATURN_2, cls.SATURATOR, cls.DECAPITATOR]
+                    "Sat",
+                    [
+                        cls.BLACK_BOX,
+                        cls.SAUSAGE_FATTENER,
+                        cls.SATURN_2,
+                        cls.SATURATOR,
+                        cls.DECAPITATOR,
+                    ],
                 ),
             ],
             [
@@ -456,6 +464,7 @@ class DeviceEnum(AbstractEnum):
             DeviceEnum.JJP_STRINGS,
             DeviceEnum.SATURATOR,
             DeviceEnum.SATURN_2,
+            DeviceEnum.SAUSAGE_FATTENER,
         ]
 
     @property
@@ -550,8 +559,3 @@ class DeviceEnum(AbstractEnum):
             DeviceEnum.SERUM_LEAD: "Lead",
             DeviceEnum.SERUM_PLUCK: "Pluck",
         }.get(self, self.instrument_enum.value)
-
-    @classmethod
-    def missing_plugin_names(cls) -> List[str]:
-        """Plugins that I've used, but I don't currently have (formerly cracks)"""
-        return ["Vocal Rider Stereo", "API-2500 Stereo", DeviceEnum.SATURN_2.value]

@@ -1,6 +1,5 @@
 from protocol0.domain.audit.utils import tail_logs
 from protocol0.domain.lom.clip.AudioClip import AudioClip
-from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.set.AbletonSet import AbletonSet
 from protocol0.domain.lom.track.TrackMapperService import TrackMapperService
 from protocol0.domain.lom.track.group_track.matching_track.MatchingTrackService import (
@@ -188,10 +187,3 @@ class LogService(object):
         Logger.info()
         Logger.info("********* ABLETON_SET *************")
         Logger.info(self._ableton_set.to_model())
-
-    @tail_logs
-    def log_missing_vsts(self) -> None:
-        for track in Song.all_simple_tracks():
-            for device in track.devices.all:
-                if device.name in DeviceEnum.missing_plugin_names():
-                    Logger.warning((track, device))
