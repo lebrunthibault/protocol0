@@ -4,6 +4,7 @@ from protocol0.domain.audit.SetFixerService import SetFixerService
 from protocol0.domain.audit.SongStatsService import SongStatsService
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
+from protocol0.domain.lom.song.components.RecordingComponent import RecordingComponent
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.shared.Song import Song
@@ -17,10 +18,12 @@ class AudioExportService(object):
         song_stats_service: SongStatsService,
         set_fixer_service: SetFixerService,
         playback_component: PlaybackComponent,
+        recording_component: RecordingComponent,
     ):
         self._song_stats_service = song_stats_service
         self._set_fixer_service = set_fixer_service
         self._playback_component = playback_component
+        self._recording_component = recording_component
 
     def export(self) -> None:
         self._set_fixer_service.fix_set()
@@ -41,6 +44,7 @@ class AudioExportService(object):
         # seq.add(partial(setattr, Song.view(), "follow_song", False))
         # seq.wait_ms(200)
         seq.add(Backend.client().export_audio)
+        seq.add(partial(setattr, self._recording_component, "back_to_arranger", True))
         seq.done()
 
     def _bounce_session_to_arrangement(self) -> None:
