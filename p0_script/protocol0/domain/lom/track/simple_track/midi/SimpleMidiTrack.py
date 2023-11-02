@@ -37,20 +37,3 @@ class SimpleMidiTrack(SimpleTrack):
             CommandBus.dispatch(LoadDeviceCommand(DeviceEnum.DRUM_RACK.name))
 
         return None
-
-    def broadcast_selected_clip(self) -> Sequence:
-        selected_cs = Song.selected_clip_slot(MidiClipSlot)
-        clip = selected_cs.clip
-        if clip is None:
-            raise Protocol0Warning("No selected clip")
-
-        matching_clip_slots = [
-            c
-            for c in self.clip_slots
-            if c.clip and c.clip.matches(clip, self.devices.parameters) and c.clip is not clip
-        ]
-
-        Backend.client().show_info(f"Copying to {len(matching_clip_slots)} clips")
-        seq = Sequence()
-        seq.add([partial(selected_cs.duplicate_clip_to, cs) for cs in matching_clip_slots])
-        return seq.done()

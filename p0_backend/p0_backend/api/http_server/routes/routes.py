@@ -213,8 +213,8 @@ def _close_explorer_window(title: str):
 
 
 @router.get("/show_info")
-def show_info(message: str, body: str = ""):
-    notify(message, NotificationEnum.INFO, body=body)
+def show_info(message: str):
+    notify(message, NotificationEnum.INFO)
 
 
 @router.get("/show_success")

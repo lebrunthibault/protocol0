@@ -60,6 +60,18 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
+    def active_set(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Active Set  # noqa: E501
+        """
+
+        payload = {"method": "GET", "path": "/set/active", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
     def analyze_test_audio_clip_jitter(
         self,
         clip_path,
@@ -1072,18 +1084,6 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
-    def server_state(
-        self,
-    ):  # noqa: E501
-        # type: () -> None
-        """
-        Server State  # noqa: E501
-        """
-
-        payload = {"method": "GET", "path": "/server_state", "params": {}}
-
-        self._send_dict_as_midi(payload)
-
     def set_clip_file_path(
         self,
         file_path,
@@ -1207,8 +1207,11 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
-    def show_info(self, message, body):  # noqa: E501
-        # type: (str, str, ) -> None
+    def show_info(
+        self,
+        message,
+    ):  # noqa: E501
+        # type: (str, ) -> None
         """
         Show Info  # noqa: E501
         """
@@ -1218,7 +1221,6 @@ class P0BackendClient(object):
             "path": "/show_info",
             "params": {
                 "message": message,
-                "body": body,
             },
         }
 

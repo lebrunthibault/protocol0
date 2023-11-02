@@ -35,6 +35,7 @@ from protocol0.domain.lom.track.simple_track.SimpleTrackSaveStartedEvent import 
 )
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.backend.Backend import Backend
+from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.ui.ColorEnum import ColorEnum
@@ -455,6 +456,26 @@ class SimpleTrack(AbstractTrack):
         # there's no selected variation index listener
         if self.instrument_rack_device:
             self.instrument_rack_device.notify_observers()
+
+    def broadcast_selected_clip(self) -> Sequence:
+        selected_cs = Song.selected_clip_slot()
+        clip = selected_cs.clip
+        if clip is None:
+            raise Protocol0Warning("No selected clip")
+
+        matching_clip_slots = [
+            c
+            for c in self.clip_slots
+            if c.clip
+            and c.clip is not clip
+            and c.clip.color != self.color
+            and c.clip.color == clip.color
+        ]
+
+        Backend.client().show_info(f"Copying to {len(matching_clip_slots)} clips")
+        seq = Sequence()
+        seq.add([partial(selected_cs.duplicate_clip_to, cs) for cs in matching_clip_slots])
+        return seq.done()
 
     def disconnect(self) -> None:
         from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_tracks
