@@ -1,8 +1,6 @@
 import json
 import logging
-import sys
 import types
-
 from typing import Optional, Any, List, Dict
 
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
@@ -30,7 +28,8 @@ class LoggerService(LoggerServiceInterface):
         level = level or LogLevelEnum.INFO
         if level.value < Config.LOG_LEVEL.value:
             return
-        message = "%s: %s" % (level.name.lower(), smart_string(message))
+        message = f"{level.name.lower()}: {smart_string(message)}"
+
         if not isinstance(debug, bool):
             raise Protocol0Error("logger: parameter mismatch")
         if debug:
@@ -44,9 +43,8 @@ class LoggerService(LoggerServiceInterface):
                     frame_info.line,
                     frame_info.method_name,
                 )
-        for line in message.splitlines():
-            if sys.version_info.major == 2:
-                line.encode("ascii", "replace")
 
-            line = "P0 - %s" % line
-            logging.info(line)
+        logging.info(f"P0 - {message}")
+
+        # for line in message.splitlines():
+        #     logging.info(f"P0 - {line}")

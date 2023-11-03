@@ -376,6 +376,7 @@ class DeviceEnum(AbstractEnum):
             lambda d: d.is_delay,
             lambda d: d.is_reverb,
             lambda d: d.is_fx,
+            lambda d: d == DeviceEnum.UTILITY,
         ]
 
         for index, predicate in enumerate(predicates):

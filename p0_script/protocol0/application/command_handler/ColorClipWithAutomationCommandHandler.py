@@ -7,4 +7,4 @@ from protocol0.domain.lom.track.TrackAutomationService import TrackAutomationSer
 
 class ColorClipWithAutomationCommandHandler(CommandHandlerInterface):
     def handle(self, command: ColorClipWithAutomationCommand) -> None:
-        self._container.get(TrackAutomationService).color_clip_with_automation()
+        self._container.get(TrackAutomationService).check_automated_parameters()
