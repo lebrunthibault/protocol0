@@ -1,5 +1,6 @@
 import itertools
 import pkgutil
+import re
 import time
 import types
 
@@ -44,6 +45,14 @@ def get_length_legend(beat_length: float, signature_numerator: int) -> str:
         return "%d beat%s" % (beat_length, "s" if beat_length > 1 else "")
     else:
         return str(int(beat_length / signature_numerator))
+
+
+def track_base_name(name: str, to_lower: bool = True) -> str:
+    basename = re.sub(r"\s\d$", "", name.strip())
+    if to_lower:
+        return basename.lower()
+    else:
+        return basename
 
 
 def get_minutes_legend(seconds: float) -> str:

@@ -137,4 +137,4 @@ class ErrorService(object):
         return trace_list
 
     def _log_error(self, message: str) -> None:
-        Logger.error(message, show_notification=False, debug=False)
+        Logger.error(message, debug=False)

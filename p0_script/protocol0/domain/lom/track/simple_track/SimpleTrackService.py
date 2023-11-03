@@ -1,4 +1,5 @@
-import re
+from collections import defaultdict
+from typing import Optional
 
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrackFlattenedEvent import (
@@ -7,28 +8,29 @@ from protocol0.domain.lom.track.simple_track.SimpleTrackFlattenedEvent import (
 from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.utils.string import title
+from protocol0.domain.shared.utils.utils import track_base_name
 from protocol0.shared.Song import Song
 
 
-def rename_tracks(group_track: SimpleTrack, track_name: str) -> None:
+def rename_tracks(group_track: SimpleTrack, track_name: Optional[str] = None) -> None:
     """Rename track with duplicate names by numbering them"""
 
-    def base_name(name: str, to_lower: bool = True) -> str:
-        basename = re.sub(r"\s\d$", "", name.strip())
-        if to_lower:
-            return basename.lower()
-        else:
-            return basename
+    tracks_by_base_name = defaultdict(list)
 
-    duplicate_tracks = [
-        t for t in group_track.sub_tracks if base_name(t.name) == base_name(track_name)
-    ]
+    for sub_track in group_track.sub_tracks:
+        if track_name and track_base_name(sub_track.name) != track_base_name(track_name):
+            continue
 
-    if len(duplicate_tracks) > 1:
-        for index, track in enumerate(duplicate_tracks):
-            track.name = title(f"{base_name(track.name, to_lower=False)} {index + 1}")
-    elif len(duplicate_tracks) == 1:
-        duplicate_tracks[0].name = title(base_name(track_name, to_lower=False))
+        tracks_by_base_name[track_base_name(sub_track.name)].append(sub_track)
+
+    for same_name_tracks in tracks_by_base_name.values():
+        if len(same_name_tracks) > 1:
+            for index, track in enumerate(same_name_tracks):
+                track.name = title(f"{track_base_name(track.name, to_lower=False)} {index + 1}")
+        elif len(same_name_tracks) == 1:
+            same_name_tracks[0].name = title(
+                track_base_name(same_name_tracks[0].name, to_lower=False)
+            )
 
 
 class SimpleTrackService(object):

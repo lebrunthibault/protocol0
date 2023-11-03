@@ -1,7 +1,8 @@
+from dataclasses import dataclass
 from functools import partial
+from typing import Optional, cast, List, Tuple
 
-from typing import Optional, cast
-
+from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.clip.ClipColorEnum import ClipColorEnum
 from protocol0.domain.lom.clip.MidiClip import MidiClip
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
@@ -15,7 +16,21 @@ from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.shared.Song import Song
+from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
+
+
+@dataclass(frozen=True)
+class ParameterEnvelope:
+    clip: Clip
+    parameter: DeviceParameter
+    time: float
+
+    @property
+    def value(self) -> float:
+        env = self.clip.automation.get_envelope(self.parameter)
+
+        return env.value_at_time(self.time)
 
 
 class TrackAutomationService(object):
@@ -116,16 +131,33 @@ class TrackAutomationService(object):
 
         return seq.done()
 
-    def color_clip_with_automation(self) -> None:
+    def check_automated_parameters(self) -> None:
+        for clip in Song.selected_track().clips:
+            clip.color = Song.selected_track().color
+
+        if (
+            self._check_automation_inner_boundaries()
+            and self._check_automation_cross_clip_boundaries()
+        ):
+            log_line = "Automation boundaries ok"
+        else:
+            log_line = "Automation boundaries problem"
+
+        log_line += "\n\nAutomated parameters:\n" + self._get_automated_parameters_log()
+
+        Logger.info(log_line)
+        Backend.client().show_info(log_line)
+
+    def _get_automated_parameters_log(self) -> str:
         track = Song.selected_track()
-        colors_on = any(c.color != track.color for c in track.clips)
 
         device_parameters = []
 
-        if colors_on:
-            for clip in track.clips:
-                clip.color = track.color
-            return
+        # colors_on = any(c.color != track.color for c in track.clips)
+        # if colors_on:
+        #     for clip in track.clips:
+        #         clip.color = track.color
+        #     return
 
         for clip in track.clips:
             if clip.automation.has_automation(track.devices.parameters):
@@ -134,11 +166,89 @@ class TrackAutomationService(object):
                     if len(parameters):
                         device_parameters.append((device, parameters[0]))
 
-                clip.color = ClipColorEnum.BLINK.value
+                # clip.color = ClipColorEnum.BLINK.value
 
         if not len(device_parameters):
-            Backend.client().show_warning("No automation")
+            return "No automation"
         else:
             parameters_name = ["%s: %s" % (d.name, p.name) for d, p in set(device_parameters)]
 
-            Backend.client().show_info("- {}".format("\n  - ".join(parameters_name)))
+            return "- {}".format("\n  - ".join(parameters_name))
+
+    def _check_automation_inner_boundaries(self) -> bool:
+        track = Song.selected_track()
+        boundaries_ok = True
+
+        for clip in track.clips:
+            if clip.bar_length <= 8:
+                continue
+
+            automated_parameters = clip.automation.get_automated_parameters(
+                track.devices.parameters
+            )
+            for param in automated_parameters:
+                if not self._check_envelope_boundary(
+                    ParameterEnvelope(clip, param, 8 * Song.signature_numerator() - 0.1),
+                    ParameterEnvelope(clip, param, 8 * Song.signature_numerator() + 0.1),
+                ):
+                    boundaries_ok = False
+
+        return boundaries_ok
+
+    def _check_automation_cross_clip_boundaries(self) -> bool:
+        track = Song.selected_track()
+        adjacent_clips: List[Tuple[Clip, Clip]] = []
+
+        for index, clip in enumerate(track.clips):
+            if clip == track.clips[-1]:
+                break
+
+            next_clip = track.clips[index + 1]
+            if next_clip.index == clip.index + 1:
+                adjacent_clips.append((clip, next_clip))
+
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev(adjacent_clips)
+
+        boundaries_ok = True
+
+        for clip, next_clip in adjacent_clips:
+            clip_params = clip.automation.get_automated_parameters(track.devices.parameters)
+            next_clip_params = next_clip.automation.get_automated_parameters(
+                track.devices.parameters
+            )
+            common_parameters = list(set(clip_params).intersection(next_clip_params))
+            for param in common_parameters:
+                if not self._check_envelope_boundary(
+                    ParameterEnvelope(clip, param, clip.length - 0.1),
+                    ParameterEnvelope(next_clip, param, 0.1),
+                ):
+                    boundaries_ok = False
+
+        return boundaries_ok
+
+    def _check_envelope_boundary(
+        self, param_env: ParameterEnvelope, next_param_env: ParameterEnvelope
+    ) -> bool:
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev(f"checking {param_env}, {next_param_env}")
+        boundary_left = param_env.value
+        boundary_right = next_param_env.value
+
+        boundary_ratio = round(boundary_right / boundary_left, 1)
+        if boundary_ratio != 1:
+            from protocol0.shared.logging.Logger import Logger
+
+            Logger.dev(
+                f"""Discontinuous boundary for {next_param_env.clip} : {next_param_env.parameter}.
+                    Env values: {round(boundary_left, 2)}, {round(boundary_right, 2)}. Ratio: {boundary_ratio}
+                """,
+                debug=False,
+            )
+            next_param_env.clip.color = ClipColorEnum.BLINK.value
+
+            return False
+
+        return True

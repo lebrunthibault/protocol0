@@ -156,7 +156,7 @@ class SimpleTrack(AbstractTrack):
         from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_tracks
 
         if self.group_track:
-            Scheduler.defer(partial(rename_tracks, self.group_track, self.name))
+            Scheduler.defer(partial(rename_tracks, self.group_track))
 
     @subject_slot("output_meter_level")
     def _output_meter_level_listener(self) -> None:

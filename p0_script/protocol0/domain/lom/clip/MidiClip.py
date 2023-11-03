@@ -14,7 +14,7 @@ from protocol0.domain.lom.note.Note import Note
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.list import find_if
-from protocol0.domain.shared.utils.utils import clamp
+from protocol0.domain.shared.utils.utils import clamp, track_base_name
 from protocol0.shared.Config import Config
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
@@ -99,7 +99,10 @@ class MidiClip(Clip):
 
     @subject_slot("muted")
     def _muted_listener(self) -> None:
-        if not self.muted and Song.selected_track().name.lower() in Config.FX_TRACK_NAMES:
+        if (
+            not self.muted
+            and track_base_name(Song.selected_track().name.lower()) in Config.FX_TRACK_NAMES
+        ):
 
             def update_loop_length() -> None:
                 length_diff = Song.selected_scene().length - self.length

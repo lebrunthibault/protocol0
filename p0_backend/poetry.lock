@@ -4173,13 +4173,13 @@ setuptools = "*"
 
 [[package]]
 name = "win11toast"
-version = "0.32"
+version = "0.34"
 description = "Toast notifications for Windows 10 and 11"
 optional = false
 python-versions = "*"
 files = [
-    {file = "win11toast-0.32-py3-none-any.whl", hash = "sha256:38ecf6625374cbeebce4f3eda20cef0b2c468fedda23d95d883dfcdac98154a6"},
-    {file = "win11toast-0.32.tar.gz", hash = "sha256:640650374285ef51bcad4453a3404f502e5b746e4a7fd7d974064a73ae808e33"},
+    {file = "win11toast-0.34-py3-none-any.whl", hash = "sha256:5c1df6301135703330fba3cbb41b0d9d044ba25c1840305b424dc08e98c9a7b6"},
+    {file = "win11toast-0.34.tar.gz", hash = "sha256:516e259bd38e124bbed39214143f1c71c0f535751bfed9454489efd2bc0cd70c"},
 ]
 
 [package.dependencies]
@@ -4237,4 +4237,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "3.11.3"
-content-hash = "0a55420c8f3de5c653c0762de8f8aa298ced3dd40501c684a44f69c7b1e68686"
+content-hash = "9af67aa9b4203509f5de02f6490ac601a5e0861af9e482405392186b88b99687"
