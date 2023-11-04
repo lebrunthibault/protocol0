@@ -120,9 +120,9 @@ class Song(object):
             cls._INSTANCE._track_component.un_focus_all_tracks()
             track.solo = True
 
-        # focus other playing track ?
+        if not track.is_foldable:
+            track.arm_state.arm()
 
-        track.arm_state.arm()
         return track
 
     @classmethod
