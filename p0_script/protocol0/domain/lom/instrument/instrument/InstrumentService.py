@@ -31,10 +31,14 @@ class InstrumentService(object):
             instrument.on_loaded(event.device_enum)
 
     def _get_device(
-        self, x_param: XParam, pd: Optional[ParamDevice], auto_enable: bool = False
+        self,
+        x_param: XParam,
+        pd: Optional[ParamDevice],
+        auto_enable: bool = False,
+        automatable: bool = False,
     ) -> Union[None, Device, Sequence]:
         if not pd:
-            device_to_load = x_param.get_device_to_load()
+            device_to_load = x_param.get_device_to_load(automatable)
             if device_to_load:
                 x_param.track.select()
                 return self._device_service.load_device(device_to_load.name)
@@ -81,7 +85,7 @@ class InstrumentService(object):
         pd = x_param.get_device_param(automatable=True)
 
         if not pd:
-            device = self._get_device(x_param, pd)
+            device = self._get_device(x_param, pd, automatable=True)
             if not isinstance(device, Device):
                 return device
 
