@@ -369,9 +369,9 @@ class DeviceEnum(AbstractEnum):
         predicates = [
             lambda d: d.is_instrument,
             lambda d: d.is_eq,
+            lambda d: d.is_filter,
             lambda d: d.is_compressor,
             lambda d: d.is_saturator,
-            lambda d: d.is_filter,
             lambda d: d.is_volume,
             lambda d: d.is_delay,
             lambda d: d.is_reverb,

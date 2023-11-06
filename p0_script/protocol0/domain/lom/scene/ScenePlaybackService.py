@@ -94,7 +94,10 @@ class ScenePlaybackService(SlotManager):
         """Event is fired *before* the scene starts playing"""
         # Stop the previous scene : quantized or immediate
         playing_scene = Song.playing_scene()
-        fired_scene = Song.scenes()[event.scene_index]
+        try:
+            fired_scene = Song.scenes()[event.scene_index]
+        except IndexError:
+            return None
 
         if playing_scene is not None and playing_scene.index != event.scene_index:
             playing_scene.stop(immediate=not Song.is_playing(), next_scene=fired_scene)
