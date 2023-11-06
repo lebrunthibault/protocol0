@@ -125,18 +125,25 @@ class SceneService(SlotManager):
         """cleaning all scenes always"""
         existing_scene_ids = [scene._live_ptr for scene in self._live_song.scenes]
 
+        deleted_scenes = []
+
         for scene_id, scene in self._live_scene_id_to_scene.copy().items():
             # refresh the mapping
             if scene_id not in existing_scene_ids:
                 # checking on name and not bar_length
                 if len(Song.scenes()) > 5 and scene.name != "0":
-                    Backend.client().show_warning("You just deleted %s" % scene)
+                    deleted_scenes.append(scene)
 
                 del self._live_scene_id_to_scene[scene_id]
 
             scene.disconnect()
             if scene == Song.playing_scene():
                 PlayingScene.set(None)
+
+        if len(deleted_scenes) == 1:
+            Backend.client().show_warning(f"You just deleted {deleted_scenes[0]}")
+        elif len(deleted_scenes) > 1:
+            Backend.client().show_warning(f"You just deleted {len(deleted_scenes)} scenes")
 
     def generate_scene(self, live_scene: Live.Scene.Scene, index: int) -> None:
         # switching to full remap because of persisting mapping problems when moving scenes
