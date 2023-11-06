@@ -100,9 +100,9 @@ class XParam:
     value_items: Optional[List[int]] = None
     track: SimpleTrack = None  # type: ignore[assignment]
 
-    def get_device_to_load(self) -> Optional[DeviceEnum]:
+    def get_device_to_load(self, automatable: bool = False) -> Optional[DeviceEnum]:
         for param_conf in self.param_configs:
-            if isinstance(param_conf, DeviceParam):
+            if isinstance(param_conf, DeviceParam) and (not automatable or param_conf.automatable):
                 return param_conf.device_enum
 
         return None
