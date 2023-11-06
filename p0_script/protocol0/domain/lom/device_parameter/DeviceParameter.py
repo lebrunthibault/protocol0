@@ -7,14 +7,16 @@ from protocol0.domain.shared.ValueScroller import ValueScroller
 from protocol0.domain.shared.utils.timing import accelerate, slow_down
 from protocol0.domain.shared.utils.utils import clamp
 from protocol0.shared.logging.Logger import Logger
+from protocol0.shared.observer.Observable import Observable
 
 
-class DeviceParameter(object):
+class DeviceParameter(Observable):
     def __init__(
         self,
         device_parameter: Live.DeviceParameter.DeviceParameter,
         enum: Optional[DeviceParamEnum] = None,
     ) -> None:
+        super(DeviceParameter, self).__init__()
         self._device_parameter: Live.DeviceParameter.DeviceParameter = device_parameter
         self.device_name = ""
 
@@ -73,6 +75,8 @@ class DeviceParameter(object):
                 self._device_parameter.value = value
             except RuntimeError as e:
                 Logger.warning(e)
+
+            self.notify_observers()
 
     @property
     def automation_state(self) -> float:

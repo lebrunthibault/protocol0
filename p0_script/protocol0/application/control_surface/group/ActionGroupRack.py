@@ -135,6 +135,10 @@ class ActionGroupRack(ActionGroupInterface):
                         lambda t: t.devices.mixer_device.volume,
                         limits=(db_to_volume(-10), db_to_volume(0)),
                     ),
+                    DeviceParam(DeviceEnum.H_COMP, DeviceParamEnum.OUTPUT, automatable=False),
+                    DeviceParam(
+                        DeviceEnum.COMPRESSOR, DeviceParamEnum.OUTPUT_GAIN, automatable=False
+                    ),
                     InstrumentParam(InstrumentParamEnum.VOLUME, automatable=False),
                     DeviceParam(DeviceEnum.UTILITY, DeviceParamEnum.GAIN, scrollable=False),
                 ],

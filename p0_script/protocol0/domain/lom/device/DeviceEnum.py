@@ -180,7 +180,7 @@ class DeviceEnum(AbstractEnum):
         return self.get_value_from_mapping(
             {
                 DeviceEnum.COMPRESSOR: [
-                    DeviceParameterValue(DeviceParamEnum.COMPRESSOR_OUTPUT_GAIN, 0),
+                    DeviceParameterValue(DeviceParamEnum.OUTPUT_GAIN, 0),
                     DeviceParameterValue(
                         DeviceParamEnum.COMPRESSOR_THRESHOLD, Config.ZERO_VOLUME
                     ),  # 0db
