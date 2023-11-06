@@ -8,7 +8,10 @@ from protocol0.domain.lom.track.group_track.ext_track.ExtMonitoringState import 
 from protocol0.domain.lom.track.group_track.ext_track.ExtSoloState import ExtSoloState
 from protocol0.domain.lom.track.group_track.ext_track.SimpleAudioExtTrack import SimpleAudioExtTrack
 from protocol0.domain.lom.track.group_track.ext_track.SimpleBaseExtTrack import SimpleBaseExtTrack
-from protocol0.domain.lom.track.group_track.ext_track.SimpleMidiExtTrack import SimpleMidiExtTrack
+from protocol0.domain.lom.track.group_track.ext_track.SimpleMidiExtTrack import (
+    SimpleMidiExtTrack,
+    get_external_device,
+)
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
@@ -68,11 +71,14 @@ class ExternalSynthTrack(AbstractGroupTrack):
         if not isinstance(base_group_track.sub_tracks[1], SimpleAudioTrack):
             return False
 
+        if not get_external_device(list(midi_track.devices)):
+            return False
+
         for track in base_group_track.sub_tracks[2:]:
             if not isinstance(track, SimpleAudioTrack):
                 return False
 
-        if midi_track.instrument is not None and not midi_track.instrument.IS_EXTERNAL_SYNTH:
+        if midi_track.instrument and not midi_track.instrument.IS_EXTERNAL_SYNTH:
             return False
 
         return True

@@ -2,7 +2,9 @@ from typing import Optional
 
 from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.scene.SceneClips import SceneClips
-from protocol0.domain.lom.track.group_track.MixBusTrack import MixBusTrack
+from protocol0.domain.lom.track.simple_track.audio.special.SimpleAutomationTrack import (
+    SimpleAutomationTrack,
+)
 from protocol0.domain.shared.utils.utils import previous_power_of_2
 from protocol0.shared.Song import Song
 
@@ -60,7 +62,7 @@ class SceneLength(object):
 
             clip = scene_cs.clip
 
-            if isinstance(scene_cs.track, MixBusTrack):
+            if isinstance(scene_cs.track, SimpleAutomationTrack):
                 continue
 
             if clip.is_recording and not (float(clip.length).is_integer()):

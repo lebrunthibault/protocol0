@@ -207,10 +207,6 @@ class TrackAutomationService(object):
             if next_clip.index == clip.index + 1:
                 adjacent_clips.append((clip, next_clip))
 
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(adjacent_clips)
-
         boundaries_ok = True
 
         for clip, next_clip in adjacent_clips:
@@ -231,17 +227,12 @@ class TrackAutomationService(object):
     def _check_envelope_boundary(
         self, param_env: ParameterEnvelope, next_param_env: ParameterEnvelope
     ) -> bool:
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(f"checking {param_env}, {next_param_env}")
         boundary_left = param_env.value
         boundary_right = next_param_env.value
 
         boundary_ratio = round(boundary_right / boundary_left, 1)
         if boundary_ratio != 1:
-            from protocol0.shared.logging.Logger import Logger
-
-            Logger.dev(
+            Logger.info(
                 f"""Discontinuous boundary for {next_param_env.clip} : {next_param_env.parameter}.
                     Env values: {round(boundary_left, 2)}, {round(boundary_right, 2)}. Ratio: {boundary_ratio}
                 """,

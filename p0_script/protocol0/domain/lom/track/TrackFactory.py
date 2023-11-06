@@ -7,8 +7,11 @@ from protocol0.domain.lom.device.DrumRackService import DrumRackService
 from protocol0.domain.lom.sample.SampleCategory import SampleCategory
 from protocol0.domain.lom.sample.SampleCategoryEnum import SampleCategoryEnum
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
+from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitoringStateEnum
 from protocol0.domain.lom.track.group_track.AbstractGroupTrack import AbstractGroupTrack
-from protocol0.domain.lom.track.group_track.MixBusTrack import MixBusTrack
+from protocol0.domain.lom.track.simple_track.audio.special.SimpleAutomationTrack import (
+    SimpleAutomationTrack,
+)
 from protocol0.domain.lom.track.group_track.NormalGroupTrack import NormalGroupTrack
 from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import (
     ExternalSynthTrack,
@@ -27,6 +30,36 @@ from protocol0.shared.Song import Song
 from protocol0.shared.sequence.Sequence import Sequence
 
 
+def _get_simple_track_class(track: Live.Track.Track) -> Type[SimpleTrack]:
+    special_tracks = (UsamoTrack, KickTrack, HatClosedTrack, ResamplingTrack)
+
+    cls = None
+
+    if track.has_midi_input:
+        cls = SimpleMidiTrack
+    elif track.has_audio_input:
+        cls = SimpleAudioTrack
+
+    for special_track in special_tracks:
+        if track.name.strip().lower() == special_track.TRACK_NAME.strip().lower():  # type: ignore[attr-defined]
+            cls = special_track  # type: ignore
+
+    try:
+        if (
+            track.has_audio_input
+            and CurrentMonitoringStateEnum.from_value(track.current_monitoring_state)
+            == CurrentMonitoringStateEnum.IN
+        ):
+            cls = SimpleAutomationTrack
+    except RuntimeError:
+        pass
+
+    if cls is None:
+        raise Protocol0Error("Unknown track type")
+
+    return cls
+
+
 class TrackFactory(object):
     def __init__(
         self,
@@ -42,28 +75,15 @@ class TrackFactory(object):
         self, track: Live.Track.Track, index: int, cls: Optional[Type[SimpleTrack]] = None
     ) -> SimpleTrack:
         # checking first on existing tracks
+        track_cls = cls or _get_simple_track_class(track)
         existing_simple_track = Song.optional_simple_track_from_live_track(track)
-        if existing_simple_track and (cls is None or isinstance(existing_simple_track, cls)):
+
+        if existing_simple_track and type(existing_simple_track) == track_cls:
             # reindexing tracks
             existing_simple_track._index = index
             return existing_simple_track
 
-        special_tracks = (UsamoTrack, KickTrack, HatClosedTrack, MixBusTrack, ResamplingTrack)
-
-        if cls is None:
-            if track.has_midi_input:
-                cls = SimpleMidiTrack
-            elif track.has_audio_input:
-                cls = SimpleAudioTrack
-
-            for special_track in special_tracks:
-                if track.name == special_track.TRACK_NAME:  # type: ignore[attr-defined]
-                    cls = special_track  # type: ignore
-
-            if cls is None:
-                raise Protocol0Error("Unknown track type")
-
-        return cls(track, index)
+        return track_cls(track, index)
 
     def create_abstract_group_track(self, base_group_track: SimpleTrack) -> AbstractGroupTrack:
         previous_abstract_group_track = base_group_track.abstract_group_track

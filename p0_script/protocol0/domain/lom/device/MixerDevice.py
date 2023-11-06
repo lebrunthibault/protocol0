@@ -12,17 +12,11 @@ if TYPE_CHECKING:
 
 
 def update_parent_compressor_from_volume(track: "SimpleTrack", db_offset: float = 0) -> None:
-    from protocol0.shared.logging.Logger import Logger
-
-    Logger.dev(f"volume change ! {track.group_track}")
-
     if not track.group_track:
         return
 
     comp = track.group_track.devices.get_one_from_enum(DeviceEnum.SSL_COMP)
-    from protocol0.shared.logging.Logger import Logger
 
-    Logger.dev(comp)
     if not comp:
         return
 
