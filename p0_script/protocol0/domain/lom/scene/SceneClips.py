@@ -5,7 +5,9 @@ from typing import List, Iterator, Optional
 from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.clip.ClipColorEnum import ClipColorEnum
 from protocol0.domain.lom.clip_slot.ClipSlot import ClipSlot
-from protocol0.domain.lom.track.group_track.MixBusTrack import MixBusTrack
+from protocol0.domain.lom.track.simple_track.audio.special.SimpleAutomationTrack import (
+    SimpleAutomationTrack,
+)
 from protocol0.domain.lom.track.group_track.ext_track.SimpleAudioExtTrack import SimpleAudioExtTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.audio.special.ResamplingTrack import ResamplingTrack
@@ -18,7 +20,7 @@ class SceneClipSlot(object):
     def __init__(self, track: SimpleTrack, clip_slot: ClipSlot) -> None:
         self.track = track
         self.clip_slot = clip_slot
-        self.is_main_clip = not isinstance(track, (SimpleAudioExtTrack, MixBusTrack))
+        self.is_main_clip = not isinstance(track, (SimpleAudioExtTrack, SimpleAutomationTrack))
 
     def __repr__(self) -> str:
         return "SceneClips(%s, %s)" % (self.track, self.clip)

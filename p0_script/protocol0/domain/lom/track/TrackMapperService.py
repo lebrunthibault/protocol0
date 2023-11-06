@@ -14,12 +14,19 @@ from protocol0.domain.lom.track.group_track.VocalsTrack import VocalsTrack
 from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import (
     ExternalSynthTrack,
 )
+from protocol0.domain.lom.track.simple_track.CurrentMonitoringStateUpdatedEvent import (
+    CurrentMonitoringStateUpdatedEvent,
+)
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrackCreatedEvent import SimpleTrackCreatedEvent
 from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_tracks
+from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 from protocol0.domain.lom.track.simple_track.audio.SimpleReturnTrack import SimpleReturnTrack
 from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
 from protocol0.domain.lom.track.simple_track.audio.special.ReferenceTrack import ReferenceTrack
+from protocol0.domain.lom.track.simple_track.audio.special.SimpleAutomationTrack import (
+    SimpleAutomationTrack,
+)
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
@@ -44,6 +51,9 @@ class TrackMapperService(SlotManager):
 
         self.tracks_listener.subject = self._live_song
         DomainEventBus.subscribe(SimpleTrackCreatedEvent, self._on_simple_track_created_event)
+        DomainEventBus.subscribe(
+            CurrentMonitoringStateUpdatedEvent, self._on_current_monitoring_state_updated_event
+        )
 
     @subject_slot("tracks")
     @handle_errors()
@@ -127,6 +137,15 @@ class TrackMapperService(SlotManager):
 
         seq.add(Undo.end_undo_step)
         return seq.done()
+
+    def _on_current_monitoring_state_updated_event(
+        self, event: CurrentMonitoringStateUpdatedEvent
+    ) -> None:
+        # handling replacement of a SimpleTrack by another
+        track = Song.optional_simple_track_from_live_track(event.track)
+
+        if isinstance(track, (SimpleAudioTrack, SimpleAutomationTrack)):
+            self._track_factory.create_simple_track(track._track, track.index)
 
     def _on_simple_track_created_event(self, event: SimpleTrackCreatedEvent) -> None:
         """So as to be able to generate simple tracks with the abstract group track aggregate"""
