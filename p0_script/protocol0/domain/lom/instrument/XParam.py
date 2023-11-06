@@ -129,9 +129,9 @@ class XParam:
 
             if pd and (not isinstance(param_conf, DeviceParam) or param_conf.scrollable):
                 if isinstance(param_conf, TrackParam) and param_conf.limits:
-                    param_value = param_conf.get_param_device(self.track).param.value
+                    param = param_conf.get_param_device(self.track).param
                     p_min, p_max = param_conf.limits
-                    if (param_value <= p_min and not go_next) or (param_value >= p_max and go_next):
+                    if (param.value <= p_min and not go_next) or (param.value >= p_max and go_next):
                         track_params = param_conf, pd
                         continue
 

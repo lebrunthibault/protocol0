@@ -48,9 +48,9 @@ class TrackData(object):
         )
 
         if selected_variation_index is not None and int(selected_variation_index) >= 0:
-            assert (
-                self._track.instrument_rack_device
-            ), f"cannot find instrument rack device on {self._track}"
+            if not self._track.instrument_rack_device:
+                return
+
             try:
                 self._track.instrument_rack_device.selected_variation_index = int(
                     selected_variation_index

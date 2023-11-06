@@ -11,7 +11,6 @@ class DeviceParamEnum(AbstractEnum):
     AUTO_FILTER_LOW_PASS_FREQUENCY = "AUTO_FILTER_LOW_PASS_FREQUENCY"
     AUTO_PAN_AMOUNT = "AUTO_PAN_AMOUNT"
     CHAIN_SELECTOR = "CHAIN_SELECTOR"
-    COMPRESSOR_OUTPUT_GAIN = "COMPRESSOR_OUTPUT_GAIN"
     COMPRESSOR_THRESHOLD = "COMPRESSOR_THRESHOLD"
     DEVICE_ON = "DEVICE_ON"
     DRIVE = "DRIVE"
@@ -26,6 +25,9 @@ class DeviceParamEnum(AbstractEnum):
     LFO_TOOL_LFO_DEPTH = "LFO_TOOL_LFO_DEPTH"
     MIX = "MIX"
     OCTAVA_VEL = "OCTAVA_VEL"
+    OUTPUT = "OUTPUT"
+    OUTPUT_GAIN = "OUTPUT_GAIN"
+    THRESH = "THRESH"
     UTILITY_SILENT_GAIN = "UTILITY_SILENT_GAIN"
     UTILITY_MID_SIDE = "UTILITY_MID_SIDE"
     WET = "WET"
@@ -41,7 +43,6 @@ class DeviceParamEnum(AbstractEnum):
                 DeviceParamEnum.AUTO_FILTER_LOW_PASS_FREQUENCY: "Frequency",
                 DeviceParamEnum.AUTO_PAN_AMOUNT: "Amount",
                 DeviceParamEnum.CHAIN_SELECTOR: "Chain Selector",
-                DeviceParamEnum.COMPRESSOR_OUTPUT_GAIN: "Output Gain",
                 DeviceParamEnum.COMPRESSOR_THRESHOLD: "Threshold",
                 DeviceParamEnum.DEVICE_ON: "Device On",
                 DeviceParamEnum.DRIVE: "Drive",
@@ -54,6 +55,9 @@ class DeviceParamEnum(AbstractEnum):
                 DeviceParamEnum.LFO_TOOL_LFO_DEPTH: "LFO Depth",
                 DeviceParamEnum.MIX: "Mix",
                 DeviceParamEnum.OCTAVA_VEL: "Vel",
+                DeviceParamEnum.OUTPUT: "Output",
+                DeviceParamEnum.OUTPUT_GAIN: "Output Gain",
+                DeviceParamEnum.THRESH: "Thresh",
                 DeviceParamEnum.UTILITY_SILENT_GAIN: "Gain",
                 DeviceParamEnum.UTILITY_MID_SIDE: "Mid/Side Balance",
                 DeviceParamEnum.WET: "Wet",

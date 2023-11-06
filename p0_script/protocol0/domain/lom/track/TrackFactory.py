@@ -17,6 +17,8 @@ from protocol0.domain.lom.track.simple_track.audio.special.ResamplingTrack impor
 from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
+from protocol0.domain.lom.track.simple_track.midi.special.HatClosedTrack import HatClosedTrack
+from protocol0.domain.lom.track.simple_track.midi.special.KickTrack import KickTrack
 from protocol0.domain.lom.track.simple_track.midi.special.UsamoTrack import UsamoTrack
 from protocol0.domain.shared.BrowserServiceInterface import BrowserServiceInterface
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
@@ -46,7 +48,7 @@ class TrackFactory(object):
             existing_simple_track._index = index
             return existing_simple_track
 
-        special_tracks = (UsamoTrack, MixBusTrack, ResamplingTrack)
+        special_tracks = (UsamoTrack, KickTrack, HatClosedTrack, MixBusTrack, ResamplingTrack)
 
         if cls is None:
             if track.has_midi_input:

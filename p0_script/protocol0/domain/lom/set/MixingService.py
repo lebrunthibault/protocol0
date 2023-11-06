@@ -7,10 +7,13 @@ from protocol0.shared.Song import Song
 class MixingService(object):
     def scroll_all_tracks_volume(self, go_next: bool) -> None:
         for track in Song.abstract_tracks():
-            if isinstance(track, NormalGroupTrack) or (
-                isinstance(track, SimpleAudioTrack)
-                and track.current_monitoring_state == CurrentMonitoringStateEnum.IN
-            ):
+            try:
+                if isinstance(track, NormalGroupTrack) or (
+                    isinstance(track, SimpleAudioTrack)
+                    and track.current_monitoring_state == CurrentMonitoringStateEnum.IN
+                ):
+                    continue
+            except RuntimeError:
                 continue
 
             track.base_track.scroll_volume(go_next)
