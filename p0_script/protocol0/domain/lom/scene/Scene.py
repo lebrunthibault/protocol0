@@ -159,7 +159,8 @@ class Scene(SlotManager):
         # stop the previous scene in advance, using clip launch quantization
         DomainEventBus.emit(SceneFiredEvent(self.index))
 
-        self._scene.fire()
+        if self._scene:
+            self._scene.fire()
 
     def stop(self, next_scene: Optional["Scene"] = None, immediate: bool = False) -> None:
         """Used to manually stopping previous scene
