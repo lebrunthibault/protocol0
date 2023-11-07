@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Optional, Union, Any
+from typing import List, Optional, Union, Any, TYPE_CHECKING
 
 from protocol0.domain.lom.device.DeviceEnumGroup import DeviceEnumGroup
 from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
@@ -7,6 +7,9 @@ from protocol0.domain.lom.device_parameter.DeviceParameterValue import DevicePar
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.shared.AbstractEnum import AbstractEnum
 from protocol0.shared.Config import Config
+
+if TYPE_CHECKING:
+    from protocol0.domain.lom.device.Device import Device
 
 
 class DeviceEnum(AbstractEnum):
@@ -175,6 +178,22 @@ class DeviceEnum(AbstractEnum):
             )
         except Protocol0Error:
             return self.value
+
+    def matches(self, device: "Device") -> bool:
+        from protocol0.domain.lom.device.RackDevice import RackDevice
+
+        insert_devices = {
+            DeviceEnum.INSERT_DELAY: DeviceEnum.DELAY,
+            DeviceEnum.INSERT_REVERB: DeviceEnum.VALHALLA_VINTAGE_VERB,
+        }
+
+        for insert_enum, device_enum in insert_devices.items():
+            if self == insert_enum and isinstance(device, RackDevice):
+                for chain in device.chains:
+                    if any(device.enum == device_enum for device in chain.devices):
+                        return True
+
+        return device.enum == self
 
     @property
     def main_parameters_default(self) -> List[DeviceParameterValue]:
