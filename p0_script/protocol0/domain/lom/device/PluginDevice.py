@@ -13,6 +13,9 @@ class PluginDevice(Device):
 
     @property
     def presets(self) -> List[str]:
+        if not self._device:
+            return []
+
         return [str(preset) for preset in list(self._device.presets) if not str(preset) == "empty"]
 
     @property

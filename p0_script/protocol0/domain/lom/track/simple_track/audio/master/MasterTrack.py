@@ -3,6 +3,7 @@ from functools import partial
 from typing import Any
 
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
+from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
 from protocol0.domain.lom.track.simple_track.SimpleTrackSaveStartedEvent import (
     SimpleTrackSaveStartedEvent,
 )
@@ -10,7 +11,7 @@ from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import Simpl
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
-from protocol0.domain.shared.utils.utils import volume_to_db
+from protocol0.domain.shared.utils.utils import volume_to_db, clamp
 
 
 class MasterTrack(SimpleAudioTrack):
@@ -49,3 +50,13 @@ class MasterTrack(SimpleAudioTrack):
         if self.volume != 0:
             Backend.client().show_warning("Master volume is not at 0 db, fixing")
             self.volume = 0
+
+    def update_limiter_volume(self, volume: float) -> None:
+        l2 = self.devices.get_one_from_enum(DeviceEnum.L2_LIMITER)
+
+        if not l2:
+            return
+
+        l2_threshold = l2.get_parameter_by_name(DeviceParamEnum.L2_THRESHOLD)
+
+        l2_threshold.value = clamp((volume + 30 - 6) / 30, 0, 1)

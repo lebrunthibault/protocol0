@@ -2,6 +2,7 @@ from typing import Any
 
 from protocol0.domain.lom.device.MixerDevice import update_parent_compressor_from_volume
 from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
+from protocol0.shared.Song import Song
 from protocol0.shared.observer.Observable import Observable
 
 
@@ -15,3 +16,4 @@ class KickTrack(SimpleMidiTrack):
     def update(self, observable: Observable) -> None:
         if observable is self.devices.mixer_device.volume:
             update_parent_compressor_from_volume(self)
+            Song.master_track().update_limiter_volume(self.volume)
