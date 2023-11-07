@@ -56,6 +56,7 @@ def hide_plugins():
         send_keys("^%p")
 
 
+@limits(calls=1, period=5)
 def reload_ableton() -> None:
     """
     Not easy to have this work every time
@@ -76,6 +77,7 @@ def reload_ableton() -> None:
     open_set("Test.als", confirm_dialog=False)
 
 
+@limits(calls=1, period=5)
 def open_set(filename: str, confirm_dialog=True):
     if not isabs(filename):
         filename = f"{settings.ableton_set_directory}\\{filename}"
