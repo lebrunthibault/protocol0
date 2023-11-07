@@ -13,7 +13,7 @@
             @scene-skip="onSceneSkip"
         ></AbletonSetSceneData>
         <AbletonSetInfo :ableton-set="selectedSet" @set-moved="hideSet"></AbletonSetInfo>
-        <AbletonSetComment :ableton-set="selectedSet"></AbletonSetComment>
+        <AbletonSetComment :ableton-set="selectedSet" :scene-data="currentScene"></AbletonSetComment>
         <button @click="openSet" type="button" class="btn btn-lg btn-light">
           <i class="fa-solid fa-up-right-from-square" data-toggle="tooltip" data-placement="top" title="Open in Ableton"></i>
         </button>
@@ -128,8 +128,8 @@ export default defineComponent({
     },
     onSceneSkip(increment: number) {
       this.currentScene = this.selectedSet?.metadata.scenes[this.currentScene.index + increment]
-      if (this.abletonSet.metadata.tempo) {
-        this.playerTime = this.currentScene?.start * (60 / this.abletonSet.metadata.tempo)
+      if (this.selectedSet?.metadata.tempo) {
+        this.playerTime = this.currentScene?.start * (60 / this.selectedSet.metadata.tempo)
       }
     },
     sortSets() {

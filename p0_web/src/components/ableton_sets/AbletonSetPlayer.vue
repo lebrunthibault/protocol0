@@ -9,6 +9,7 @@ import WaveSurferRegions from 'wavesurfer.js/plugins/regions'
 import { defineComponent } from "vue";
 import { onKeyStroke } from '@vueuse/core'
 import {AbletonSet, SceneData} from "@/components/ableton_sets/ableton_sets";
+import {sceneName} from "@/utils/utils";
 
 
 export default defineComponent({
@@ -42,7 +43,9 @@ export default defineComponent({
       }
 
       for (const sceneData of this.scenes) {
-        if (sceneData.end > this.wavesurfer?.getCurrentTime()) {
+        const beat_duration = 60 / this.abletonSet.metadata.tempo
+
+        if (sceneData.end * beat_duration > this.wavesurfer?.getCurrentTime()) {
           return sceneData
         }
       }
@@ -87,12 +90,10 @@ export default defineComponent({
           const wsRegions = this.wavesurfer.registerPlugin(WaveSurferRegions.create())
 
           this.wavesurfer.on('ready', () => {
-            const title = sceneData.name.split("(")[0].trim();
-            const shortenedTitle = title.length > 10 ? title.slice(0, 8) + ".." : title;
             const beat_duration = 60 / this.abletonSet.metadata.tempo
 
             wsRegions.addRegion({
-              content: shortenedTitle,
+              content: sceneName(sceneData.name),
               start: sceneData.start * beat_duration,
               color: 'rgba(199,49,49,0.18)',
             })
