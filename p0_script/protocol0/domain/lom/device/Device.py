@@ -91,11 +91,11 @@ class Device(SlotManager):
 
     @property
     def is_instrument(self) -> bool:
-        return self._device.type == Live.Device.DeviceType.instrument
+        return self._device and self._device.type == Live.Device.DeviceType.instrument
 
     @property
     def is_midi(self) -> bool:
-        return self._device.type == Live.Device.DeviceType.midi_effect
+        return self._device and self._device.type == Live.Device.DeviceType.midi_effect
 
     @property
     def preset_name(self) -> Optional[str]:

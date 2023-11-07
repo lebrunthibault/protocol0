@@ -49,6 +49,7 @@ class DeviceEnum(AbstractEnum):
     LFO_TOOL = "LFOTool_x64"
     L1_LIMITER = "L1 limiter Stereo"
     L1_ULTRAMAXIMIZER = "L1+ Ultramaximizer Stereo"
+    L2_LIMITER = "L2 Stereo"
     LIMITER = "Limiter"
     MASTERING_RACK = "Mastering Rack"
     NOTE_LENGTH = "Note Length"
@@ -181,9 +182,7 @@ class DeviceEnum(AbstractEnum):
             {
                 DeviceEnum.COMPRESSOR: [
                     DeviceParameterValue(DeviceParamEnum.OUTPUT_GAIN, 0),
-                    DeviceParameterValue(
-                        DeviceParamEnum.COMPRESSOR_THRESHOLD, Config.ZERO_VOLUME
-                    ),  # 0db
+                    DeviceParameterValue(DeviceParamEnum.THRESHOLD, Config.ZERO_VOLUME),  # 0db
                 ],
                 DeviceEnum.EQ_EIGHT: [
                     DeviceParameterValue(DeviceParamEnum.FREQUENCY_1_A, 0.285494267941),
