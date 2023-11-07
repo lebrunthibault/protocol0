@@ -8,8 +8,11 @@
   <div class="modal" id="setCommentModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">{{ abletonSet.path_info.name }} comment</h5>
+        <div class="modal-header d-flex">
+          <h5 class="modal-title">
+            {{ abletonSet.path_info.name }}
+          </h5>
+          <span v-if="sceneData" class="font-italic">{{ sceneName }}</span>
         </div>
         <div class="modal-body">
           <form action="" @submit.prevent="submit">
@@ -27,19 +30,25 @@
 <script lang="ts">
 
 import {defineComponent, PropType} from "vue";
-import {notify} from '@/utils/utils'
+import {notify, sceneName} from '@/utils/utils'
 import {apiService} from "@/utils/apiService";
-import {AbletonSet} from "@/components/ableton_sets/ableton_sets";
+import {AbletonSet, SceneData} from "@/components/ableton_sets/ableton_sets";
 
 
 export default defineComponent({
   name: 'AbletonSetComment',
   props: {
     abletonSet: Object as PropType<AbletonSet>,
+    sceneData: Object as PropType<SceneData> | null,
   },
   data() {
     return {
       comment: this.abletonSet.metadata.comment
+    }
+  },
+  computed: {
+    sceneName(): string {
+      return sceneName(this.sceneData?.name)
     }
   },
   watch: {

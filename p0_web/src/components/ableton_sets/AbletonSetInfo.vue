@@ -90,8 +90,6 @@ export default defineComponent({
           return 0
         }
 
-        console.log(this.abletonSet.metadata?.scenes)
-
         return this.abletonSet.metadata.scenes.at(-1).end / 4
     },
     canArchive(): boolean {

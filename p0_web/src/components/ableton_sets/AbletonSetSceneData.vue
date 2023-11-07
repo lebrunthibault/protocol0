@@ -38,6 +38,7 @@
 <script lang="ts">
 
 import {defineComponent, PropType} from "vue";
+import {AbletonSet, SceneData} from "@/components/ableton_sets/ableton_sets";
 
 export default defineComponent({
   name: 'AbletonSetSceneData',
