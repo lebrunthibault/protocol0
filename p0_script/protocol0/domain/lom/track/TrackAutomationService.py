@@ -5,6 +5,7 @@ from typing import Optional, cast, List, Tuple
 from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.clip.ClipColorEnum import ClipColorEnum
 from protocol0.domain.lom.clip.MidiClip import MidiClip
+from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
 from protocol0.domain.lom.track.TrackFactory import TrackFactory
 from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import (
@@ -135,23 +136,37 @@ class TrackAutomationService(object):
         for clip in Song.selected_track().clips:
             clip.color = Song.selected_track().color
 
+        automated_parameters = self._get_automated_parameters()
+
+        if not len(automated_parameters):
+            log_line = "No automation"
+        else:
+            parameters_name = ["%s: %s" % (d.name, p.name) for d, p in set(automated_parameters)]
+            log_line = "Automated parameters:\n" + "- {}".format("\n  - ".join(parameters_name))
+
+        log_line += "\n\n"
+
         if (
             self._check_automation_inner_boundaries()
             and self._check_automation_cross_clip_boundaries()
         ):
-            log_line = "Automation boundaries ok"
+            log_line += "Automation boundaries ok"
         else:
-            log_line = "Automation boundaries problem"
+            log_line += "Automation boundaries problem"
 
-        log_line += "\n\nAutomated parameters:\n" + self._get_automated_parameters_log()
+        removed_device_names = self._remove_non_automated_devices(
+            [device for device, param in automated_parameters]
+        )
+        if len(removed_device_names):
+            log_line += "\n\nRemoved devices: " + ", ".join(removed_device_names)
 
         Logger.info(log_line)
         Backend.client().show_info(log_line)
 
-    def _get_automated_parameters_log(self) -> str:
+    def _get_automated_parameters(self) -> List[Tuple[Device, DeviceParameter]]:
         track = Song.selected_track()
 
-        device_parameters = []
+        device_parameters: List[Tuple[Device, DeviceParameter]] = []
 
         # colors_on = any(c.color != track.color for c in track.clips)
         # if colors_on:
@@ -168,12 +183,7 @@ class TrackAutomationService(object):
 
                 # clip.color = ClipColorEnum.BLINK.value
 
-        if not len(device_parameters):
-            return "No automation"
-        else:
-            parameters_name = ["%s: %s" % (d.name, p.name) for d, p in set(device_parameters)]
-
-            return "- {}".format("\n  - ".join(parameters_name))
+        return device_parameters
 
     def _check_automation_inner_boundaries(self) -> bool:
         track = Song.selected_track()
@@ -248,3 +258,15 @@ class TrackAutomationService(object):
             return False
 
         return True
+
+    def _remove_non_automated_devices(self, automated_devices: List[Device]) -> List[str]:
+        track = Song.selected_track()
+
+        deleted_device_names = []
+
+        for device in track.devices:
+            if not device.is_enabled and device not in automated_devices:
+                deleted_device_names.append(device.name)
+                track.devices.delete(device)
+
+        return deleted_device_names
