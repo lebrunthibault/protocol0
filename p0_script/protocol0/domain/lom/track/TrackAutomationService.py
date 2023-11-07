@@ -230,10 +230,15 @@ class TrackAutomationService(object):
         boundary_left = param_env.value
         boundary_right = next_param_env.value
 
-        boundary_ratio = round(boundary_right / boundary_left, 1)
+        if boundary_left == 0:
+            boundary_ratio = 1.0 if boundary_right == 0 else 0.0
+        else:
+            boundary_ratio = round(boundary_right / boundary_left, 1)
+
         if boundary_ratio != 1:
+            boundary_type = "cross" if param_env != next_param_env else "inner"
             Logger.info(
-                f"""Discontinuous boundary for {next_param_env.clip} : {next_param_env.parameter}.
+                f"""Discontinuous {boundary_type} boundary for {next_param_env.clip} : {next_param_env.parameter}.
                     Env values: {round(boundary_left, 2)}, {round(boundary_right, 2)}. Ratio: {boundary_ratio}
                 """,
                 debug=False,

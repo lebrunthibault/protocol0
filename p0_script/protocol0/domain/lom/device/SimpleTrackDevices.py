@@ -81,9 +81,9 @@ class SimpleTrackDevices(SlotManager, Observable):
         self, device_enum: DeviceEnum, all_devices: bool = False
     ) -> Optional[Device]:
         if all_devices:
-            return find_if(lambda d: d.enum == device_enum, self._all_devices)
+            return find_if(device_enum.matches, self._all_devices)
         else:
-            return find_if(lambda d: d.enum == device_enum, self._devices)
+            return find_if(device_enum.matches, self._devices)
 
     def _find_all_devices(
         self, devices: Optional[List[Device]], only_visible: bool = False
