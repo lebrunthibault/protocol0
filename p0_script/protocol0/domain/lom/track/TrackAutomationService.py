@@ -6,6 +6,8 @@ from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.clip.ClipColorEnum import ClipColorEnum
 from protocol0.domain.lom.clip.MidiClip import MidiClip
 from protocol0.domain.lom.device.Device import Device
+from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
+from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
 from protocol0.domain.lom.track.TrackFactory import TrackFactory
 from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import (
@@ -264,8 +266,17 @@ class TrackAutomationService(object):
 
         deleted_device_names = []
 
+        def is_default_utility(dev: Device) -> bool:
+            return (
+                dev.enum == DeviceEnum.UTILITY
+                and dev.get_parameter_by_name(DeviceParamEnum.UTILITY_MID_SIDE).value == 1
+                and dev.get_parameter_by_name(DeviceParamEnum.GAIN).value == 0
+            )
+
         for device in track.devices:
-            if not device.is_enabled and device not in automated_devices:
+            if (
+                not device.is_enabled or is_default_utility(device)
+            ) and device not in automated_devices:
                 deleted_device_names.append(device.name)
                 track.devices.delete(device)
 
