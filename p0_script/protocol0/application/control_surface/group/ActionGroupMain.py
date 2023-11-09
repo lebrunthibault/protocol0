@@ -66,4 +66,6 @@ class ActionGroupMain(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        pass
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev(Song.selected_device().is_default)

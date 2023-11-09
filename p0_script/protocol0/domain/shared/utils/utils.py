@@ -123,8 +123,8 @@ def previous_power_of_2(x: int) -> int:
 
     res = 2 ** (x - 1).bit_length()
 
-    if res == x:
-        return res
+    if x == res or x == res * 3 / 4:
+        return x
     else:
         return int(res / 2)
 

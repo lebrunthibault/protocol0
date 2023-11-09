@@ -2,7 +2,6 @@ from protocol0.application.CommandBus import CommandBus
 from protocol0.application.command.FireSceneToPositionCommand import FireSceneToPositionCommand
 from protocol0.application.command_handler.CommandHandlerInterface import CommandHandlerInterface
 from protocol0.domain.lom.scene.ScenePlaybackService import ScenePlaybackService
-from protocol0.domain.lom.song.components.SceneComponent import SceneComponent
 from protocol0.shared.Song import Song
 
 
@@ -27,7 +26,7 @@ class FireSceneToPositionCommandHandler(CommandHandlerInterface):
             FireSceneToPositionCommand, 1, except_current=True
         )
 
-        if recent_command is not None and recent_command.bar_length in (0, 1):
+        if recent_command and recent_command.bar_length:
             bar_length += (recent_command.bar_length + 1) * 10
 
         fire_to_position(selected_scene, bar_length)

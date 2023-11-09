@@ -394,6 +394,7 @@ class DeviceEnum(AbstractEnum):
             lambda d: d.is_delay,
             lambda d: d.is_reverb,
             lambda d: d.is_fx,
+            lambda d: d.is_limiter,
             lambda d: d == DeviceEnum.UTILITY,
         ]
 
@@ -448,6 +449,15 @@ class DeviceEnum(AbstractEnum):
         return self in [
             DeviceEnum.SERUM_BASS,
             DeviceEnum.SYLENTH1_BASS,
+        ]
+
+    @property
+    def is_limiter(self) -> bool:
+        return self in [
+            DeviceEnum.LIMITER,
+            DeviceEnum.L1_LIMITER,
+            DeviceEnum.L1_ULTRAMAXIMIZER,
+            DeviceEnum.L2_LIMITER,
         ]
 
     @property
