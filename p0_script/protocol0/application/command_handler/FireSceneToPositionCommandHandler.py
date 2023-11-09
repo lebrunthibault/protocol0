@@ -26,7 +26,7 @@ class FireSceneToPositionCommandHandler(CommandHandlerInterface):
             FireSceneToPositionCommand, 1, except_current=True
         )
 
-        if recent_command and recent_command.bar_length:
+        if recent_command and recent_command.bar_length is not None:
             bar_length += (recent_command.bar_length + 1) * 10
 
         fire_to_position(selected_scene, bar_length)
