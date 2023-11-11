@@ -1,7 +1,7 @@
 from functools import partial
+from typing import Optional, Type
 
 import Live
-from typing import Optional, Type
 
 from protocol0.domain.lom.device.DrumRackService import DrumRackService
 from protocol0.domain.lom.sample.SampleCategory import SampleCategory
@@ -9,17 +9,18 @@ from protocol0.domain.lom.sample.SampleCategoryEnum import SampleCategoryEnum
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
 from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitoringStateEnum
 from protocol0.domain.lom.track.group_track.AbstractGroupTrack import AbstractGroupTrack
-from protocol0.domain.lom.track.simple_track.audio.special.SimpleAutomationTrack import (
-    SimpleAutomationTrack,
-)
 from protocol0.domain.lom.track.group_track.NormalGroupTrack import NormalGroupTrack
 from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import (
     ExternalSynthTrack,
 )
-from protocol0.domain.lom.track.simple_track.audio.special.ResamplingTrack import ResamplingTrack
-from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
-from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
+from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
+from protocol0.domain.lom.track.simple_track.audio.special.ReferenceTrack import ReferenceTrack
+from protocol0.domain.lom.track.simple_track.audio.special.ResamplingTrack import ResamplingTrack
+from protocol0.domain.lom.track.simple_track.audio.special.SimpleAutomationTrack import (
+    SimpleAutomationTrack,
+)
+from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
 from protocol0.domain.lom.track.simple_track.midi.special.HatClosedTrack import HatClosedTrack
 from protocol0.domain.lom.track.simple_track.midi.special.KickTrack import KickTrack
 from protocol0.domain.lom.track.simple_track.midi.special.UsamoTrack import UsamoTrack
@@ -93,6 +94,9 @@ class TrackFactory(object):
                 return previous_abstract_group_track
             else:
                 return ExternalSynthTrack(base_group_track=base_group_track)
+
+        if base_group_track.name.strip().lower() == ReferenceTrack.TRACK_NAME.lower():
+            return ReferenceTrack(base_group_track=base_group_track)
 
         # handling normal group track
 
