@@ -52,7 +52,6 @@ class DeviceEnum(AbstractEnum):
     L1_ULTRAMAXIMIZER = "L1+ Ultramaximizer Stereo"
     L2_LIMITER = "L2 Stereo"
     LIMITER = "Limiter"
-    MASTERING_RACK = "Mastering Rack"
     NOTE_LENGTH = "Note Length"
     OCTAVA = "Octava.adg"
     OPUS = "Opus"
@@ -72,7 +71,6 @@ class DeviceEnum(AbstractEnum):
     REVERB = "Reverb"
     REV2_EDITOR = "REV2Editor"
     R_VERB = "RVerb Stereo"
-    SAMPLE_PITCH_RACK = "Sample Pitch Rack"
     SATURATOR = "Saturator"
     SATURN_2 = "Saturn 2"
     SAUSAGE_FATTENER = "Sausage Fattener"
@@ -127,8 +125,6 @@ class DeviceEnum(AbstractEnum):
     @property
     def is_rack_preset(self) -> bool:
         return self in [
-            DeviceEnum.MASTERING_RACK,
-            DeviceEnum.SAMPLE_PITCH_RACK,
             DeviceEnum.INSERT_DELAY,
             DeviceEnum.INSERT_FILTER,
             DeviceEnum.INSERT_REVERB,
