@@ -225,7 +225,7 @@ class DeviceEnum(AbstractEnum):
                 cls.UTILITY,
             ],
             [
-                DeviceEnumGroup("Comp", [cls.H_COMP, cls.COMPRESSOR, cls.SSL_COMP, cls.VCOMP]),
+                DeviceEnumGroup("Comp", [cls.H_COMP, cls.SSL_COMP, cls.COMPRESSOR]),
                 DeviceEnumGroup(
                     "Sat",
                     [

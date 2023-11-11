@@ -24,7 +24,10 @@ class SceneComponent(object):
             self.select_scene(Song.scenes()[event.scene_index])
 
     def select_scene(self, scene: Scene) -> None:
-        self._song_view.selected_scene = scene._scene
+        try:
+            self._song_view.selected_scene = scene._scene
+        except RuntimeError:
+            pass
 
     def scroll_scenes(self, go_next: bool) -> None:
         # have the scroller work the other way around
