@@ -13,6 +13,7 @@ from protocol0.domain.lom.track.TrackFactory import TrackFactory
 from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import (
     ExternalSynthTrack,
 )
+from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.ValueScroller import ValueScroller
 from protocol0.domain.shared.backend.Backend import Backend
@@ -21,6 +22,10 @@ from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
+
+
+def is_param_automated(track: SimpleTrack, param: DeviceParameter) -> bool:
+    return any(clip.automation.get_envelope(param) is not None for clip in track.clips)
 
 
 @dataclass(frozen=True)

@@ -11,12 +11,14 @@ class DeviceParamEnum(AbstractEnum):
     AUTO_FILTER_LOW_PASS_FREQUENCY = "AUTO_FILTER_LOW_PASS_FREQUENCY"
     AUTO_PAN_AMOUNT = "AUTO_PAN_AMOUNT"
     CHAIN_SELECTOR = "CHAIN_SELECTOR"
+    DECAY = "DECAY"
     DEVICE_ON = "DEVICE_ON"
     DRIVE = "DRIVE"
     DRY_WET = "DRY_WET"
     EFFECTRIX_GLOBALWET = "EFFECTRIX_GLOBALWET"
-    FREQUENCY_1_A = "EQ_EIGHT_FREQUENCY_1_A"
-    FREQUENCY_8_A = "EQ_EIGHT_FREQUENCY_8_A"
+    FB = "FB"
+    FREQUENCY_1_A = "FREQUENCY_1_A"
+    FREQUENCY_8_A = "FREQUENCY_8_A"
     GAIN = "GAIN"
     GAIN_4_A = "EQ_EIGHT_GAIN_4_A"
     INPUT = "INPUT"
@@ -45,8 +47,10 @@ class DeviceParamEnum(AbstractEnum):
                 DeviceParamEnum.AUTO_PAN_AMOUNT: "Amount",
                 DeviceParamEnum.CHAIN_SELECTOR: "Chain Selector",
                 DeviceParamEnum.THRESHOLD: "Threshold",
+                DeviceParamEnum.DECAY: "Decay",
                 DeviceParamEnum.DEVICE_ON: "Device On",
                 DeviceParamEnum.DRIVE: "Drive",
+                DeviceParamEnum.FB: "FB",
                 DeviceParamEnum.FREQUENCY_1_A: "1 Frequency A",
                 DeviceParamEnum.FREQUENCY_8_A: "8 Frequency A",
                 DeviceParamEnum.GAIN: "Gain",
