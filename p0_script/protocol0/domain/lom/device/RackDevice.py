@@ -4,6 +4,8 @@ from typing import List, Optional, Any, cast
 
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceChain import DeviceChain
+from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
+from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.observer.Observable import Observable
 
@@ -86,6 +88,21 @@ class RackDevice(Device, Observable):
             self.selected_variation_index -= 1
 
         self.notify_observers()
+
+    @property
+    def enum(self) -> Optional[DeviceEnum]:
+        if not self.get_parameter_by_name(DeviceParamEnum.INPUT) or not self.get_parameter_by_name(
+            DeviceParamEnum.WET
+        ):
+            return super(RackDevice, self).enum
+
+        for chain in self.chains:
+            if any(device.enum == DeviceEnum.VALHALLA_VINTAGE_VERB for device in chain.devices):
+                return DeviceEnum.INSERT_REVERB
+            if any(device.enum == DeviceEnum.DELAY for device in chain.devices):
+                return DeviceEnum.INSERT_DELAY
+
+        return super(RackDevice, self).enum
 
     def disconnect(self) -> None:
         super(RackDevice, self).disconnect()

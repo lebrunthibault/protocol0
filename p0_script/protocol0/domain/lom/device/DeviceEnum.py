@@ -3,10 +3,8 @@ from typing import List, Optional, Union, Any, TYPE_CHECKING
 
 from protocol0.domain.lom.device.DeviceEnumGroup import DeviceEnumGroup
 from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
-from protocol0.domain.lom.device_parameter.DeviceParameterValue import DeviceParameterValue
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.shared.AbstractEnum import AbstractEnum
-from protocol0.shared.Config import Config
 
 if TYPE_CHECKING:
     from protocol0.domain.lom.device.Device import Device
@@ -194,29 +192,6 @@ class DeviceEnum(AbstractEnum):
                         return True
 
         return device.enum == self
-
-    @property
-    def main_parameters_default(self) -> List[DeviceParameterValue]:
-        return self.get_value_from_mapping(
-            {
-                DeviceEnum.COMPRESSOR: [
-                    DeviceParameterValue(DeviceParamEnum.OUTPUT_GAIN, 0),
-                    DeviceParameterValue(DeviceParamEnum.THRESHOLD, Config.ZERO_VOLUME),  # 0db
-                ],
-                DeviceEnum.EQ_EIGHT: [
-                    DeviceParameterValue(DeviceParamEnum.FREQUENCY_1_A, 0.285494267941),
-                    DeviceParameterValue(DeviceParamEnum.GAIN_4_A, 0),
-                    DeviceParameterValue(DeviceParamEnum.FREQUENCY_8_A, 1),
-                ],  # 90 Hz
-                DeviceEnum.LFO_TOOL: [
-                    DeviceParameterValue(DeviceParamEnum.LFO_TOOL_LFO_DEPTH, 0),
-                ],
-                DeviceEnum.UTILITY: [
-                    DeviceParameterValue(DeviceParamEnum.GAIN, 0),
-                    DeviceParameterValue(DeviceParamEnum.UTILITY_MID_SIDE, 1),
-                ],
-            }
-        )
 
     @property
     def default_parameter(self) -> Optional[DeviceParamEnum]:

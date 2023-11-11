@@ -79,17 +79,6 @@ class DeviceParameter(Observable):
             self.notify_observers()
 
     @property
-    def automation_state(self) -> float:
-        if self._device_parameter:
-            return self._device_parameter.automation_state
-        else:
-            return 0
-
-    @property
-    def is_automated(self) -> bool:
-        return self.automation_state != Live.DeviceParameter.AutomationState.none
-
-    @property
     def min(self) -> float:
         if self._device_parameter:
             return self._device_parameter.min
