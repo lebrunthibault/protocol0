@@ -38,7 +38,10 @@ class ParameterEnvelope:
     def value(self) -> float:
         env = self.clip.automation.get_envelope(self.parameter)
 
-        return env.value_at_time(self.time)
+        if env:
+            return env.value_at_time(self.time)
+        else:
+            return self.parameter.value
 
 
 class TrackAutomationService(object):
@@ -153,10 +156,10 @@ class TrackAutomationService(object):
 
         log_line += "\n\n"
 
-        if (
-            self._check_automation_inner_boundaries()
-            and self._check_automation_cross_clip_boundaries()
-        ):
+        inner_boundaries_ok = self._check_automation_inner_boundaries()
+        cross_boundaries_ok = self._check_automation_cross_clip_boundaries()
+
+        if inner_boundaries_ok and cross_boundaries_ok:
             log_line += "Automation boundaries ok"
         else:
             log_line += "Automation boundaries problem"
@@ -204,11 +207,17 @@ class TrackAutomationService(object):
                 track.devices.parameters
             )
             for param in automated_parameters:
-                if not self._check_envelope_boundary(
-                    ParameterEnvelope(clip, param, 8 * Song.signature_numerator() - 0.1),
-                    ParameterEnvelope(clip, param, 8 * Song.signature_numerator() + 0.1),
-                ):
-                    boundaries_ok = False
+                # check every 8 measures
+                for bar_length in range(8, int(clip.bar_length), 8):
+                    if not self._check_envelope_boundary(
+                        ParameterEnvelope(
+                            clip, param, bar_length * Song.signature_numerator() - 0.1
+                        ),
+                        ParameterEnvelope(
+                            clip, param, bar_length * Song.signature_numerator() + 0.1
+                        ),
+                    ):
+                        boundaries_ok = False
 
         return boundaries_ok
 
@@ -231,8 +240,16 @@ class TrackAutomationService(object):
             next_clip_params = next_clip.automation.get_automated_parameters(
                 track.devices.parameters
             )
-            common_parameters = list(set(clip_params).intersection(next_clip_params))
+            common_parameters: List[DeviceParameter] = list(
+                set(clip_params).union(next_clip_params)
+            )
             for param in common_parameters:
+                if param in track.devices.mixer_device.sends or param.name in (
+                    DeviceParamEnum.INPUT.parameter_name,
+                    DeviceParamEnum.LFO_TOOL_LFO_DEPTH.parameter_name,
+                ):
+                    continue
+
                 if not self._check_envelope_boundary(
                     ParameterEnvelope(clip, param, clip.length - 0.1),
                     ParameterEnvelope(next_clip, param, 0.1),
@@ -253,11 +270,9 @@ class TrackAutomationService(object):
             boundary_ratio = round(boundary_right / boundary_left, 1)
 
         if boundary_ratio != 1:
-            boundary_type = "cross" if param_env != next_param_env else "inner"
+            boundary_type = "cross" if param_env.clip != next_param_env.clip else "inner"
             Logger.info(
-                f"""Discontinuous {boundary_type} boundary for {next_param_env.clip} : {next_param_env.parameter}.
-                    Env values: {round(boundary_left, 2)}, {round(boundary_right, 2)}. Ratio: {boundary_ratio}
-                """,
+                f"{boundary_type} on {next_param_env.clip} : {next_param_env.parameter}. {round(boundary_left, 2)} / {round(boundary_right, 2)} = {boundary_ratio} %",
                 debug=False,
             )
             next_param_env.clip.color = ClipColorEnum.BLINK.value

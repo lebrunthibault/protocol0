@@ -29,7 +29,7 @@ class DeviceParameter(Observable):
             self.default_value = 0
 
     def __repr__(self, **k: Any) -> str:
-        return "%s: %s" % (self.name, self.value)
+        return "%s: %s" % (self.name, round(self.value, 2))
 
     @classmethod
     def create_from_name(
