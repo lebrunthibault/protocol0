@@ -4,6 +4,7 @@ from protocol0.shared.AbstractEnum import AbstractEnum
 
 
 class DeviceParamEnum(AbstractEnum):
+    AB_SWITCH = "AB_SWITCH"
     ARP_RATE = "ARP_RATE"
     ARP_GATE = "ARP_GATE"
     ARP_STYLE = "ARP_STYLE"
@@ -27,6 +28,7 @@ class DeviceParamEnum(AbstractEnum):
     LFO_TOOL_LFO_DEPTH = "LFO_TOOL_LFO_DEPTH"
     MIX = "MIX"
     OCTAVA_VEL = "OCTAVA_VEL"
+    ORIGINAL_REFERENCE = "ORIGINAL_REFERENCE"
     OUTPUT = "OUTPUT"
     OUTPUT_GAIN = "OUTPUT_GAIN"
     THRESH = "THRESH"
@@ -39,6 +41,7 @@ class DeviceParamEnum(AbstractEnum):
     def parameter_name(self) -> str:
         return self.get_value_from_mapping(
             {
+                DeviceParamEnum.AB_SWITCH: "AB Switch",
                 DeviceParamEnum.ARP_RATE: "Synced Rate",
                 DeviceParamEnum.ARP_GATE: "Gate",
                 DeviceParamEnum.ARP_STYLE: "Style",
@@ -61,6 +64,7 @@ class DeviceParamEnum(AbstractEnum):
                 DeviceParamEnum.LFO_TOOL_LFO_DEPTH: "LFO Depth",
                 DeviceParamEnum.MIX: "Mix",
                 DeviceParamEnum.OCTAVA_VEL: "Vel",
+                DeviceParamEnum.ORIGINAL_REFERENCE: "Original/Reference",
                 DeviceParamEnum.OUTPUT: "Output",
                 DeviceParamEnum.OUTPUT_GAIN: "Output Gain",
                 DeviceParamEnum.THRESH: "Thresh",

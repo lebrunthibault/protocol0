@@ -23,7 +23,6 @@ from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_tr
 from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 from protocol0.domain.lom.track.simple_track.audio.SimpleReturnTrack import SimpleReturnTrack
 from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
-from protocol0.domain.lom.track.simple_track.audio.special.ReferenceTrack import ReferenceTrack
 from protocol0.domain.lom.track.simple_track.audio.special.SimpleAutomationTrack import (
     SimpleAutomationTrack,
 )
@@ -46,7 +45,6 @@ class TrackMapperService(SlotManager):
         self._live_track_id_to_simple_track: Dict[int, SimpleTrack] = collections.OrderedDict()
         self._drums_track: Optional[DrumsTrack] = None
         self._vocals_track: Optional[VocalsTrack] = None
-        self._reference_track: Optional[ReferenceTrack] = None
         self._master_track: Optional[SimpleTrack] = None
 
         self.tracks_listener.subject = self._live_song
@@ -115,7 +113,6 @@ class TrackMapperService(SlotManager):
         abgs = list(Song.abstract_group_tracks())
 
         self._drums_track = find_if(lambda t: isinstance(t, DrumsTrack), abgs)
-        self._reference_track = find_if(lambda t: isinstance(t, ReferenceTrack), abgs)
         self._vocals_track = find_if(lambda t: isinstance(t, VocalsTrack), abgs)
 
     def _on_track_added(self) -> Optional[Sequence]:

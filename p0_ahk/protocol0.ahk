@@ -67,12 +67,12 @@ Return
 ^Enter::
 	callBackend("go_to_group_track")
 return
-^Left::
-	callBackend("scene/scroll_position?direction=prev")
-return
-^Right::
-	callBackend("scene/scroll_position?direction=next")
-return
+;^Left::
+;	callBackend("scene/scroll_position?direction=prev")
+;return
+;^Right::
+;	callBackend("scene/scroll_position?direction=next")
+;return
 ^+Left::
 	callBackend("scene/scroll_position_fine?direction=prev")
 return

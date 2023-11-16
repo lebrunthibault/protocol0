@@ -54,6 +54,7 @@ from protocol0.application.command.ScrollTrackVolumeCommand import ScrollTrackVo
 from protocol0.application.command.ShowAutomationCommand import ShowAutomationCommand
 from protocol0.application.command.ShowInstrumentCommand import ShowInstrumentCommand
 from protocol0.application.command.ToggleArmCommand import ToggleArmCommand
+from protocol0.application.command.ToggleMonoSwitchCommand import ToggleMonoSwitchCommand
 from protocol0.application.command.ToggleReferenceTrackCommand import ToggleReferenceTrackCommand
 from .action_routes import router as actions_router
 from .clip_routes import router as clip_router
@@ -340,6 +341,11 @@ async def scroll_track_volume(direction: str):
 @router.get("/scroll_presets")
 async def scroll_presets(direction: str):
     p0_script_client().dispatch(ScrollPresetsCommand(go_next=direction == "next"))
+
+
+@router.get("/toggle_mono")
+async def toggle_mono():
+    p0_script_client().dispatch(ToggleMonoSwitchCommand())
 
 
 @router.get("/toggle_reference")
