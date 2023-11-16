@@ -12,15 +12,10 @@ class NormalGroupTrack(AbstractGroupTrack):
     @classmethod
     def make(cls, base_group_track: SimpleTrack) -> "NormalGroupTrack":
         from protocol0.domain.lom.track.group_track.DrumsTrack import DrumsTrack
-        from protocol0.domain.lom.track.simple_track.audio.special.ReferenceTrack import (
-            ReferenceTrack,
-        )
         from protocol0.domain.lom.track.group_track.VocalsTrack import VocalsTrack
 
         if DrumsTrack.is_track_valid(base_group_track):
             return DrumsTrack(base_group_track)
-        elif base_group_track.name == ReferenceTrack.TRACK_NAME:
-            return ReferenceTrack(base_group_track)
         elif VocalsTrack.TRACK_NAME == base_group_track.name.strip():
             return VocalsTrack(base_group_track)
         else:

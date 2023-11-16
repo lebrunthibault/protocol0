@@ -1,17 +1,16 @@
 import collections
 from functools import partial
 from itertools import chain
+from typing import List, Iterator, Dict
 
 import Live
 from _Framework.SubjectSlot import subject_slot, SlotManager
-from typing import List, Iterator, Dict
 
 from protocol0.domain.lom.scene.PlayingScene import PlayingScene
 from protocol0.domain.lom.scene.Scene import Scene
 from protocol0.domain.lom.scene.ScenePlaybackService import ScenePlaybackService
 from protocol0.domain.lom.scene.ScenesMappedEvent import ScenesMappedEvent
 from protocol0.domain.lom.song.components.SceneCrudComponent import SceneCrudComponent
-from protocol0.domain.lom.track.TrackAddedEvent import TrackAddedEvent
 from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
 from protocol0.domain.lom.track.simple_track.midi.special.UsamoTrack import UsamoTrack
 from protocol0.domain.shared.backend.Backend import Backend
@@ -42,8 +41,6 @@ class SceneService(SlotManager):
         self.scenes_listener.subject = live_song
         self._selected_scene_listener.subject = live_song.view
         self._live_scene_id_to_scene: Dict[int, Scene] = collections.OrderedDict()
-
-        DomainEventBus.subscribe(TrackAddedEvent, self._on_track_added_event)
 
     def get_scene(self, live_scene: Live.Scene.Scene) -> Scene:
         return self._live_scene_id_to_scene[live_scene._live_ptr]
@@ -163,18 +160,4 @@ class SceneService(SlotManager):
         seq.add(
             lambda: self._scene_playback_service.fire_scene(Song.scenes()[selected_scene_index + 1])
         )
-        return seq.done()
-
-    def _on_track_added_event(self, _: TrackAddedEvent) -> Sequence:
-        seq = Sequence()
-
-        def delete_empty_scenes() -> None:
-            for scene in list(reversed(Song.scenes()))[1:]:
-                if len(scene.clips.all) == 0:
-                    self._scene_crud_component.delete_scene(scene)
-                else:
-                    return
-
-        seq.wait_ms(1000)  # wait for the track clips to be populated
-        seq.add(delete_empty_scenes)
         return seq.done()

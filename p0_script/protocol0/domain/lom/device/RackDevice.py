@@ -48,25 +48,33 @@ class RackDevice(Device, Observable):
 
     @property
     def has_macro_mappings(self) -> bool:
-        return self._device.has_macro_mappings and set(self._device.macros_mapped) != {False}
+        return (
+            self._device
+            and self._device.has_macro_mappings
+            and set(self._device.macros_mapped) != {False}
+        )
 
     def remove_macro(self) -> None:
         try:
-            self._device.remove_macro()
+            if self._device:
+                self._device.remove_macro()
         except RuntimeError:
             pass
 
     @property
     def variation_count(self) -> int:
-        return self._device.variation_count
+        return self._device.variation_count if self._device else 0
 
     @property
     def selected_variation_index(self) -> int:
-        return self._device.selected_variation_index
+        return self._device.selected_variation_index if self._device else 0
 
     @selected_variation_index.setter
     def selected_variation_index(self, selected_variation_index: int) -> None:
         if selected_variation_index < 0:
+            return
+
+        if not self._device:
             return
 
         self._device.selected_variation_index = selected_variation_index

@@ -15,7 +15,6 @@ from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import 
 )
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
-from protocol0.domain.lom.track.simple_track.audio.special.ReferenceTrack import ReferenceTrack
 from protocol0.domain.lom.track.simple_track.audio.special.ResamplingTrack import ResamplingTrack
 from protocol0.domain.lom.track.simple_track.audio.special.SimpleAutomationTrack import (
     SimpleAutomationTrack,
@@ -95,11 +94,7 @@ class TrackFactory(object):
             else:
                 return ExternalSynthTrack(base_group_track=base_group_track)
 
-        if base_group_track.name.strip().lower() == ReferenceTrack.TRACK_NAME.lower():
-            return ReferenceTrack(base_group_track=base_group_track)
-
         # handling normal group track
-
         if isinstance(previous_abstract_group_track, NormalGroupTrack):
             return previous_abstract_group_track
         else:

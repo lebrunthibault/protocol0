@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 
 
 class DeviceEnum(AbstractEnum):
+    ADPTR_METRIC_AB = "ADPTR MetricAB"
     API_2500 = "API-2500 Stereo"
     ARPEGGIATOR = "Arpeggiator"
     AUDIO_EFFECT_RACK = "Audio Effect Rack"
@@ -19,7 +20,7 @@ class DeviceEnum(AbstractEnum):
     AUTO_FILTER_LOW_PASS = "Auto Filter Low Pass"
     AUTO_PAN = "AutoPan"
     BEAT_REPEAT = "Beat Repeat"
-    BLACK_BOX = "Black Box Analog Design HG-2MS"
+    BLACK_BOX = "Black Box Analog Design HG-2"
     COMPRESSOR = "Compressor"
     DECAPITATOR = "Decapitator"
     DE_ESSER = "DeEsser Stereo"
@@ -68,6 +69,7 @@ class DeviceEnum(AbstractEnum):
     PLAY = "play_VST_x64"
     PRO_Q_3 = "Pro-Q 3"
     PRO_Q_3_VST3 = "FabFilter Pro-Q 3"
+    REFERENCE = "REFERENCE"
     REVERB = "Reverb"
     REV2_EDITOR = "REV2Editor"
     R_VERB = "RVerb Stereo"
