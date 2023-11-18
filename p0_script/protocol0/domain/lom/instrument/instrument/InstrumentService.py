@@ -82,6 +82,12 @@ class InstrumentService(object):
 
     @lock
     def toggle_param(self, x_param: XParam) -> Optional[Sequence]:
+        pd_mutable = x_param.get_device_param(mutable=True)
+        if pd_mutable:
+            device = self._get_device(x_param, pd_mutable)
+            device.toggle()
+            return None
+
         pd = x_param.get_device_param(automatable=True)
 
         if not pd:
@@ -134,11 +140,11 @@ class InstrumentService(object):
 
     @lock
     @handle_errors(reset=False)
-    def scroll_param(self, param: XParam, go_next: bool) -> Optional[Sequence]:
-        param_conf, pd = param.get_scrollable(go_next)
+    def scroll_param(self, x_param: XParam, go_next: bool) -> Optional[Sequence]:
+        param_conf, pd = x_param.get_scrollable(go_next)
         auto_enable = not isinstance(param_conf, DeviceParam) or param_conf.auto_disable is False
 
-        res = self._setup_device_and_clip(param, pd, select_clip=False, auto_enable=auto_enable)
+        res = self._setup_device_and_clip(x_param, pd, select_clip=False, auto_enable=auto_enable)
         if isinstance(res, Sequence):
             return res
 
@@ -151,12 +157,12 @@ class InstrumentService(object):
             except AttributeError:
                 return None
         else:
-            if param.value_items:
-                pd.param.scroll_slowed(go_next, value_items=param.value_items)
+            if x_param.value_items:
+                pd.param.scroll_slowed(go_next, value_items=x_param.value_items)
             else:
                 pd.param.scroll(go_next)
 
-            device_param_conf = find_if(lambda p: isinstance(p, DeviceParam), param.param_configs)
+            device_param_conf = find_if(lambda p: isinstance(p, DeviceParam), x_param.param_configs)
 
             # disable the device the the param reaches its minimum
             if device_param_conf and device_param_conf.auto_disable:

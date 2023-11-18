@@ -37,7 +37,10 @@ class AbstractTrackArmState(Observable):
             if self._live_track.fold_state:
                 self._live_track.fold_state = False
 
-        return self.arm_track()
+        try:
+            return self.arm_track()
+        except RuntimeError:
+            return None
 
     def arm_track(self) -> Optional[Sequence]:
         Logger.warning("Tried arming un-armable track")

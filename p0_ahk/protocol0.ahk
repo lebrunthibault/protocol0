@@ -97,9 +97,9 @@ return
 ^!Down::
 	callBackend("scroll_track_volume?direction=prev")
 return
-^+i::
-	callBackend("show_instrument")
-return
+;^+i::
+;	callBackend("show_instrument")
+;return
 ^q::
 	callBackend("show_automation?direction=next")
 return

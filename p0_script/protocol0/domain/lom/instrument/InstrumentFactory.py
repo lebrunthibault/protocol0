@@ -41,7 +41,7 @@ class InstrumentFactory(object):
         ):
             return track.instrument  # maintaining state
         else:
-            rack_device = track.devices.get_rack_device(instrument_device)
+            rack_device = track.devices.get_device_or_rack_device(instrument_device)
             if rack_device:
                 rack_device.register_observer(track)
 
