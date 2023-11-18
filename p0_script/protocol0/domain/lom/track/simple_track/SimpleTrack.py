@@ -207,7 +207,7 @@ class SimpleTrack(AbstractTrack):
         if not self.instrument or not self.instrument.device:
             return None
 
-        return self.devices.get_rack_device(self.instrument.device)
+        return self.devices.get_device_or_rack_device(self.instrument.device)
 
     @property
     def is_foldable(self) -> bool:

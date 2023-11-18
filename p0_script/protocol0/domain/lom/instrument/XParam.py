@@ -28,6 +28,7 @@ class DeviceParam:
     auto_disable: bool = False
     automatable: bool = True
     scrollable: bool = True
+    mutable: bool = False
 
     def get_param_device(self, track: SimpleTrack) -> Optional[ParamDevice]:
         device = track.devices.get_one_from_enum(self.device_enum)
@@ -107,7 +108,9 @@ class XParam:
 
         return None
 
-    def get_device_param(self, automatable: bool = False) -> Optional[ParamDeviceNotCallable]:
+    def get_device_param(
+        self, automatable: bool = False, mutable: bool = False
+    ) -> Optional[ParamDeviceNotCallable]:
         for param_conf in self.param_configs:
             pd = param_conf.get_param_device(self.track)
 
@@ -116,6 +119,7 @@ class XParam:
                 and not isinstance(param_conf, TrackParam)
                 and isinstance(pd.param, DeviceParameter)
                 and (not automatable or param_conf.automatable)
+                and (not mutable or param_conf.mutable)
             ):
                 return cast(ParamDeviceNotCallable, pd)
 

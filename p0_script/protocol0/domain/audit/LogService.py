@@ -122,7 +122,10 @@ class LogService(object):
             Logger.info()
             Logger.info("current_track.instrument: %s" % current_track.instrument)
             Logger.info()
-            Logger.info("current_track.instrument: %s" % current_track.instrument)
+            Logger.info(
+                "selected_track.instrument.instrument_rack_device: %s"
+                % Song.selected_track().instrument_rack_device
+            )
             Logger.info()
             Logger.info(
                 "current_track.instrument.selected_preset: %s"

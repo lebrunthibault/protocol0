@@ -83,7 +83,14 @@ class ActionGroupRack(ActionGroupInterface):
             ),
             XParam(
                 "Arp",
-                [DeviceParam(DeviceEnum.ARPEGGIATOR, DeviceParamEnum.ARP_STYLE, automatable=False)],
+                [
+                    DeviceParam(
+                        DeviceEnum.ARPEGGIATOR,
+                        DeviceParamEnum.ARP_STYLE,
+                        automatable=False,
+                        mutable=True,
+                    )
+                ],
                 value_items=arp_styles,
             ),
             XParam(
