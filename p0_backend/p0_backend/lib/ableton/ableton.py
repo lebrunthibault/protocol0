@@ -4,6 +4,7 @@ from os.path import isabs
 
 import keyboard
 import win32gui  # noqa
+from loguru import logger
 from ratelimit import limits
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
@@ -79,6 +80,8 @@ def reload_ableton() -> None:
 
 @limits(calls=1, period=5)
 def open_set(filename: str, confirm_dialog=True):
+    logger.info(f"opening {filename}")
+
     if not isabs(filename):
         filename = f"{settings.ableton_set_directory}\\{filename}"
 
@@ -89,9 +92,6 @@ def open_set(filename: str, confirm_dialog=True):
     relative_path = filename.replace(f"{settings.ableton_set_directory}\\", "").replace("//", "\\")
     notify(f"Opening '{relative_path}'")
 
-    from loguru import logger
-
-    logger.success("hello")
     try:
         focus_ableton()
     except Protocol0Error:
@@ -101,7 +101,7 @@ def open_set(filename: str, confirm_dialog=True):
     time.sleep(1.5)
 
     if confirm_dialog:
-        for _ in range(6):
+        for _ in range(3):
             send_right()
             send_keys("{ENTER}")
             time.sleep(0.5)
