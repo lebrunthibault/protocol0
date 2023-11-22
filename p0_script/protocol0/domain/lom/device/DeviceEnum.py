@@ -21,6 +21,7 @@ class DeviceEnum(AbstractEnum):
     AUTO_PAN = "AutoPan"
     BEAT_REPEAT = "Beat Repeat"
     BLACK_BOX = "Black Box Analog Design HG-2.2"
+    BLACK_BOX_MS = "Black Box Analog Design HG-2MS"
     C4 = "C4 Stereo"
     COMPRESSOR = "Compressor"
     DECAPITATOR = "Decapitator"
