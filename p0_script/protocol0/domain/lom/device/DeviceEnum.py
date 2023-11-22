@@ -20,7 +20,8 @@ class DeviceEnum(AbstractEnum):
     AUTO_FILTER_LOW_PASS = "Auto Filter Low Pass"
     AUTO_PAN = "AutoPan"
     BEAT_REPEAT = "Beat Repeat"
-    BLACK_BOX = "Black Box Analog Design HG-2"
+    BLACK_BOX = "Black Box Analog Design HG-2.2"
+    C4 = "C4 Stereo"
     COMPRESSOR = "Compressor"
     DECAPITATOR = "Decapitator"
     DE_ESSER = "DeEsser Stereo"
@@ -223,7 +224,7 @@ class DeviceEnum(AbstractEnum):
                 cls.UTILITY,
             ],
             [
-                DeviceEnumGroup("Comp", [cls.H_COMP, cls.SSL_COMP, cls.COMPRESSOR]),
+                DeviceEnumGroup("Comp", [cls.H_COMP, cls.SSL_COMP, cls.COMPRESSOR, cls.C4]),
                 DeviceEnumGroup(
                     "Sat",
                     [
