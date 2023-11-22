@@ -124,7 +124,7 @@ class DeviceService(object):
     def _on_device_loaded_event(self, _: DeviceLoadedEvent) -> None:
         """Select the default parameter if it exists"""
         device = Song.selected_track().devices.selected
-        if device.enum.default_parameter is not None:
+        if device and device.enum.default_parameter is not None:
             parameter = device.get_parameter_by_name(device.enum.default_parameter)
             self._device_component.selected_parameter = parameter
 

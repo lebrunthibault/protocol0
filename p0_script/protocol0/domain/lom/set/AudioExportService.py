@@ -4,6 +4,7 @@ from protocol0.domain.audit.SetFixerService import SetFixerService
 from protocol0.domain.audit.SongStatsService import SongStatsService
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
+from protocol0.domain.lom.song.components.SceneComponent import SceneComponent
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.shared.Song import Song
@@ -17,10 +18,12 @@ class AudioExportService(object):
         song_stats_service: SongStatsService,
         set_fixer_service: SetFixerService,
         playback_component: PlaybackComponent,
+        scene_component: SceneComponent,
     ):
         self._song_stats_service = song_stats_service
         self._set_fixer_service = set_fixer_service
         self._playback_component = playback_component
+        self._scene_component = scene_component
 
     def export(self) -> None:
         self._set_fixer_service.fix_set()
@@ -55,6 +58,8 @@ class AudioExportService(object):
 
         for track in Song.simple_tracks():
             track.clear_arrangement()
+
+        self._scene_component.looping_scene_toggler.reset()
 
         song_time = 0.0
         for scene in Song.active_scenes():

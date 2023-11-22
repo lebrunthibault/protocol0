@@ -141,7 +141,7 @@ class Container(ContainerInterface):
         set_fixer_service = SetFixerService(validator_service)
         song_stats_service = SongStatsService(ableton_set)
         audio_export_service = AudioExportService(
-            song_stats_service, set_fixer_service, playback_component
+            song_stats_service, set_fixer_service, playback_component, scene_component
         )
         Song(
             live_song,

@@ -119,7 +119,7 @@ class XParam:
                 and not isinstance(param_conf, TrackParam)
                 and isinstance(pd.param, DeviceParameter)
                 and (not automatable or param_conf.automatable)
-                and (not mutable or param_conf.mutable)
+                and (not mutable or (isinstance(param_conf, DeviceParam) and param_conf.mutable))
             ):
                 return cast(ParamDeviceNotCallable, pd)
 
