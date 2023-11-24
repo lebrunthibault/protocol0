@@ -108,7 +108,10 @@ class Device(SlotManager):
 
     @is_enabled.setter
     def is_enabled(self, on: bool) -> None:
-        self.get_parameter_by_name(DeviceParamEnum.DEVICE_ON).value = 1 if on else 0
+        try:
+            self.get_parameter_by_name(DeviceParamEnum.DEVICE_ON).value = 1 if on else 0
+        except AttributeError:
+            pass
 
     def toggle(self) -> None:
         self.is_enabled = not self.is_enabled

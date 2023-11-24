@@ -29,6 +29,11 @@ class AudioExportService(object):
         self._set_fixer_service.fix_set()
         self._song_stats_service.export_song_structure()
         self._playback_component.reset()
+        l2 = Song.master_track().devices.get_one_from_enum(DeviceEnum.L2_LIMITER)
+        if l2 and not l2.is_enabled:
+            l2.is_enabled = True
+            Backend.client().show_warning("Enabling L2")
+
         ApplicationView.show_arrangement()
 
         # hack to show 1.1.1 in the arrangement

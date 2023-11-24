@@ -44,6 +44,7 @@ class SongInitService(object):
             if black_box:
                 tracks.append(track)
 
-        message = f"Found blackbox on {' - '.join(tracks)}"
-        Logger.info(message)
-        Backend.client().show_warning(message)
+        if len(tracks):
+            message = f"Found blackbox on {' - '.join(tracks)}"
+            Logger.info(message)
+            Backend.client().show_warning(message)
