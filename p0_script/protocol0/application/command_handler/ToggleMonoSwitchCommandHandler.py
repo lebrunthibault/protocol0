@@ -12,4 +12,4 @@ class ToggleMonoSwitchCommandHandler(CommandHandlerInterface):
         if utility:
             utility.get_parameter_by_name("Mono").toggle()
         else:
-            Logger.warning("Utility not setup")
+            Logger.warning("Utility not found")
