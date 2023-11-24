@@ -22,6 +22,7 @@ class DeviceEnum(AbstractEnum):
     BEAT_REPEAT = "Beat Repeat"
     BLACK_BOX = "Black Box Analog Design HG-2.2"
     BLACK_BOX_MS = "Black Box Analog Design HG-2MS"
+    CHANNEL_EQ = "Channel EQ"
     C4 = "C4 Stereo"
     COMPRESSOR = "Compressor"
     DECAPITATOR = "Decapitator"
@@ -221,7 +222,7 @@ class DeviceEnum(AbstractEnum):
                     "Filter",
                     [cls.AUTO_FILTER_LOW_PASS, cls.AUTO_FILTER_HIGH_PASS],
                 ),
-                DeviceEnumGroup("EQ", [cls.EQ_EIGHT, cls.PRO_Q_3, cls.VEQ]),
+                DeviceEnumGroup("EQ", [cls.EQ_EIGHT, cls.PRO_Q_3, cls.CHANNEL_EQ]),
                 cls.UTILITY,
             ],
             [
