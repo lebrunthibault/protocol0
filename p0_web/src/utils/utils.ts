@@ -16,7 +16,7 @@ function sceneName(name: string): string {
 }
 
 function notify(message: string, options: NotificationOptions = {}) {
-  Notification.requestPermission().then(function (result) {
+  Notification.requestPermission().then(function () {
     if (options.body) {
       options.requireInteraction = true
     }

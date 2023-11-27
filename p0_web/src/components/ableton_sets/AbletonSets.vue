@@ -32,7 +32,11 @@
       </select>
     </div>
     <div v-for="(setFolder, i) in ['Draft', 'Beta', 'Release']" :key="i" class="col-sm px-5">
-      <h2 class="text-center mb-4">{{ setFolder }}</h2>
+      <div class="d-flex justify-content-around">
+        <div></div>
+        <h2 class="text-center">{{ setFolder }} </h2>
+        <small>{{ abletonSetsByStage[setFolder.toUpperCase()] ? abletonSetsByStage[setFolder.toUpperCase()].length: 0 }}</small>
+      </div>
       <div class="list-group list-group-flush">
         <div v-for="(abletonSet, j) in abletonSetsByStage[setFolder.toUpperCase()]" :key="j"
              class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
@@ -136,27 +140,22 @@ export default defineComponent({
       if (!this.filterType) {
         return
       }
-      const getProp = (filterType: string): Function => {
-        switch (filterType) {
-          case "name":
-            return (set: AbletonSet) => set.path_info.name
-          case "recent":
-            return (set: AbletonSet) => set.path_info.saved_at
-          case "stars":
-            return (set: AbletonSet) => set.metadata?.stars
-        }
 
-        throw new Error(`unknown filter ${filterType}`)
-      }
-      const getPredicate = (getProp: Function, filterType: string): Function => {
+      const getPredicate = (filterType: string): Function => {
           if (filterType === "name") {
-            return (a: AbletonSet, b: AbletonSet) => getProp(a) > getProp(b) ? 1: - 1
-          } else {
-            return (a: AbletonSet, b: AbletonSet) => getProp(a) < getProp(b) ? 1: - 1
+            return (a: AbletonSet, b: AbletonSet) => b.path_info.name.localeCompare(a.path_info.name, undefined, {numeric: true})
+          } else if (filterType === "recent") {
+            return (a: AbletonSet, b: AbletonSet) => a.path_info.saved_at < b.path_info.saved_at ? 1: -1
+          } else if (filterType === "stars") {
+            return (a: AbletonSet, b: AbletonSet) => {
+              return a.metadata?.stars < b.metadata?.stars ? 1: - 1
+            }
           }
+
+          throw new Error(`unknown filter ${filterType}`)
       }
 
-      this.abletonSets.sort(getPredicate(getProp(this.filterType), this.filterType))
+      this.abletonSets.sort(getPredicate(this.filterType))
     },
     async fetchSets() {
       let url = '/set/all'
