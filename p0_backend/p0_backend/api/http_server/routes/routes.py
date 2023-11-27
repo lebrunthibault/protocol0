@@ -350,7 +350,7 @@ async def toggle_mono():
 
 
 @router.get("/toggle_limiter")
-async def toggle_mono():
+async def toggle_limiter():
     p0_script_client().dispatch(ToggleLimiterCommand())
 
 
