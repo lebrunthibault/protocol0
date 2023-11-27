@@ -63,7 +63,7 @@ _.replace_selected_notes  # unused method (protocol0\tests\domain\fixtures\clip.
 _.mute_for  # unused method (protocol0\domain\lom\track\simple_track\audio\master\MasterTrack.py:39)
 _.fire_scene  # unused method (protocol0\domain\lom\scene\ScenePlaybackService.py:50)
 _.fire_scene_to_position  # unused method (protocol0\domain\lom\scene\ScenePlaybackService.py:60)
-_.export_song_structure  # unused method (protocol0\domain\audit\SongStatsService.py:20)
+_.get_song_structure  # unused method (protocol0\domain\audit\SongStatsService.py:20)
 OFF  # unused variable (protocol0\domain\lom\track\CurrentMonitoringStateEnum.py:7)
 _.match_clip_colors  # unused method (protocol0\domain\lom\track\group_track\matching_track\MatchingTrackService.py:144)
 _.select_or_sync_automation  # unused method (protocol0\domain\lom\track\TrackAutomationService.py:81)
