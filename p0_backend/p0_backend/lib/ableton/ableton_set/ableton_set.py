@@ -218,14 +218,17 @@ class AbletonSet(BaseModel):
             f.write(self.metadata.model_dump_json(exclude={"path_info"}))
 
 
-def set_scene_stats(tempo: float, scene_stats: List[SceneStat]):
+def set_scene_stats(tempo: float, l2_disabled: float, scene_stats: List[SceneStat]):
     ableton_set = AbletonSet.create(get_launched_set_path())
 
     ableton_set.metadata.tempo = tempo
     ableton_set.metadata.scenes = scene_stats
 
     song_bar_length = round(scene_stats[-1].end / 4)
-    notify(f"{song_bar_length} bars")
+    message = f"{song_bar_length} bars"
+    if l2_disabled:
+        message += "\nEnabling L2"
+    notify(message)
 
     ableton_set.save()
 

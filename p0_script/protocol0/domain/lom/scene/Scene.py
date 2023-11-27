@@ -178,7 +178,7 @@ class Scene(SlotManager):
         seq.add(self.scene_name.update)
         seq.done()
 
-    @throttle(duration=40)
+    # @throttle(duration=40)
     def fire_to_position(self, bar_length: int) -> Sequence:
         seq = Sequence()
 

@@ -55,6 +55,7 @@ async def post_current_state(payload: PostCurrentStatePayload):
 
 class SceneStatsPayload(BaseModel):
     tempo: float
+    l2_disabled: float
     scenes: List[SceneStat]
 
 
@@ -64,7 +65,11 @@ class PostSceneStatsPayload(BaseModel):
 
 @router.post("/scene_stats")
 async def post_scene_stats(payload: PostSceneStatsPayload):
-    set_scene_stats(payload.post_scene_stats_payload.tempo, payload.post_scene_stats_payload.scenes)
+    set_scene_stats(
+        payload.post_scene_stats_payload.tempo,
+        payload.post_scene_stats_payload.l2_disabled,
+        payload.post_scene_stats_payload.scenes,
+    )
 
 
 @router.put("/{filename}")

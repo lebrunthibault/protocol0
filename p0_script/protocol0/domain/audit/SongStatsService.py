@@ -1,11 +1,10 @@
 import json
 
-from protocol0.domain.lom.set.AbletonSet import AbletonSet
 from protocol0.domain.audit.stats.SceneStats import SceneStats
 from protocol0.domain.audit.stats.SongStats import SongStats
 from protocol0.domain.audit.utils import tail_logs
+from protocol0.domain.lom.set.AbletonSet import AbletonSet
 from protocol0.domain.lom.track.group_track.matching_track.utils import assert_valid_track_name
-from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.logging.StatusBar import StatusBar
@@ -21,7 +20,7 @@ class SongStatsService(object):
         Logger.clear()
         Logger.info(json.dumps(stats.to_dict(), indent=4))
 
-    def export_song_structure(self) -> None:
+    def get_song_structure(self) -> SceneStats:
         for track in Song.abstract_tracks():
             try:
                 assert_valid_track_name(track.name)
@@ -36,7 +35,4 @@ class SongStatsService(object):
         if len(list(set(scene_names))) < 2:
             StatusBar.show_message("Scenes are not named")
 
-        scene_stats = SceneStats()
-        Backend.client().post_scene_stats(
-            {"scenes": scene_stats.to_full_dict()["scenes"], "tempo": Song.tempo()}
-        )
+        return SceneStats()
