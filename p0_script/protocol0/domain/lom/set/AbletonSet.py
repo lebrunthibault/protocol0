@@ -12,6 +12,8 @@ from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
 from protocol0.domain.lom.track.abstract_track.AbstractTrackNameUpdatedEvent import (
     AbstractTrackNameUpdatedEvent,
 )
+from protocol0.domain.lom.track.group_track.TrackCategoryEnum import TrackCategoryEnum
+from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrackArmedEvent import SimpleTrackArmedEvent
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
@@ -28,6 +30,20 @@ class SceneTrackState:
     has_clip: bool
     is_playing: bool
     is_armed: bool
+
+    @classmethod
+    def create(
+        cls, track: SimpleTrack, category: TrackCategoryEnum, scene_index: int
+    ) -> "SceneTrackState":
+        clip = track.clip_slots[scene_index].clip
+
+        return cls(
+            track_name=track.name,
+            group_name=category.value,
+            has_clip=clip is not None,
+            is_playing=clip is not None and clip.is_playing,
+            is_armed=track.arm_state.is_armed,
+        )
 
 
 @dataclass
