@@ -18,12 +18,13 @@ from protocol0.domain.lom.set.AbletonSet import SceneTrackState, AbletonScene
 from protocol0.domain.lom.song.components.TrackComponent import find_top_group_sub_tracks
 from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
 from protocol0.domain.lom.track.group_track.TrackCategoryEnum import TrackCategoryEnum
+from protocol0.domain.lom.track.simple_track.midi.special.KickTrack import KickTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.ValueScroller import ValueScroller
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.BarChangedEvent import BarChangedEvent
 from protocol0.domain.shared.utils.forward_to import ForwardTo
-from protocol0.domain.shared.utils.timing import throttle
+from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.Song import Song
 from protocol0.shared.observer.Observable import Observable
 from protocol0.shared.sequence.Sequence import Sequence
@@ -213,20 +214,16 @@ class Scene(SlotManager):
     def to_scene_state(self) -> AbletonScene:
         scene_state = AbletonScene()
         for group_enum in list(TrackCategoryEnum):
-            group_name = group_enum.value
-            sub_tracks = find_top_group_sub_tracks(group_name)
-
-            for track in sub_tracks:
-                clip = track.clip_slots[self.index].clip
-                getattr(scene_state, group_name).append(
-                    SceneTrackState(
-                        track_name=track.name,
-                        group_name=group_name,
-                        has_clip=clip is not None,
-                        is_playing=clip is not None and clip.is_playing,
-                        is_armed=track.arm_state.is_armed,
-                    )
+            for track in find_top_group_sub_tracks(group_enum.value):
+                getattr(scene_state, group_enum.value).append(
+                    SceneTrackState.create(track, group_enum, self.index)
                 )
+
+        kick_track = find_if(lambda t: isinstance(t, KickTrack), Song.simple_tracks())
+        if kick_track:
+            scene_state.drums.insert(
+                0, SceneTrackState.create(kick_track, TrackCategoryEnum.DRUMS, self.index)
+            )
 
         return scene_state
 
