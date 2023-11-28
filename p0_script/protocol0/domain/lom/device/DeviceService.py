@@ -68,7 +68,7 @@ class DeviceService(object):
         ):
             seq.add(partial(self._show_default_automation, Song.selected_clip()))
 
-        if device_enum.instrument_enum == DeviceEnum.SYLENTH1:
+        if device_enum.is_instrument and device_enum.instrument_enum == DeviceEnum.SYLENTH1:
             seq.add(Backend.client().un_group)
 
         seq.add(Undo.end_undo_step)

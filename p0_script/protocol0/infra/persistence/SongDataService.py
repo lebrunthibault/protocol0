@@ -2,6 +2,7 @@ from typing import Callable
 
 from protocol0.domain.lom.scene.SceneFiredEvent import SceneFiredEvent
 from protocol0.domain.lom.song.components.SceneComponent import SceneComponent
+from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.infra.persistence.SongDataEnum import SongDataEnum
@@ -40,7 +41,10 @@ class SongDataService(object):
     def _save(self) -> None:
         """Save watched elements in the set data"""
         for enum, element in self._elements.items():
-            self._set_data(enum.value, element.get_value())
+            try:
+                self._set_data(enum.value, element.get_value())
+            except Protocol0Error:
+                return
 
     def _restore(self) -> None:
         """Restore data from set data to script"""
