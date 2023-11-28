@@ -81,10 +81,10 @@ class DeviceEnum(AbstractEnum):
     SAUSAGE_FATTENER = "Sausage Fattener"
     SERUM = "Serum_x64"
     SERUM_RACK = "Serum Rack.adg"
-    SERUM_BASS = "Serum Bass.adg"
-    SERUM_KEYS = "Serum Keys.adg"
-    SERUM_LEAD = "Serum Lead.adg"
-    SERUM_PLUCK = "Serum Pluck.adg"
+    SERUM_BASS = "Serum_x64"
+    SERUM_KEYS = "Serum_x64"
+    SERUM_LEAD = "Serum_x64"
+    SERUM_PLUCK = "Serum_x64"
     SIMPLER = "Simpler"
     SOOTHE2 = "soothe2"
     SOUNDID_REFERENCE_PLUGIN = "SoundID Reference Plugin"
@@ -249,41 +249,22 @@ class DeviceEnum(AbstractEnum):
             ],
             [
                 cls.DRUM_RACK,
+                cls.KONTAKT,
+                cls.SERUM,
                 # DeviceEnumGroup(
-                #     "Sylenth1",
+                #     "Opus",
                 #     [
-                #         cls.SYLENTH1_RACK,
-                #         cls.SYLENTH1_BASS,
-                #         cls.SYLENTH1_KEYS,
-                #         cls.SYLENTH1_LEAD,
-                #         cls.SYLENTH1_PLUCK,
+                #         cls.OPUS,
+                #         cls.OPUS_VIOLINS,
+                #         cls.OPUS_CELLO,
+                #         cls.OPUS_CELLI,
+                #         cls.OPUS_STRINGS,
+                #         cls.OPUS_HORNS,
+                #         cls.OPUS_TRUMPETS,
+                #         cls.OPUS_POP_BRASS,
+                #         cls.OPUS_GLOCKENSPIEL,
                 #     ],
                 # ),
-                # DeviceEnumGroup(
-                #     "Serum",
-                #     [
-                #         cls.SERUM_RACK,
-                #         cls.SERUM_BASS,
-                #         cls.SERUM_KEYS,
-                #         cls.SERUM_LEAD,
-                #         cls.SERUM_PLUCK,
-                #     ],
-                # ),
-                # cls.SYNTH_MASTER_2,
-                DeviceEnumGroup(
-                    "Opus",
-                    [
-                        cls.OPUS,
-                        cls.OPUS_VIOLINS,
-                        cls.OPUS_CELLO,
-                        cls.OPUS_CELLI,
-                        cls.OPUS_STRINGS,
-                        cls.OPUS_HORNS,
-                        cls.OPUS_TRUMPETS,
-                        cls.OPUS_POP_BRASS,
-                        cls.OPUS_GLOCKENSPIEL,
-                    ],
-                ),
             ],
         ]
 
