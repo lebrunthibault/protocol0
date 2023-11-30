@@ -148,9 +148,10 @@ class Song(object):
         """we use the live ptr instead of the track to be able to access outdated simple tracks on deletion"""
         track_mapping = cls._INSTANCE._track_mapper_service._live_track_id_to_simple_track
         if live_track._live_ptr not in track_mapping:
-            # traceback.print_stack()
+            existing_tracks = [str(track) for track in track_mapping.values()]
             raise Protocol0Error(
-                f"Couldn't find live track {live_track.name} in _live_track_id_to_simple_track mapping"
+                "Couldn't find live track %s in _live_track_id_to_simple_track mapping : \n "
+                "%s" % (live_track.name, "\n".join(existing_tracks))
             )
 
         return track_mapping[live_track._live_ptr]
