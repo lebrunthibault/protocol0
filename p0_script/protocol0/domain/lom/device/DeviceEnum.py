@@ -25,6 +25,7 @@ class DeviceEnum(AbstractEnum):
     CHANNEL_EQ = "Channel EQ"
     C4 = "C4 Stereo"
     COMPRESSOR = "Compressor"
+    CTHULHU = "Cthulhu_x64"
     DECAPITATOR = "Decapitator"
     DE_ESSER = "DeEsser Stereo"
     DELAY = "Delay"

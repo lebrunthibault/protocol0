@@ -71,9 +71,9 @@ class AbletonSetPlace(Enum):
     def folder_name(self) -> str:
         return {
             self.TRACKS: "tracks",
-            self.ARCHIVE: "_other\\archive",
-            self.RELEASED: "_other\\released",
-            self.TRASH: "_other\\trash",
+            self.ARCHIVE: "other\\archive",
+            self.RELEASED: "other\\released",
+            self.TRASH: "other\\trash",
         }[
             self  # type: ignore[index]
         ]
