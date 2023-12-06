@@ -9,6 +9,7 @@ from protocol0.domain.lom.device.SimplerDevice import SimplerDevice
 from protocol0.domain.lom.instrument.InstrumentInterface import InstrumentInterface
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.domain.shared.utils.utils import import_package
+from protocol0.shared.logging.Logger import Logger
 
 if TYPE_CHECKING:
     from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
@@ -57,7 +58,9 @@ class InstrumentFactory(object):
 
             return InstrumentDrumRack
         elif isinstance(device, PluginDevice):
-            assert device.enum, f"plugin device not detected : {device}"
+            if not device.enum:
+                Logger.warning(f"plugin device not detected : {device}")
+                return None
 
             for _class in cls._get_instrument_classes():
                 if _class.DEVICE == device.enum:

@@ -28,7 +28,7 @@ class CommandBusHistory(object):
     def get_recent_command(
         self, command_class: Type[T], delay: float, except_current: bool
     ) -> Optional[T]:
-        """Delay in ms"""
+        """Delay in seconds"""
         time_limit = time.time() - delay
 
         for entry in reversed(list(filter(None, self._history))):

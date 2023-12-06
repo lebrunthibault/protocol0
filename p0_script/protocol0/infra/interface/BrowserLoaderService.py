@@ -1,7 +1,7 @@
 import Live
 from typing import Dict
 
-from protocol0.domain.lom.device.Sample.SampleNotFoundError import SampleNotFoundError
+from protocol0.domain.lom.device.Sample.BrowserItemNotFoundError import BrowserItemNotFoundError
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.shared.logging.Logger import Logger
@@ -126,7 +126,7 @@ class BrowserLoaderService(object):
         self._cache_category(category)
         item = self._cached_browser_items[category].get(name, None)
         if item is None:
-            raise SampleNotFoundError(name)
+            raise BrowserItemNotFoundError(name)
 
         return item
 
