@@ -14,6 +14,7 @@ from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 
 
 # noinspection SpellCheckingInspection
+from protocol0.shared.Song import Song
 
 
 class ActionGroupMain(ActionGroupInterface):
@@ -61,31 +62,6 @@ class ActionGroupMain(ActionGroupInterface):
             on_scroll=partial(scroll_devices_param, DeviceEnum.INSERT_DELAY, [DeviceParamEnum.FB]),
         )
 
-        #
-        # def record_track(record_type: RecordTypeEnum) -> Optional[Sequence]:
-        #     return self._container.get(RecordService).record_track(
-        #         Song.current_track(), record_type
-        #     )
-
-        # # RECordAudio encoder
-        # self.add_encoder(
-        #     identifier=5,
-        #     name="record audio export",
-        #     filter_active_tracks=True,
-        #     on_press=lambda: partial(record_track, RecordTypeEnum.AUDIO),
-        #     on_long_press=lambda: partial(record_track, RecordTypeEnum.AUDIO_FULL),
-        # )
-        #
-        # # RECord normal encoder
-        # self.add_encoder(
-        #     identifier=9,
-        #     name="record normal",
-        #     filter_active_tracks=True,
-        #     on_scroll=self._container.get(RecordService).recording_bar_length_scroller.scroll,
-        #     on_press=lambda: partial(record_track, RecordTypeEnum.MIDI),
-        #     on_long_press=lambda: partial(record_track, RecordTypeEnum.MIDI_UNLIMITED),
-        # )
-
         self.add_encoder(identifier=13, name="test", on_press=self.action_test)
 
         # VOLume encoder
@@ -96,4 +72,5 @@ class ActionGroupMain(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        pass
+        from protocol0.shared.logging.Logger import Logger
+        Logger.dev(Song.selected_device().parameters)

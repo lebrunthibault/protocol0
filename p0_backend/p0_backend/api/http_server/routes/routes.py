@@ -57,6 +57,7 @@ from protocol0.application.command.ToggleArmCommand import ToggleArmCommand
 from protocol0.application.command.ToggleLimiterCommand import ToggleLimiterCommand
 from protocol0.application.command.ToggleMonoSwitchCommand import ToggleMonoSwitchCommand
 from protocol0.application.command.ToggleReferenceTrackCommand import ToggleReferenceTrackCommand
+from protocol0.application.command.ToggleReferenceTrackFiltersCommand import ToggleReferenceTrackFiltersCommand
 from .action_routes import router as actions_router
 from .clip_routes import router as clip_router
 from .export_routes import router as export_router
@@ -357,6 +358,11 @@ async def toggle_limiter():
 @router.get("/toggle_reference")
 async def toggle_reference():
     p0_script_client().dispatch(ToggleReferenceTrackCommand())
+
+
+@router.get("/toggle_reference_filters")
+async def toggle_reference_filters():
+    p0_script_client().dispatch(ToggleReferenceTrackFiltersCommand())
 
 
 @router.get("/show_instrument")

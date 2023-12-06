@@ -92,6 +92,7 @@ class DeviceEnum(AbstractEnum):
     SPLICE = "Splice Bridge"
     SPIFF = "spiff"
     SSL_COMP = "SSLComp Stereo"
+    STANDARD_CLIP = "StandardCLIP.vstpreset"
     SUPER_TAP_2 = "SuperTap 2-Taps Stereo"
     SUPER_TAP_6 = "SuperTap 6-Taps Stereo"
     SURFEREQ = "SurferEQ"
@@ -238,6 +239,7 @@ class DeviceEnum(AbstractEnum):
                         cls.DECAPITATOR,
                     ],
                 ),
+                DeviceEnumGroup("Clip", [cls.STANDARD_CLIP]),
             ],
             [
                 cls.LFO_TOOL,
@@ -252,20 +254,6 @@ class DeviceEnum(AbstractEnum):
                 cls.DRUM_RACK,
                 cls.KONTAKT,
                 cls.SERUM,
-                # DeviceEnumGroup(
-                #     "Opus",
-                #     [
-                #         cls.OPUS,
-                #         cls.OPUS_VIOLINS,
-                #         cls.OPUS_CELLO,
-                #         cls.OPUS_CELLI,
-                #         cls.OPUS_STRINGS,
-                #         cls.OPUS_HORNS,
-                #         cls.OPUS_TRUMPETS,
-                #         cls.OPUS_POP_BRASS,
-                #         cls.OPUS_GLOCKENSPIEL,
-                #     ],
-                # ),
             ],
         ]
 
@@ -354,6 +342,7 @@ class DeviceEnum(AbstractEnum):
             lambda d: d.is_fx,
             lambda d: d.is_limiter,
             lambda d: d == DeviceEnum.UTILITY,
+            lambda d: d == DeviceEnum.STANDARD_CLIP,
         ]
 
         for index, predicate in enumerate(predicates):

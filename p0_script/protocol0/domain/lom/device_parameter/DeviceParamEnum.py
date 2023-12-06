@@ -18,6 +18,7 @@ class DeviceParamEnum(AbstractEnum):
     DRY_WET = "DRY_WET"
     EFFECTRIX_GLOBALWET = "EFFECTRIX_GLOBALWET"
     FB = "FB"
+    FILTER_SWITCH = "FILTER_SWITCH"
     FREQUENCY_1_A = "FREQUENCY_1_A"
     FREQUENCY_8_A = "FREQUENCY_8_A"
     GAIN = "GAIN"
@@ -54,6 +55,7 @@ class DeviceParamEnum(AbstractEnum):
                 DeviceParamEnum.DEVICE_ON: "Device On",
                 DeviceParamEnum.DRIVE: "Drive",
                 DeviceParamEnum.FB: "FB",
+                DeviceParamEnum.FILTER_SWITCH: "Filter Switch",
                 DeviceParamEnum.FREQUENCY_1_A: "1 Frequency A",
                 DeviceParamEnum.FREQUENCY_8_A: "8 Frequency A",
                 DeviceParamEnum.GAIN: "Gain",
