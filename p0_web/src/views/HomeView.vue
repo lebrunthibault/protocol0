@@ -19,6 +19,7 @@
         <li>
           <router-link to="/actions" class="nav-item nav-link m-3">Actions</router-link>
         </li>
+        <Settings></Settings>
       </ul>
     </div>
   </nav>
@@ -30,10 +31,11 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
 import AbletonSets from "@/components/ableton_sets/AbletonSets.vue";
+import Settings from "@/components/Settings.vue";
 
 export default defineComponent({
   name: 'HomeView',
-  components: {AbletonSets},
+  components: {AbletonSets, Settings},
   data: () => ({}),
 })
 </script>

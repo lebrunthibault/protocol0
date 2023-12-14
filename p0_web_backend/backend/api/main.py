@@ -12,7 +12,7 @@ from starlette.staticfiles import StaticFiles
 
 from backend.api.routes.routes import router
 from backend.lib.notification import notify
-from backend.settings import Settings
+from backend.settings import Settings, PROJECT_DIRECTORY, SETS_DIRECTORY
 
 settings = Settings()
 
@@ -55,7 +55,7 @@ async def _catch_protocol0_errors(request: Request, call_next):
         return PlainTextResponse(str(e), status_code=500)
 
 
-app.mount("/static", StaticFiles(directory=settings.ableton_set_directory), name="static")
+app.mount("/static", StaticFiles(directory=SETS_DIRECTORY), name="static")
 
 
 def start():
@@ -65,7 +65,7 @@ def start():
         port=settings.port,
         reload=True,
         log_config="backend/api/logging-config.yaml",
-        reload_dirs=settings.project_directory,
+        reload_dirs=PROJECT_DIRECTORY,
         workers=1,
     )
 
