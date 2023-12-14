@@ -16,5 +16,5 @@ RUN npm install
 COPY . .
 
 EXPOSE 8080
-#CMD [ "http-server", "dist" ]
+
 CMD [ "npm", "run", "dev" ]
