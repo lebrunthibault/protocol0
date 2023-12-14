@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+  backend:
+    build:
+      context: backend
+      target: builder
+    image: "thibaultlebrun/p0_web_backend:development"
+    ports:
+      - "8000:8000"
+    volumes:
+      - D:\ableton projects:/sets
+      - ./backend/backend:/app/backend
+
+  frontend:
+    build:
+      context: frontend
+      dockerfile: development.Dockerfile
+    image: "thibaultlebrun/p0_web_frontend:development"
+    ports:
+      - "8080:5173"
+    volumes:
+      - ./frontend:/app

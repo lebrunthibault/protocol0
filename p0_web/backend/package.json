@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "lint": "black backend && flake8 backend && mypy backend && vulture .",
-    "format": "black ."
+    "format": "black .."
   },
   "dependencies": {
 

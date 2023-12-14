@@ -14,7 +14,7 @@ class DirectorySettings(BaseModel):
 
 
 class Settings(BaseSettings):
-    port: int = 8001
+    port: int = 8000
     directories: DirectorySettings = DirectorySettings()
 
 
