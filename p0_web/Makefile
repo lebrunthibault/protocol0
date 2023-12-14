@@ -8,10 +8,6 @@ bootstrap: .env
 
 .PHONY: boostrap
 
-build:
-	@docker compose build
-.PHONY: build
-
 up:
 	@docker compose -f docker-compose-dev.yml up --build
 .PHONY: up
