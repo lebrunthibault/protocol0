@@ -6,8 +6,7 @@
     "p0_script",
     "p0_sdk",
     "p0_stream_deck",
-    "p0_web",
-    "p0_web_backend"
+    "p0_web/*"
   ],
   "scripts": {
     "build": "turbo run build",
