@@ -1,4 +1,6 @@
-from protocol0.application.command.ToggleReferenceTrackFiltersCommand import ToggleReferenceTrackFiltersCommand
+from protocol0.application.command.ToggleReferenceTrackFiltersCommand import (
+    ToggleReferenceTrackFiltersCommand,
+)
 from protocol0.application.command_handler.CommandHandlerInterface import CommandHandlerInterface
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum

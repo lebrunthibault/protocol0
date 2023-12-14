@@ -57,7 +57,9 @@ from protocol0.application.command.ToggleArmCommand import ToggleArmCommand
 from protocol0.application.command.ToggleLimiterCommand import ToggleLimiterCommand
 from protocol0.application.command.ToggleMonoSwitchCommand import ToggleMonoSwitchCommand
 from protocol0.application.command.ToggleReferenceTrackCommand import ToggleReferenceTrackCommand
-from protocol0.application.command.ToggleReferenceTrackFiltersCommand import ToggleReferenceTrackFiltersCommand
+from protocol0.application.command.ToggleReferenceTrackFiltersCommand import (
+    ToggleReferenceTrackFiltersCommand,
+)
 from .action_routes import router as actions_router
 from .clip_routes import router as clip_router
 from .export_routes import router as export_router
