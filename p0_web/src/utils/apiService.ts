@@ -16,7 +16,7 @@ function getOptions(method: string, body: Object | null = null) {
     return options
 }
 
-const baseURL = 'http://localhost:8000'
+const baseURL = 'http://localhost:8001'
 
 const makeRequest = async (path: string, method: string, data: Object | null = null) => {
     const url = `${baseURL}${path}`
