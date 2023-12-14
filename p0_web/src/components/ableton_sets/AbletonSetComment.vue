@@ -61,7 +61,7 @@ export default defineComponent({
       $('#setCommentModal').modal('show')
     },
     async submit() {
-      await apiService.put(`/set/${encodeURI(this.abletonSet?.path_info.filename)}`, {comment: this.comment})
+      await apiService.put(`/set/?filename=${encodeURIComponent(this.abletonSet?.path_info.filename)}`, {comment: this.comment})
       this.abletonSet.metadata.comment = this.comment
       notify("Set saved")
       $('#setCommentModal').modal('hide')

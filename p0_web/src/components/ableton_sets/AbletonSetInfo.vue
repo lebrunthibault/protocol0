@@ -80,7 +80,7 @@ export default defineComponent({
       this.stage = this.abletonSet?.metadata?.stage
     },
     async stage() {
-      await apiService.put(`/set/${encodeURI(this.abletonSet?.path_info.filename)}`, {stage: this.stage})
+      await apiService.put(`/set/?filename=${encodeURIComponent(this.abletonSet?.path_info.filename)}`, {stage: this.stage})
       this.abletonSet.metadata.stage = this.stage
     }
   },
@@ -129,7 +129,7 @@ export default defineComponent({
       $('#setInfoModal').modal('show')
     },
     async submit() {
-      await apiService.put(`/set/${encodeURI(this.abletonSet?.path_info.filename)}`, {name: this.name})
+      await apiService.put(`/set/?filename=${encodeURIComponent(this.abletonSet?.path_info.filename)}`, {name: this.name})
       this.abletonSet.path_info.filename = this.abletonSet.path_info.filename.replace(this.abletonSet.path_info.name, this.name)
       this.abletonSet.path_info.name = this.name
       $('#setInfoModal').modal('hide')

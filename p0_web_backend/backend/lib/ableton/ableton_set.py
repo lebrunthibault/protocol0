@@ -11,7 +11,7 @@ from typing import List, Optional
 from loguru import logger
 from pydantic import BaseModel
 
-from backend.settings import Settings
+from backend.settings import Settings, SETS_DIRECTORY
 
 settings = Settings()
 
@@ -173,9 +173,7 @@ class AbletonSet(BaseModel):
 
         # handle audio info
         if os.path.exists(ableton_set.path_info.audio_filename):
-            audio_path = os.path.relpath(
-                ableton_set.path_info.audio_filename, settings.ableton_set_directory
-            )
+            audio_path = os.path.relpath(ableton_set.path_info.audio_filename, SETS_DIRECTORY)
             audio_url = f"http://localhost:{settings.port}/static/{audio_path}"
 
             audio_saved_at = os.path.getmtime(ableton_set.path_info.audio_filename)
@@ -245,7 +243,7 @@ def list_sets(set_place: AbletonSetPlace = None) -> List[AbletonSet]:
     excluded_sets = ["Backup", "test", "tests"]
     ableton_sets = []
 
-    top_folder_path = os.path.join(settings.ableton_set_directory, set_place.folder_name)
+    top_folder_path = os.path.join(SETS_DIRECTORY, set_place.folder_name)
     from loguru import logger
 
     logger.success(top_folder_path)
@@ -254,6 +252,9 @@ def list_sets(set_place: AbletonSetPlace = None) -> List[AbletonSet]:
         top_folder_path
     ), f"{top_folder_path} does not exist"
     als_files = glob.glob(os.path.join(top_folder_path, "**/*.als"), recursive=True)
+    from loguru import logger
+
+    logger.success(als_files)
 
     for als_file in als_files:
         if any(word in als_file for word in excluded_sets):

@@ -17,4 +17,4 @@ up:
 .PHONY: up
 
 publish:
-	@docker tag docker/welcome-to-docker thibaultlebrun/p0_web_backend
+	@docker compose push

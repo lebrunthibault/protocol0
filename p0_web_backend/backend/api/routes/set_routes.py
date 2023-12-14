@@ -29,7 +29,7 @@ async def sets(place: AbletonSetPlace = AbletonSetPlace.TRACKS) -> List[AbletonS
     return list_sets(place)
 
 
-@router.put("/{filename}")
+@router.put("/")
 async def put_set(filename: str, payload: SetPayload):
     update_set(filename, payload)
 
