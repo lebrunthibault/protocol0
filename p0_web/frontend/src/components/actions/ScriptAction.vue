@@ -5,7 +5,7 @@
 <script lang="ts">
 import { Action } from './actions'
 import { PropType } from 'vue'
-import { apiService } from '@/utils/apiService'
+import api from '@/utils/api'
 import { capitalizeFirstLetter } from '@/utils/utils'
 
 export default {
@@ -16,7 +16,7 @@ export default {
   },
   methods: {
     async execute(action_id: number) {
-      await apiService.get(`/actions/${this.actionGroupId}/${action_id}`)
+      await api.get(`/actions/${this.actionGroupId}/${action_id}`)
     }
   },
   computed: {

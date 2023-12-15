@@ -16,15 +16,18 @@ function getOptions(method: string, body: Object | null = null) {
     return options
 }
 
-const baseURL = 'http://localhost:8000'
+const makeRequest = async (baseUrl: string, path: string, method: string, optional: boolean, data: Object | null = null) => {
+    const url = `${baseUrl}${path}`
 
-const makeRequest = async (path: string, method: string, data: Object | null = null) => {
-    const url = `${baseURL}${path}`
     let response = null;
     try {
       response = await fetch(url, getOptions(method, data))
     } catch (e: any) {
-      notify(e)
+        if (optional) {
+            notify("This feature is not available")
+        } else {
+            notify(e)
+        }
       throw e
     }
 
@@ -46,25 +49,24 @@ const makeRequest = async (path: string, method: string, data: Object | null = n
     }
 }
 
-class APIService {
+class ApiService {
+    constructor(private readonly baseUrl: string, private readonly optional: boolean = false) {}
+
   async get(path: string) {
-    return await makeRequest(path, "GET")
-    // const url = `${this.baseURL}${path}`
-    // const response = await fetch(url)
-    // return await response.json()
+    return await makeRequest(this.baseUrl, path, "GET", this.optional)
   }
 
   async post(path: string, data: Object) {
-    return await makeRequest(path, "POST", data)
+    return await makeRequest(this.baseUrl, path, "POST", this.optional, data)
   }
 
   async put(path: string, data: Object) {
-    return await makeRequest(path, "PUT", data)
+    return await makeRequest(this.baseUrl, path, "PUT", this.optional, data)
   }
 
   async delete(path: string) {
-    return await makeRequest(path, "DELETE")
+    return await makeRequest(this.baseUrl, path, "DELETE", this.optional)
   }
 }
 
-export const apiService = new APIService()
+export default ApiService

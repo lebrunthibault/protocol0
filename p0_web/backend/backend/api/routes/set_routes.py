@@ -16,13 +16,6 @@ router = APIRouter()
 
 settings = Settings()
 
-try:
-    from p0_backend.lib.ableton.ableton import open_set
-except ImportError:
-
-    def open_set(*_, **__):
-        pass
-
 
 @router.get("/all")
 async def sets(place: AbletonSetPlace = AbletonSetPlace.TRACKS) -> List[AbletonSet]:
@@ -32,11 +25,6 @@ async def sets(place: AbletonSetPlace = AbletonSetPlace.TRACKS) -> List[AbletonS
 @router.put("/")
 async def put_set(filename: str, payload: SetPayload):
     update_set(filename, payload)
-
-
-@router.get("/open")
-async def _open_set(path: str):
-    open_set(path)
 
 
 @router.post("/archive")

@@ -16,15 +16,10 @@ from p0_backend.lib.ableton.ableton_set.ableton_set import (
     AbletonSet,
     set_scene_stats,
     SceneStat,
-    SetPayload,
-    update_set,
-    move_set,
     AbletonSetCurrentState,
 )
 from p0_backend.lib.ableton.ableton_set.ableton_set_manager import (
     AbletonSetManager,
-    list_sets,
-    AbletonSetPlace,
 )
 from p0_backend.settings import Settings
 from protocol0.application.command.SaveSongCommand import SaveSongCommand
@@ -37,11 +32,6 @@ settings = Settings()
 @router.get("/active")
 async def active_set() -> AbletonSet:
     return AbletonSetManager.active()
-
-
-@router.get("/all")
-async def sets(place: AbletonSetPlace = AbletonSetPlace.TRACKS) -> List[AbletonSet]:
-    return list_sets(place)
 
 
 class PostCurrentStatePayload(BaseModel):
@@ -72,11 +62,6 @@ async def post_scene_stats(payload: PostSceneStatsPayload):
     )
 
 
-@router.put("/{filename}")
-async def put_set(filename: str, payload: SetPayload):
-    update_set(filename, payload)
-
-
 @router.get("/save_as_template")
 async def _save_set_as_template():
     save_set_as_template()
@@ -104,18 +89,3 @@ async def open_set_by_type(name: str):
 async def close_set(filename: str):
     await AbletonSetManager.remove(filename)
     await ws_manager.broadcast_active_set()
-
-
-@router.post("/archive")
-async def _archive_set(path: str):
-    move_set(path, AbletonSetPlace.ARCHIVE)
-
-
-@router.post("/un_archive")
-async def _un_archive_set(path: str):
-    move_set(path, AbletonSetPlace.TRACKS)
-
-
-@router.delete("")
-async def _delete_set(path: str):
-    move_set(path, AbletonSetPlace.TRASH)

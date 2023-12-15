@@ -28,7 +28,7 @@
 
 import {defineComponent} from "vue";
 import {notify} from '@/utils/utils'
-import {apiService} from "@/utils/apiService";
+import api from "@/utils/api";
 
 
 export default defineComponent({
@@ -44,14 +44,13 @@ export default defineComponent({
     },
     async submit() {
       // save in localStorage
-      await apiService.put(`/settings/`, this.settings)
+      await api.put(`/settings/`, this.settings)
       notify("Set saved")
       // $('#settingsModal').modal('hide')
     }
   },
   async mounted() {
-    this.settings = await apiService.get("/settings")
-    console.log(this.settings)
+    this.settings = await api.get("/settings")
   }
 })
 </script>

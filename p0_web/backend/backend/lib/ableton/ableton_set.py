@@ -4,12 +4,12 @@ import os.path
 import shutil
 from enum import Enum
 from json import JSONDecodeError
-from os.path import basename, dirname, exists
+from os.path import basename, dirname, exists, join, isabs
 from pathlib import Path
 from typing import List, Optional
 
 from loguru import logger
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from backend.settings import Settings, SETS_DIRECTORY
 
@@ -17,7 +17,8 @@ settings = Settings()
 
 
 class PathInfo(BaseModel):
-    filename: str
+    filename: str = Field(exclude=True)
+    relative_name: str
     name: str
     saved_at: Optional[float] = 0
 
@@ -40,9 +41,15 @@ class PathInfo(BaseModel):
 
     @classmethod
     def create(cls, filename: str) -> "PathInfo":
-        path = Path(filename)
+        assert not isabs(filename), f"Got an absolute filename: {filename}"
+        path = Path(join(SETS_DIRECTORY, filename))
 
-        return cls(filename=filename, name=path.stem, saved_at=path.stat().st_mtime)
+        return cls(
+            filename=str(path),
+            relative_name=filename,
+            name=path.stem,
+            saved_at=path.stat().st_mtime,
+        )
 
 
 class SceneStat(BaseModel):
@@ -163,7 +170,11 @@ class AbletonSet(BaseModel):
                     data = json.load(f)
                     ableton_set.metadata = AbletonSetMetadata(
                         **data,
-                        path_info=PathInfo.create(ableton_set.path_info.metadata_filename),
+                        path_info=PathInfo.create(
+                            ableton_set.path_info.metadata_filename.removeprefix(
+                                SETS_DIRECTORY + "/"
+                            )
+                        ),
                     )
                 except JSONDecodeError as e:
                     from loguru import logger
@@ -268,7 +279,9 @@ def list_sets(set_place: AbletonSetPlace = None) -> List[AbletonSet]:
         if als_file.endswith("master.als"):
             continue
 
-        ableton_sets.append(AbletonSet.create(als_file, set_place))
+        ableton_sets.append(
+            AbletonSet.create(als_file.removeprefix(SETS_DIRECTORY + "/"), set_place)
+        )
 
     return ableton_sets
 

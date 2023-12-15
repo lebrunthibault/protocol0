@@ -37,11 +37,9 @@ class ScriptClient {
 
         switch (data.type) {
         case 'FAVORITE_DEVICES':
-            console.log('FAVORITE_DEVICES', data.data)
             EventBus.emit(new FavoriteDeviceNamesUpdatedEvent(data.data))
             break
         case 'ACTIVE_SET':
-            console.log('ACTIVE_SET', data.data)
             ScriptClient.emitActiveSet(AbletonSetCurrentStateSchema.parse(JSON.parse(data.data)))
             break
         default:

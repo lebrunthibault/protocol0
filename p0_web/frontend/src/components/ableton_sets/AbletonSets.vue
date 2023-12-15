@@ -78,7 +78,8 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {apiService} from '@/utils/apiService'
+import api from '@/utils/api'
+import localApi from '@/utils/localApi'
 import AbletonSetPlayer from "@/components/ableton_sets/AbletonSetPlayer.vue";
 import AbletonSetSceneData from "@/components/ableton_sets/AbletonSetSceneData.vue";
 import AbletonSetComment from "@/components/ableton_sets/AbletonSetComment.vue";
@@ -125,7 +126,7 @@ export default defineComponent({
       this.currentScene = this.selectedSet.metadata.scenes ? this.selectedSet.metadata.scenes[0] : null
     },
     async openSet() {
-      await apiService.get(`/set/open?path=${this.selectedSet?.path_info.filename}`)
+      await localApi.get(`/set/open?path=${this.selectedSet?.path_info.relative_name}`)
     },
     onSceneChange(sceneData: SceneData) {
       this.currentScene = sceneData
@@ -162,7 +163,7 @@ export default defineComponent({
       if (this.setPlace) {
         url += `?place=${this.setPlace}`
       }
-      this.abletonSets = await apiService.get(url)
+      this.abletonSets = await api.get(url)
 
       // add index to scenes
       for (const abletonSet of this.abletonSets) {

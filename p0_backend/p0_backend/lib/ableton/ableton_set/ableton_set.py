@@ -1,11 +1,10 @@
 import glob
 import json
 import os.path
-import shutil
 import time
 from enum import Enum
 from json import JSONDecodeError
-from os.path import basename, dirname, exists
+from os.path import basename, dirname
 from pathlib import Path
 from typing import List, Optional
 
@@ -37,10 +36,6 @@ class PathInfo(BaseModel):
     def audio_filename(self) -> str:
         return self.filename.replace(".als", ".wav")
 
-    @property
-    def mp3_filename(self) -> str:
-        return self.filename.replace(".als", ".mp3")
-
     @classmethod
     def create(cls, filename: str) -> "PathInfo":
         path = Path(filename)
@@ -53,12 +48,6 @@ class SceneStat(BaseModel):
     start: int
     end: int
     track_names: List[str]
-
-
-class AbletonSetStage(str, Enum):
-    DRAFT = "DRAFT"
-    BETA = "BETA"
-    RELEASE = "RELEASE"
 
 
 class AbletonSetPlace(Enum):
@@ -94,9 +83,6 @@ class AbletonSetMetadata(BaseModel):
     path_info: Optional[PathInfo] = None
     tempo: float = 0
     scenes: List[SceneStat] = []
-    stars: int = 0
-    comment: str = ""
-    stage: AbletonSetStage = AbletonSetStage.DRAFT
 
 
 class AudioInfo(BaseModel):
@@ -143,13 +129,6 @@ class AbletonSet(BaseModel):
     audio: Optional[AudioInfo] = None
     metadata: Optional[AbletonSetMetadata] = None
     current_state: Optional[AbletonSetCurrentState] = None
-
-    @property
-    def has_own_folder(self) -> bool:
-        return (
-            basename(dirname(str(self.path_info.filename))).lower().strip()
-            == self.path_info.name.lower().strip()
-        )
 
     @classmethod
     def all_tracks_folder(cls) -> List[str]:
@@ -231,75 +210,3 @@ def set_scene_stats(tempo: float, l2_disabled: float, scene_stats: List[SceneSta
     notify(message)
 
     ableton_set.save()
-
-
-class SetPayload(BaseModel):
-    name: Optional[str] = None
-    stars: Optional[int] = None
-    comment: Optional[str] = None
-    stage: Optional[AbletonSetStage] = None
-
-
-def update_set(filename: str, payload: SetPayload):
-    ableton_set = AbletonSet.create(filename)
-
-    if payload.stars is not None:
-        ableton_set.metadata.stars = payload.stars
-    if payload.comment is not None:
-        ableton_set.metadata.comment = payload.comment
-    if payload.stage is not None:
-        ableton_set.metadata.stage = payload.stage
-
-    ableton_set.save()
-
-    if payload.name and payload.name != ableton_set.path_info.name:
-        rename_set(ableton_set, payload.name)
-
-
-def rename_set(ableton_set: AbletonSet, name: str):
-    def rename(filename: str) -> None:
-        if not exists(filename):
-            return
-
-        directory, base_name = os.path.split(filename)
-        new_name = os.path.join(directory, name)
-
-        if Path(base_name).suffix:
-            new_name += f".{'.'.join(base_name.split('.')[1:])}"
-
-        os.rename(filename, new_name)
-
-    assert ableton_set.path_info.filename
-
-    rename(ableton_set.path_info.filename)
-    rename(ableton_set.path_info.metadata_filename)
-    rename(ableton_set.path_info.audio_filename)
-    rename(f"{ableton_set.path_info.audio_filename}.asd")
-    rename(ableton_set.path_info.mp3_filename)
-    rename(f"{ableton_set.path_info.mp3_filename}.asd")
-
-    if ableton_set.has_own_folder:
-        rename(dirname(str(ableton_set.path_info.filename)))
-
-
-def move_set(path: str, set_place: AbletonSetPlace):
-    ableton_set = AbletonSet.create(path.replace("\\\\", "\\"))
-    if not ableton_set:
-        return
-
-    def move_file(filename):
-        if not exists(filename):
-            return
-
-        dest = filename.replace(ableton_set.place.folder_name, set_place.folder_name)
-        shutil.move(filename, dest)
-
-    if ableton_set.has_own_folder:
-        move_file(dirname(str(ableton_set.path_info.filename)))
-    else:
-        move_file(ableton_set.path_info.filename)
-        move_file(ableton_set.path_info.metadata_filename)
-        move_file(ableton_set.path_info.audio_filename)
-        move_file(f"{ableton_set.path_info.audio_filename}.asd")
-        move_file(f"{ableton_set.path_info.mp3_filename}")
-        move_file(f"{ableton_set.path_info.mp3_filename}.mp3.asd")

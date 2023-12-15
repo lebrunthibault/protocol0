@@ -31,7 +31,7 @@
 
 import {defineComponent, PropType} from "vue";
 import {notify, sceneName} from '@/utils/utils'
-import {apiService} from "@/utils/apiService";
+import api from "@/utils/api";
 import {AbletonSet, SceneData} from "@/components/ableton_sets/ableton_sets";
 
 
@@ -61,7 +61,7 @@ export default defineComponent({
       $('#setCommentModal').modal('show')
     },
     async submit() {
-      await apiService.put(`/set/?filename=${encodeURIComponent(this.abletonSet?.path_info.filename)}`, {comment: this.comment})
+      await api.put(`/set/?filename=${encodeURIComponent(this.abletonSet?.path_info.relative_name)}`, {comment: this.comment})
       this.abletonSet.metadata.comment = this.comment
       notify("Set saved")
       $('#setCommentModal').modal('hide')

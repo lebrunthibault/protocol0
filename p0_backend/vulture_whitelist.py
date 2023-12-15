@@ -34,7 +34,6 @@ set_clip_file_path  # unused function (p0_backend\lib\ableton\interface\clip.py:
 drag_matching_track  # unused function (p0_backend\lib\ableton\matching_track\load_matching_track.py:12)
 load_instrument_track  # unused function (p0_backend\lib\ableton\interface\track.py:101)
 websocket_endpoint  # unused function (p0_backend\api\http_server\ws.py:53)
-_.update_set  # unused method (p0_backend\lib\ableton_set.py:161)
 analyze_test_audio_clip_jitter  # unused function (p0_backend\lib\ableton\analyze_clip_jitter.py:12)
 _catch_protocol0_errors  # unused function (p0_backend\api\http_server\main.py:57)
 set_envelope_loop_length  # unused function (p0_backend\lib\ableton\automation.py:15)

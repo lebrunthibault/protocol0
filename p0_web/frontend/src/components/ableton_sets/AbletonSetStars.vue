@@ -13,7 +13,7 @@
 
 <script lang="ts">
 import {defineComponent, PropType} from "vue";
-import {apiService} from '@/utils/apiService';
+import api from '@/utils/api';
 import {notify} from '@/utils/utils';
 import {AbletonSet} from "@/components/ableton_sets/ableton_sets";
 
@@ -35,7 +35,7 @@ export default defineComponent({
   },
   methods: {
     async save() {
-      await apiService.put(`/set/?filename=${encodeURIComponent(this.abletonSet?.path_info.filename)}`, {stars: this.stars})
+      await api.put(`/set/?filename=${encodeURIComponent(this.abletonSet?.path_info.relative_name)}`, {stars: this.stars})
       this.abletonSet.metadata.stars = this.stars
       notify("Set saved")
       this.$emit("update")
