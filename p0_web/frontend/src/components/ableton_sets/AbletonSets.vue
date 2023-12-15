@@ -29,6 +29,7 @@
         <option value="name">Name</option>
         <option value="recent">Recent</option>
         <option value="stars">Stars</option>
+        <option value="commented">Commented</option>
       </select>
     </div>
     <div v-for="(setFolder, i) in ['Draft', 'Beta', 'Release']" :key="i" class="col-sm px-5">
@@ -151,6 +152,8 @@ export default defineComponent({
             return (a: AbletonSet, b: AbletonSet) => {
               return a.metadata?.stars < b.metadata?.stars ? 1: - 1
             }
+          } else if (filterType === "commented") {
+            return (_: AbletonSet, b: AbletonSet) => b.metadata.comment ? 1: -1
           }
 
           throw new Error(`unknown filter ${filterType}`)
