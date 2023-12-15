@@ -11,10 +11,12 @@ The web app makes the following things possible :
 The stages are named : draft, beta and release
 - archive or restore a set (in fact move it to an archive folder)
 - soft delete an archived set (in fact move it to a trash folder)
+- rename a set, its json metadata file and its optional exported wav and mp3
 - be able to do all of this on archived sets as well as "released" sets (sets present in a specific release folder)
 
 All this is done without opening the set. 
 The metadata data is stored in a json file that has the set name with a .json extension.
+It's expected that sets are exported as audio using the same name as the .als file.
 
 # Install
 The app is bundled as 2 docker images.

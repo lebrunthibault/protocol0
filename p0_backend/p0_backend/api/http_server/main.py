@@ -30,7 +30,7 @@ app = FastAPI(debug=True, title="p0_backend", version="1.0.0")
 
 origins = [
     "http://localhost",
-    "http://localhost:5173",
+    "http://localhost:8080",
 ]
 
 app.add_middleware(
@@ -94,7 +94,7 @@ def start():
     uvicorn.run(
         "p0_backend.api.http_server.main:app",
         host="0.0.0.0",
-        port=8000,
+        port=8001,
         reload=True,
         log_config="p0_backend/api/http_server/logging-config.yaml",
         reload_dirs=settings.project_directory,

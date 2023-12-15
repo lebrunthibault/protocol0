@@ -1,5 +1,5 @@
 interface PathInfo {
-    filename: string
+    relative_name: string
     name: string
     saved_at: number
 }

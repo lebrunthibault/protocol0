@@ -24,7 +24,7 @@
 import ActionGroupComponent from '@/components/actions/ActionGroup.vue'
 import { ActionGroup } from '@/components/actions/actions'
 import { PropType, defineComponent } from 'vue'
-import { apiService } from '@/utils/apiService'
+import localApi from '@/utils/localApi'
 
 export default defineComponent({
   name: 'ScriptActions',
@@ -34,7 +34,7 @@ export default defineComponent({
     selectedActionGroup: Object as PropType<ActionGroup>
   }),
   async mounted() {
-    this.actionGroups = await apiService.get('/actions')
+    this.actionGroups = await localApi.get('/actions')
     this.actionGroups.sort((a: ActionGroup) => {
       return a.name === 'Main' ? -1 : 1
     })

@@ -1,14 +1,11 @@
-import glob
-import os.path
 import re
-from typing import Optional, List
+from typing import Optional
 
 from loguru import logger
 
 from p0_backend.lib.ableton.ableton import is_ableton_focused
 from p0_backend.lib.ableton.ableton_set.ableton_set import (
     AbletonSet,
-    AbletonSetPlace,
     AbletonSetCurrentState,
 )
 from p0_backend.lib.ableton.get_set import (
@@ -99,31 +96,3 @@ def get_focused_set() -> Optional[AbletonSet]:
         return AbletonSetManager.active()
 
     return None
-
-
-def list_sets(set_place: AbletonSetPlace = None) -> List[AbletonSet]:
-    excluded_sets = ["Dancing Feet", "Backup", "test", "tests"]
-    ableton_sets = []
-
-    top_folder_path = os.path.join(settings.ableton_set_directory, set_place.folder_name)
-
-    assert os.path.exists(top_folder_path) and os.path.isdir(
-        top_folder_path
-    ), f"{top_folder_path} does not exist"
-    als_files = glob.glob(os.path.join(top_folder_path, "**\\*.als"), recursive=True)
-
-    for als_file in als_files:
-        if any(word in als_file for word in excluded_sets):
-            continue
-
-        # skip set sub tracks
-        if "tracks\\" in als_file.replace(top_folder_path, ""):
-            continue
-
-        # skip mastering sets
-        if als_file.endswith("master.als"):
-            continue
-
-        ableton_sets.append(AbletonSet.create(als_file, set_place))
-
-    return ableton_sets

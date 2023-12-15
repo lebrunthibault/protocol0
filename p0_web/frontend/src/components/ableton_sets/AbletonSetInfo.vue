@@ -57,7 +57,7 @@
 import {defineComponent, PropType} from "vue";
 import moment from 'moment';
 import {basename, notify} from '@/utils/utils'
-import {apiService} from "@/utils/apiService";
+import api from "@/utils/api";
 import {AbletonSet, AbletonSetPlace} from '@/components/ableton_sets/ableton_sets';
 
 
@@ -80,7 +80,7 @@ export default defineComponent({
       this.stage = this.abletonSet?.metadata?.stage
     },
     async stage() {
-      await apiService.put(`/set/?filename=${encodeURIComponent(this.abletonSet?.path_info.filename)}`, {stage: this.stage})
+      await api.put(`/set/?filename=${encodeURIComponent(this.abletonSet?.path_info.relative_name)}`, {stage: this.stage})
       this.abletonSet.metadata.stage = this.stage
     }
   },
@@ -129,26 +129,26 @@ export default defineComponent({
       $('#setInfoModal').modal('show')
     },
     async submit() {
-      await apiService.put(`/set/?filename=${encodeURIComponent(this.abletonSet?.path_info.filename)}`, {name: this.name})
-      this.abletonSet.path_info.filename = this.abletonSet.path_info.filename.replace(this.abletonSet.path_info.name, this.name)
+      await api.put(`/set/?filename=${encodeURIComponent(this.abletonSet?.path_info.relative_name)}`, {name: this.name})
+      this.abletonSet.path_info.relative_name = this.abletonSet.path_info.relative_name.replace(this.abletonSet.path_info.name, this.name)
       this.abletonSet.path_info.name = this.name
       $('#setInfoModal').modal('hide')
     },
     basename,
     async archiveSet() {
-      await apiService.post(`/set/archive?path=${this.abletonSet?.path_info.filename}`)
+      await api.post(`/set/archive?path=${this.abletonSet?.path_info.relative_name}`)
       this.$emit('setMoved', this.abletonSet)
       notify("Set archived")
       $('#setInfoModal').modal('hide')
     },
     async unArchiveSet() {
-      await apiService.post(`/set/un_archive?path=${this.abletonSet?.path_info.filename}`)
+      await api.post(`/set/un_archive?path=${this.abletonSet?.path_info.relative_name}`)
       this.$emit('setMoved', this.abletonSet)
       notify("Set restored")
       $('#setInfoModal').modal('hide')
     },
     async deleteSet() {
-      await apiService.delete(`/set?path=${this.abletonSet?.path_info.filename}`)
+      await api.delete(`/set?path=${this.abletonSet?.path_info.relative_name}`)
       this.$emit('setMoved', this.abletonSet)
       notify("Set moved to trash")
       $('#setInfoModal').modal('hide')
