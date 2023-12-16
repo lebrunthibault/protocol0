@@ -23,10 +23,12 @@ The app is bundled as 2 docker images.
 You should install docker and then run the 2 images (one for the frontend, one for the backend)
 
 - [Install docker](https://docs.docker.com/engine/install/)
-- Run the backend with : `docker run -p 8000:8000 -v "<YOUR_SETS_FOLDER>:/sets" -d thibaultlebrun/p0_web_backend:development`
+- Run the backend with : `docker run -p 8001:8001 -v "<YOUR_SETS_FOLDER>:/sets" -d thibaultlebrun/p0_web_backend`
 and replace `YOUR_SETS_FOLDER` with your sets folder (e.g. "D:\sets")
-- Run the frontend with : `docker run -p 8080:8080 -v -d thibaultlebrun/p0_web_frontend:development`
+- Run the frontend with : `docker run -p 8080:8080 -v -d thibaultlebrun/p0_web_frontend`
 - Access the web app at `localhost:8080`
+
+(the backend is exposed on port 8001)
 
 ## Folder layout
 The web app expects the following layout for the sets present in a *single* root directory
