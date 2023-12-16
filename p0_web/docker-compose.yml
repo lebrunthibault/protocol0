@@ -5,9 +5,9 @@ services:
     build:
       context: backend
       target: builder
-    image: "thibaultlebrun/p0_web_backend:development"
+    image: "thibaultlebrun/p0_web_backend"
 
   frontend:
     build:
       context: frontend
-    image: "thibaultlebrun/p0_web_frontend:development"
+    image: "thibaultlebrun/p0_web_frontend"

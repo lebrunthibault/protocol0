@@ -1,10 +1,6 @@
 API_URL          ?= http://localhost:8000/openapi.json
 
-.env:
-	@powershell -Command "cp .env.dist .env"
-	@echo Please edit your .env
-
-bootstrap: .env
+bootstrap:
 	@npm install
 	@echo project bootstrapped
 
