@@ -3,6 +3,7 @@ from functools import partial
 from protocol0.application.ScriptResetActivatedEvent import ScriptResetActivatedEvent
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
+from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.device.ReverbDelayService import (
     scroll_insert_device_volumes,
     scroll_devices_param,
@@ -72,6 +73,12 @@ class ActionGroupMain(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
+        device = Song.selected_device()
+        if not isinstance(device, RackDevice) or len(device.chains) != 2:
+            from protocol0.shared.logging.Logger import Logger
+            Logger.dev("not a rack device")
+
+        device.chains[1]
         from protocol0.shared.logging.Logger import Logger
 
         Logger.dev(Song.selected_device().parameters)
