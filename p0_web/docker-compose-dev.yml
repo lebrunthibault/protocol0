@@ -18,6 +18,6 @@ services:
       dockerfile: development.Dockerfile
     image: "thibaultlebrun/p0_web_frontend:development"
     ports:
-      - "8080:8080"
+      - "8080:5173"
     volumes:
       - ./frontend:/app

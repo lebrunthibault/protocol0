@@ -9,7 +9,7 @@ bootstrap: .env
 .PHONY: boostrap
 
 up:
-	@docker compose -f docker-compose-dev.yml up
+	@docker compose -f docker-compose-dev.yml up --build
 .PHONY: up
 
 publish:
