@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Optional
+from typing import Optional, cast
 
 import Live
 
@@ -7,6 +7,7 @@ from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device.DeviceLoadedEvent import DeviceLoadedEvent
+from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
 from protocol0.domain.lom.song.components.TrackComponent import get_track_by_name
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
@@ -17,10 +18,24 @@ from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.BrowserServiceInterface import BrowserServiceInterface
 from protocol0.domain.shared.backend.Backend import Backend
+from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.shared.Song import Song
 from protocol0.shared.Undo import Undo
+from protocol0.shared.logging.StatusBar import StatusBar
 from protocol0.shared.sequence.Sequence import Sequence
+
+
+def find_parent_rack(track: SimpleTrack, device: Device) -> Optional[RackDevice]:
+    if device in track.devices:
+        return None
+
+    for rack_device in [d for d in track.devices if isinstance(d, RackDevice)]:
+        for chain in rack_device.chains:
+            if device in chain.devices:
+                return rack_device
+
+    raise Protocol0Error("Couldn't find device %s (may be too nested to be detected)" % device.name)
 
 
 class DeviceService(object):
@@ -150,3 +165,33 @@ class DeviceService(object):
                 return device
 
         return None
+
+    def toggle_selected_rack_chain(self) -> None:
+        device = Song.selected_device()
+        assert device, "No selected device"
+
+        def is_valid_rack(d: Device) -> bool:
+            return (
+                isinstance(d, RackDevice) and len(d.chains) == 2 and len(d.chains[1].devices) != 0
+            )
+
+        if not is_valid_rack(device):
+            parent_rack = find_parent_rack(Song.selected_track(), device)
+            from protocol0.shared.logging.Logger import Logger
+
+            Logger.dev(parent_rack)
+
+            if parent_rack and is_valid_rack(parent_rack):
+                parent_rack.is_showing_chain_devices = False
+                self._device_component.select_device(Song.selected_track(), parent_rack)
+                return None
+
+            StatusBar.show_message("not a valid rack device")
+            return None
+
+        device = cast(RackDevice, device)
+
+        device.is_showing_chain_devices = True
+        device.selected_chain = device.chains[1]
+
+        self._device_component.select_device(Song.selected_track(), device.chains[1].devices[-1])

@@ -3,7 +3,6 @@ from functools import partial
 from protocol0.application.ScriptResetActivatedEvent import ScriptResetActivatedEvent
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
-from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.device.ReverbDelayService import (
     scroll_insert_device_volumes,
     scroll_devices_param,
@@ -12,7 +11,6 @@ from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnu
 from protocol0.domain.lom.set.MixingService import MixingService
 from protocol0.domain.lom.song.components.TempoComponent import TempoComponent
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
-
 
 # noinspection SpellCheckingInspection
 from protocol0.shared.Song import Song
@@ -73,12 +71,6 @@ class ActionGroupMain(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        device = Song.selected_device()
-        if not isinstance(device, RackDevice) or len(device.chains) != 2:
-            from protocol0.shared.logging.Logger import Logger
-            Logger.dev("not a rack device")
-
-        device.chains[1]
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(Song.selected_device().parameters)
+        Song.selected_device().is_showing_chains = False
+        Song.selected_device().is_collapsed = True
+        Song.selected_device().is_collapsed = False

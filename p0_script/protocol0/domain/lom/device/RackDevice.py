@@ -39,6 +39,14 @@ class RackDevice(Device, Observable):
             chain.register_observer(self)
 
     @property
+    def is_showing_chain_devices(self) -> bool:
+        return not self._device.view.is_showing_chain_devices
+
+    @is_showing_chain_devices.setter
+    def is_showing_chain_devices(self, is_showing_chains: bool) -> None:
+        self._view.is_showing_chain_devices = is_showing_chains
+
+    @property
     def selected_chain(self) -> Optional[DeviceChain]:
         return find_if(lambda c: c._chain == self._view.selected_chain, self.chains)
 

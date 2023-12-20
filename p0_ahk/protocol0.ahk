@@ -15,7 +15,7 @@ CoordMode,mouse,screen
 
 ; loop must be before any return
 Loop, 9 {
-    HotKey, ^NumPad%A_Index%, FireSceneToPosition
+    HotKey ^NumPad%A_Index%, FireSceneToPosition
 }
 Loop, 9 {
     HotKey, ^SC%A_Index%, FireSceneToPosition
@@ -42,12 +42,6 @@ return
     Send ^,  ; works best from ahk
     callBackend("set/save_as_template")
 return
-^!+l::
-	callBackend("tail_logs_raw")
-return
-^!+t::
-	callBackend("test")
-return
 ^+a::
 	callBackend("arm")
 return
@@ -57,31 +51,16 @@ return
 +space::
 	callBackend("scene/fire_to_last_position")
 return
-^NumPad0::
-	callBackend("scene/fire_to_position?bar_length=-1")
-return
 FireSceneToPosition:
     barLength:=SubStr(A_ThisHotkey,"^NumPad") - 1
 	callBackend("scene/fire_to_position?bar_length="barLength)
 Return
-^Enter::
-	callBackend("go_to_group_track")
-return
 ^Up::
 	callBackend("scene/scroll?direction=next")
 return
 ^Down::
 	callBackend("scene/scroll?direction=prev")
 return
-^!Up::
-	callBackend("scroll_track_volume?direction=next")
-return
-^!Down::
-	callBackend("scroll_track_volume?direction=prev")
-return
-;^+i::
-;	callBackend("show_instrument")
-;return
 ^q::
 	callBackend("show_automation?direction=next")
 return
@@ -90,6 +69,13 @@ return
 return
 ^e::
 	callBackend("clip/toggle_notes")
+return
+;edit grid size
+*^NumpadEnd::
+    Send ^{numpad1}
+return
+*^NumpadDown::
+    Send ^{numpad2}
 return
 ^+e::
 	callBackend("edit_automation_value")
