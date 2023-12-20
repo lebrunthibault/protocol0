@@ -3,12 +3,12 @@ from functools import partial
 from typing import Optional, Tuple, List
 
 from protocol0.domain.lom.device.Device import Device
+from protocol0.domain.lom.device.DeviceService import find_parent_rack
 from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.BrowserServiceInterface import BrowserServiceInterface
 from protocol0.domain.shared.backend.Backend import Backend
-from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.shared.sequence.Sequence import Sequence
 from protocol0.shared.types import Coords
 
@@ -32,7 +32,7 @@ class DeviceDisplayService(object):
         if device.enum is None:
             return None
 
-        parent_rack = self._find_parent_rack(track, device)
+        parent_rack = find_parent_rack(track, device)
         seq = Sequence()
         seq.add(ApplicationView.show_device)
         # Scheduler.wait_ms(1000, Backend.client().show_plugins)  # because of the keyboard shortcut
@@ -146,15 +146,3 @@ class DeviceDisplayService(object):
 
     def _get_device_click_x_position(self, device_position: int) -> int:
         return self.WIDTH_PIXEL_OFFSET + device_position * self.COLLAPSED_DEVICE_PIXEL_WIDTH
-
-    def _find_parent_rack(self, track: SimpleTrack, device: Device) -> Optional[RackDevice]:
-        if device in track.devices:
-            return None
-
-        for rack_device in [d for d in track.devices if isinstance(d, RackDevice)]:
-            if device in rack_device.chains[0].devices:
-                return rack_device
-
-        raise Protocol0Error(
-            "Couldn't find device %s (may be too nested to be detected)" % device.name
-        )

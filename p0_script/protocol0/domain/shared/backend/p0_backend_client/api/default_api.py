@@ -91,25 +91,6 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
-    def archive_set(
-        self,
-        path,
-    ):  # noqa: E501
-        # type: (str, ) -> None
-        """
-        Archive Set  # noqa: E501
-        """
-
-        payload = {
-            "method": "POST",
-            "path": "/set/archive",
-            "params": {
-                "path": path,
-            },
-        }
-
-        self._send_dict_as_midi(payload)
-
     def arm(
         self,
     ):  # noqa: E501
@@ -170,7 +151,7 @@ class P0BackendClient(object):
 
         payload = {
             "method": "GET",
-            "path": "/click",
+            "path": "/keyboard/click",
             "params": {
                 "x": x,
                 "y": y,
@@ -203,7 +184,7 @@ class P0BackendClient(object):
 
         payload = {
             "method": "GET",
-            "path": "/click_vertical_zone",
+            "path": "/keyboard/click_vertical_zone",
             "params": {
                 "x": x,
                 "y": y,
@@ -283,25 +264,6 @@ class P0BackendClient(object):
         """
 
         payload = {"method": "GET", "path": "/clip/crop", "params": {}}
-
-        self._send_dict_as_midi(payload)
-
-    def delete_set(
-        self,
-        path,
-    ):  # noqa: E501
-        # type: (str, ) -> None
-        """
-        Delete Set  # noqa: E501
-        """
-
-        payload = {
-            "method": "DELETE",
-            "path": "/set",
-            "params": {
-                "path": path,
-            },
-        }
 
         self._send_dict_as_midi(payload)
 
@@ -506,7 +468,7 @@ class P0BackendClient(object):
 
         payload = {
             "method": "GET",
-            "path": "/load_device",
+            "path": "/device/load",
             "params": {
                 "name": name,
                 "create_track": create_track,
@@ -527,7 +489,7 @@ class P0BackendClient(object):
 
         payload = {
             "method": "GET",
-            "path": "/load_drum_rack",
+            "path": "/device/load_drum_rack",
             "params": {
                 "category": category,
                 "subcategory": subcategory,
@@ -575,7 +537,7 @@ class P0BackendClient(object):
         Load Minitaur  # noqa: E501
         """
 
-        payload = {"method": "GET", "path": "/load_minitaur", "params": {}}
+        payload = {"method": "GET", "path": "/device/load_minitaur", "params": {}}
 
         self._send_dict_as_midi(payload)
 
@@ -587,7 +549,7 @@ class P0BackendClient(object):
         Load Rev2  # noqa: E501
         """
 
-        payload = {"method": "GET", "path": "/load_rev2", "params": {}}
+        payload = {"method": "GET", "path": "/device/load_rev2", "params": {}}
 
         self._send_dict_as_midi(payload)
 
@@ -675,7 +637,7 @@ class P0BackendClient(object):
 
         payload = {
             "method": "GET",
-            "path": "/move_to",
+            "path": "/keyboard/move_to",
             "params": {
                 "x": x,
                 "y": y,
@@ -810,27 +772,6 @@ class P0BackendClient(object):
             "path": "/set/scene_stats",
             "params": {
                 "post_scene_stats_payload": post_scene_stats_payload,
-            },
-        }
-
-        self._send_dict_as_midi(payload)
-
-    def put_set(
-        self,
-        filename,
-        set_payload,
-    ):  # noqa: E501
-        # type: (str, SetPayload, ) -> None
-        """
-        Put Set  # noqa: E501
-        """
-
-        payload = {
-            "method": "PUT",
-            "path": "/set/{filename}",
-            "params": {
-                "filename": filename,
-                "set_payload": set_payload,
             },
         }
 
@@ -1049,7 +990,7 @@ class P0BackendClient(object):
         Select And Copy  # noqa: E501
         """
 
-        payload = {"method": "GET", "path": "/select_and_copy", "params": {}}
+        payload = {"method": "GET", "path": "/keyboard/select_and_copy", "params": {}}
 
         self._send_dict_as_midi(payload)
 
@@ -1061,7 +1002,7 @@ class P0BackendClient(object):
         Select And Delete  # noqa: E501
         """
 
-        payload = {"method": "GET", "path": "/select_and_delete", "params": {}}
+        payload = {"method": "GET", "path": "/keyboard/select_and_delete", "params": {}}
 
         self._send_dict_as_midi(payload)
 
@@ -1073,7 +1014,7 @@ class P0BackendClient(object):
         Select And Paste  # noqa: E501
         """
 
-        payload = {"method": "GET", "path": "/select_and_paste", "params": {}}
+        payload = {"method": "GET", "path": "/keyboard/select_and_paste", "params": {}}
 
         self._send_dict_as_midi(payload)
 
@@ -1148,22 +1089,6 @@ class P0BackendClient(object):
             "path": "/clip/set_loop_length",
             "params": {
                 "bar_length": bar_length,
-            },
-        }
-
-        self._send_dict_as_midi(payload)
-
-    def sets(self, place):  # noqa: E501
-        # type: (AbletonSetPlace, ) -> None
-        """
-        Sets  # noqa: E501
-        """
-
-        payload = {
-            "method": "GET",
-            "path": "/set/all",
-            "params": {
-                "place": place,
             },
         }
 
@@ -1416,6 +1341,30 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
+    def toggle_limiter(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Toggle Limiter  # noqa: E501
+        """
+
+        payload = {"method": "GET", "path": "/toggle_limiter", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
+    def toggle_mono(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Toggle Mono  # noqa: E501
+        """
+
+        payload = {"method": "GET", "path": "/toggle_mono", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
     def toggle_reference(
         self,
     ):  # noqa: E501
@@ -1428,6 +1377,18 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
+    def toggle_reference_filters(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Toggle Reference Filters  # noqa: E501
+        """
+
+        payload = {"method": "GET", "path": "/toggle_reference_filters", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
     def toggle_scene_loop(
         self,
     ):  # noqa: E501
@@ -1437,25 +1398,6 @@ class P0BackendClient(object):
         """
 
         payload = {"method": "GET", "path": "/scene/toggle_loop", "params": {}}
-
-        self._send_dict_as_midi(payload)
-
-    def un_archive_set(
-        self,
-        path,
-    ):  # noqa: E501
-        # type: (str, ) -> None
-        """
-        Un Archive Set  # noqa: E501
-        """
-
-        payload = {
-            "method": "POST",
-            "path": "/set/un_archive",
-            "params": {
-                "path": path,
-            },
-        }
 
         self._send_dict_as_midi(payload)
 

@@ -153,7 +153,19 @@ export default defineComponent({
               return a.metadata?.stars < b.metadata?.stars ? 1: - 1
             }
           } else if (filterType === "commented") {
-            return (_: AbletonSet, b: AbletonSet) => b.metadata.comment ? 1: -1
+            console.log("commented")
+            return (a: AbletonSet, b: AbletonSet) => {
+              if (!b.metadata.comment) {
+                return -1;
+              } else if (!a.metadata.comment) {
+                return 1;
+              }
+
+              const aLines = a.metadata.comment ? a.metadata.comment.split("\n").length : 0;
+              const bLines = b.metadata.comment ? b.metadata.comment.split("\n").length : 0;
+
+              return bLines - aLines;
+            }
           }
 
           throw new Error(`unknown filter ${filterType}`)

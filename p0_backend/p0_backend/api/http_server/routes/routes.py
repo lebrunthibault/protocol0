@@ -31,7 +31,6 @@ from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.explorer import close_samples_windows, close_explorer_window, open_explorer
 from p0_backend.lib.keys import send_keys
-from p0_backend.lib.mouse.mouse import click, click_vertical_zone, move_to
 from p0_backend.lib.notification import notify
 from p0_backend.lib.process import execute_powershell_command
 from p0_backend.lib.window.find_window import find_window_handle_by_enum
@@ -40,11 +39,7 @@ from p0_backend.settings import Settings
 from protocol0.application.command.BounceTrackToAudioCommand import BounceTrackToAudioCommand
 from protocol0.application.command.DrumRackToSimplerCommand import DrumRackToSimplerCommand
 from protocol0.application.command.GoToGroupTrackCommand import GoToGroupTrackCommand
-from protocol0.application.command.LoadDeviceCommand import LoadDeviceCommand
-from protocol0.application.command.LoadDrumRackCommand import LoadDrumRackCommand
 from protocol0.application.command.LoadMatchingTrackCommand import LoadMatchingTrackCommand
-from protocol0.application.command.LoadMinitaurCommand import LoadMinitaurCommand
-from protocol0.application.command.LoadRev2Command import LoadRev2Command
 from protocol0.application.command.LogSelectedCommand import LogSelectedCommand
 from protocol0.application.command.LogSongStatsCommand import LogSongStatsCommand
 from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongCommand
@@ -60,9 +55,11 @@ from protocol0.application.command.ToggleReferenceTrackCommand import ToggleRefe
 from protocol0.application.command.ToggleReferenceTrackFiltersCommand import (
     ToggleReferenceTrackFiltersCommand,
 )
-from .action_routes import router as actions_router
+from .action_routes import router as action_router
 from .clip_routes import router as clip_router
+from .device_routes import router as device_router
 from .export_routes import router as export_router
+from .keyboard_routes import router as keyboard_router
 from .record_routes import router as record_router
 from .scene_routes import router as scene_router
 from .set_routes import router as set_router
@@ -71,9 +68,11 @@ router = APIRouter()
 
 settings = Settings()
 
-router.include_router(actions_router, prefix="/actions")
+router.include_router(action_router, prefix="/actions")
 router.include_router(clip_router, prefix="/clip")
+router.include_router(device_router, prefix="/device")
 router.include_router(export_router, prefix="/export")
+router.include_router(keyboard_router, prefix="/keyboard")
 router.include_router(record_router, prefix="/record")
 router.include_router(scene_router, prefix="/scene")
 router.include_router(set_router, prefix="/set")
@@ -109,39 +108,6 @@ async def _reload_ableton():
 @router.get("/flatten_track")
 def _flatten_track():
     flatten_track()
-
-
-@router.get("/move_to")
-def _move_to(x: int, y: int):
-    move_to((x, y))
-
-
-@router.get("/click")
-def _click(x: int, y: int):
-    click((x, y))
-
-
-@router.get("/click_vertical_zone")
-def _click_vertical_zone(x: int, y: int):
-    click_vertical_zone((x, y))
-
-
-@router.get("/select_and_copy")
-def select_and_copy():
-    send_keys("^a")
-    send_keys("^c")
-
-
-@router.get("/select_and_paste")
-def select_and_paste():
-    send_keys("^a")
-    send_keys("^v")
-
-
-@router.get("/select_and_delete")
-def select_and_delete():
-    send_keys("^a")
-    send_keys("{DELETE}")
 
 
 @router.get("/un_group")
@@ -270,26 +236,6 @@ async def open_in_explorer(path: str):
 @router.get("/play_pause")
 async def play_pause():
     p0_script_client().dispatch(PlayPauseSongCommand())
-
-
-@router.get("/load_device")
-async def load_device(name: str, create_track: bool = False):
-    p0_script_client().dispatch(LoadDeviceCommand(name, create_track))
-
-
-@router.get("/load_drum_rack")
-async def load_drum_rack(category: str, subcategory: str):
-    p0_script_client().dispatch(LoadDrumRackCommand(category, subcategory))
-
-
-@router.get("/load_rev2")
-async def load_rev2():
-    p0_script_client().dispatch(LoadRev2Command())
-
-
-@router.get("/load_minitaur")
-async def load_minitaur():
-    p0_script_client().dispatch(LoadMinitaurCommand())
 
 
 @router.get("/bounce_track_to_audio")
