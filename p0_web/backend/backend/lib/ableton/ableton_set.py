@@ -60,8 +60,8 @@ class SceneStat(BaseModel):
 
 
 class AbletonSetStage(str, Enum):
-    DRAFT = "DRAFT"
-    BETA = "BETA"
+    IDEA = "IDEA"
+    TRACK = "TRACK"
     RELEASE = "RELEASE"
 
 
@@ -100,7 +100,7 @@ class AbletonSetMetadata(BaseModel):
     scenes: List[SceneStat] = []
     stars: int = 0
     comment: str = ""
-    stage: AbletonSetStage = AbletonSetStage.DRAFT
+    stage: AbletonSetStage = AbletonSetStage.IDEA
 
 
 class AudioInfo(BaseModel):

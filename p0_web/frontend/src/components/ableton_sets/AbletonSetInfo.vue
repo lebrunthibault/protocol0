@@ -28,13 +28,13 @@
               {{ abletonSet.metadata.tempo }} BPM, {{ barLength }} bars
             </div>
             <div class="btn-group" role="group">
-              <input type="radio" class="btn-check" name="stage_draft" id="stage_draft" autocomplete="off"
-                     v-model="stage" value="DRAFT" :checked="stage === 'DRAFT'">
-              <label class="btn btn-outline-primary" for="stage_draft">Draft</label>
+              <input type="radio" class="btn-check" name="stage_idea" id="stage_idea" autocomplete="off"
+                     v-model="stage" value="IDEA" :checked="stage === 'IDEA'">
+              <label class="btn btn-outline-primary" for="stage_idea">Idea</label>
 
-              <input type="radio" class="btn-check" name="stage_beta" id="stage_beta" autocomplete="off"
-                     v-model="stage" value="BETA" :checked="stage === 'BETA'">
-              <label class="btn btn-outline-primary" for="stage_beta">Beta</label>
+              <input type="radio" class="btn-check" name="stage_track" id="stage_track" autocomplete="off"
+                     v-model="stage" value="BETA" :checked="stage === 'TRACK'">
+              <label class="btn btn-outline-primary" for="stage_track">Track</label>
 
               <input type="radio" class="btn-check" name="stage_release" id="stage_release" autocomplete="off"
                      v-model="stage" value="RELEASE" :checked="stage === 'RELEASE'">

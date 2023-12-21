@@ -8,7 +8,7 @@ The web app makes the following things possible :
 - rank sets by assigning them stars (0 to 5)
 - add a commentary to the set
 - assign a "stage" to the set depending on if it's an idea, a work in progress or a pre-release.
-The stages are named : draft, beta and release
+The stages are named : idea, track and release
 - archive or restore a set (in fact move it to an archive folder)
 - soft delete an archived set (in fact move it to a trash folder)
 - rename a set, its json metadata file and its optional exported wav and mp3

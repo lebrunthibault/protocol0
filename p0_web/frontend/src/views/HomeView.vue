@@ -9,7 +9,7 @@
           <router-link v-if="$route.query.place" to="/" class="nav-item nav-link m-3">Tracks</router-link>
         </li>
         <li>
-          <router-link v-if="$route.query.place != 'archive'" to="/?place=archive" class="nav-item nav-link m-3">Archive2</router-link>
+          <router-link v-if="$route.query.place != 'archive'" to="/?place=archive" class="nav-item nav-link m-3">Archive</router-link>
         </li>
         <li>
           <router-link v-if="$route.query.place != 'released'" to="/?place=released" class="nav-item nav-link m-3">Released</router-link>

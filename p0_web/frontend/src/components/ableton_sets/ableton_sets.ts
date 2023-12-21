@@ -24,8 +24,8 @@ enum AbletonSetPlace {
 }
 
 enum SetStage {
-  DRAFT = "DRAFT",
-  BETA = "BEAT",
+  IDEA = "IDEA",
+  TRACK = "TRACK",
   RELEASE = "RELEASE"
 }
 
