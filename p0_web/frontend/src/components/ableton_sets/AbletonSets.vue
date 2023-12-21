@@ -32,7 +32,7 @@
         <option value="commented">Commented</option>
       </select>
     </div>
-    <div v-for="(setFolder, i) in ['Draft', 'Beta', 'Release']" :key="i" class="col-sm px-5">
+    <div v-for="(setFolder, i) in ['Idea', 'Track', 'Release']" :key="i" class="col-sm px-5">
       <div class="d-flex justify-content-around">
         <div></div>
         <h2 class="text-center">{{ setFolder }} </h2>
