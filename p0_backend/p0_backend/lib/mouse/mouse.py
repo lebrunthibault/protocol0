@@ -39,13 +39,6 @@ def click(coords: Coords, exact=False, button=pyautogui.PRIMARY, duration=0) -> 
         logger.warning(e)
 
 
-def double_click(coords: Coords):
-    try:
-        pyautogui.doubleClick(*coords)
-    except pyautogui.FailSafeException as e:
-        logger.warning(e)
-
-
 def click_vertical_zone(coords: Coords) -> None:
     x, y = coords
     for i in range(120, -40, -20):

@@ -16,13 +16,6 @@ class PixelColorEnum(Enum):
     BUTTON_NOT_SHOWN = "C3C3C3"
     BUTTON_DEACTIVATED = "A5A5A5"
 
-    BROWSER_BACKGROUND_10 = "878787"
-    BROWSER_BACKGROUND_11 = "8F8F8F"
-
-    @classmethod
-    def browser_background(cls):
-        return cls.BROWSER_BACKGROUND_11 if settings.is_ableton_11 else cls.BROWSER_BACKGROUND_10
-
     ELEMENT_FOCUSED = "FF39D4"
     ELEMENT_SELECTED = "C7EDFF"
 
@@ -38,7 +31,6 @@ class PixelColorEnum(Enum):
         )
 
     WHITE = "FFFFFF"
-    BLACK = "000000"
 
     EXPLORER_SELECTED_ENTRY = "CCE8FF"
     EXPLORER_SELECTED_ENTRY_LIGHT = "E5F3FF"

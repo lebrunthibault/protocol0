@@ -5,7 +5,6 @@ from p0_backend.lib.ableton.interface.clip import set_clip_file_path, crop_clip
 from protocol0.application.command.ColorClipWithAutomationCommand import (
     ColorClipWithAutomationCommand,
 )
-from protocol0.application.command.MatchClipColorCommand import MatchClipColorCommand
 from protocol0.application.command.MoveClipLoopCommand import MoveClipLoopCommand
 from protocol0.application.command.SelectClipCommand import SelectClipCommand
 from protocol0.application.command.SetClipLoopLengthCommand import SetClipLoopLengthCommand
@@ -38,11 +37,6 @@ async def toggle_clip(track_name: str):
 @router.get("/toggle_notes")
 async def _toggle_clip_notes():
     p0_script_client().dispatch(ToggleNotesCommand())
-
-
-@router.get("/match_colors")
-async def _match_clip_colors():
-    p0_script_client().dispatch(MatchClipColorCommand())
 
 
 @router.get("/color_with_automation")

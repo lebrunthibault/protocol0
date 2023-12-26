@@ -1,4 +1,3 @@
-from functools import partial
 from os.path import basename
 from typing import List, cast, Any, Optional
 
@@ -8,18 +7,13 @@ from _Framework.SubjectSlot import subject_slot
 
 from protocol0.domain.lom.clip.AudioClip import AudioClip
 from protocol0.domain.lom.clip_slot.AudioClipSlot import AudioClipSlot
-from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
 from protocol0.domain.lom.track.group_track.DrumsTrack import DrumsTrack
-from protocol0.domain.lom.track.simple_track.AudioToMidiClipMapping import AudioToMidiClipMapping
 from protocol0.domain.lom.track.simple_track.CurrentMonitoringStateUpdatedEvent import (
     CurrentMonitoringStateUpdatedEvent,
 )
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
-from protocol0.domain.shared.backend.Backend import Backend
-from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
-from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
@@ -50,7 +44,6 @@ class SimpleAudioTrack(SimpleTrack):
         # don't flatten when the track did not change since last flatten (used to retry on error)
         self._needs_flattening = True
 
-        self.clip_mapping = AudioToMidiClipMapping(self._data)
         self._data.restore()
 
         self._has_clip_listener.replace_subjects(self._track.clip_slots)
@@ -86,28 +79,6 @@ class SimpleAudioTrack(SimpleTrack):
     @subject_slot("current_monitoring_state")
     def _current_monitoring_state_listener(self) -> None:
         DomainEventBus.emit(CurrentMonitoringStateUpdatedEvent(self._track))
-
-    def load_full_track(self) -> Sequence:
-        assert isinstance(Song.current_track(), SimpleAudioTrack), "Track already loaded"
-        matching_track = find_if(
-            lambda t: t != self and t.name == self.name and not t.is_foldable,
-            Song.simple_tracks(),
-        )
-        if matching_track is not None:
-            matching_track.select()
-            raise Protocol0Warning("Track already loaded")
-
-        track_color = self.color
-        seq = Sequence()
-        seq.add(self.focus)
-        seq.add(Backend.client().drag_matching_track)
-        seq.wait_for_backend_event("track_focused")
-        seq.add(partial(setattr, self, "color", track_color))
-        seq.wait_for_backend_event("matching_track_loaded")
-        seq.wait_for_event(TracksMappedEvent)
-        seq.add(partial(Backend.client().close_explorer_window, "tracks"))
-        seq.add(partial(Backend.client().show_success, "Track loaded"))
-        return seq.done()
 
     def flatten(self, flatten_track: bool = True) -> Sequence:
         return super(SimpleAudioTrack, self).flatten(self._needs_flattening)

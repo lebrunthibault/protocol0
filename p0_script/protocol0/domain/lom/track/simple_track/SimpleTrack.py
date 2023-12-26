@@ -317,11 +317,6 @@ class SimpleTrack(AbstractTrack):
         except RuntimeError:
             pass
 
-    def reset_mixer(self) -> None:
-        self.volume = 0
-        for param in self.devices.mixer_device.parameters:
-            param.value = param.default_value
-
     def focus(self) -> Sequence:
         # track can disappear out of view if this is done later
         track_color = self.color

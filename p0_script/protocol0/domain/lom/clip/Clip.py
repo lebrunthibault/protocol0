@@ -1,18 +1,14 @@
-from functools import partial
-
 import Live
 from _Framework.SubjectSlot import SlotManager
 from typing import Optional, List, cast
 
 from protocol0.domain.lom.clip.ClipAppearance import ClipAppearance
-from protocol0.domain.lom.clip.ClipColorEnum import ClipColorEnum
 from protocol0.domain.lom.clip.ClipConfig import ClipConfig
 from protocol0.domain.lom.clip.ClipLoop import ClipLoop
 from protocol0.domain.lom.clip.ClipName import ClipName
 from protocol0.domain.lom.clip.ClipPlayingPosition import ClipPlayingPosition
 from protocol0.domain.lom.clip.automation.ClipAutomation import ClipAutomation
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
-from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.forward_to import ForwardTo
 from protocol0.domain.shared.utils.utils import previous_power_of_2
 from protocol0.shared.Song import Song
@@ -39,8 +35,6 @@ class Clip(SlotManager, Observable):
 
         self.loop.register_observer(self)
         self._notes_shown = True
-
-        self.previous_hash = 0
 
     def __eq__(self, clip: object) -> bool:
         return isinstance(clip, Clip) and self._clip == clip._clip
@@ -109,11 +103,6 @@ class Clip(SlotManager, Observable):
         self.selected = True
         self.notify_observers()
         self.selected = False
-
-    def blink(self) -> None:
-        color = self.color
-        self.color = ClipColorEnum.BLINK.value
-        Scheduler.wait_ms(1500, partial(setattr, self, "color", color))
 
     def stop(self, immediate: bool = False, wait_until_end: bool = False) -> None:
         """

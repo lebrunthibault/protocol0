@@ -8,9 +8,6 @@ from protocol0.application.Protocol0 import Protocol0
 from protocol0.application.control_surface.ActionGroupFactory import ActionGroupFactory
 from protocol0.domain.lom.set.AbletonSet import AbletonSet
 from protocol0.domain.lom.song.SongInitService import SongInitService
-from protocol0.domain.lom.track.group_track.matching_track.MatchingTrackInterface import (
-    MatchingTrackInterface,
-)
 from protocol0.domain.lom.track.routing.RoutingTrackDescriptor import RoutingTrackDescriptor
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.backend.Backend import Backend
@@ -57,7 +54,6 @@ def monkey_patch_static():
     InstrumentDisplayService._on_simple_track_armed_event = nop
 
     SongInitService.init_song = nop
-    MatchingTrackInterface.disconnect = nop
     RoutingTrackDescriptor.__set__ = nop
 
     def log(_, message, *__, **___):

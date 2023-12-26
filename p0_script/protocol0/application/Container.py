@@ -24,8 +24,8 @@ from protocol0.domain.lom.scene.PlayingScene import PlayingScene
 from protocol0.domain.lom.scene.ScenePlaybackService import ScenePlaybackService
 from protocol0.domain.lom.scene.SceneService import SceneService
 from protocol0.domain.lom.set.AbletonSet import AbletonSet
-from protocol0.domain.lom.set.MixingService import MixingService
 from protocol0.domain.lom.set.AudioExportService import AudioExportService
+from protocol0.domain.lom.set.MixingService import MixingService
 from protocol0.domain.lom.song.SongInitService import SongInitService
 from protocol0.domain.lom.song.components.ClipComponent import ClipComponent
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
@@ -37,13 +37,10 @@ from protocol0.domain.lom.song.components.SceneCrudComponent import SceneCrudCom
 from protocol0.domain.lom.song.components.TempoComponent import TempoComponent
 from protocol0.domain.lom.song.components.TrackComponent import TrackComponent
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
+from protocol0.domain.lom.track.ClipPlayerService import ClipPlayerService
 from protocol0.domain.lom.track.TrackAutomationService import TrackAutomationService
 from protocol0.domain.lom.track.TrackFactory import TrackFactory
 from protocol0.domain.lom.track.TrackMapperService import TrackMapperService
-from protocol0.domain.lom.track.ClipPlayerService import ClipPlayerService
-from protocol0.domain.lom.track.group_track.matching_track.MatchingTrackService import (
-    MatchingTrackService,
-)
 from protocol0.domain.lom.track.simple_track.SimpleTrackService import SimpleTrackService
 from protocol0.domain.lom.validation.ValidatorFactory import ValidatorFactory
 from protocol0.domain.lom.validation.ValidatorService import ValidatorService
@@ -130,7 +127,6 @@ class Container(ContainerInterface):
         track_mapper_service = TrackMapperService(live_song, track_factory)
         simple_track_service = SimpleTrackService()
         track_player_service = ClipPlayerService()
-        matching_track_service = MatchingTrackService(track_crud_component)
         scene_playback_service = ScenePlaybackService(playback_component)
         scene_service = SceneService(live_song, scene_crud_component, scene_playback_service)
         PlayingScene(scene_component)
@@ -169,7 +165,7 @@ class Container(ContainerInterface):
         audio_latency_service = AudioLatencyAnalyzerService(
             track_recorder_service, interface_clicks_service, track_crud_component, tempo_component
         )
-        log_service = LogService(ableton_set, track_mapper_service, matching_track_service)
+        log_service = LogService(ableton_set, track_mapper_service)
 
         self._register(midi_service)
         self._register(browser_service)
@@ -191,7 +187,6 @@ class Container(ContainerInterface):
         self._register(track_mapper_service)
         self._register(simple_track_service)
         self._register(track_player_service)
-        self._register(matching_track_service)
 
         self._register(scene_service)
         self._register(scene_playback_service)
