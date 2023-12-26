@@ -145,7 +145,7 @@ class DeviceService(object):
 
     def _show_default_automation(self, clip: Clip) -> None:
         device = Song.selected_track().devices.selected
-        assert device.enum.default_parameter, "Loaded device has no default parameter"
+        assert device and device.enum.default_parameter, "Loaded device has no default parameter"
         parameter = device.get_parameter_by_name(device.enum.default_parameter)
         assert parameter is not None, "parameter not found"
 
