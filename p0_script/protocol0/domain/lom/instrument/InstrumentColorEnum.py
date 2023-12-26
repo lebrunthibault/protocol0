@@ -6,7 +6,5 @@ class InstrumentColorEnum(AbstractEnum):
     SIMPLER = 2
     SERUM = 18
     REV2 = 23
-    OPUS = 23
-    PLAY = 23
     KONTAKT = 26
     MINITAUR = 69

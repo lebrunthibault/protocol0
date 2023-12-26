@@ -4,7 +4,6 @@ from protocol0.domain.audit.stats.SceneStats import SceneStats
 from protocol0.domain.audit.stats.SongStats import SongStats
 from protocol0.domain.audit.utils import tail_logs
 from protocol0.domain.lom.set.AbletonSet import AbletonSet
-from protocol0.domain.lom.track.group_track.matching_track.utils import assert_valid_track_name
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.logging.StatusBar import StatusBar
@@ -21,13 +20,6 @@ class SongStatsService(object):
         Logger.info(json.dumps(stats.to_dict(), indent=4))
 
     def get_song_structure(self) -> SceneStats:
-        for track in Song.abstract_tracks():
-            try:
-                assert_valid_track_name(track.name)
-            except AssertionError as e:
-                StatusBar.show_message(str(e))
-                raise e
-
         scene_names = [scene.scene_name.get_base_name() for scene in Song.scenes()]
         if "" in scene_names:
             scene_names.remove("")
