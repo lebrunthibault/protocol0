@@ -1,6 +1,5 @@
 end  # unused variable (backend\lib\ableton\ableton_set.py:51)
 track_names  # unused variable (backend\lib\ableton\ableton_set.py:52)
-BETA  # unused variable (backend\lib\ableton\ableton_set.py:57)
 RELEASE  # unused variable (backend\lib\ableton\ableton_set.py:58)
 tempo  # unused variable (backend\lib\ableton\ableton_set.py:92)
 scenes  # unused variable (backend\lib\ableton\ableton_set.py:93)

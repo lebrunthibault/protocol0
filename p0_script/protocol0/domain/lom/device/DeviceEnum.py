@@ -29,6 +29,7 @@ class DeviceEnum(AbstractEnum):
     DECAPITATOR = "Decapitator"
     DE_ESSER = "DeEsser Stereo"
     DELAY = "Delay"
+    DP_METER_5 = "dpMeter5"
     DRUM_BUSS = "Drum Buss"
     DOUBLER2 = "Doubler2 Stereo"
     DOUBLER4 = "Doubler4 Stereo"
@@ -39,7 +40,6 @@ class DeviceEnum(AbstractEnum):
     EQ_ROOM = "EQ Room"
     EXTERNAL_AUDIO_EFFECT = "Ext. Audio Effect"
     EXTERNAL_INSTRUMENT = "Ext. Instrument"
-    FREE_CLIP = "FreeClip"
     GATE = "Gate"
     GATEKEEPER = "Gatekeeper"
     GLUE_COMPRESSOR = "Glue Compressor"
@@ -59,20 +59,11 @@ class DeviceEnum(AbstractEnum):
     LIMITER = "Limiter"
     NOTE_LENGTH = "Note Length"
     OCTAVA = "Octava.adg"
-    OPUS = "Opus"
-    OPUS_VIOLINS = "Opus Violins.vstpreset"
-    OPUS_CELLO = "Opus Cello.vstpreset"
-    OPUS_CELLI = "Opus Celli.vstpreset"
-    OPUS_STRINGS = "Opus Strings.vstpreset"
-    OPUS_HORNS = "Opus Horns.vstpreset"
-    OPUS_TRUMPETS = "Opus Trumpets.vstpreset"
-    OPUS_POP_BRASS = "Opus Pop Brass.vstpreset"
-    OPUS_GLOCKENSPIEL = "Opus Glockenspiel.vstpreset"
     OZONE = "Ozone 9"
     PITCH = "Pitch"
-    PLAY = "play_VST_x64"
     PRO_Q_3 = "Pro-Q 3"
     PRO_Q_3_VST3 = "FabFilter Pro-Q 3"
+    PSY_SCOPE = "PsyScope_Pro"
     REFERENCE = "REFERENCE"
     REVERB = "Reverb"
     REV2_EDITOR = "REV2Editor"
@@ -144,7 +135,7 @@ class DeviceEnum(AbstractEnum):
 
     @property
     def can_be_saved(self) -> bool:
-        return self not in [DeviceEnum.REV2_EDITOR, DeviceEnum.PLAY, DeviceEnum.OPUS]
+        return self not in [DeviceEnum.REV2_EDITOR]
 
     @property
     def browser_name(self) -> str:
@@ -226,9 +217,10 @@ class DeviceEnum(AbstractEnum):
                 ),
                 DeviceEnumGroup("EQ", [cls.EQ_EIGHT, cls.PRO_Q_3, cls.CHANNEL_EQ]),
                 cls.UTILITY,
+                DeviceEnumGroup("Meter", [cls.DP_METER_5, cls.PSY_SCOPE]),
             ],
             [
-                DeviceEnumGroup("Comp", [cls.H_COMP, cls.SSL_COMP, cls.COMPRESSOR, cls.C4]),
+                DeviceEnumGroup("Comp", [cls.H_COMP, cls.COMPRESSOR, cls.SSL_COMP, cls.C4]),
                 DeviceEnumGroup(
                     "Sat",
                     [
@@ -284,7 +276,6 @@ class DeviceEnum(AbstractEnum):
                     DeviceEnum.EQ_ROOM: 31,
                     DeviceEnum.EXTERNAL_AUDIO_EFFECT: 5,
                     DeviceEnum.EXTERNAL_INSTRUMENT: 20,
-                    DeviceEnum.FREE_CLIP: 40,
                     DeviceEnum.KONTAKT: 1000,
                     DeviceEnum.GATE: 7,
                     DeviceEnum.GATEKEEPER: 130,
@@ -297,7 +288,6 @@ class DeviceEnum(AbstractEnum):
                     DeviceEnum.L1_ULTRAMAXIMIZER: 64,
                     DeviceEnum.LIMITER: 5,
                     DeviceEnum.PITCH: 2,
-                    DeviceEnum.PLAY: 214,
                     DeviceEnum.PRO_Q_3: 53,
                     DeviceEnum.PRO_Q_3_VST3: 53,
                     DeviceEnum.REVERB: 9,
@@ -342,7 +332,9 @@ class DeviceEnum(AbstractEnum):
             lambda d: d.is_fx,
             lambda d: d.is_limiter,
             lambda d: d == DeviceEnum.UTILITY,
+            lambda d: d == DeviceEnum.DP_METER_5,
             lambda d: d == DeviceEnum.STANDARD_CLIP,
+            lambda d: d == DeviceEnum.PSY_SCOPE,
         ]
 
         for index, predicate in enumerate(predicates):
@@ -356,8 +348,6 @@ class DeviceEnum(AbstractEnum):
         return self in [
             DeviceEnum.DRUM_RACK,
             DeviceEnum.KONTAKT,
-            DeviceEnum.OPUS,
-            DeviceEnum.PLAY,
             DeviceEnum.REV2_EDITOR,
             DeviceEnum.SERUM,
             DeviceEnum.SERUM_RACK,

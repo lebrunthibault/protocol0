@@ -33,7 +33,7 @@
               <label class="btn btn-outline-primary" for="stage_idea">Idea</label>
 
               <input type="radio" class="btn-check" name="stage_track" id="stage_track" autocomplete="off"
-                     v-model="stage" value="BETA" :checked="stage === 'TRACK'">
+                     v-model="stage" value="TRACK" :checked="stage === 'TRACK'">
               <label class="btn btn-outline-primary" for="stage_track">Track</label>
 
               <input type="radio" class="btn-check" name="stage_release" id="stage_release" autocomplete="off"
