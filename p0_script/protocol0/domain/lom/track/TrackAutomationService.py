@@ -178,20 +178,12 @@ class TrackAutomationService(object):
 
         device_parameters: List[Tuple[Device, DeviceParameter]] = []
 
-        # colors_on = any(c.color != track.color for c in track.clips)
-        # if colors_on:
-        #     for clip in track.clips:
-        #         clip.color = track.color
-        #     return
-
         for clip in track.clips:
             if clip.automation.has_automation(track.devices.parameters):
                 for device in track.devices.all:
                     parameters = list(clip.automation.get_automated_parameters(device.parameters))
                     if len(parameters):
                         device_parameters.append((device, parameters[0]))
-
-                # clip.color = ClipColorEnum.BLINK.value
 
         return device_parameters
 
