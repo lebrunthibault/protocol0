@@ -1,10 +1,8 @@
-import glob
 import json
 import os.path
-import time
 from enum import Enum
 from json import JSONDecodeError
-from os.path import basename, dirname
+from os.path import dirname
 from pathlib import Path
 from typing import List, Optional
 
@@ -22,11 +20,6 @@ class PathInfo(BaseModel):
     filename: str
     name: str
     saved_at: Optional[float] = 0
-
-    @property
-    def tracks_folder(self):
-        assert self.filename is not None, "current set is Untitled"
-        return f"{dirname(self.filename)}\\tracks"
 
     @property
     def metadata_filename(self) -> str:
@@ -129,32 +122,6 @@ class AbletonSet(BaseModel):
     audio: Optional[AudioInfo] = None
     metadata: Optional[AbletonSetMetadata] = None
     current_state: Optional[AbletonSetCurrentState] = None
-
-    @classmethod
-    def all_tracks_folder(cls) -> List[str]:
-        return next(os.walk(f"{settings.ableton_set_directory}\\tracks"))[1]
-
-    @property
-    def saved_temp_track(self) -> Optional[str]:
-        temp_track_folder = f"{settings.ableton_set_directory}\\tracks"
-        return next(iter(glob.glob(f"{temp_track_folder}\\*.als")), None)
-
-    @property
-    def saved_tracks(self) -> List[str]:
-        return glob.glob(f"{self.path_info.tracks_folder}\\*.als")
-
-    @property
-    def is_current_track_saved(self) -> bool:
-        saved_track = self.saved_temp_track
-        if saved_track is None:
-            return False
-
-        saved_track_name = basename(saved_track).replace(".als", "")
-
-        assert saved_track_name == self.current_state.current_track.name, "track saved mismatch"
-        assert time.time() - os.path.getmtime(saved_track) <= 2, "track not saved recently"
-
-        return True
 
     @classmethod
     def create(cls, set_filename: str, set_place: AbletonSetPlace = None) -> "AbletonSet":

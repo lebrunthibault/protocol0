@@ -56,7 +56,3 @@ class MixerDevice(SlotManager):
     def reset(self) -> None:
         for param in self.parameters:
             param.value = 0
-
-    @property
-    def is_default(self) -> bool:
-        return all(param.value == param.default_value for param in self.parameters)

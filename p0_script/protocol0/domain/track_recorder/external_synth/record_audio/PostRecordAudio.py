@@ -1,8 +1,6 @@
 from functools import partial
-
 from typing import cast
 
-from protocol0.domain.lom.clip.ClipInfo import ClipInfo
 from protocol0.domain.lom.clip.MidiClip import MidiClip
 from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import ExternalSynthTrack
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
@@ -31,12 +29,4 @@ class PostRecordAudio(RecordProcessorInterface):
                 setattr, audio_clip.loop, "end", config.bar_length * Song.signature_numerator()
             ),
         )
-        midi_new_hash = midi_clip.get_hash(track.midi_track.devices.parameters)
-        track.audio_track.clip_mapping.register_hash_equivalence(
-            midi_clip.previous_hash, midi_new_hash
-        )
-        track.audio_track.clip_mapping.register_file_path(
-            audio_clip.file_path, ClipInfo(midi_clip, track.midi_track.devices.parameters)
-        )
-        midi_clip.previous_hash = midi_new_hash
         audio_clip.clip_name.update(midi_clip.clip_name.base_name)

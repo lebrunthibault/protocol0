@@ -24,8 +24,6 @@ from p0_backend.lib.ableton.interface.sample import load_sample_in_simpler
 from p0_backend.lib.ableton.interface.toggle_ableton_button import toggle_ableton_button
 from p0_backend.lib.ableton.interface.track import click_focused_track
 from p0_backend.lib.ableton.interface.track import flatten_track, load_instrument_track
-from p0_backend.lib.ableton.matching_track.load_matching_track import drag_matching_track
-from p0_backend.lib.ableton.matching_track.save_track import save_track_to_sub_tracks
 from p0_backend.lib.ableton.set_profiling.ableton_set_profiler import AbletonSetProfiler
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
@@ -36,10 +34,8 @@ from p0_backend.lib.process import execute_powershell_command
 from p0_backend.lib.window.find_window import find_window_handle_by_enum
 from p0_backend.lib.window.window import focus_window
 from p0_backend.settings import Settings
-from protocol0.application.command.BounceTrackToAudioCommand import BounceTrackToAudioCommand
 from protocol0.application.command.DrumRackToSimplerCommand import DrumRackToSimplerCommand
 from protocol0.application.command.GoToGroupTrackCommand import GoToGroupTrackCommand
-from protocol0.application.command.LoadMatchingTrackCommand import LoadMatchingTrackCommand
 from protocol0.application.command.LogSelectedCommand import LogSelectedCommand
 from protocol0.application.command.LogSongStatsCommand import LogSongStatsCommand
 from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongCommand
@@ -238,29 +234,9 @@ async def play_pause():
     p0_script_client().dispatch(PlayPauseSongCommand())
 
 
-@router.get("/bounce_track_to_audio")
-async def _bounce_track_to_audio():
-    p0_script_client().dispatch(BounceTrackToAudioCommand())
-
-
 @router.get("/click_focused_track")
 async def _click_focused_track():
     click_focused_track()
-
-
-@router.get("/save_track_to_sub_tracks")
-async def _save_track_to_sub_tracks():
-    save_track_to_sub_tracks(AbletonSetManager.active())
-
-
-@router.get("/load_matching_track")
-async def load_matching_track():
-    p0_script_client().dispatch(LoadMatchingTrackCommand())
-
-
-@router.get("/drag_matching_track")
-async def _drag_matching_track():
-    drag_matching_track(AbletonSetManager.active())
 
 
 @router.get("/log_selected")
