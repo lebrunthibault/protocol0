@@ -11,6 +11,7 @@ from protocol0.domain.audit.AudioLatencyAnalyzerService import AudioLatencyAnaly
 from protocol0.domain.audit.LogService import LogService
 from protocol0.domain.audit.SetFixerService import SetFixerService
 from protocol0.domain.audit.SongStatsService import SongStatsService
+from protocol0.domain.lom.device.ClipperService import ClipperService
 from protocol0.domain.lom.device.DeviceDisplayService import DeviceDisplayService
 from protocol0.domain.lom.device.DeviceService import DeviceService
 from protocol0.domain.lom.device.DrumRackSampleService import DrumRackSampleService
@@ -120,6 +121,7 @@ class Container(ContainerInterface):
         instrument_display_service = InstrumentDisplayService(device_display_service)
         device_service = DeviceService(track_crud_component, device_component, browser_service)
         instrument_service = InstrumentService(device_service, device_component)
+        clipper_service = ClipperService(browser_service)
         drum_rack_service = DrumRackService(browser_service)
         drum_rack_sample_service = DrumRackSampleService()
         track_factory = TrackFactory(track_crud_component, browser_service, drum_rack_service)
@@ -196,6 +198,7 @@ class Container(ContainerInterface):
         self._register(instrument_preset_scroller_service)
 
         self._register(device_service)
+        self._register(clipper_service)
         self._register(drum_rack_service)
         self._register(drum_rack_sample_service)
 

@@ -2,6 +2,7 @@ from functools import partial
 
 from protocol0.application.ScriptResetActivatedEvent import ScriptResetActivatedEvent
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
+from protocol0.domain.lom.device.ClipperService import ClipperService
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device.ReverbDelayService import (
     scroll_insert_device_volumes,
@@ -61,6 +62,13 @@ class ActionGroupMain(ActionGroupInterface):
             on_scroll=partial(scroll_devices_param, DeviceEnum.INSERT_DELAY, [DeviceParamEnum.FB]),
         )
 
+        self.add_encoder(
+            identifier=12,
+            name="all clippers",
+            on_press=self._container.get(ClipperService).toggle_all,
+            on_scroll=self._container.get(ClipperService).scroll_all,
+        )
+
         self.add_encoder(identifier=13, name="test", on_press=self.action_test)
 
         # VOLume encoder
@@ -71,6 +79,6 @@ class ActionGroupMain(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        Song.selected_device().is_showing_chains = False
-        Song.selected_device().is_collapsed = True
-        Song.selected_device().is_collapsed = False
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev(Song.selected_track().is_bus_track)
