@@ -34,6 +34,7 @@ class DeviceEnum(AbstractEnum):
     DOUBLER2 = "Doubler2 Stereo"
     DOUBLER4 = "Doubler4 Stereo"
     DRUM_RACK = "Drum Rack"
+    DUCK = "Duck"
     EFFECTRIX = "Effectrix"
     ENIGMA = "Enigma Stereo"
     EQ_EIGHT = "EQ Eight"
@@ -231,16 +232,14 @@ class DeviceEnum(AbstractEnum):
                         cls.DECAPITATOR,
                     ],
                 ),
-                DeviceEnumGroup("Clip", [cls.STANDARD_CLIP]),
+                cls.STANDARD_CLIP,
             ],
             [
-                cls.LFO_TOOL,
+                DeviceEnumGroup("Duck", [cls.DUCK, cls.LFO_TOOL]),
                 DeviceEnumGroup(
                     "Delay", [cls.INSERT_DELAY, cls.SUPER_TAP_6, cls.SUPER_TAP_2, cls.DELAY]
                 ),
-                DeviceEnumGroup(
-                    "Reverb", [cls.INSERT_REVERB, cls.VALHALLA_VINTAGE_VERB, cls.TRUE_VERB]
-                ),
+                DeviceEnumGroup("Reverb", [cls.INSERT_REVERB, cls.VALHALLA_VINTAGE_VERB]),
             ],
             [
                 cls.DRUM_RACK,
@@ -325,8 +324,8 @@ class DeviceEnum(AbstractEnum):
             lambda d: d.is_eq,
             lambda d: d.is_filter,
             lambda d: d.is_compressor,
-            lambda d: d.is_saturator,
             lambda d: d.is_volume,
+            lambda d: d.is_saturator,
             lambda d: d.is_delay,
             lambda d: d.is_reverb,
             lambda d: d.is_fx,

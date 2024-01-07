@@ -24,6 +24,7 @@ class DeviceParamEnum(AbstractEnum):
     GAIN = "GAIN"
     GAIN_4_A = "EQ_EIGHT_GAIN_4_A"
     INPUT = "INPUT"
+    INPUT_GAIN = "INPUT_GAIN"
     L2_THRESHOLD = "L2_THRESHOLD"
     LENGTH = "LENGTH"
     LFO_TOOL_LFO_DEPTH = "LFO_TOOL_LFO_DEPTH"
@@ -61,6 +62,7 @@ class DeviceParamEnum(AbstractEnum):
                 DeviceParamEnum.GAIN: "Gain",
                 DeviceParamEnum.GAIN_4_A: "4 Gain A",
                 DeviceParamEnum.INPUT: "Input",
+                DeviceParamEnum.INPUT_GAIN: "Input Gain",
                 DeviceParamEnum.L2_THRESHOLD: "Thresh Slider",
                 DeviceParamEnum.LENGTH: "Time Length",
                 DeviceParamEnum.LFO_TOOL_LFO_DEPTH: "LFO Depth",

@@ -231,6 +231,14 @@ class SimpleTrack(AbstractTrack):
         return any(clip_slot.is_triggered for clip_slot in self.clip_slots)
 
     @property
+    def is_bus_track(self) -> bool:
+        return (
+            self.group_track is not None
+            and self.group_track.index == 0
+            and self.current_monitoring_state == CurrentMonitoringStateEnum.IN
+        )
+
+    @property
     def volume(self) -> float:
         volume = self._track.mixer_device.volume.value if self._track else 0
         return volume_to_db(volume)
