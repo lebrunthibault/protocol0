@@ -81,3 +81,4 @@ move_set  # unused function (p0_backend\lib\ableton\ableton_set\ableton_set.py:2
 go_to_desktop  # unused function (p0_backend\lib\desktop\desktop.py:5)
 selected_track  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py:116)
 current_track  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py:108)
+main  # unused function (p0_backend\scripts\analyze_sample.py:91)

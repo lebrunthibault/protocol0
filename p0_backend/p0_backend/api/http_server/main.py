@@ -1,12 +1,15 @@
 """ http / websocket gateway server to the midi server. Hit by ahk and the stream deck. """
 import asyncio
 import traceback
+from contextlib import asynccontextmanager
 
+import redis.asyncio as redis
 import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
+from fastapi_limiter import FastAPILimiter
 from loguru import logger
 from ratelimit import RateLimitException
 from starlette.middleware.cors import CORSMiddleware
@@ -26,7 +29,16 @@ from protocol0.application.command.GetSetStateCommand import GetSetStateCommand 
 
 settings = Settings()
 
-app = FastAPI(debug=True, title="p0_backend", version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    redis_connection = redis.from_url("redis://localhost:6379", encoding="utf8")
+    await FastAPILimiter.init(redis_connection)
+    yield
+    await FastAPILimiter.close()
+
+
+app = FastAPI(lifespan=lifespan, debug=True, title="p0_backend", version="1.0.0")
 
 origins = [
     "http://localhost",
