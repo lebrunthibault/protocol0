@@ -15,21 +15,30 @@ def get_ableton_window_titles() -> List[str]:
 
 
 def get_launched_set_path() -> str:
-    launched_set = next(w for w in get_ableton_window_titles() if "ableton projects" in w)
+    windows = get_ableton_window_titles()
+    launched_set = next((w for w in windows if "ableton projects" in w), None)
+
+    assert launched_set, f"Couldn't find launched set in {windows}"
 
     set_title = re.match(r"([^*]*)", launched_set).group(1).split(" [")[0].strip()
 
     file_paths = []
 
-    filename = f"{set_title}.als"
+    set_filename = f"{set_title}.als"
 
     for root, _, files in os.walk(settings.ableton_set_directory):
         for file in files:
-            if file == filename:
+            if file == set_filename:
                 file_path = os.path.join(root, file)
                 file_paths.append(file_path)
+            elif file == set_title:
+                from loguru import logger
 
-    assert len(file_paths) <= 1, f"Duplicate sets found : '{filename}' : {file_paths}"
-    assert len(file_paths) == 1, f"Couldn't find '{filename}' in {settings.ableton_set_directory}"
+                logger.success(f"found folder {file}")
+
+    assert len(file_paths) <= 1, f"Duplicate sets found : '{set_filename}' : {file_paths}"
+    assert (
+        len(file_paths) == 1
+    ), f"Couldn't find '{set_filename}' in {settings.ableton_set_directory}"
 
     return file_paths[0]

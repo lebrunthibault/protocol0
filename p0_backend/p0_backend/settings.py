@@ -46,7 +46,7 @@ class Settings(BaseSettings):
 
     @property
     def ableton_test_set_path(self) -> str:
-        return f"{self.ableton_set_directory}\\tracks\\Test\\Test.als"
+        return f"{self.ableton_set_directory}\\test.als"
 
     icons_directory: str = "C:\\Users\\thiba\\OneDrive\\Images\\icons"
 

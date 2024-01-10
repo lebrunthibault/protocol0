@@ -21,3 +21,8 @@ services:
       - "8080:5173"
     volumes:
       - ./frontend:/app
+
+  redis:
+    image: redislabs/redismod
+    ports:
+      - '6379:6379'
