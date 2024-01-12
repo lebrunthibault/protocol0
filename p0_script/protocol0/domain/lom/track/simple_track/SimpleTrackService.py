@@ -44,5 +44,6 @@ class SimpleTrackService(object):
             clip.looping = True
             clip.loop.start = 0
             clip.loop.end = clip.loop.end / 2
+            clip.loop.end_marker = clip.loop.end
 
         flattened_track._needs_flattening = False
