@@ -1,5 +1,6 @@
 import math
 import sys
+from dataclasses import dataclass
 from typing import List
 
 import librosa
@@ -61,6 +62,37 @@ def get_sample_frequencies(sr: float, sample_counts: List[float]) -> List[float]
     return result_list
 
 
+@dataclass
+class Frequency:
+    frequency: float
+    closest_note: str
+    octave: str
+    cent: int
+
+    def __init__(self, frequency: float):
+        self.frequency = frequency
+        self.closest_note, self.octave, self.cent = frequency_to_note(frequency)
+
+    def __repr__(self) -> str:
+        return f"{self.frequency:.2f} Hz, {self.closest_note}{self.octave}{'+' if self.cent >= 0 else ''}{self.cent}"
+
+
+@dataclass
+class Frequencies:
+    frequencies: List[float]
+    average_freq: Frequency
+
+    def __init__(self, frequencies: List[float]):
+        self.frequencies = frequencies
+        self.average_freq = Frequency(sum(frequencies[-5:]) / 5)
+
+    def __repr__(self) -> str:
+        if len(self.frequencies) < 5:
+            return "Not enough frequencies"
+
+        return f"Frequencies : {[round(f, 2) for f in self.frequencies]}"
+
+
 def process_wav_file(file_path):
     # Load the audio file using librosa
     audio_data, sr = librosa.load(file_path, sr=None, mono=True)
@@ -75,17 +107,8 @@ def process_wav_file(file_path):
     sample_counts = get_zero_crossing_sample_counts(audio_data)
 
     frequencies = get_sample_frequencies(sr, sample_counts)
-    # print(f"Sample counts : {sample_counts}")
-    print(f"Frequencies : {[round(f, 2) for f in frequencies]}")
-    if len(frequencies) < 5:
-        print("Not enough frequencies")
-        return
-
-    average_freq = sum(frequencies[-5:]) / 5
-    closest_note, octave, cent = frequency_to_note(average_freq)
-    print(
-        f"Last 5 average: {average_freq:.2f} Hz, {closest_note}{octave}{'+' if cent >= 0 else ''}{cent}"
-    )
+    kick_frequencies = Frequencies(frequencies)
+    print(kick_frequencies)
 
 
 def main():

@@ -320,7 +320,7 @@ class Song(object):
 
     @classmethod
     def selected_device(cls) -> Optional["Device"]:
-        return cls.selected_track().devices.selected  # type: ignore[has-type]
+        return cls.selected_track().devices.selected
 
     @classmethod
     def is_playing(cls) -> bool:
