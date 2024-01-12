@@ -37,6 +37,7 @@ class DeviceParamEnum(AbstractEnum):
     THRESHOLD = "THRESHOLD"
     UTILITY_SILENT_GAIN = "UTILITY_SILENT_GAIN"
     UTILITY_MID_SIDE = "UTILITY_MID_SIDE"
+    UTILITY_WIDTH = "UTILITY_WIDTH"
     WET = "WET"
 
     @property
@@ -74,6 +75,7 @@ class DeviceParamEnum(AbstractEnum):
                 DeviceParamEnum.THRESH: "Thresh",
                 DeviceParamEnum.UTILITY_SILENT_GAIN: "Gain",
                 DeviceParamEnum.UTILITY_MID_SIDE: "Mid/Side Balance",
+                DeviceParamEnum.UTILITY_WIDTH: "Stereo Width",
                 DeviceParamEnum.WET: "Wet",
             }
         )

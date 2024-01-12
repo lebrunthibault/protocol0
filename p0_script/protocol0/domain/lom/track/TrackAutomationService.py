@@ -279,9 +279,12 @@ class TrackAutomationService(object):
         deleted_device_names = []
 
         def is_default_utility(dev: Device) -> bool:
+            width_param = dev.get_parameter_by_name(
+                DeviceParamEnum.UTILITY_MID_SIDE
+            ) or dev.get_parameter_by_name(DeviceParamEnum.UTILITY_WIDTH)
             return (
                 dev.enum == DeviceEnum.UTILITY
-                and dev.get_parameter_by_name(DeviceParamEnum.UTILITY_MID_SIDE).value == 1
+                and width_param.value == 1
                 and dev.get_parameter_by_name(DeviceParamEnum.GAIN).value == 0
             )
 
