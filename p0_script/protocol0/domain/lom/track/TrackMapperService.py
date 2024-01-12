@@ -1,6 +1,6 @@
 import collections
 from functools import partial
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 import Live
 from _Framework.SubjectSlot import subject_slot, SlotManager
@@ -19,6 +19,9 @@ from protocol0.domain.lom.track.simple_track.CurrentMonitoringStateUpdatedEvent 
 )
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrackCreatedEvent import SimpleTrackCreatedEvent
+from protocol0.domain.lom.track.simple_track.SimpleTrackFlattenedEvent import (
+    SimpleTrackFlattenedEvent,
+)
 from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_tracks
 from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 from protocol0.domain.lom.track.simple_track.audio.SimpleReturnTrack import SimpleReturnTrack
@@ -32,7 +35,6 @@ from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.Song import Song
 from protocol0.shared.Undo import Undo
-from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
 
 
@@ -56,10 +58,13 @@ class TrackMapperService(SlotManager):
     @subject_slot("tracks")
     @handle_errors()
     def tracks_listener(self) -> None:
-        self._clean_tracks()
+        deleted_track_indexes = self._clean_tracks()
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev(f"deleted_track_indexes: {deleted_track_indexes}")
 
         previous_simple_track_count = len(list(Song.all_simple_tracks()))
-        has_added_tracks = 0 < previous_simple_track_count < len(list(Song.live_tracks()))
+        added_track_count = len(list(Song.live_tracks())) - previous_simple_track_count
 
         self._generate_simple_tracks()
         self._generate_abstract_group_tracks()
@@ -67,29 +72,31 @@ class TrackMapperService(SlotManager):
         for scene in Song.scenes():
             scene.on_tracks_change()
 
-        Logger.info("mapped tracks")
-
         seq = Sequence()
-        if has_added_tracks and Song.selected_track():
+        if added_track_count > 0 and Song.selected_track():
             seq.add(partial(DomainEventBus.defer_emit, TrackAddedEvent()))
-            seq.add(self._on_track_added)
+            seq.add(partial(self._on_track_added, deleted_track_indexes))
 
         seq.add(partial(DomainEventBus.defer_emit, TracksMappedEvent()))
         seq.done()
 
         self._get_special_tracks()
 
-    def _clean_tracks(self) -> None:
+    def _clean_tracks(self) -> List[int]:
         existing_track_ids = [track._live_ptr for track in list(Song.live_tracks())]
         deleted_ids = []
+        deleted_indexes = []
 
         for track_id, simple_track in self._live_track_id_to_simple_track.items():
             if track_id not in existing_track_ids:
                 simple_track.disconnect()
                 deleted_ids.append(track_id)
+                deleted_indexes.append(simple_track.index)
 
         for track_id in deleted_ids:
             del self._live_track_id_to_simple_track[track_id]
+
+        return deleted_indexes
 
     def _generate_simple_tracks(self) -> None:
         """instantiate SimpleTracks (including return / master, that are marked as inactive)"""
@@ -115,12 +122,15 @@ class TrackMapperService(SlotManager):
         self._drums_track = find_if(lambda t: isinstance(t, DrumsTrack), abgs)
         self._vocals_track = find_if(lambda t: isinstance(t, VocalsTrack), abgs)
 
-    def _on_track_added(self) -> Optional[Sequence]:
+    def _on_track_added(self, deleted_track_indexes: List[int]) -> Optional[Sequence]:
         if not Song.selected_track().IS_ACTIVE:
             return None
         Undo.begin_undo_step()  # Live crashes on undo without this
         seq = Sequence()
         added_track = Song.selected_track()
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev(f"added_track: {added_track}")
         if Song.selected_track() == Song.current_track().base_track:
             added_track = Song.current_track()
 
@@ -131,6 +141,9 @@ class TrackMapperService(SlotManager):
 
         seq.add(added_track.on_added)
         seq.add(Song.current_track().arm_state.arm)
+
+        if added_track.index in deleted_track_indexes:
+            seq.add(partial(DomainEventBus.emit, SimpleTrackFlattenedEvent()))
 
         seq.add(Undo.end_undo_step)
         return seq.done()
@@ -157,6 +170,9 @@ class TrackMapperService(SlotManager):
         self, previous_simple_track: SimpleTrack, new_simple_track: SimpleTrack
     ) -> None:
         """disconnecting and removing from SimpleTrack group track and abstract_group_track"""
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev(f"replacing {previous_simple_track} with {new_simple_track}")
         new_simple_track._index = previous_simple_track._index
         previous_simple_track.disconnect()
 

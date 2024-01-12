@@ -393,15 +393,13 @@ class SimpleTrack(AbstractTrack):
             seq.add(Backend.client().flatten_track)
             seq.wait_for_backend_event("track_focused")
             seq.add(recolor_track)
-            seq.log("track focused !")
             seq.wait_for_backend_event("track_flattened")
-            seq.log("track flattened !")
             seq.defer()
         else:
             self.select()
 
         seq.add(partial(ClipInfo.restore_duplicate_clips, clip_infos))
-        seq.add(partial(DomainEventBus.emit, SimpleTrackFlattenedEvent(clip_infos)))
+        seq.add(partial(DomainEventBus.emit, SimpleTrackFlattenedEvent()))
         seq.defer()
 
         return seq.done()

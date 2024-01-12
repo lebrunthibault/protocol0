@@ -58,6 +58,7 @@ class DeviceEnum(AbstractEnum):
     L1_ULTRAMAXIMIZER = "L1+ Ultramaximizer Stereo"
     L2_LIMITER = "L2 Stereo"
     LIMITER = "Limiter"
+    M_ANALYZER = "MAnalyzer"
     NOTE_LENGTH = "Note Length"
     OCTAVA = "Octava.adg"
     OZONE = "Ozone 9"
@@ -218,7 +219,7 @@ class DeviceEnum(AbstractEnum):
                 ),
                 DeviceEnumGroup("EQ", [cls.EQ_EIGHT, cls.PRO_Q_3, cls.CHANNEL_EQ]),
                 cls.UTILITY,
-                DeviceEnumGroup("Meter", [cls.DP_METER_5, cls.PSY_SCOPE]),
+                DeviceEnumGroup("Meter", [cls.DP_METER_5, cls.PSY_SCOPE, cls.M_ANALYZER]),
             ],
             [
                 DeviceEnumGroup("Comp", [cls.H_COMP, cls.COMPRESSOR, cls.SSL_COMP, cls.C4]),
@@ -232,7 +233,7 @@ class DeviceEnum(AbstractEnum):
                         cls.DECAPITATOR,
                     ],
                 ),
-                cls.STANDARD_CLIP,
+                DeviceEnumGroup("Clip", [cls.STANDARD_CLIP]),  # for renaming
             ],
             [
                 DeviceEnumGroup("Duck", [cls.DUCK, cls.LFO_TOOL]),
@@ -330,9 +331,9 @@ class DeviceEnum(AbstractEnum):
             lambda d: d.is_reverb,
             lambda d: d.is_fx,
             lambda d: d.is_limiter,
-            lambda d: d == DeviceEnum.UTILITY,
             lambda d: d == DeviceEnum.DP_METER_5,
             lambda d: d == DeviceEnum.STANDARD_CLIP,
+            lambda d: d == DeviceEnum.UTILITY,
             lambda d: d == DeviceEnum.PSY_SCOPE,
         ]
 
