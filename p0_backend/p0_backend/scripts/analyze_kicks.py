@@ -1,4 +1,5 @@
 import math
+import os
 import sys
 from dataclasses import dataclass
 from typing import List
@@ -11,7 +12,11 @@ from numpy import ndarray
 def frequency_to_note(freq: float):
     notes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
 
-    note_number = 12 * math.log2(freq / 440) + 49
+    try:
+        note_number = 12 * math.log2(freq / 440) + 49
+    except ValueError:
+        return "C", "-2", 0
+
     cent = round((note_number - round(note_number)) * 100)
     note_number = round(note_number)
 
@@ -93,22 +98,30 @@ class Frequencies:
         return f"Frequencies : {[round(f, 2) for f in self.frequencies]}"
 
 
-def process_wav_file(file_path):
+def get_wav_file_frequency(file_path: str) -> Frequencies:
     # Load the audio file using librosa
     audio_data, sr = librosa.load(file_path, sr=None, mono=True)
-    print(f"Sample rate : {sr} Hz")
 
-    # Calculate the skip samples (10 milliseconds)
-    skip_samples = int(sr * 0.01)
-
-    # Skip the first 10 milliseconds
-    audio_data = audio_data[skip_samples:]
+    # skip attack (10 milliseconds)
+    audio_data = audio_data[int(sr * 0.01) :]
 
     sample_counts = get_zero_crossing_sample_counts(audio_data)
 
     frequencies = get_sample_frequencies(sr, sample_counts)
-    kick_frequencies = Frequencies(frequencies)
-    print(kick_frequencies)
+    return Frequencies(frequencies)
+
+
+def process_kick_directory(directory_path: str):
+    for root, _, files in os.walk(directory_path):
+        for file_name in files:
+            if file_name.lower().endswith(".wav"):
+                file_path = os.path.join(root, file_name)
+                frequencies = get_wav_file_frequency(file_path)
+
+                # Write frequencies to a text file with the same name as the WAV file
+                output_file_path = os.path.splitext(file_path)[0] + ".txt"
+                with open(output_file_path, "w") as output_file:
+                    output_file.write(f"{frequencies}\n{frequencies.average_freq}")
 
 
 def main():
@@ -116,5 +129,4 @@ def main():
         print("Usage: python script.py <filename.wav>")
         sys.exit(1)
 
-    file_path = sys.argv[1]
-    process_wav_file(file_path)
+    process_kick_directory(sys.argv[1])

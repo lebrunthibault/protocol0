@@ -81,4 +81,4 @@ class ActionGroupMain(ActionGroupInterface):
     def action_test(self) -> None:
         from protocol0.shared.logging.Logger import Logger
 
-        Logger.dev(Song.selected_track().is_bus_track)
+        Logger.dev(Song.selected_device().parameters)
