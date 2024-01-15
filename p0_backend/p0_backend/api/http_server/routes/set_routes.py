@@ -18,6 +18,7 @@ from p0_backend.lib.ableton.ableton_set.ableton_set import (
     set_scene_stats,
     SceneStat,
     AbletonSetCurrentState,
+    prepare_for_soundcloud,
 )
 from p0_backend.lib.ableton.ableton_set.ableton_set_manager import (
     AbletonSetManager,
@@ -90,3 +91,8 @@ async def open_set_by_type(name: str):
 async def close_set(filename: str):
     await AbletonSetManager.remove(filename)
     await ws_manager.broadcast_active_set()
+
+
+@router.post("/prepare_for_soundcloud")
+async def _prepare_for_soundcloud(path: str):
+    prepare_for_soundcloud(path)

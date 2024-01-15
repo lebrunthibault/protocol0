@@ -1,8 +1,9 @@
 import json
 import os.path
+import subprocess
 from enum import Enum
 from json import JSONDecodeError
-from os.path import dirname
+from os.path import dirname, isabs
 from pathlib import Path
 from typing import List, Optional
 
@@ -10,6 +11,7 @@ from loguru import logger
 from pydantic import BaseModel
 
 from p0_backend.lib.ableton.get_set import get_launched_set_path
+from p0_backend.lib.explorer import open_explorer
 from p0_backend.lib.notification import notify
 from p0_backend.settings import Settings
 
@@ -125,6 +127,11 @@ class AbletonSet(BaseModel):
 
     @classmethod
     def create(cls, set_filename: str, set_place: AbletonSetPlace = None) -> "AbletonSet":
+        if not isabs(set_filename):
+            set_filename = f"{settings.ableton_set_directory}\\{set_filename}"
+
+        assert os.path.exists(set_filename), f"fichier introuvable : {set_filename}"
+
         ableton_set = AbletonSet(
             place=set_place or AbletonSetPlace.from_directory(dirname(set_filename)),
             path_info=PathInfo.create(set_filename),
@@ -177,3 +184,21 @@ def set_scene_stats(tempo: float, l2_disabled: float, scene_stats: List[SceneSta
     notify(message)
 
     ableton_set.save()
+
+
+def prepare_for_soundcloud(path: str):
+    ableton_set = AbletonSet.create(path)
+    assert ableton_set.path_info.audio_filename, "Track has not wav file"
+    audio_output = ableton_set.path_info.audio_filename.replace(".wav", "-streaming.wav")
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-y",
+            "-i",
+            ableton_set.path_info.audio_filename,
+            "-af",
+            "adelay=500|500",
+            audio_output,
+        ]
+    )
+    open_explorer(audio_output)

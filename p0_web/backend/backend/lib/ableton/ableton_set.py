@@ -255,17 +255,11 @@ def list_sets(set_place: AbletonSetPlace = None) -> List[AbletonSet]:
     ableton_sets = []
 
     top_folder_path = os.path.join(SETS_DIRECTORY, set_place.folder_name)
-    from loguru import logger
-
-    logger.success(top_folder_path)
 
     assert os.path.exists(top_folder_path) and os.path.isdir(
         top_folder_path
     ), f"{top_folder_path} does not exist"
     als_files = glob.glob(os.path.join(top_folder_path, "**/*.als"), recursive=True)
-    from loguru import logger
-
-    logger.success(als_files)
 
     for als_file in als_files:
         if any(word in als_file for word in excluded_sets):
