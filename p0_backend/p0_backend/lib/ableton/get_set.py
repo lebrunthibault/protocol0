@@ -2,6 +2,8 @@ import os
 import re
 from typing import List
 
+from loguru import logger
+
 from p0_backend.lib.window.find_window import get_windows_list
 from p0_backend.settings import Settings
 
@@ -32,9 +34,7 @@ def get_launched_set_path() -> str:
                 file_path = os.path.join(root, file)
                 file_paths.append(file_path)
             elif file == set_title:
-                from loguru import logger
-
-                logger.success(f"found folder {file}")
+                logger.info(f"found folder {file}")
 
     assert len(file_paths) <= 1, f"Duplicate sets found : '{set_filename}' : {file_paths}"
     assert (

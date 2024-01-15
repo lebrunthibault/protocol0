@@ -12,6 +12,10 @@ up:
 	@docker compose -f docker-compose-dev.yml up --build
 .PHONY: up
 
+logs:
+	@docker compose -f docker-compose-dev.yml logs -f
+.PHONY: logs
+
 publish:
 	@docker compose build
 	@docker compose push

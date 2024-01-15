@@ -94,7 +94,8 @@ class ClipLoop(SlotManager, Observable, LoopableInterface):
 
     @start_marker.setter
     def start_marker(self, start_marker: float) -> None:
-        self._clip.start_marker = start_marker
+        if self._clip:
+            self._clip.start_marker = start_marker
 
     @property
     def end(self) -> float:

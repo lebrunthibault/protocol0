@@ -8,6 +8,10 @@
         <div class="modal-header d-flex">
           <h5 class="modal-title">{{ abletonSet.path_info.name }} <small>({{ modifiedSince }})</small></h5>
           <div>
+            <button v-if="abletonSet.audio"
+                @click="prepareForSoundCloud" type="button" class="btn btn-lg btn-light mx-2">
+              <i class="fa-brands fa-soundcloud" data-toggle="tooltip" data-placement="top" title="Export to mp3"></i>
+            </button>
             <button v-if="canArchive"
                     @click="archiveSet" type="button" class="btn btn-lg btn-light mx-2">
               <i class="fa-solid fa-box-archive" data-toggle="tooltip" data-placement="top" title="Archive set"></i>
@@ -56,8 +60,9 @@
 
 import {defineComponent, PropType} from "vue";
 import moment from 'moment';
-import {basename, notify} from '@/utils/utils'
+import {notify} from '@/utils/utils'
 import api from "@/utils/api";
+import localApi from '@/utils/localApi'
 import {AbletonSet, AbletonSetPlace} from '@/components/ableton_sets/ableton_sets';
 
 
@@ -134,7 +139,11 @@ export default defineComponent({
       this.abletonSet.path_info.name = this.name
       $('#setInfoModal').modal('hide')
     },
-    basename,
+    async prepareForSoundCloud() {
+      await localApi.post(`/set/prepare_for_soundcloud?path=${this.abletonSet?.path_info.relative_name}`)
+      notify("Set exported to mp3")
+      $('#setInfoModal').modal('hide')
+    },
     async archiveSet() {
       await api.post(`/set/archive?path=${this.abletonSet?.path_info.relative_name}`)
       this.$emit('setMoved', this.abletonSet)

@@ -335,6 +335,7 @@ class DeviceEnum(AbstractEnum):
             lambda d: d == DeviceEnum.STANDARD_CLIP,
             lambda d: d == DeviceEnum.UTILITY,
             lambda d: d == DeviceEnum.PSY_SCOPE,
+            lambda d: d == DeviceEnum.M_ANALYZER,
         ]
 
         for index, predicate in enumerate(predicates):
