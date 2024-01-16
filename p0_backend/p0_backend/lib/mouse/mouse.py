@@ -4,7 +4,6 @@ from time import sleep
 import pyautogui
 from loguru import logger
 
-from p0_backend.settings import Settings
 from p0_backend.lib.ableton.interface.coords import Coords
 
 
@@ -21,15 +20,11 @@ def drag_to(coords: Coords, duration=0.5) -> None:
     pyautogui.dragTo(*coords, button="left", duration=duration, tween=tween)
 
 
-def click(coords: Coords, exact=False, button=pyautogui.PRIMARY, duration=0) -> None:
+def click(coords: Coords, button=pyautogui.PRIMARY, duration=0) -> None:
     # coordinates are relative to a 1080p display resolution
     # accounting for resolution change
 
     x, y = coords
-
-    if not exact:
-        x *= Settings().display_resolution_factor
-        y *= Settings().display_resolution_factor
 
     try:
         pyautogui.mouseDown(x, y, button=button)
@@ -37,6 +32,11 @@ def click(coords: Coords, exact=False, button=pyautogui.PRIMARY, duration=0) -> 
         pyautogui.mouseUp(x, y, button=button)
     except pyautogui.FailSafeException as e:
         logger.warning(e)
+
+
+def double_click(coords: Coords, interval: float = 0) -> None:
+    x, y = coords
+    pyautogui.doubleClick(x, y, interval=interval)
 
 
 def click_vertical_zone(coords: Coords) -> None:

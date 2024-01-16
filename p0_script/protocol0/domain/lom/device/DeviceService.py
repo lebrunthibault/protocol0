@@ -177,9 +177,6 @@ class DeviceService(object):
 
         if not is_valid_rack(device):
             parent_rack = find_parent_rack(Song.selected_track(), device)
-            from protocol0.shared.logging.Logger import Logger
-
-            Logger.dev(parent_rack)
 
             if parent_rack and is_valid_rack(parent_rack):
                 parent_rack.is_showing_chain_devices = False

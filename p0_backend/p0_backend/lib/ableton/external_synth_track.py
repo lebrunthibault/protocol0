@@ -22,4 +22,4 @@ def _click_rev2_editor(coords: Coords):
     handle = find_window_handle_by_enum(settings.rev2_editor_window_title)
     assert handle, "Couldn't focus rev2 editor"
     focus_window(name=settings.rev2_editor_window_title)
-    click(get_absolute_coords(handle, coords), exact=True)
+    click(get_absolute_coords(handle, coords))

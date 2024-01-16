@@ -31,12 +31,8 @@ class ClipperService:
 
         # clipper.toggle()
 
-        input_gain = clipper.get_parameter_by_name(DeviceParamEnum.INPUT_GAIN)
-        output_gain = clipper.get_parameter_by_name(DeviceParamEnum.OUTPUT_GAIN)
-
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev((input_gain.value, output_gain.value))
+        # input_gain = clipper.get_parameter_by_name(DeviceParamEnum.INPUT_GAIN)
+        # output_gain = clipper.get_parameter_by_name(DeviceParamEnum.OUTPUT_GAIN)
 
         return None
 

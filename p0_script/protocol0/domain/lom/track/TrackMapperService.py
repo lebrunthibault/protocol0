@@ -59,9 +59,6 @@ class TrackMapperService(SlotManager):
     @handle_errors()
     def tracks_listener(self) -> None:
         deleted_track_indexes = self._clean_tracks()
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(f"deleted_track_indexes: {deleted_track_indexes}")
 
         previous_simple_track_count = len(list(Song.all_simple_tracks()))
         added_track_count = len(list(Song.live_tracks())) - previous_simple_track_count
@@ -128,9 +125,6 @@ class TrackMapperService(SlotManager):
         Undo.begin_undo_step()  # Live crashes on undo without this
         seq = Sequence()
         added_track = Song.selected_track()
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(f"added_track: {added_track}")
         if Song.selected_track() == Song.current_track().base_track:
             added_track = Song.current_track()
 
@@ -170,9 +164,6 @@ class TrackMapperService(SlotManager):
         self, previous_simple_track: SimpleTrack, new_simple_track: SimpleTrack
     ) -> None:
         """disconnecting and removing from SimpleTrack group track and abstract_group_track"""
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(f"replacing {previous_simple_track} with {new_simple_track}")
         new_simple_track._index = previous_simple_track._index
         previous_simple_track.disconnect()
 
