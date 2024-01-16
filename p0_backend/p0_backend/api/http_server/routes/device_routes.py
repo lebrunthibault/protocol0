@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
+from p0_backend.lib.synth.serum import serum_add_filter_macro
 
 from protocol0.application.command.LoadDeviceCommand import LoadDeviceCommand
 from protocol0.application.command.LoadDrumRackCommand import LoadDrumRackCommand
@@ -34,3 +35,8 @@ async def load_minitaur():
 @router.get("/toggle_rack_chain")
 async def toggle_rack_chain():
     p0_script_client().dispatch(ToggleRackChainCommand())
+
+
+@router.get("/serum_add_filter_macro")
+async def _serum_add_filter_macro():
+    serum_add_filter_macro()

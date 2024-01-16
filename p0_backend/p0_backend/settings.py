@@ -61,6 +61,3 @@ class Settings(BaseSettings):
     p0_input_port_name: str = "P0_IN_MIDI"
     p0_input_from_http_port_name: str = "P0_IN_HTTP"
     p0_backend_loopback_name: str = "P0_BACKEND_LOOPBACK"
-
-    # 1 is 1080p, 2 is 4K
-    display_resolution_factor: int = 1

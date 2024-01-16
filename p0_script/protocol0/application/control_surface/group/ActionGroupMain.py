@@ -13,8 +13,8 @@ from protocol0.domain.lom.set.MixingService import MixingService
 from protocol0.domain.lom.song.components.TempoComponent import TempoComponent
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 
+
 # noinspection SpellCheckingInspection
-from protocol0.shared.Song import Song
 
 
 class ActionGroupMain(ActionGroupInterface):
@@ -79,6 +79,4 @@ class ActionGroupMain(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(Song.selected_device().parameters)
+        pass

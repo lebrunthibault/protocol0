@@ -73,12 +73,7 @@ class DeviceEnum(AbstractEnum):
     SATURATOR = "Saturator"
     SATURN_2 = "Saturn 2"
     SAUSAGE_FATTENER = "Sausage Fattener"
-    SERUM = "Serum_x64"
-    SERUM_RACK = "Serum Rack.adg"
-    SERUM_BASS = "Serum_x64"
-    SERUM_KEYS = "Serum_x64"
-    SERUM_LEAD = "Serum_x64"
-    SERUM_PLUCK = "Serum_x64"
+    SERUM = "Serum Rack.adg"
     SIMPLER = "Simpler"
     SOOTHE2 = "soothe2"
     SOUNDID_REFERENCE_PLUGIN = "SoundID Reference Plugin"
@@ -351,11 +346,6 @@ class DeviceEnum(AbstractEnum):
             DeviceEnum.KONTAKT,
             DeviceEnum.REV2_EDITOR,
             DeviceEnum.SERUM,
-            DeviceEnum.SERUM_RACK,
-            DeviceEnum.SERUM_BASS,
-            DeviceEnum.SERUM_KEYS,
-            DeviceEnum.SERUM_LEAD,
-            DeviceEnum.SERUM_PLUCK,
             DeviceEnum.SPLICE,
             DeviceEnum.SYLENTH1,
             DeviceEnum.SYLENTH1_RACK,
@@ -369,23 +359,19 @@ class DeviceEnum(AbstractEnum):
     @property
     def is_harmony_instrument(self) -> bool:
         return self in [
-            DeviceEnum.SERUM_KEYS,
             DeviceEnum.SYLENTH1_KEYS,
-            DeviceEnum.SERUM_PLUCK,
             DeviceEnum.SYLENTH1_PLUCK,
         ]
 
     @property
     def is_melody_instrument(self) -> bool:
         return self in [
-            DeviceEnum.SERUM_LEAD,
             DeviceEnum.SYLENTH1_LEAD,
         ]
 
     @property
     def is_bass_instrument(self) -> bool:
         return self in [
-            DeviceEnum.SERUM_BASS,
             DeviceEnum.SYLENTH1_BASS,
         ]
 
@@ -499,11 +485,6 @@ class DeviceEnum(AbstractEnum):
 
         if self in [
             DeviceEnum.SERUM,
-            DeviceEnum.SERUM_RACK,
-            DeviceEnum.SERUM_BASS,
-            DeviceEnum.SERUM_KEYS,
-            DeviceEnum.SERUM_LEAD,
-            DeviceEnum.SERUM_PLUCK,
         ]:
             return DeviceEnum.SERUM
 
@@ -520,9 +501,4 @@ class DeviceEnum(AbstractEnum):
             DeviceEnum.SYLENTH1_LEAD: "Lead",
             DeviceEnum.SYLENTH1_PLUCK: "Pluck",
             DeviceEnum.SERUM: "Serum",
-            DeviceEnum.SERUM_RACK: "Serum",
-            DeviceEnum.SERUM_BASS: "Bass",
-            DeviceEnum.SERUM_KEYS: "Keys",
-            DeviceEnum.SERUM_LEAD: "Lead",
-            DeviceEnum.SERUM_PLUCK: "Pluck",
         }.get(self, self.instrument_enum.value)

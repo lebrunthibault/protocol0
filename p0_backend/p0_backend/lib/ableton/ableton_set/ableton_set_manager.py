@@ -30,7 +30,11 @@ class AbletonSetManager:
         try:
             ableton_set = AbletonSet.create(get_launched_set_path())
         except AssertionError:
-            ableton_set = AbletonSet.create(settings.ableton_test_set_path)
+            try:
+                ableton_set = AbletonSet.create(settings.ableton_test_set_path)
+            except AssertionError as e:
+                logger.error(e)
+                return
 
         ableton_set.current_state = current_state
 

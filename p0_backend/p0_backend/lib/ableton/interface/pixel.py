@@ -114,10 +114,7 @@ def get_absolute_coords(handle: int, coords: Coords) -> Coords:
     (x, y, w, h) = get_window_position(handle)
     (x_coords, y_coords) = coords
 
-    x_coords *= settings.display_resolution_factor
-    y_coords *= settings.display_resolution_factor
-
-    return (x + x_coords, y + y_coords)
+    return x + x_coords, y + y_coords
 
 
 def get_pixel_color_at(coords: Coords) -> Optional[PixelColorEnum]:
