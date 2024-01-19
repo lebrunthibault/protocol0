@@ -28,9 +28,13 @@ def resize_clip_to_scene_length(
         return
 
     def set_clip_length() -> None:
-        clip.loop.start = clip.loop.start_marker = 0
-        clip.loop.end = clip.loop.end_marker = Song.scenes()[clip.index].length
-        clip.show_loop()
+        # noinspection PyBroadException
+        try:
+            clip.loop.start = clip.loop.start_marker = 0
+            clip.loop.end = clip.loop.end_marker = Song.scenes()[clip.index].length
+            clip.show_loop()
+        except Exception:
+            pass
 
     Scheduler.defer(set_clip_length)
     Scheduler.wait_ms(50, set_clip_length)  # hack to make the loop start on 1.1.1
