@@ -20,6 +20,10 @@ logs:
 	powershell -c "Get-Content -Path 'C:\Users\thiba\AppData\Roaming\Ableton\Live 11.3.4\Preferences\Log.txt' -Wait -Tail 50"
 .PHONY: logs
 
+logs_10:
+	powershell -c "Get-Content -Path 'C:\Users\thiba\AppData\Roaming\Ableton\Live 10.1.43\Preferences\Log.txt' -Wait -Tail 50"
+.PHONY: logs_10
+
 test:
 	@poetry run python p0_backend/scripts/cli.py test
 .PHONY: test

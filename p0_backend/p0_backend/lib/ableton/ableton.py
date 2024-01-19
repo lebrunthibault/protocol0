@@ -62,6 +62,11 @@ def reload_ableton() -> None:
     """
     Not easy to have this work every time
     """
+    # execute_powershell_command(
+    #     f'& "D:\\SoundBanks and programs\\Ableton 10\\Program\\Ableton Live 10 Suite.exe" "C:\\Users\\thiba\\OneDrive\\Bureau\\default 10 Project\\default 10.als"',
+    #     minimized=True,
+    # )
+    # return
     try:
         focus_ableton()
     except (AssertionError, Protocol0Error):
