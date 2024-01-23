@@ -59,8 +59,6 @@ class AbstractGroupTrack(AbstractTrack):
     @color.setter
     def color(self, color_index: int) -> None:
         self.base_track.color = color_index
-        # for track in self.sub_tracks:
-        #     track.color = color_index
 
     def fire(self, scene_index: int) -> None:
         for track in self.sub_tracks:
