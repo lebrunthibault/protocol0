@@ -5,7 +5,6 @@ from typing import Optional, Dict, List
 import Live
 from _Framework.SubjectSlot import subject_slot, SlotManager
 
-from protocol0.domain.lom.track.TrackAddedEvent import TrackAddedEvent
 from protocol0.domain.lom.track.TrackFactory import TrackFactory
 from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
 from protocol0.domain.lom.track.group_track.DrumsTrack import DrumsTrack
@@ -71,7 +70,6 @@ class TrackMapperService(SlotManager):
 
         seq = Sequence()
         if added_track_count > 0 and Song.selected_track():
-            seq.add(partial(DomainEventBus.defer_emit, TrackAddedEvent()))
             seq.add(partial(self._on_track_added, deleted_track_indexes))
 
         seq.add(partial(DomainEventBus.defer_emit, TracksMappedEvent()))
