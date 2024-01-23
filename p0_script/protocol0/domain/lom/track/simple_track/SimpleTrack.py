@@ -9,6 +9,7 @@ from protocol0.domain.lom.clip.ClipConfig import ClipConfig
 from protocol0.domain.lom.clip.ClipInfo import ClipInfo
 from protocol0.domain.lom.clip.ClipTail import ClipTail
 from protocol0.domain.lom.clip_slot.ClipSlot import ClipSlot
+from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.device.SimpleTrackDevices import SimpleTrackDevices
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
@@ -40,6 +41,7 @@ from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.ui.ColorEnum import ColorEnum
 from protocol0.domain.shared.utils.forward_to import ForwardTo
+from protocol0.domain.shared.utils.timing import defer
 from protocol0.domain.shared.utils.utils import volume_to_db, db_to_volume
 from protocol0.infra.persistence.TrackData import TrackData
 from protocol0.shared.Config import Config
@@ -94,6 +96,7 @@ class SimpleTrack(AbstractTrack):
         self.arm_state.register_observer(self)
 
         self._name_listener.subject = live_track
+        self._solo_listener.subject = live_track
         self._output_meter_level_listener.subject = None
 
         self.devices.build()
@@ -156,6 +159,15 @@ class SimpleTrack(AbstractTrack):
 
         if self.group_track:
             Scheduler.defer(partial(rename_tracks, self.group_track))
+
+    @subject_slot("solo")
+    @defer
+    def _solo_listener(self) -> None:
+        try:
+            if self.solo and list(self.devices)[0].enum == DeviceEnum.CTHULHU:
+                list(Song.simple_tracks())[self.index + 1].solo = True
+        except IndexError:
+            pass
 
     @subject_slot("output_meter_level")
     def _output_meter_level_listener(self) -> None:
