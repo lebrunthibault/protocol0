@@ -18,14 +18,6 @@ from protocol0.shared.types import T
 
 CommandMapping = Dict[Type[SerializableCommand], Type[CommandHandlerInterface]]
 
-# broadcast_commands = [
-#     GetSetStateCommand,
-#     FireSceneToPositionCommand,
-#     FireSelectedSceneCommand,
-#     PlayPauseSongCommand,
-#     ToggleSceneLoopCommand,
-# ]
-
 
 class CommandBus(object):
     _DEBUG = False
