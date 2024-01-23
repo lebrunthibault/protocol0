@@ -43,7 +43,7 @@ return
     callBackend("set/save_as_template")
 return
 ^+a::
-	callBackend("arm")
+	callBackend("track/arm")
 return
 ^space::
 	callBackend("scene/fire_selected")
@@ -62,10 +62,10 @@ return
 	callBackend("scene/scroll?direction=prev")
 return
 ^q::
-	callBackend("show_automation?direction=next")
+	callBackend("clip/show_automation?direction=next")
 return
 ^+q::
-	callBackend("show_automation?direction=prev")
+	callBackend("clip/show_automation?direction=prev")
 return
 ^e::
 	callBackend("clip/toggle_notes")
@@ -78,7 +78,7 @@ return
     Send ^{numpad2}
 return
 ^+e::
-	callBackend("edit_automation_value")
+	callBackend("clip/edit_automation_value")
 return
 ^l::
 	callBackend("scene/toggle_loop")

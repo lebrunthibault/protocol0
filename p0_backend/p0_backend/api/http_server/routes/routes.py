@@ -1,5 +1,3 @@
-from time import sleep
-
 from fastapi import APIRouter
 from win11toast import toast_async
 
@@ -9,11 +7,7 @@ from p0_backend.lib.ableton.ableton import (
     hide_plugins,
     show_plugins,
 )
-from p0_backend.lib.ableton.ableton_set.ableton_set_manager import (
-    AbletonSetManager,
-)
 from p0_backend.lib.ableton.analyze_clip_jitter import analyze_test_audio_clip_jitter
-from p0_backend.lib.ableton.automation import edit_automation_value
 from p0_backend.lib.ableton.automation import set_envelope_loop_length
 from p0_backend.lib.ableton.external_synth_track import (
     activate_rev2_editor,
@@ -22,11 +16,8 @@ from p0_backend.lib.ableton.external_synth_track import (
 from p0_backend.lib.ableton.interface.browser import preload_sample_category
 from p0_backend.lib.ableton.interface.sample import load_sample_in_simpler
 from p0_backend.lib.ableton.interface.toggle_ableton_button import toggle_ableton_button
-from p0_backend.lib.ableton.interface.track import click_focused_track
-from p0_backend.lib.ableton.interface.track import flatten_track, load_instrument_track
 from p0_backend.lib.ableton.set_profiling.ableton_set_profiler import AbletonSetProfiler
 from p0_backend.lib.enum.notification_enum import NotificationEnum
-from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.explorer import close_samples_windows, close_explorer_window, open_explorer
 from p0_backend.lib.keys import send_keys
 from p0_backend.lib.notification import notify
@@ -35,16 +26,12 @@ from p0_backend.lib.window.find_window import find_window_handle_by_enum
 from p0_backend.lib.window.window import focus_window
 from p0_backend.settings import Settings
 from protocol0.application.command.DrumRackToSimplerCommand import DrumRackToSimplerCommand
-from protocol0.application.command.GoToGroupTrackCommand import GoToGroupTrackCommand
 from protocol0.application.command.LogSelectedCommand import LogSelectedCommand
 from protocol0.application.command.LogSongStatsCommand import LogSongStatsCommand
 from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongCommand
 from protocol0.application.command.ReloadScriptCommand import ReloadScriptCommand
 from protocol0.application.command.ScrollPresetsCommand import ScrollPresetsCommand
-from protocol0.application.command.ScrollTrackVolumeCommand import ScrollTrackVolumeCommand
-from protocol0.application.command.ShowAutomationCommand import ShowAutomationCommand
 from protocol0.application.command.ShowInstrumentCommand import ShowInstrumentCommand
-from protocol0.application.command.ToggleArmCommand import ToggleArmCommand
 from protocol0.application.command.ToggleLimiterCommand import ToggleLimiterCommand
 from protocol0.application.command.ToggleMonoSwitchCommand import ToggleMonoSwitchCommand
 from protocol0.application.command.ToggleReferenceTrackCommand import ToggleReferenceTrackCommand
@@ -59,6 +46,7 @@ from .keyboard_routes import router as keyboard_router
 from .record_routes import router as record_router
 from .scene_routes import router as scene_router
 from .set_routes import router as set_router
+from .track_routes import router as track_router
 
 router = APIRouter()
 
@@ -72,6 +60,7 @@ router.include_router(keyboard_router, prefix="/keyboard")
 router.include_router(record_router, prefix="/record")
 router.include_router(scene_router, prefix="/scene")
 router.include_router(set_router, prefix="/set")
+router.include_router(track_router, prefix="/track")
 
 
 @router.get("/")
@@ -84,13 +73,6 @@ def ping():
     AbletonSetProfiler.end_measurement()
 
 
-@router.get("/search")
-def search(text: str):
-    send_keys("^f")
-    sleep(0.1)
-    send_keys(text)
-
-
 @router.get("/show_sample_category")
 def show_sample_category(category: str):
     preload_sample_category(category)
@@ -99,20 +81,6 @@ def show_sample_category(category: str):
 @router.get("/reload_ableton")
 async def _reload_ableton():
     reload_ableton()
-
-
-@router.get("/flatten_track")
-def _flatten_track():
-    flatten_track()
-
-
-@router.get("/un_group")
-async def un_group():
-    hide_plugins()
-    send_keys("+{TAB}")
-    send_keys("+{TAB}")
-    send_keys("^+g")
-    show_plugins(force=True)
 
 
 @router.get("/analyze_test_audio_clip_jitter")
@@ -138,11 +106,6 @@ def _hide_plugins():
 @router.get("/toggle_ableton_button")
 def _toggle_ableton_button(x: int, y: int, activate: bool = False):
     toggle_ableton_button((x, y), activate=activate)
-
-
-@router.get("/load_instrument_track")
-def _load_instrument_track(instrument_name: str):
-    load_instrument_track(instrument_name)
 
 
 @router.get("/load_sample_in_simpler")
@@ -234,11 +197,6 @@ async def play_pause():
     p0_script_client().dispatch(PlayPauseSongCommand())
 
 
-@router.get("/click_focused_track")
-async def _click_focused_track():
-    click_focused_track()
-
-
 @router.get("/log_selected")
 async def _log_selected():
     p0_script_client().dispatch(LogSelectedCommand())
@@ -252,16 +210,6 @@ async def _log_song_stats():
 @router.get("/drum_rack_to_simpler")
 async def drum_rack_to_simpler():
     p0_script_client().dispatch(DrumRackToSimplerCommand())
-
-
-@router.get("/arm")
-async def arm():
-    p0_script_client().dispatch(ToggleArmCommand())
-
-
-@router.get("/scroll_track_volume")
-async def scroll_track_volume(direction: str):
-    p0_script_client().dispatch(ScrollTrackVolumeCommand(go_next=direction == "next"))
 
 
 @router.get("/scroll_presets")
@@ -292,31 +240,3 @@ async def toggle_reference_filters():
 @router.get("/show_instrument")
 async def show_instrument():
     p0_script_client().dispatch(ShowInstrumentCommand())
-
-
-@router.get("/show_automation")
-async def show_automation(direction: str):
-    p0_script_client().dispatch(ShowAutomationCommand(go_next=direction == "next"))
-
-
-@router.get("/edit_automation_value")
-async def _edit_automation_value():
-    try:
-        active_set = AbletonSetManager.active()
-    except Protocol0Error:
-        active_set = None
-
-    if active_set is not None:
-        assert active_set.current_state.selected_track.type in (
-            "SimpleAudioTrack",
-            "SimpleAudioExtTrack",
-            "SimpleMidiTrack",
-            "SimpleMidiExtTrack",
-        ), "cannot edit automation"
-
-    edit_automation_value()
-
-
-@router.get("/go_to_group_track")
-async def _go_to_group_track():
-    p0_script_client().dispatch(GoToGroupTrackCommand())
