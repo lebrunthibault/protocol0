@@ -75,12 +75,19 @@ class AudioExportService(object):
 
         self._scene_component.looping_scene_toggler.reset()
 
+        excluded_tracks = []
+        if Song.reference_track():
+            excluded_tracks.append(Song.reference_track())
+
         song_time = 0.0
         for scene in Song.active_scenes():
             scene_start = song_time
             scene_end = song_time + scene.length
 
             for scene_cs in scene.clips.clip_slot_tracks:
+                if scene_cs.track in excluded_tracks:
+                    continue
+
                 clip = scene_cs.clip
                 if not clip:
                     continue

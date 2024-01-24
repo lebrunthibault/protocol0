@@ -211,6 +211,10 @@ class Song(object):
         return cls._INSTANCE._track_mapper_service._master_track
 
     @classmethod
+    def reference_track(cls) -> Optional["SimpleTrack"]:
+        return next(filter(lambda t: t.name.lower().strip() == "ref", list(cls.simple_tracks())), None)  # type: ignore[arg-type]
+
+    @classmethod
     def return_tracks(cls) -> List[Live.Track.Track]:
         return list(cls._live_song().return_tracks)
 
