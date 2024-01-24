@@ -11,10 +11,6 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class DrumPad(SlotManager):
-    INITIAL_NOTE = 36
-    _FIRST_DRUM_PAD_WIDTH = 115
-    _FIRST_DRUM_PAD_HEIGHT = 987
-
     def __init__(self, drum_pad: Live.DrumPad.DrumPad) -> None:
         super(DrumPad, self).__init__()
         self._drum_pad = drum_pad
@@ -53,8 +49,3 @@ class DrumPad(SlotManager):
     @property
     def is_empty(self) -> bool:
         return len(self._drum_pad.chains) == 0
-
-    @classmethod
-    def select_first_pad(cls) -> Sequence:
-        Backend.client().click(cls._FIRST_DRUM_PAD_WIDTH, cls._FIRST_DRUM_PAD_HEIGHT)
-        return Sequence().wait(2).done()

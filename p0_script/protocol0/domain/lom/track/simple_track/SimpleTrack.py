@@ -361,17 +361,6 @@ class SimpleTrack(AbstractTrack):
 
         return seq.done()
 
-    def click(self) -> Sequence:
-        track_color = self.color
-
-        seq = Sequence()
-        seq.add(self.focus)
-        seq.add(Backend.client().click_focused_track)
-        seq.wait_for_backend_event("track_clicked", timeout=3000)
-        seq.add(partial(setattr, self, "color", track_color))
-
-        return seq.done()
-
     def save(self) -> Sequence:
         track_color = self.color
 

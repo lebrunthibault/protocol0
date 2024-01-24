@@ -24,7 +24,7 @@ class SongStatsService(object):
         if "" in scene_names:
             scene_names.remove("")
 
-        if len(list(set(scene_names))) < 2:
+        if len(scene_names) > 2 and len(list(set(scene_names))) < 2:
             StatusBar.show_message("Scenes are not named")
 
         return SceneStats()

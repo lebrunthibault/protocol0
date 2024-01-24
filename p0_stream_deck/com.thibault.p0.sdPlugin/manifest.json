@@ -74,18 +74,6 @@
     },
     {
       "Icon": "icon/p0_action/action",
-      "Name": "Load drum track",
-      "States": [
-        {
-          "Title": "",
-          "Image": "icon/p0_action/state"
-        }
-      ],
-      "Tooltip": "Load drum track",
-      "UUID": "com.thibault.p0.load-drum-track"
-    },
-    {
-      "Icon": "icon/p0_action/action",
       "Name": "Load grouped device",
       "States": [
         {
@@ -107,18 +95,6 @@
       ],
       "Tooltip": "Load instrument device",
       "UUID": "com.thibault.p0.load-instrument"
-    },
-    {
-      "Icon": "icon/p0_action/action",
-      "Name": "Load vocal track",
-      "States": [
-        {
-          "Title": "",
-          "Image": "icon/p0_action/state"
-        }
-      ],
-      "Tooltip": "Load vocal track",
-      "UUID": "com.thibault.p0.load-vocal-track"
     }
   ],
   "Profiles": [

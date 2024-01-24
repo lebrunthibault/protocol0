@@ -8,7 +8,6 @@ enum ProfileNameEnum {
     DRUMS = 'profiles/Drums',
     HOME = 'profiles/Home',
     SELECTED_SCENE = 'profiles/SelectedScene',
-    VOCALS = 'profiles/Vocals',
 }
 
 // noinspection JSUnusedGlobalSymbols

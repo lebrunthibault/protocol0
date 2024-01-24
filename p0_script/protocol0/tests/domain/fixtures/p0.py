@@ -44,7 +44,6 @@ def monkey_patch_static():
     Backend(nop)
     Undo(nop, nop)
     AbletonSet.notify = nop
-    SimpleTrack.click = nop
     # noinspection PyTypeChecker
     Scheduler(TickSchedulerTest(), None)  # ignore beat scheduling in tests
 

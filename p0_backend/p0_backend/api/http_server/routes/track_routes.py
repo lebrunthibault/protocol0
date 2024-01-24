@@ -5,7 +5,6 @@ from p0_backend.lib.ableton.ableton import (
     hide_plugins,
     show_plugins,
 )
-from p0_backend.lib.ableton.interface.track import click_focused_track
 from p0_backend.lib.ableton.interface.track import flatten_track, load_instrument_track
 from p0_backend.lib.keys import send_keys
 from protocol0.application.command.ToggleArmCommand import ToggleArmCommand
@@ -31,11 +30,6 @@ async def un_group():
 @router.get("/load_instrument_track")
 def _load_instrument_track(instrument_name: str):
     load_instrument_track(instrument_name)
-
-
-@router.get("/click_focused_track")
-async def _click_focused_track():
-    click_focused_track()
 
 
 @router.get("/arm")

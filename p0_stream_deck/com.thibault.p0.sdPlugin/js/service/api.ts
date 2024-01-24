@@ -16,12 +16,6 @@ const API = {
     loadDeviceInNewTrack (name: string) {
         fetch(`${Config.P0_API_URL}/device/load?name=${name}&create_track=true`).then(() => null)
     },
-    loadDrumSamples (category: string) {
-        fetch(`${Config.P0_API_URL}/device/load_drum_rack/?category=drums&subcategory=${category}`).then(() => null)
-    },
-    loadVocalSamples (category: string) {
-        fetch(`${Config.P0_API_URL}/device/load_drum_rack/?category=vocals&subcategory=${category}`).then(() => null)
-    },
     selectClip (trackName: string) {
         fetch(`${Config.P0_API_URL}/clip/select?track_name=${trackName}`).then(() => null)
     },

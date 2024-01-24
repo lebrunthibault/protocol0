@@ -10,7 +10,7 @@ class SimpleTrackArmState(AbstractTrackArmState):
 
     @property
     def is_armed(self) -> bool:
-        return self._live_track.can_be_armed and self._live_track.arm
+        return self._live_track and self._live_track.can_be_armed and self._live_track.arm
 
     @is_armed.setter
     def is_armed(self, is_armed: bool) -> None:

@@ -23,7 +23,6 @@ const actionTypes = {
     CAPTURE_MIDI_VALIDATE: new ActionType('capture-midi-validate', ProfileNameEnum.CLIP_LOOP, ProfileNameEnum.SELECTED_SCENE),
     DRUM_RACK_TO_SIMPLER: new ActionType('drum-rack-to-simpler', ProfileNameEnum.DRUMS),
     LOAD_DEVICE: new ActionType('load-device', ProfileNameEnum.DEVICES),
-    LOAD_DRUM_TRACK: new ActionType('load-drum-track', ProfileNameEnum.DRUMS),
     LOAD_GROUPED_DEVICE: new ActionType(
         'load-grouped-device',
         ProfileNameEnum.DEVICE_GROUP,
@@ -31,7 +30,6 @@ const actionTypes = {
         LoadDeviceActionSlot
     ),
     LOAD_INSTRUMENT: new ActionType('load-instrument', ProfileNameEnum.DEVICE_GROUP),
-    LOAD_VOCAL_TRACK: new ActionType('load-vocal-track', ProfileNameEnum.VOCALS),
     OPEN_SET: new ActionType('open-set', ProfileNameEnum.HOME, ProfileNameEnum.DEVICES),
     CLIP_SLOT_CONTROL: new ActionType(
         'clip-slot-control',

@@ -4,8 +4,6 @@ from typing import List, Union, Optional
 import pyautogui
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.settings import Settings, DOWN_BBOX
-from p0_backend.lib.notification import notify
 from p0_backend.lib.ableton.get_set import get_ableton_window_titles
 from p0_backend.lib.ableton.interface.coords import Coords
 from p0_backend.lib.ableton.interface.pixel import (
@@ -18,6 +16,8 @@ from p0_backend.lib.decorators import timeit
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.explorer import drag_file_to
 from p0_backend.lib.mouse.mouse import click
+from p0_backend.lib.notification import notify
+from p0_backend.settings import Settings, DOWN_BBOX
 from protocol0.application.command.EmitBackendEventCommand import (
     EmitBackendEventCommand,
 )
@@ -105,9 +105,3 @@ def load_instrument_track(instrument_name: str):
     )
 
     p0_script_client().dispatch(EmitBackendEventCommand("instrument_loaded"))
-
-
-def click_focused_track():
-    coords = get_focused_track_coords(box_boundary="right")
-    click(coords)
-    p0_script_client().dispatch(EmitBackendEventCommand("track_clicked"))

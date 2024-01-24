@@ -2,16 +2,9 @@ from typing import List
 
 from protocol0.domain.lom.device.DrumPad import DrumPad
 from protocol0.domain.lom.device.RackDevice import RackDevice
-from protocol0.shared.logging.Logger import Logger
 
 
 class DrumRackDevice(RackDevice):
-    def pad_names_equal(self, names: List[str]) -> bool:
-        pad_names = [drum_pad.name for drum_pad in self.filled_drum_pads]
-        if names != pad_names:
-            Logger.info("difference: %s" % list(set(names) - set(pad_names)))
-        return names == pad_names
-
     @property
     def drum_pads(self) -> List[DrumPad]:
         return [DrumPad(drum_pad) for drum_pad in self._device.drum_pads if drum_pad]

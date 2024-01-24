@@ -1,11 +1,8 @@
-from functools import partial
 from typing import Optional, Type
 
 import Live
 
 from protocol0.domain.lom.device.DrumRackService import DrumRackService
-from protocol0.domain.lom.sample.SampleCategory import SampleCategory
-from protocol0.domain.lom.sample.SampleCategoryEnum import SampleCategoryEnum
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
 from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitoringStateEnum
 from protocol0.domain.lom.track.group_track.AbstractGroupTrack import AbstractGroupTrack
@@ -25,9 +22,7 @@ from protocol0.domain.lom.track.simple_track.midi.special.KickTrack import KickT
 from protocol0.domain.lom.track.simple_track.midi.special.UsamoTrack import UsamoTrack
 from protocol0.domain.shared.BrowserServiceInterface import BrowserServiceInterface
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
-from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.shared.Song import Song
-from protocol0.shared.sequence.Sequence import Sequence
 
 
 def _get_simple_track_class(track: Live.Track.Track) -> Type[SimpleTrack]:
@@ -99,31 +94,3 @@ class TrackFactory(object):
             return previous_abstract_group_track
         else:
             return NormalGroupTrack.make(base_group_track)
-
-    def add_sample_track(self, category: SampleCategoryEnum, sample_sub_category: str) -> Sequence:
-        sample_group_track = Song.drums_track()
-        if sample_group_track is None:
-            raise Protocol0Warning("Sample group track doesn't exist")
-
-        if sample_sub_category.lower() not in category.subcategories:
-            raise Protocol0Warning(
-                "Cannot find %s sample category for '%s'" % (category, sample_sub_category)
-            )
-
-        sample_category = SampleCategory(category, sample_sub_category)
-
-        sample_group_track.base_track.is_folded = False
-
-        seq = Sequence()
-        seq.add(
-            partial(
-                self._track_crud_component.create_midi_track, sample_category.create_track_index
-            )
-        )
-        seq.add(lambda: setattr(Song.selected_track(), "volume", -15))
-        seq.add(lambda: setattr(Song.selected_track(), "color", sample_category.color))
-
-        # not creating clip here
-        seq.add(partial(self._drum_rack_service.load_category_drum_rack, sample_category))
-
-        return seq.done()
