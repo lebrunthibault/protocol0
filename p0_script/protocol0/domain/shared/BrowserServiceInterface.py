@@ -11,6 +11,3 @@ class BrowserServiceInterface(object):
 
     def load_sample(self, sample_name: str) -> Sequence:
         raise NotImplementedError
-
-    def load_drum_pad_sample(self, sample_name: str) -> Sequence:
-        raise NotImplementedError

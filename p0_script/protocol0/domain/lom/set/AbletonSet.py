@@ -5,7 +5,6 @@ from typing import Optional, List
 from protocol0.domain.lom.clip_slot.ClipSlotPlayingStatusUpdatedEvent import (
     ClipSlotPlayingStatusUpdatedEvent,
 )
-from protocol0.domain.lom.device.DrumRackLoadedEvent import DrumRackLoadedEvent
 from protocol0.domain.lom.instrument.instrument.InstrumentDrumRack import InstrumentDrumRack
 from protocol0.domain.lom.track.SelectedTrackChangedEvent import SelectedTrackChangedEvent
 from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
@@ -75,7 +74,6 @@ class AbletonSet(object):
 
         listened_events = [
             AbstractTrackNameUpdatedEvent,
-            DrumRackLoadedEvent,
             SessionUpdatedEvent,
             TracksMappedEvent,
             ClipSlotPlayingStatusUpdatedEvent,

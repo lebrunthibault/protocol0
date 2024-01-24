@@ -27,9 +27,7 @@ if TYPE_CHECKING:
         ExternalSynthTrack,
     )
     from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
-    from protocol0.domain.lom.track.group_track.DrumsTrack import DrumsTrack
     from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
-    from protocol0.domain.lom.track.group_track.VocalsTrack import VocalsTrack
     from protocol0.domain.lom.scene.Scene import Scene
     from protocol0.domain.lom.clip.Clip import Clip
     from protocol0.domain.lom.clip.MidiClip import MidiClip  # noqa
@@ -187,16 +185,6 @@ class Song(object):
         )
 
     @classmethod
-    def abstract_group_tracks(cls) -> Iterator["AbstractGroupTrack"]:
-        from protocol0.domain.lom.track.group_track.AbstractGroupTrack import (  # noqa
-            AbstractGroupTrack,
-        )
-
-        for track in cls.abstract_tracks():
-            if isinstance(track, AbstractGroupTrack):
-                yield track
-
-    @classmethod
     def external_synth_tracks(cls) -> Iterator["ExternalSynthTrack"]:
         from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import (  # noqa
             ExternalSynthTrack,
@@ -217,14 +205,6 @@ class Song(object):
     @classmethod
     def armed_tracks(cls) -> Iterator["AbstractTrack"]:
         return (track for track in cls.abstract_tracks() if track.arm_state.is_armed)
-
-    @classmethod
-    def drums_track(cls) -> Optional["DrumsTrack"]:
-        return cls._INSTANCE._track_mapper_service._drums_track
-
-    @classmethod
-    def vocals_track(cls) -> Optional["VocalsTrack"]:
-        return cls._INSTANCE._track_mapper_service._vocals_track
 
     @classmethod
     def master_track(cls) -> Optional["MasterTrack"]:

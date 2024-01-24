@@ -1,2 +1,0 @@
-class DrumRackLoadedEvent(object):
-    pass

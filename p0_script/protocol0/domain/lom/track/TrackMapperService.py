@@ -8,9 +8,7 @@ from _Framework.SubjectSlot import subject_slot, SlotManager
 from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitoringStateEnum
 from protocol0.domain.lom.track.TrackFactory import TrackFactory
 from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
-from protocol0.domain.lom.track.group_track.DrumsTrack import DrumsTrack
 from protocol0.domain.lom.track.group_track.NormalGroupTrack import NormalGroupTrack
-from protocol0.domain.lom.track.group_track.VocalsTrack import VocalsTrack
 from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import (
     ExternalSynthTrack,
 )
@@ -45,8 +43,6 @@ class TrackMapperService(SlotManager):
         self._track_factory = track_factory
 
         self._live_track_id_to_simple_track: Dict[int, SimpleTrack] = collections.OrderedDict()
-        self._drums_track: Optional[DrumsTrack] = None
-        self._vocals_track: Optional[VocalsTrack] = None
         self._master_track: Optional[SimpleTrack] = None
 
         self.tracks_listener.subject = self._live_song
@@ -89,8 +85,6 @@ class TrackMapperService(SlotManager):
         seq.add(partial(DomainEventBus.defer_emit, TracksMappedEvent()))
         seq.done()
 
-        self._get_special_tracks()
-
     def _clean_tracks(self) -> List[int]:
         existing_track_ids = [track._live_ptr for track in list(Song.live_tracks())]
         deleted_ids = []
@@ -124,12 +118,6 @@ class TrackMapperService(SlotManager):
 
         for track in Song.simple_tracks():
             track.on_tracks_change()
-
-    def _get_special_tracks(self) -> None:
-        abgs = list(Song.abstract_group_tracks())
-
-        self._drums_track = find_if(lambda t: isinstance(t, DrumsTrack), abgs)
-        self._vocals_track = find_if(lambda t: isinstance(t, VocalsTrack), abgs)
 
     def _on_track_added(self, deleted_track_indexes: List[int]) -> Optional[Sequence]:
         if not Song.selected_track().IS_ACTIVE:

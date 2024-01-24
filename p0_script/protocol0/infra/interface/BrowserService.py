@@ -54,14 +54,6 @@ class BrowserService(BrowserServiceInterface):
         seq.wait(20)
         return seq.done()
 
-    def load_drum_pad_sample(self, name: str) -> Sequence:
-        ApplicationView.toggle_browse()
-        self._browser_loader_service.load_sample(name)
-        seq = Sequence()
-        # seq.wait(2)
-        seq.add(ApplicationView.toggle_browse)
-        return seq.done()
-
     def _on_sample_selected_event(self, event: SampleSelectedEvent) -> None:
         item = self._browser_loader_service.get_sample(sample_name=event.sample_name)
 
