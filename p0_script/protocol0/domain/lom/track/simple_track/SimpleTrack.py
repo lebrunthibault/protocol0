@@ -245,6 +245,11 @@ class SimpleTrack(AbstractTrack):
         )
 
     @property
+    def is_cthulhu_track(self) -> bool:
+        devices = list(self.devices)
+        return len(devices) > 0 and devices[0].enum == DeviceEnum.CTHULHU
+
+    @property
     def volume(self) -> float:
         volume = self._track.mixer_device.volume.value if self._track else 0
         return volume_to_db(volume)
