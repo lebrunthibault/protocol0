@@ -5,6 +5,7 @@ from typing import Optional, Dict, List
 import Live
 from _Framework.SubjectSlot import subject_slot, SlotManager
 
+from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitoringStateEnum
 from protocol0.domain.lom.track.TrackFactory import TrackFactory
 from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
 from protocol0.domain.lom.track.group_track.DrumsTrack import DrumsTrack
@@ -71,6 +72,19 @@ class TrackMapperService(SlotManager):
         seq = Sequence()
         if added_track_count > 0 and Song.selected_track():
             seq.add(partial(self._on_track_added, deleted_track_indexes))
+            try:
+                if added_track_count == 2:
+                    tracks = (
+                        list(Song.simple_tracks())[Song.selected_track().index - 1],
+                        Song.selected_track(),
+                    )
+                    cthulhu_track = next(filter(lambda t: t.is_cthulhu_track, tracks), None)
+                    if cthulhu_track:
+                        # unselect both tracks
+                        seq.add(list(Song.simple_tracks())[0].select)
+                        seq.add(partial(self._on_cthulhu_tracks_added, cthulhu_track))
+            except IndexError:
+                pass
 
         seq.add(partial(DomainEventBus.defer_emit, TracksMappedEvent()))
         seq.done()
@@ -139,6 +153,35 @@ class TrackMapperService(SlotManager):
 
         seq.add(Undo.end_undo_step)
         return seq.done()
+
+    def _on_cthulhu_tracks_added(self, cthulhu_track: SimpleTrack) -> None:
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev("cthulhu track added")
+        notes_track = next(
+            filter(lambda t: t.name.lower().strip() == "notes", Song.simple_tracks()), None
+        )
+        assert notes_track, "No 'Notes' track"
+
+        cthulhu_track.input_routing.track = notes_track
+        cthulhu_track.select()
+        synth_track = list(Song.simple_tracks())[cthulhu_track.index + 1]
+
+        def get_bus_track(name: str) -> Optional[SimpleTrack]:
+            track = find_if(
+                lambda t: t.name.lower().strip() == name.lower().strip(), Song.simple_tracks()
+            )
+            if track:
+                assert (
+                    track.current_monitoring_state == CurrentMonitoringStateEnum.IN
+                ), f"bus track {track} has not monitor IN"
+
+            return track
+
+        bus_track = get_bus_track(f"{synth_track.name} Bus")
+        assert bus_track, f"Could not find bus track for {synth_track}"
+
+        synth_track.output_routing.track = bus_track
 
     def _on_current_monitoring_state_updated_event(
         self, event: CurrentMonitoringStateUpdatedEvent

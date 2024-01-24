@@ -73,7 +73,7 @@ class DeviceEnum(AbstractEnum):
     SATURATOR = "Saturator"
     SATURN_2 = "Saturn 2"
     SAUSAGE_FATTENER = "Sausage Fattener"
-    SERUM = "Serum Rack.adg"
+    SERUM = "Serum_x64"
     SIMPLER = "Simpler"
     SOOTHE2 = "soothe2"
     SOUNDID_REFERENCE_PLUGIN = "SoundID Reference Plugin"
@@ -327,8 +327,8 @@ class DeviceEnum(AbstractEnum):
             lambda d: d.is_fx,
             lambda d: d.is_limiter,
             lambda d: d == DeviceEnum.DP_METER_5,
-            lambda d: d == DeviceEnum.STANDARD_CLIP,
             lambda d: d == DeviceEnum.UTILITY,
+            lambda d: d == DeviceEnum.STANDARD_CLIP,
             lambda d: d == DeviceEnum.PSY_SCOPE,
             lambda d: d == DeviceEnum.M_ANALYZER,
         ]
