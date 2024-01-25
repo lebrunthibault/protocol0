@@ -115,9 +115,9 @@ class ClipSlot(SlotManager, Observable):
             seq.wait_for_event(ClipCreatedOrDeletedEvent, self._clip_slot)
         return seq.done()
 
-    def prepare_for_record(self) -> Sequence:
+    def prepare_for_record(self, clear: bool = True) -> Sequence:
         seq = Sequence()
-        if self.clip:
+        if self.clip and clear:
             seq.add(self.delete_clip)
             seq.wait(3)  # because has stop button is automatically removed on deletion
 

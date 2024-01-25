@@ -1,14 +1,34 @@
+from functools import partial
 from typing import cast
 
 from protocol0.domain.lom.song.SongStartedEvent import SongStartedEvent
 from protocol0.domain.lom.song.SongStoppedEvent import SongStoppedEvent
 from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
-from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
-from protocol0.domain.shared.scheduler.Last32thPassedEvent import Last32thPassedEvent
+from protocol0.domain.shared.scheduler.Last8thPassedEvent import Last8thPassedEvent
 from protocol0.domain.track_recorder.config.RecordConfig import RecordConfig
-from protocol0.domain.track_recorder.event.RecordStartedEvent import RecordStartedEvent
 from protocol0.shared.Song import Song
 from protocol0.shared.sequence.Sequence import Sequence
+
+
+def record_from_config(config: RecordConfig) -> Sequence:
+    # launch the record
+    seq = Sequence()
+    bar_length = cast(float, config.bar_length)
+    if bar_length != 0:
+        if not Song.is_playing():
+            seq.wait_for_event(SongStartedEvent)
+        if not config.records_midi:
+            # play well with the tail recording
+            bar_length -= 0.6
+
+        # this works because the method is called before the beginning of the bar
+        seq.wait_bars(bar_length)
+        seq.wait_for_event(Last8thPassedEvent)
+    else:
+        seq.wait_for_event(SongStoppedEvent)
+        seq.add(lambda: Song.selected_scene().scene_name.update(""))
+
+    return seq.done()
 
 
 class BaseRecorder(object):
@@ -18,16 +38,21 @@ class BaseRecorder(object):
         self._track = track
         self.config = record_config
 
-    def pre_record(self) -> Sequence:
+    def pre_record(self, clear_clips: bool) -> Sequence:
         seq = Sequence()
         seq.add(self._arm_track)
-        seq.add(self._prepare_clip_slots_for_record)
+        seq.add(partial(self._prepare_clip_slots_for_record, clear_clips=clear_clips))
         return seq.done()
 
-    def _prepare_clip_slots_for_record(self) -> Sequence:
+    def _prepare_clip_slots_for_record(self, clear_clips: bool) -> Sequence:
         """isolating this, we need clip slots to be computed at runtime (if the track changes)"""
         seq = Sequence()
-        seq.add([clip_slot.prepare_for_record for clip_slot in self.config.clip_slots])
+        seq.add(
+            [
+                partial(clip_slot.prepare_for_record, clear=clear_clips)
+                for clip_slot in self.config.clip_slots
+            ]
+        )
         return seq.done()
 
     def _arm_track(self) -> Sequence:
@@ -36,32 +61,6 @@ class BaseRecorder(object):
             seq.add(lambda: self._track.arm_state.arm())
         else:
             seq.add(self._track.arm_state.arm)
-
-        return seq.done()
-
-    def record(self) -> Sequence:
-        # launch the record
-        DomainEventBus.emit(
-            RecordStartedEvent(
-                self.config.scene_index,
-                has_count_in=self.config.records_midi,
-            )
-        )
-        seq = Sequence()
-        bar_length = cast(float, self.config.bar_length)
-        if bar_length != 0:
-            if not Song.is_playing():
-                seq.wait_for_event(SongStartedEvent)
-            if not self.config.records_midi:
-                # play well with the tail recording
-                bar_length -= 0.6
-
-            # this works because the method is called before the beginning of the bar
-            seq.wait_bars(bar_length)
-            seq.wait_for_event(Last32thPassedEvent)
-        else:
-            seq.wait_for_event(SongStoppedEvent)
-            seq.add(lambda: Song.selected_scene().scene_name.update(""))
 
         return seq.done()
 

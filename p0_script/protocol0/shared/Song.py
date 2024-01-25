@@ -337,6 +337,10 @@ class Song(object):
         return cls._INSTANCE._tempo_component.tempo
 
     @classmethod
+    def set_tempo(cls, tempo: float) -> None:
+        cls._INSTANCE._tempo_component.tempo = tempo
+
+    @classmethod
     def current_beats_song_time(cls) -> Live.Song.BeatTime:
         # noinspection PyArgumentList
         return cls._live_song().get_current_beats_song_time()

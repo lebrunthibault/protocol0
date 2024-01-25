@@ -23,7 +23,7 @@ class RecordAudioMulti(RecordProcessorInterface):
 
         seq.wait_for_event(SceneLastBarPassedEvent)
         seq.wait_beats(2)
-        seq.add(self._launch_record_on_next_scene)
+        seq.add(partial(self._launch_record_on_next_scene, track, config))
         return seq.done()
 
     def _launch_record_on_next_scene(

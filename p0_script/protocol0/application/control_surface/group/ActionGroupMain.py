@@ -15,6 +15,9 @@ from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 
 
 # noinspection SpellCheckingInspection
+from protocol0.domain.track_recorder.RecordService import RecordService
+from protocol0.domain.track_recorder.RecordTypeEnum import RecordTypeEnum
+from protocol0.shared.Song import Song
 
 
 class ActionGroupMain(ActionGroupInterface):
@@ -79,4 +82,4 @@ class ActionGroupMain(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        pass
+        self._container.get(RecordService).record_track(Song.selected_track(), RecordTypeEnum.MIDI)
