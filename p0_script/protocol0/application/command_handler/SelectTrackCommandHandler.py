@@ -22,7 +22,3 @@ class SelectTrackCommandHandler(CommandHandlerInterface):
         else:
             cls._PREVIOUS_SELECT_TRACK = Song.selected_track()
             track.select()
-
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(f"previous: {cls._PREVIOUS_SELECT_TRACK}")
