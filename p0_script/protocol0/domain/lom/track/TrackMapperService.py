@@ -143,9 +143,6 @@ class TrackMapperService(SlotManager):
         return seq.done()
 
     def _on_cthulhu_tracks_added(self, cthulhu_track: SimpleTrack) -> None:
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev("cthulhu track added")
         assert Song.notes_track(), "No 'Notes' track"
 
         cthulhu_track.input_routing.track = Song.notes_track()  # type: ignore[assignment]
