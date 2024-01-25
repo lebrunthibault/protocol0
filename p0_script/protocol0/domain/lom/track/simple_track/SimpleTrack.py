@@ -149,6 +149,8 @@ class SimpleTrack(AbstractTrack):
         elif isinstance(observable, SimpleTrackArmState) and self.arm_state.is_armed:
             DomainEventBus.emit(SimpleTrackArmedEvent(self._track))
 
+        return None
+
     @subject_slot("name")
     def _name_listener(self) -> None:
         from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_tracks
@@ -159,11 +161,22 @@ class SimpleTrack(AbstractTrack):
     @subject_slot("solo")
     @defer
     def _solo_listener(self) -> None:
-        try:
-            if self.solo and list(self.devices)[0].enum == DeviceEnum.CTHULHU:
-                list(Song.simple_tracks())[self.index + 1].solo = True
-        except IndexError:
-            pass
+        """Handle Cthulhu tracks"""
+        if not self.solo:
+            return
+
+        if self.is_cthulhu_track:
+            synth_track: Optional[SimpleTrack] = next(
+                filter(lambda t: t.input_routing.track == self, Song.simple_tracks()), None  # type: ignore[arg-type]
+            )
+            if synth_track:
+                synth_track.solo = True
+            if Song.notes_track():
+                Song.notes_track().solo = True
+        elif self.is_cthulhu_synth_track:
+            self.input_routing.track.solo = True
+            if Song.notes_track():
+                Song.notes_track().solo = True
 
     @subject_slot("output_meter_level")
     def _output_meter_level_listener(self) -> None:
@@ -248,6 +261,10 @@ class SimpleTrack(AbstractTrack):
     def is_cthulhu_track(self) -> bool:
         devices = list(self.devices)
         return len(devices) > 0 and devices[0].enum == DeviceEnum.CTHULHU
+
+    @property
+    def is_cthulhu_synth_track(self) -> bool:
+        return self.input_routing.track is not None and self.input_routing.track.is_cthulhu_track
 
     @property
     def volume(self) -> float:
