@@ -146,12 +146,9 @@ class TrackMapperService(SlotManager):
         from protocol0.shared.logging.Logger import Logger
 
         Logger.dev("cthulhu track added")
-        notes_track = next(
-            filter(lambda t: t.name.lower().strip() == "notes", Song.simple_tracks()), None
-        )
-        assert notes_track, "No 'Notes' track"
+        assert Song.notes_track(), "No 'Notes' track"
 
-        cthulhu_track.input_routing.track = notes_track
+        cthulhu_track.input_routing.track = Song.notes_track()  # type: ignore[assignment]
         cthulhu_track.select()
         synth_track = list(Song.simple_tracks())[cthulhu_track.index + 1]
 

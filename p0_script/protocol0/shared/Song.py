@@ -36,6 +36,12 @@ if TYPE_CHECKING:
     from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
 
 
+def _get_track_by_name(track_name: str) -> Optional["SimpleTrack"]:
+    return next(
+        filter(lambda t: t.name.lower().strip() == track_name, list(Song.simple_tracks())), None  # type: ignore[arg-type]
+    )
+
+
 class Song(object):
     """Read only facade for accessing song properties"""
 
@@ -212,7 +218,11 @@ class Song(object):
 
     @classmethod
     def reference_track(cls) -> Optional["SimpleTrack"]:
-        return next(filter(lambda t: t.name.lower().strip() == "ref", list(cls.simple_tracks())), None)  # type: ignore[arg-type]
+        return _get_track_by_name("ref")
+
+    @classmethod
+    def notes_track(cls) -> Optional["SimpleTrack"]:
+        return _get_track_by_name("notes")
 
     @classmethod
     def return_tracks(cls) -> List[Live.Track.Track]:

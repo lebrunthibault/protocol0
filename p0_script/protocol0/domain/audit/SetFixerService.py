@@ -1,3 +1,4 @@
+from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.validation.ValidatorService import ValidatorService
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.shared.Song import Song
@@ -19,6 +20,20 @@ class SetFixerService(object):
             is_valid = self._validator_service.validate_object(obj)
             if not is_valid:
                 invalid_objects.append(obj)
+
+        def is_routed_to_master(t: SimpleTrack) -> bool:
+            return (
+                t.name.lower().strip() not in ("*", "pre")
+                and not t.is_cthulhu_track
+                and t.output_routing.track == Song.master_track()
+            )
+
+        routed_to_master = list(filter(is_routed_to_master, Song.simple_tracks()))
+
+        if len(routed_to_master) != 0:
+            Backend.client().show_warning("Too many tracks routed to master")
+            Logger.info(f"Routed to master: {routed_to_master}")
+            return
 
         if len(invalid_objects) == 0:
             self._refresh_objects_appearance()
