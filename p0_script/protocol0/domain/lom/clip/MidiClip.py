@@ -79,6 +79,9 @@ class MidiClip(Clip):
         seq.defer()
         return seq.done()
 
+    def clear_notes(self) -> Optional[Sequence]:
+        return self.set_notes([], replace=True)
+
     def on_added(self) -> Optional[Sequence]:
         if len(self.get_notes()) > 0 or self.is_recording:
             return None

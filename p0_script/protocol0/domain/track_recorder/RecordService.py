@@ -23,14 +23,18 @@ from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.track_recorder.AbstractRecorderFactory import (
     AbstractTrackRecorderFactory,
 )
-from protocol0.domain.track_recorder.BaseRecorder import BaseRecorder
+from protocol0.domain.track_recorder.BaseRecorder import BaseRecorder, record_from_config
 from protocol0.domain.track_recorder.RecordTypeEnum import RecordTypeEnum
 from protocol0.domain.track_recorder.config.RecordConfig import RecordConfig
 from protocol0.domain.track_recorder.config.RecordProcessors import RecordProcessors
+from protocol0.domain.track_recorder.cthulhu_track.RecorderCthulhuFactory import (
+    TrackRecorderCthulhuFactory,
+)
 from protocol0.domain.track_recorder.event.RecordCancelledEvent import (
     RecordCancelledEvent,
 )
 from protocol0.domain.track_recorder.event.RecordEndedEvent import RecordEndedEvent
+from protocol0.domain.track_recorder.event.RecordStartedEvent import RecordStartedEvent
 from protocol0.domain.track_recorder.external_synth.TrackRecorderExternalSynthFactory import (
     TrackRecorderExternalSynthFactory,
 )
@@ -47,7 +51,7 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class RecordService(object):
-    _DEBUG = False
+    _DEBUG = True
 
     def __init__(
         self,
@@ -65,6 +69,7 @@ class RecordService(object):
             Config.DEFAULT_RECORDING_BAR_LENGTH
         )
         self._recorder: Optional[BaseRecorder] = None
+        self._processors: Optional[RecordProcessors] = None
 
     @property
     def is_recording(self) -> bool:
@@ -72,7 +77,10 @@ class RecordService(object):
 
     def _get_track_recorder_factory(self, track: AbstractTrack) -> AbstractTrackRecorderFactory:
         if isinstance(track, SimpleTrack):
-            return TrackRecorderSimpleFactory()
+            if track.is_cthulhu_synth_track:
+                return TrackRecorderCthulhuFactory()
+            else:
+                return TrackRecorderSimpleFactory()
         elif isinstance(track, ExternalSynthTrack):
             return TrackRecorderExternalSynthFactory()
         else:
@@ -95,7 +103,8 @@ class RecordService(object):
             record_type=record_type,
             recording_bar_length=self.recording_bar_length_scroller.current_value.bar_length_value,
         )
-        processors = recorder_factory.get_processors(record_type)
+        self._processors = recorder_factory.get_processors(record_type)
+
         self._recorder = BaseRecorder(track, config)
 
         seq = Sequence()
@@ -106,11 +115,11 @@ class RecordService(object):
 
         if self._DEBUG:
             Logger.info("recorder_config: %s" % config)
-            Logger.info("processors: %s" % processors)
+            Logger.info("processors: %s" % self._processors)
 
         Backend.client().show_info(f"Rec: {config.record_name} ({config.bar_length} bars)")
 
-        seq.add(partial(self._start_recording, track, record_type, config, processors))
+        seq.add(partial(self._start_recording, track, record_type, config))
         return seq.done()
 
     def _start_recording(
@@ -118,7 +127,6 @@ class RecordService(object):
         track: AbstractTrack,
         record_type: RecordTypeEnum,
         config: RecordConfig,
-        processors: RecordProcessors,
     ) -> Optional[Sequence]:
         # this will stop the previous playing scene on playback stop
         PlayingScene.set(config.recording_scene)
@@ -127,9 +135,9 @@ class RecordService(object):
         seq = Sequence()
 
         # PRE RECORD
-        seq.add(self._recorder.pre_record)
-        if processors.pre_record is not None:
-            seq.add(partial(processors.pre_record.process, track, config))
+        seq.add(partial(self._recorder.pre_record, clear_clips=config.clear_clips))
+        if self._processors.pre_record is not None:
+            seq.add(partial(self._processors.pre_record.process, track, config))
         seq.add(partial(record_type.get_count_in().launch, self._playback_component, track))
         seq.add(partial(DomainEventBus.subscribe, SongStoppedEvent, self._on_song_stopped_event))
 
@@ -137,20 +145,22 @@ class RecordService(object):
             seq.wait_ms(50)  # so that the record doesn't start before the clip slot is ready
 
         # RECORD
-        if processors.record is not None:
-            seq.add(partial(processors.record.process, track, config))
+        record_event = RecordStartedEvent(config.scene_index, has_count_in=config.records_midi)
+        seq.add(partial(DomainEventBus.emit, record_event))
+        if self._processors.record is not None:
+            seq.add(partial(self._processors.record.process, track, config))
         else:
-            seq.add(self._recorder.record)
+            seq.add(partial(record_from_config, self._recorder.config))
 
-        if processors.on_record_end is not None:
-            seq.add(partial(processors.on_record_end.process, track, config))
+        if self._processors.on_record_end is not None:
+            seq.add(partial(self._processors.on_record_end.process, track, config))
 
         seq.defer()
         seq.add(partial(DomainEventBus.emit, RecordEndedEvent()))
 
         # POST RECORD
-        if processors.post_record is not None:
-            seq.add(partial(processors.post_record.process, track, config))
+        if self._processors.post_record is not None:
+            seq.add(partial(self._processors.post_record.process, track, config))
 
         seq.add(partial(setattr, self, "_recorder", None))
         seq.add(partial(DomainEventBus.un_subscribe, ErrorRaisedEvent, self._on_error_raised_event))
@@ -167,6 +177,10 @@ class RecordService(object):
 
         if self._recorder is not None:
             self._recorder.cancel_record()
+            if self._processors.on_record_cancelled:
+                self._processors.on_record_cancelled.process(
+                    self._recorder._track, self._recorder.config
+                )
 
         self._recorder = None
         if show_notification:
@@ -176,6 +190,11 @@ class RecordService(object):
         """happens when manually stopping song while recording."""
         if self._recorder is None:
             return
+
+        if self._processors.on_record_cancelled:
+            self._processors.on_record_cancelled.process(
+                self._recorder._track, self._recorder.config
+            )
 
         if self._recorder.config.bar_length == 0:
             return  # already handled

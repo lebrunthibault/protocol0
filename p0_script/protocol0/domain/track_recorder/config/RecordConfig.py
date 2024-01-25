@@ -14,12 +14,15 @@ class RecordConfig(object):
         scene_index: Optional[int],
         bar_length: int,
         records_midi: bool,
+        clear_clips: bool = True,
     ) -> None:
         self.record_name = record_name
         self.tracks = tracks
         self._scene_index = scene_index
         self.bar_length = bar_length
         self.records_midi = records_midi
+        self.clear_clips = clear_clips
+        self.original_tempo = Song.tempo()
 
     @property
     def scene_index(self) -> int:
