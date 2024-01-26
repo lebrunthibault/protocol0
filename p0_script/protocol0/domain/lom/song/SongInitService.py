@@ -25,8 +25,13 @@ class SongInitService(object):
         CommandBus.dispatch(ResetPlaybackCommand())
 
         DomainEventBus.emit(SongInitializedEvent())
+
         seq = Sequence()
         seq.wait(2)
+        for track in Song.simple_tracks():
+            if track.is_cthulhu_track:
+                seq.add(track.select)
+                seq.wait_ms(500)
         seq.add(ApplicationView.show_session)
         seq.wait(8)
 

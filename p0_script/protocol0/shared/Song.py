@@ -205,6 +205,10 @@ class Song(object):
         return cls._INSTANCE._track_component.scrollable_tracks
 
     @classmethod
+    def top_tracks(cls) -> List["SimpleTrack"]:
+        return list(filter(lambda t: not t.group_track, cls.simple_tracks()))
+
+    @classmethod
     def visible_tracks(cls) -> Iterator["AbstractTrack"]:
         return (t for t in cls.simple_tracks() if t.is_visible)
 

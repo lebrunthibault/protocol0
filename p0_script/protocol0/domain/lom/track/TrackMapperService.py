@@ -130,8 +130,10 @@ class TrackMapperService(SlotManager):
 
         seq.defer()
 
-        if added_track.group_track:
-            seq.add(partial(rename_tracks, added_track.group_track, added_track.name))
+        tracks = (
+            added_track.group_track.sub_tracks if added_track.group_track else Song.top_tracks()
+        )
+        seq.add(partial(rename_tracks, tracks, added_track.name))
 
         seq.add(added_track.on_added)
         seq.add(Song.current_track().arm_state.arm)
@@ -143,11 +145,14 @@ class TrackMapperService(SlotManager):
         return seq.done()
 
     def _on_cthulhu_tracks_added(self, cthulhu_track: SimpleTrack) -> None:
+        rename_tracks(list(Song.top_tracks()), cthulhu_track.name)
         assert Song.notes_track(), "No 'Notes' track"
 
         cthulhu_track.input_routing.track = Song.notes_track()  # type: ignore[assignment]
         cthulhu_track.select()
+
         synth_track = list(Song.simple_tracks())[cthulhu_track.index + 1]
+        rename_tracks(list(Song.top_tracks()), synth_track.name)
 
         def get_bus_track(name: str) -> Optional[SimpleTrack]:
             track = find_if(

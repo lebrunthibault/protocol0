@@ -155,8 +155,8 @@ class SimpleTrack(AbstractTrack):
     def _name_listener(self) -> None:
         from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_tracks
 
-        if self.group_track:
-            Scheduler.defer(partial(rename_tracks, self.group_track))
+        tracks = self.group_track.sub_tracks if self.group_track else Song.top_tracks()
+        Scheduler.defer(partial(rename_tracks, tracks))
 
     @subject_slot("solo")
     @defer
@@ -499,8 +499,8 @@ class SimpleTrack(AbstractTrack):
     def disconnect(self) -> None:
         from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_tracks
 
-        if self.group_track:
-            Scheduler.defer(partial(rename_tracks, self.group_track, self.name))
+        tracks = self.group_track.sub_tracks if self.group_track else Song.top_tracks()
+        Scheduler.defer(partial(rename_tracks, tracks, self.name))
 
         super(SimpleTrack, self).disconnect()
         self.devices.disconnect()
