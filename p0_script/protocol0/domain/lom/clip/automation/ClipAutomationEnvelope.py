@@ -1,3 +1,5 @@
+from typing import List
+
 import Live
 
 from protocol0.domain.shared.backend.Backend import Backend
@@ -16,14 +18,17 @@ class ClipAutomationEnvelope(object):
 
     @property
     def hash(self) -> float:
-        """pick up to 10 values to generate a footprint of the automation"""
+        return hash(tuple(self.get_values()))
+
+    def get_values(self) -> List[float]:
+        """pick up x values"""
         values = [
             round(self.value_at_time(i), 4)
             for i in float_seq(0, int(self._length), self._length / self._FOOTPRINT_MEASURES)
         ]
         values.append(self.value_at_time(self._length))
 
-        return hash(tuple(values))
+        return values
 
     @property
     def start(self) -> float:
@@ -43,6 +48,14 @@ class ClipAutomationEnvelope(object):
             values.append(round(val, 4))
 
         return hash(tuple(values)) == self.hash
+
+    def equals(self, value: float) -> bool:
+        """Checks the automation equals a single value"""
+        return (
+            self.is_linear
+            and self.value_at_time(0) == value
+            and self.value_at_time(self._length) == value
+        )
 
     def value_at_time(self, beat_length: float) -> float:
         return self._envelope.value_at_time(beat_length)

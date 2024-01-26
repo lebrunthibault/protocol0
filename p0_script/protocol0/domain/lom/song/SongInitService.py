@@ -46,7 +46,7 @@ class SongInitService(object):
                     partial(
                         self._device_display_service.toggle_plugin_window,
                         track,
-                        list(track.devices)[0],
+                        track.devices.get_one_from_enum(DeviceEnum.CTHULHU),
                     )
                 )
         seq.add(ApplicationView.show_session)

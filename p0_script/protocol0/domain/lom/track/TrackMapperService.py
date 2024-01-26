@@ -76,9 +76,6 @@ class TrackMapperService(SlotManager):
                     cthulhu_track: Optional[CthulhuTrack] = next(
                         filter(lambda t: isinstance(t, CthulhuTrack), tracks), None
                     )
-                    from protocol0.shared.logging.Logger import Logger
-
-                    Logger.dev((tracks, cthulhu_track))
                     if cthulhu_track:
                         # unselect both tracks
                         seq.add(list(Song.simple_tracks())[0].select)

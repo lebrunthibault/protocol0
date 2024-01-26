@@ -32,6 +32,7 @@ class DeviceParamEnum(AbstractEnum):
     ORIGINAL_REFERENCE = "ORIGINAL_REFERENCE"
     OUTPUT = "OUTPUT"
     OUTPUT_GAIN = "OUTPUT_GAIN"
+    PATTERN = "PATTERN"
     UTILITY_SILENT_GAIN = "UTILITY_SILENT_GAIN"
     UTILITY_MID_SIDE = "UTILITY_MID_SIDE"
     UTILITY_WIDTH = "UTILITY_WIDTH"
@@ -67,6 +68,7 @@ class DeviceParamEnum(AbstractEnum):
                 DeviceParamEnum.ORIGINAL_REFERENCE: "Original/Reference",
                 DeviceParamEnum.OUTPUT: "Output",
                 DeviceParamEnum.OUTPUT_GAIN: "Output Gain",
+                DeviceParamEnum.PATTERN: "Pattern",
                 DeviceParamEnum.UTILITY_SILENT_GAIN: "Gain",
                 DeviceParamEnum.UTILITY_MID_SIDE: "Mid/Side Balance",
                 DeviceParamEnum.UTILITY_WIDTH: "Stereo Width",
