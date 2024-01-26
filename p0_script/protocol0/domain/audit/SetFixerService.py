@@ -1,4 +1,5 @@
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
+from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 from protocol0.domain.lom.validation.ValidatorService import ValidatorService
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.shared.Song import Song
@@ -24,7 +25,7 @@ class SetFixerService(object):
         def is_routed_to_master(t: SimpleTrack) -> bool:
             return (
                 t.name.lower().strip() not in ("*", "pre")
-                and not t.is_cthulhu_track
+                and isinstance(t, SimpleAudioTrack)
                 and t.output_routing.track == Song.master_track()
             )
 

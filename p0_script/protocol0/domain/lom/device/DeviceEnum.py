@@ -132,7 +132,7 @@ class DeviceEnum(AbstractEnum):
 
     @property
     def can_be_saved(self) -> bool:
-        return self not in [DeviceEnum.REV2_EDITOR]
+        return self not in [DeviceEnum.REV2_EDITOR, DeviceEnum.CTHULHU]
 
     @property
     def browser_name(self) -> str:

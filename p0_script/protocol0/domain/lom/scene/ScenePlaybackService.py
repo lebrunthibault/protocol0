@@ -20,7 +20,7 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class ScenePlaybackService(SlotManager):
-    _DEBUG = True
+    _DEBUG = False
 
     def __init__(self, playback_component: PlaybackComponent) -> None:
         super(ScenePlaybackService, self).__init__()

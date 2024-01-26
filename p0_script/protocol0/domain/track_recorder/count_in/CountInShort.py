@@ -5,7 +5,9 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class CountInShort(CountInInterface):
-    def launch(self, playback_component: PlaybackComponent, _: AbstractTrack) -> Sequence:
+    def launch(
+        self, playback_component: PlaybackComponent, _: AbstractTrack, __: bool = True
+    ) -> Sequence:
         playback_component.stop_playing()
         # self.track.stop(immediate=True)
         seq = Sequence()

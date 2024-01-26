@@ -17,8 +17,7 @@ from protocol0.domain.lom.track.simple_track.audio.special.SimpleAutomationTrack
     SimpleAutomationTrack,
 )
 from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
-from protocol0.domain.lom.track.simple_track.midi.special.HatClosedTrack import HatClosedTrack
-from protocol0.domain.lom.track.simple_track.midi.special.KickTrack import KickTrack
+from protocol0.domain.lom.track.simple_track.midi.special.CthulhuTrack import CthulhuTrack
 from protocol0.domain.lom.track.simple_track.midi.special.UsamoTrack import UsamoTrack
 from protocol0.domain.shared.BrowserServiceInterface import BrowserServiceInterface
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
@@ -26,7 +25,7 @@ from protocol0.shared.Song import Song
 
 
 def _get_simple_track_class(track: Live.Track.Track) -> Type[SimpleTrack]:
-    special_tracks = (UsamoTrack, KickTrack, HatClosedTrack, ResamplingTrack)
+    special_tracks = (UsamoTrack, ResamplingTrack)
 
     cls = None
 
@@ -38,6 +37,9 @@ def _get_simple_track_class(track: Live.Track.Track) -> Type[SimpleTrack]:
     for special_track in special_tracks:
         if track.name.strip().lower() == special_track.TRACK_NAME.strip().lower():  # type: ignore[attr-defined]
             cls = special_track  # type: ignore
+
+    if CthulhuTrack.is_track_valid(track):
+        cls = CthulhuTrack
 
     try:
         if (

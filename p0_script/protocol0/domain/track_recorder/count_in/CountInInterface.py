@@ -4,5 +4,10 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class CountInInterface(object):
-    def launch(self, playback_component: PlaybackComponent, track: AbstractTrack) -> Sequence:
+    def launch(
+        self,
+        playback_component: PlaybackComponent,
+        track: AbstractTrack,
+        solo_count_in: bool = True,
+    ) -> Sequence:
         raise NotImplementedError

@@ -9,3 +9,4 @@ class InputRoutingChannelEnum(AbstractEnum):
 
     # MIDI
     CHANNEL_1 = "Ch. 1"
+    CTHULHU = "Cthulhu_x64"

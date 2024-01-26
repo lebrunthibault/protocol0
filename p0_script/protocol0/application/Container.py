@@ -156,7 +156,7 @@ class Container(ContainerInterface):
             track_recorder_service,
         )
 
-        song_service = SongInitService(playback_component, ableton_set)
+        song_service = SongInitService(playback_component, device_display_service, ableton_set)
         instrument_preset_scroller_service = InstrumentPresetScrollerService()
         mixing_service = MixingService()
         interface_clicks_service = InterfaceClicksService()

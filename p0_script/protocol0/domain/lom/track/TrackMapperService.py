@@ -5,7 +5,6 @@ from typing import Optional, Dict, List
 import Live
 from _Framework.SubjectSlot import subject_slot, SlotManager
 
-from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitoringStateEnum
 from protocol0.domain.lom.track.TrackFactory import TrackFactory
 from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
 from protocol0.domain.lom.track.group_track.NormalGroupTrack import NormalGroupTrack
@@ -27,10 +26,10 @@ from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import Mas
 from protocol0.domain.lom.track.simple_track.audio.special.SimpleAutomationTrack import (
     SimpleAutomationTrack,
 )
+from protocol0.domain.lom.track.simple_track.midi.special.CthulhuTrack import CthulhuTrack
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
-from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.Song import Song
 from protocol0.shared.Undo import Undo
 from protocol0.shared.sequence.Sequence import Sequence
@@ -66,7 +65,7 @@ class TrackMapperService(SlotManager):
             scene.on_tracks_change()
 
         seq = Sequence()
-        if added_track_count > 0 and Song.selected_track():
+        if previous_simple_track_count and added_track_count > 0 and Song.selected_track():
             seq.add(partial(self._on_track_added, deleted_track_indexes))
             try:
                 if added_track_count == 2:
@@ -74,11 +73,16 @@ class TrackMapperService(SlotManager):
                         list(Song.simple_tracks())[Song.selected_track().index - 1],
                         Song.selected_track(),
                     )
-                    cthulhu_track = next(filter(lambda t: t.is_cthulhu_track, tracks), None)
+                    cthulhu_track: Optional[CthulhuTrack] = next(
+                        filter(lambda t: isinstance(t, CthulhuTrack), tracks), None
+                    )
+                    from protocol0.shared.logging.Logger import Logger
+
+                    Logger.dev((tracks, cthulhu_track))
                     if cthulhu_track:
                         # unselect both tracks
                         seq.add(list(Song.simple_tracks())[0].select)
-                        seq.add(partial(self._on_cthulhu_tracks_added, cthulhu_track))
+                        seq.add(cthulhu_track.on_added)
             except IndexError:
                 pass
 
@@ -122,6 +126,7 @@ class TrackMapperService(SlotManager):
     def _on_track_added(self, deleted_track_indexes: List[int]) -> Optional[Sequence]:
         if not Song.selected_track().IS_ACTIVE:
             return None
+
         Undo.begin_undo_step()  # Live crashes on undo without this
         seq = Sequence()
         added_track = Song.selected_track()
@@ -143,32 +148,6 @@ class TrackMapperService(SlotManager):
 
         seq.add(Undo.end_undo_step)
         return seq.done()
-
-    def _on_cthulhu_tracks_added(self, cthulhu_track: SimpleTrack) -> None:
-        rename_tracks(list(Song.top_tracks()), cthulhu_track.name)
-        assert Song.notes_track(), "No 'Notes' track"
-
-        cthulhu_track.input_routing.track = Song.notes_track()  # type: ignore[assignment]
-        cthulhu_track.select()
-
-        synth_track = list(Song.simple_tracks())[cthulhu_track.index + 1]
-        rename_tracks(list(Song.top_tracks()), synth_track.name)
-
-        def get_bus_track(name: str) -> Optional[SimpleTrack]:
-            track = find_if(
-                lambda t: t.name.lower().strip() == name.lower().strip(), Song.simple_tracks()
-            )
-            if track:
-                assert (
-                    track.current_monitoring_state == CurrentMonitoringStateEnum.IN
-                ), f"bus track {track} has not monitor IN"
-
-            return track
-
-        bus_track = get_bus_track(f"{synth_track.name} Bus")
-        assert bus_track, f"Could not find bus track for {synth_track}"
-
-        synth_track.output_routing.track = bus_track
 
     def _on_current_monitoring_state_updated_event(
         self, event: CurrentMonitoringStateUpdatedEvent
