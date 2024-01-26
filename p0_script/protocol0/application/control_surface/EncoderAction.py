@@ -1,10 +1,8 @@
 import time
 from functools import partial
-
 from typing import Optional, List, Any, Callable
 
 from protocol0.application.control_surface.EncoderMoveEnum import EncoderMoveEnum
-from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.utils.func import get_callable_repr, is_lambda
 from protocol0.shared.Undo import Undo
 from protocol0.shared.logging.Logger import Logger
@@ -69,8 +67,6 @@ class EncoderAction(object):
         if on_press:
             actions.append(EncoderAction(on_press, move_type=EncoderMoveEnum.PRESS, name=name))
         if on_long_press:
-            if not on_press:
-                raise Protocol0Error("Cannot set on_long_press without on_press")
             actions.append(
                 EncoderAction(on_long_press, move_type=EncoderMoveEnum.LONG_PRESS, name=name)
             )
