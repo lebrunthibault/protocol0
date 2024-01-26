@@ -24,6 +24,7 @@ class TrackRecorderCthulhuFactory(AbstractTrackRecorderFactory):
             scene_index=Song.selected_scene().index,
             bar_length=Song.selected_scene().bar_length,
             records_midi=True,
+            solo_count_in=False,
             clear_clips=False,
         )
 

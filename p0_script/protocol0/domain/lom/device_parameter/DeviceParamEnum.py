@@ -25,7 +25,6 @@ class DeviceParamEnum(AbstractEnum):
     GAIN_4_A = "EQ_EIGHT_GAIN_4_A"
     INPUT = "INPUT"
     INPUT_GAIN = "INPUT_GAIN"
-    L2_THRESHOLD = "L2_THRESHOLD"
     LENGTH = "LENGTH"
     LFO_TOOL_LFO_DEPTH = "LFO_TOOL_LFO_DEPTH"
     MIX = "MIX"
@@ -33,8 +32,6 @@ class DeviceParamEnum(AbstractEnum):
     ORIGINAL_REFERENCE = "ORIGINAL_REFERENCE"
     OUTPUT = "OUTPUT"
     OUTPUT_GAIN = "OUTPUT_GAIN"
-    THRESH = "THRESH"
-    THRESHOLD = "THRESHOLD"
     UTILITY_SILENT_GAIN = "UTILITY_SILENT_GAIN"
     UTILITY_MID_SIDE = "UTILITY_MID_SIDE"
     UTILITY_WIDTH = "UTILITY_WIDTH"
@@ -52,7 +49,6 @@ class DeviceParamEnum(AbstractEnum):
                 DeviceParamEnum.AUTO_FILTER_LOW_PASS_FREQUENCY: "Frequency",
                 DeviceParamEnum.AUTO_PAN_AMOUNT: "Amount",
                 DeviceParamEnum.CHAIN_SELECTOR: "Chain Selector",
-                DeviceParamEnum.THRESHOLD: "Threshold",
                 DeviceParamEnum.DECAY: "Decay",
                 DeviceParamEnum.DEVICE_ON: "Device On",
                 DeviceParamEnum.DRIVE: "Drive",
@@ -64,7 +60,6 @@ class DeviceParamEnum(AbstractEnum):
                 DeviceParamEnum.GAIN_4_A: "4 Gain A",
                 DeviceParamEnum.INPUT: "Input",
                 DeviceParamEnum.INPUT_GAIN: "Input Gain",
-                DeviceParamEnum.L2_THRESHOLD: "Thresh Slider",
                 DeviceParamEnum.LENGTH: "Time Length",
                 DeviceParamEnum.LFO_TOOL_LFO_DEPTH: "LFO Depth",
                 DeviceParamEnum.MIX: "Mix",
@@ -72,7 +67,6 @@ class DeviceParamEnum(AbstractEnum):
                 DeviceParamEnum.ORIGINAL_REFERENCE: "Original/Reference",
                 DeviceParamEnum.OUTPUT: "Output",
                 DeviceParamEnum.OUTPUT_GAIN: "Output Gain",
-                DeviceParamEnum.THRESH: "Thresh",
                 DeviceParamEnum.UTILITY_SILENT_GAIN: "Gain",
                 DeviceParamEnum.UTILITY_MID_SIDE: "Mid/Side Balance",
                 DeviceParamEnum.UTILITY_WIDTH: "Stereo Width",

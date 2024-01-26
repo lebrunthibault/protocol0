@@ -9,18 +9,26 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class CountInOneBar(CountInInterface):
-    def launch(self, playback_component: PlaybackComponent, track: AbstractTrack) -> Sequence:
+    def launch(
+        self,
+        playback_component: PlaybackComponent,
+        track: AbstractTrack,
+        solo_count_in: bool = True,
+    ) -> Sequence:
         playback_component.stop()
-        # solo for count in
         track_solo = track.solo
-        track.solo = True
+
+        if solo_count_in:
+            track.solo = True
+
         playback_component.metronome = True
         playback_component.start_playing()
 
         seq = Sequence()
         seq.defer()
         seq.wait_for_event(Last32thPassedEvent, continue_on_song_stop=True)
-        seq.add(partial(setattr, track, "solo", track_solo))
+        if solo_count_in:
+            seq.add(partial(setattr, track, "solo", track_solo))
         seq.add(partial(self._stop_count_in, playback_component, track))
         seq.done()
         # we don't delay because we launch the scene at the same time

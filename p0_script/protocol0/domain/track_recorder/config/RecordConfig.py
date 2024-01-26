@@ -14,6 +14,7 @@ class RecordConfig(object):
         scene_index: Optional[int],
         bar_length: int,
         records_midi: bool,
+        solo_count_in: bool = True,
         clear_clips: bool = True,
     ) -> None:
         self.record_name = record_name
@@ -21,6 +22,7 @@ class RecordConfig(object):
         self._scene_index = scene_index
         self.bar_length = bar_length
         self.records_midi = records_midi
+        self.solo_count_in = solo_count_in
         self.clear_clips = clear_clips
         self.original_tempo = Song.tempo()
 

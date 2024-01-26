@@ -1,28 +1,9 @@
+from typing import List, Dict
+
 import Live
 from _Framework.SubjectSlot import SlotManager
-from typing import List, Dict, TYPE_CHECKING
 
-from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
-from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
-from protocol0.domain.shared.utils.utils import clamp
-
-if TYPE_CHECKING:
-    from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
-
-
-def update_parent_compressor_from_volume(track: "SimpleTrack", db_offset: float = 0) -> None:
-    if not track.group_track:
-        return
-
-    comp = track.group_track.devices.get_one_from_enum(DeviceEnum.SSL_COMP)
-
-    if not comp:
-        return
-
-    comp_threshold = comp.get_parameter_by_name(DeviceParamEnum.THRESH)
-
-    comp_threshold.value = clamp((track.volume + 36 + db_offset) / 36, 0, 1)
 
 
 class MixerDevice(SlotManager):

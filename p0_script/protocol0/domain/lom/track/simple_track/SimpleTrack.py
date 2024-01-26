@@ -9,7 +9,6 @@ from protocol0.domain.lom.clip.ClipConfig import ClipConfig
 from protocol0.domain.lom.clip.ClipInfo import ClipInfo
 from protocol0.domain.lom.clip.ClipTail import ClipTail
 from protocol0.domain.lom.clip_slot.ClipSlot import ClipSlot
-from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.device.SimpleTrackDevices import SimpleTrackDevices
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
@@ -165,15 +164,7 @@ class SimpleTrack(AbstractTrack):
         if not self.solo:
             return
 
-        if self.is_cthulhu_track:
-            synth_track: Optional[SimpleTrack] = next(
-                filter(lambda t: t.input_routing.track == self, Song.simple_tracks()), None  # type: ignore[arg-type]
-            )
-            if synth_track:
-                synth_track.solo = True
-            if Song.notes_track():
-                Song.notes_track().solo = True
-        elif self.is_cthulhu_synth_track:
+        if self.is_cthulhu_synth_track:
             self.input_routing.track.solo = True
             if Song.notes_track():
                 Song.notes_track().solo = True
@@ -258,13 +249,12 @@ class SimpleTrack(AbstractTrack):
         )
 
     @property
-    def is_cthulhu_track(self) -> bool:
-        devices = list(self.devices)
-        return len(devices) > 0 and devices[0].enum == DeviceEnum.CTHULHU
-
-    @property
     def is_cthulhu_synth_track(self) -> bool:
-        return self.input_routing.track is not None and self.input_routing.track.is_cthulhu_track
+        from protocol0.domain.lom.track.simple_track.midi.special.CthulhuTrack import CthulhuTrack
+
+        return self.input_routing.track is not None and isinstance(
+            self.input_routing.track, CthulhuTrack
+        )
 
     @property
     def volume(self) -> float:

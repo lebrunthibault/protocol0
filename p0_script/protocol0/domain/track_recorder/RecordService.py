@@ -51,7 +51,7 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class RecordService(object):
-    _DEBUG = True
+    _DEBUG = False
 
     def __init__(
         self,
@@ -138,7 +138,14 @@ class RecordService(object):
         seq.add(partial(self._recorder.pre_record, clear_clips=config.clear_clips))
         if self._processors.pre_record is not None:
             seq.add(partial(self._processors.pre_record.process, track, config))
-        seq.add(partial(record_type.get_count_in().launch, self._playback_component, track))
+        seq.add(
+            partial(
+                record_type.get_count_in().launch,
+                self._playback_component,
+                track,
+                config.solo_count_in,
+            )
+        )
         seq.add(partial(DomainEventBus.subscribe, SongStoppedEvent, self._on_song_stopped_event))
 
         if not config.records_midi:

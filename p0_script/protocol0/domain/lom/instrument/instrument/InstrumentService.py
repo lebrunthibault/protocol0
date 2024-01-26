@@ -17,7 +17,7 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class InstrumentService(object):
-    _DEBUG = True
+    _DEBUG = False
 
     def __init__(self, device_service: DeviceService, device_component: DeviceComponent) -> None:
         super(InstrumentService, self).__init__()

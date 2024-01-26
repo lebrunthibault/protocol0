@@ -18,13 +18,11 @@ from protocol0.domain.lom.set.AbletonSet import SceneTrackState, AbletonScene
 from protocol0.domain.lom.song.components.TrackComponent import find_top_group_sub_tracks
 from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
 from protocol0.domain.lom.track.group_track.TrackCategoryEnum import TrackCategoryEnum
-from protocol0.domain.lom.track.simple_track.midi.special.KickTrack import KickTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.ValueScroller import ValueScroller
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.BarChangedEvent import BarChangedEvent
 from protocol0.domain.shared.utils.forward_to import ForwardTo
-from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.Song import Song
 from protocol0.shared.observer.Observable import Observable
 from protocol0.shared.sequence.Sequence import Sequence
@@ -218,12 +216,6 @@ class Scene(SlotManager):
                 getattr(scene_state, group_enum.value).append(
                     SceneTrackState.create(track, group_enum, self.index)
                 )
-
-        kick_track = find_if(lambda t: isinstance(t, KickTrack), Song.simple_tracks())
-        if kick_track:
-            scene_state.drums.insert(
-                0, SceneTrackState.create(kick_track, TrackCategoryEnum.DRUMS, self.index)
-            )
 
         return scene_state
 
