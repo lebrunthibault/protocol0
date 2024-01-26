@@ -60,9 +60,4 @@ class ActionGroupMain(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(Song.selected_track().input_routing.channel)
-        channels = Song.selected_track()._track.available_input_routing_channels
-        Logger.dev(channels)
-        Logger.dev([c.display_name for c in channels])
+        pass

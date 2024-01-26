@@ -154,6 +154,7 @@ class RecordService(object):
         # RECORD
         record_event = RecordStartedEvent(config.scene_index, has_count_in=config.records_midi)
         seq.add(partial(DomainEventBus.emit, record_event))
+
         if self._processors.record is not None:
             seq.add(partial(self._processors.record.process, track, config))
         else:
