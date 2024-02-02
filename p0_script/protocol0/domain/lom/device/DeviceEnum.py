@@ -77,6 +77,7 @@ class DeviceEnum(AbstractEnum):
     SIMPLER = "Simpler"
     SOOTHE2 = "soothe2"
     SOUNDID_REFERENCE_PLUGIN = "SoundID Reference Plugin"
+    SPAN = "SPAN"
     SPLICE = "Splice Bridge"
     SPIFF = "spiff"
     SSL_COMP = "SSLComp Stereo"
@@ -214,7 +215,7 @@ class DeviceEnum(AbstractEnum):
                 ),
                 DeviceEnumGroup("EQ", [cls.EQ_EIGHT, cls.PRO_Q_3, cls.CHANNEL_EQ]),
                 cls.UTILITY,
-                DeviceEnumGroup("Meter", [cls.DP_METER_5, cls.PSY_SCOPE, cls.M_ANALYZER]),
+                DeviceEnumGroup("Meter", [cls.DP_METER_5, cls.PSY_SCOPE, cls.M_ANALYZER, cls.SPAN]),
             ],
             [
                 DeviceEnumGroup("Comp", [cls.H_COMP, cls.COMPRESSOR, cls.SSL_COMP, cls.C4]),
