@@ -39,4 +39,4 @@ async def arm():
 
 @router.get("/select")
 async def select(name: str):
-    p0_script_client().dispatch(SelectTrackCommand(name))
+    p0_script_client().dispatch(SelectTrackCommand(name.replace("_", " ")))

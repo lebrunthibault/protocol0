@@ -20,6 +20,8 @@ Loop, 9 {
 Loop, 9 {
     HotKey, ^SC%A_Index%, FireSceneToPosition
 }
+^NumPad0::
+    GoSub, FireSceneToPosition
 return
 
 ; global hotkeys
