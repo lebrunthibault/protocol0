@@ -9,6 +9,7 @@ from backend.lib.ableton.ableton_set import (
     move_set,
     list_sets,
     AbletonSetPlace,
+    create_set_folder,
 )
 from backend.settings import Settings
 
@@ -40,3 +41,8 @@ async def _un_archive_set(path: str):
 @router.delete("")
 async def _delete_set(path: str):
     move_set(path, AbletonSetPlace.TRASH)
+
+
+@router.post("/create_folder")
+async def create_folder(path: str):
+    create_set_folder(path)

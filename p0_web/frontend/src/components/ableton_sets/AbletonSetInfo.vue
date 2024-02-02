@@ -12,6 +12,10 @@
                 @click="prepareForSoundCloud" type="button" class="btn btn-lg btn-light mx-2">
               <i class="fa-brands fa-soundcloud" data-toggle="tooltip" data-placement="top" title="Export to mp3"></i>
             </button>
+            <button v-if="!abletonSet.path_info.has_own_folder"
+                    @click="createSetFolder" type="button" class="btn btn-lg btn-light mx-2">
+              <i class="fa-solid fa-folder-plus" data-toggle="tooltip" data-placement="top" title="Create set folder"></i>
+            </button>
             <button v-if="canArchive"
                     @click="archiveSet" type="button" class="btn btn-lg btn-light mx-2">
               <i class="fa-solid fa-box-archive" data-toggle="tooltip" data-placement="top" title="Archive set"></i>
@@ -142,6 +146,11 @@ export default defineComponent({
     async prepareForSoundCloud() {
       await localApi.post(`/set/prepare_for_soundcloud?path=${this.abletonSet?.path_info.relative_name}`)
       notify("Set exported to mp3")
+      $('#setInfoModal').modal('hide')
+    },
+    async createSetFolder() {
+      await api.post(`/set/create_folder?path=${this.abletonSet?.path_info.relative_name}`)
+      notify("Set folder created")
       $('#setInfoModal').modal('hide')
     },
     async archiveSet() {

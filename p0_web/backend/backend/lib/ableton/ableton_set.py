@@ -4,7 +4,7 @@ import os.path
 import shutil
 from enum import Enum
 from json import JSONDecodeError
-from os.path import basename, dirname, exists, join, isabs
+from os.path import basename, dirname, exists, join, isabs, splitext
 from pathlib import Path
 from typing import List, Optional
 
@@ -20,6 +20,7 @@ class PathInfo(BaseModel):
     filename: str = Field(exclude=True)
     relative_name: str
     name: str
+    has_own_folder: bool
     saved_at: Optional[float] = 0
 
     @property
@@ -48,6 +49,7 @@ class PathInfo(BaseModel):
             filename=str(path),
             relative_name=filename,
             name=path.stem,
+            has_own_folder=_has_own_folder(filename),
             saved_at=path.stat().st_mtime,
         )
 
@@ -133,6 +135,10 @@ class AbletonSetCurrentState(BaseModel):
     current_track: AbletonTrack
     selected_track: AbletonTrack
     drum_rack_visible: bool
+
+
+def _has_own_folder(filename: str) -> bool:
+    return basename(dirname(filename)).lower() == Path(filename).stem.lower()
 
 
 class AbletonSet(BaseModel):
@@ -246,7 +252,7 @@ def rename_set(ableton_set: AbletonSet, name: str):
     rename(ableton_set.path_info.mp3_filename)
     rename(f"{ableton_set.path_info.mp3_filename}.asd")
 
-    if ableton_set.has_own_folder:
+    if ableton_set.path_info.has_own_folder:
         rename(dirname(str(ableton_set.path_info.filename)))
 
 
@@ -281,6 +287,10 @@ def list_sets(set_place: AbletonSetPlace = None) -> List[AbletonSet]:
 
 
 def move_set(path: str, set_place: AbletonSetPlace):
+    return _move_set_to_folder(path, set_place.folder_name)
+
+
+def _move_set_to_folder(path: str, folder_path: str):
     ableton_set = AbletonSet.create(path)
     if not ableton_set:
         return
@@ -289,10 +299,10 @@ def move_set(path: str, set_place: AbletonSetPlace):
         if not exists(filename):
             return
 
-        dest = filename.replace(ableton_set.place.folder_name, set_place.folder_name)
+        dest = filename.replace(ableton_set.place.folder_name, folder_path)
         shutil.move(filename, dest)
 
-    if ableton_set.has_own_folder:
+    if ableton_set.path_info.has_own_folder:
         move_file(dirname(str(ableton_set.path_info.filename)))
     else:
         move_file(ableton_set.path_info.filename)
@@ -301,3 +311,17 @@ def move_set(path: str, set_place: AbletonSetPlace):
         move_file(f"{ableton_set.path_info.audio_filename}.asd")
         move_file(f"{ableton_set.path_info.mp3_filename}")
         move_file(f"{ableton_set.path_info.mp3_filename}.mp3.asd")
+
+
+def create_set_folder(path: str):
+    ableton_set = AbletonSet.create(path)
+    if not ableton_set:
+        return
+
+    assert not ableton_set.has_own_folder, "Set already has own folder"
+    set_folder = splitext(ableton_set.path_info.filename)[0]
+
+    os.mkdir(set_folder)
+    os.mkdir(f"{set_folder}/tracks")
+    os.mkdir(f"{set_folder}/ref")
+    _move_set_to_folder(path, f"tracks/{ableton_set.path_info.name}")
