@@ -8,10 +8,6 @@
       <div class="btn-group" role="group">
         <AbletonSetStars :ableton-set="selectedSet"
           @update="sortSets"></AbletonSetStars>
-        <AbletonSetSceneData
-            :ableton-set="selectedSet"  :scene-data="currentScene" v-if="currentScene"
-            @scene-skip="onSceneSkip"
-        ></AbletonSetSceneData>
         <AbletonSetInfo :ableton-set="selectedSet" @set-moved="hideSet"></AbletonSetInfo>
         <AbletonSetComment :ableton-set="selectedSet" :scene-data="currentScene"></AbletonSetComment>
         <button @click="openSet" type="button" class="btn btn-lg btn-light">
@@ -82,7 +78,6 @@ import {defineComponent} from 'vue'
 import api from '@/utils/api'
 import localApi from '@/utils/localApi'
 import AbletonSetPlayer from "@/components/ableton_sets/AbletonSetPlayer.vue";
-import AbletonSetSceneData from "@/components/ableton_sets/AbletonSetSceneData.vue";
 import AbletonSetComment from "@/components/ableton_sets/AbletonSetComment.vue";
 import AbletonSetInfo from "@/components/ableton_sets/AbletonSetInfo.vue";
 import AbletonSetStars from "@/components/ableton_sets/AbletonSetStars.vue";
@@ -93,7 +88,6 @@ export default defineComponent({
   name: 'AbletonSets',
   components: {
     AbletonSetPlayer,
-    AbletonSetSceneData,
     AbletonSetComment,
     AbletonSetInfo,
     AbletonSetStars,

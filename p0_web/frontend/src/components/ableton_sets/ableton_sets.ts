@@ -1,6 +1,7 @@
 interface PathInfo {
     relative_name: string
     name: string
+    has_own_folder: boolean
     saved_at: number
 }
 
