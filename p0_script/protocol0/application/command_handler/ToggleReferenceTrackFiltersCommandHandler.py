@@ -10,9 +10,11 @@ from protocol0.shared.logging.Logger import Logger
 
 class ToggleReferenceTrackFiltersCommandHandler(CommandHandlerInterface):
     def handle(self, _: ToggleReferenceTrackFiltersCommand) -> None:
-        adptr = Song.master_track().devices.get_one_from_enum(DeviceEnum.ADPTR_METRIC_AB)
+        adptr = Song.master_track().devices.get_one_from_enum(
+            DeviceEnum.ADPTR_METRIC_AB, all_devices=True
+        )
         if adptr:
             adptr.get_parameter_by_name(DeviceParamEnum.FILTER_SWITCH).toggle()
             return None
 
-        Logger.warning("No reference plugin")
+        Logger.error("No reference plugin")
