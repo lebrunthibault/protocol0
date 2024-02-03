@@ -11,7 +11,10 @@ class SelectTrackCommandHandler(CommandHandlerInterface):
     _PREVIOUS_SELECT_TRACK: Optional[SimpleTrack] = None
 
     def handle(self, command: SelectTrackCommand) -> None:
-        track = find_if(lambda t: t.name == command.track_name, Song.simple_tracks())
+        if not command.track_name.lower() == "master":
+            track = Song.master_track()
+        else:
+            track = find_if(lambda t: t.name == command.track_name, Song.simple_tracks())
 
         assert track is not None, "Couldn't find track %s" % command.track_name
 

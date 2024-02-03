@@ -10,6 +10,6 @@ class ToggleMonoSwitchCommandHandler(CommandHandlerInterface):
         utility = Song.master_track().devices.get_one_from_enum(DeviceEnum.UTILITY)
 
         if utility:
-            utility.get_parameter_by_name("Mono").toggle()
+            utility.toggle()
         else:
-            Logger.warning("Utility not found")
+            Logger.error("Utility not found")
