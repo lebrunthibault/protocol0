@@ -35,6 +35,13 @@ class ActionGroupMain(ActionGroupInterface):
             on_press=partial(DomainEventBus.emit, ScriptResetActivatedEvent()),
         )
 
+        # RESAmple encoder
+        self.add_encoder(
+            identifier=5,
+            name="Resample",
+            on_press=self._container.get(RecordService).resample_selected_track,
+        )
+
         self.add_encoder(identifier=13, name="test", on_press=self.action_test)
 
         def _record_from_cthulhu() -> None:

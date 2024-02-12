@@ -9,7 +9,6 @@ class CountInShort(CountInInterface):
         self, playback_component: PlaybackComponent, _: AbstractTrack, __: bool = True
     ) -> Sequence:
         playback_component.stop_playing()
-        # self.track.stop(immediate=True)
         seq = Sequence()
         seq.wait(40)  # mini count in
         return seq.done()
