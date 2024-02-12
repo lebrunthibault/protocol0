@@ -11,7 +11,7 @@ class SelectTrackCommandHandler(CommandHandlerInterface):
     _PREVIOUS_SELECT_TRACK: Optional[SimpleTrack] = None
 
     def handle(self, command: SelectTrackCommand) -> None:
-        if not command.track_name.lower() == "master":
+        if command.track_name.lower() == "master":
             track = Song.master_track()
         else:
             track = find_if(lambda t: t.name == command.track_name, Song.simple_tracks())

@@ -40,7 +40,7 @@ class CthulhuTrack(SimpleMidiTrack):
     @classmethod
     def is_track_valid(cls, track: Live.Track.Track) -> bool:
         devices = list(track.devices)
-        return len(devices) > 0 and devices[0].name == DeviceEnum.CTHULHU.value
+        return len(devices) > 0 and any(d.name == DeviceEnum.CTHULHU.value for d in devices)
 
     @subject_slot("solo")
     @defer

@@ -1,6 +1,5 @@
 from typing import Optional
 
-from protocol0.domain.lom.track.simple_track.audio.special.ResamplingTrack import ResamplingTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.track_recorder.AbstractRecorderFactory import (
@@ -22,7 +21,7 @@ class TrackRecorderSimpleFactory(AbstractTrackRecorderFactory):
             tracks=[track],
             scene_index=self._get_recording_scene_index(track),
             bar_length=self._get_recording_bar_length(record_type, recording_bar_length),
-            records_midi=True,
+            records_midi=record_type != RecordTypeEnum.AUDIO,
         )
 
     def _get_recording_scene_index(self, track: SimpleTrack) -> Optional[int]:
@@ -37,9 +36,7 @@ class TrackRecorderSimpleFactory(AbstractTrackRecorderFactory):
             return 0
         elif record_type == RecordTypeEnum.MIDI:
             return bar_length
-        elif record_type == RecordTypeEnum.AUDIO and isinstance(
-            Song.selected_track(), ResamplingTrack
-        ):
+        elif record_type == RecordTypeEnum.AUDIO:
             return Song.selected_scene().bar_length
         else:
             raise Protocol0Warning("Invalid record type")

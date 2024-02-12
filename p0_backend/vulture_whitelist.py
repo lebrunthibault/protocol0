@@ -83,3 +83,4 @@ current_track  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set
 main  # unused function (p0_backend\scripts\analyze_kicks.py:91)
 prepare_for_soundcloud  # unused function (p0_backend\lib\ableton\ableton_set\ableton_set.py:189)
 serum_add_filter_macro  # unused function (p0_backend\lib\synth\serum.py:10)
+serum_make_filter_macro_bidirectional  # unused function (p0_backend\lib\synth\serum.py:62)

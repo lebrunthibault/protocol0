@@ -133,7 +133,11 @@ class Container(ContainerInterface):
         scene_service = SceneService(live_song, scene_crud_component, scene_playback_service)
         PlayingScene(scene_component)
         track_recorder_service = RecordService(
-            playback_component, scene_crud_component, quantization_component, scene_playback_service
+            playback_component,
+            scene_crud_component,
+            quantization_component,
+            track_crud_component,
+            scene_playback_service,
         )
         validator_service = ValidatorService(ValidatorFactory(browser_service), drum_rack_service)
         set_fixer_service = SetFixerService(validator_service)

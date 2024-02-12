@@ -10,6 +10,7 @@ from protocol0.domain.lom.song.SongStoppedEvent import SongStoppedEvent
 from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
 from protocol0.domain.lom.song.components.QuantizationComponent import QuantizationComponent
 from protocol0.domain.lom.song.components.SceneCrudComponent import SceneCrudComponent
+from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
 from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
 from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import (
     ExternalSynthTrack,
@@ -58,11 +59,13 @@ class RecordService(object):
         playback_component: PlaybackComponent,
         scene_crud_component: SceneCrudComponent,
         quantization_component: QuantizationComponent,
+        track_crud_component: TrackCrudComponent,
         scene_playback_service: ScenePlaybackService,
     ) -> None:
         self._playback_component = playback_component
         self._scene_crud_component = scene_crud_component
         self._quantization_component = quantization_component
+        self._track_crud_component = track_crud_component
         self._scene_playback_service = scene_playback_service
 
         self.recording_bar_length_scroller = RecordingBarLengthScroller(
@@ -138,21 +141,28 @@ class RecordService(object):
         seq.add(partial(self._recorder.pre_record, clear_clips=config.clear_clips))
         if self._processors.pre_record is not None:
             seq.add(partial(self._processors.pre_record.process, track, config))
-        seq.add(
-            partial(
-                record_type.get_count_in().launch,
-                self._playback_component,
-                track,
-                config.solo_count_in,
+
+        # COUNT IN
+        if not Song.is_playing():
+            seq.add(
+                partial(
+                    record_type.get_count_in().launch,
+                    self._playback_component,
+                    track,
+                    config.solo_count_in,
+                )
             )
-        )
+
         seq.add(partial(DomainEventBus.subscribe, SongStoppedEvent, self._on_song_stopped_event))
 
         if not config.records_midi:
             seq.wait_ms(50)  # so that the record doesn't start before the clip slot is ready
 
         # RECORD
-        record_event = RecordStartedEvent(config.scene_index, has_count_in=config.records_midi)
+        record_event = RecordStartedEvent(
+            config.scene_index,
+            has_count_in=config.records_midi,
+        )
         seq.add(partial(DomainEventBus.emit, record_event))
 
         if self._processors.record is not None:
@@ -260,3 +270,19 @@ class RecordService(object):
         clip.crop()
         clip.quantize()
         self._scene_playback_service.fire_scene(Song.selected_scene())
+
+    def resample_selected_track(self) -> Optional[Sequence]:
+        source_track = Song.selected_track()
+        source_track.solo = True
+
+        def resample() -> Optional[Sequence]:
+            track = Song.selected_track()
+            track.input_routing.track = source_track
+
+            return self.record_track(track, RecordTypeEnum.AUDIO)
+
+        seq = Sequence()
+        seq.add(partial(self._track_crud_component.create_audio_track, source_track.index + 1))
+        seq.add(resample)
+
+        return seq.done()
