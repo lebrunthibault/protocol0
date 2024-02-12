@@ -1,5 +1,3 @@
-from functools import partial
-
 from protocol0.application.CommandBus import CommandBus
 from protocol0.application.command.ResetPlaybackCommand import ResetPlaybackCommand
 from protocol0.domain.lom.device.DeviceDisplayService import DeviceDisplayService
@@ -7,7 +5,6 @@ from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.set.AbletonSet import AbletonSet
 from protocol0.domain.lom.song.SongInitializedEvent import SongInitializedEvent
 from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
-from protocol0.domain.lom.track.simple_track.midi.special.CthulhuTrack import CthulhuTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
@@ -39,16 +36,17 @@ class SongInitService(object):
         seq = Sequence()
         seq.wait(2)
         selected_track = Song.selected_track()
-        for track in Song.simple_tracks():
-            if isinstance(track, CthulhuTrack):
-                seq.add(track.select)
-                seq.add(
-                    partial(
-                        self._device_display_service.toggle_plugin_window,
-                        track,
-                        track.devices.get_one_from_enum(DeviceEnum.CTHULHU),
-                    )
-                )
+        # # activate cthulhu devices
+        # for track in Song.simple_tracks():
+        #     if isinstance(track, CthulhuTrack):
+        #         seq.add(track.select)
+        #         seq.add(
+        #             partial(
+        #                 self._device_display_service.toggle_plugin_window,
+        #                 track,
+        #                 track.devices.get_one_from_enum(DeviceEnum.CTHULHU),
+        #             )
+        #         )
         seq.add(ApplicationView.show_session)
         seq.add(selected_track.select)
         seq.wait(8)

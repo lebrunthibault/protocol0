@@ -40,6 +40,7 @@ from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.ui.ColorEnum import ColorEnum
 from protocol0.domain.shared.utils.forward_to import ForwardTo
+from protocol0.domain.shared.utils.list import find_if
 from protocol0.domain.shared.utils.timing import defer
 from protocol0.domain.shared.utils.utils import volume_to_db, db_to_volume
 from protocol0.infra.persistence.TrackData import TrackData
@@ -48,6 +49,40 @@ from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.observer.Observable import Observable
 from protocol0.shared.sequence.Sequence import Sequence
+
+
+def route_track_to_bus(track: "SimpleTrack") -> None:
+    suffix_to_bus = {
+        "ARP": "PLK",
+        "PLK": "PLK",
+        "LD": "LD",
+        "CHD": "LD",
+        "BS": "BS",
+        "SUB": "BS",
+    }
+
+    def _track_suffix(name: str) -> str:
+        return name.strip().upper().split(" ")[0]
+
+    track_suffix = _track_suffix(track.name)
+    if track_suffix not in suffix_to_bus:
+        return
+
+    bus_track_group = list(Song.simple_tracks())[0]
+    assert bus_track_group.is_foldable, "Could not find Bus group track"
+
+    bus_track = find_if(
+        lambda t: _track_suffix(t.name) == suffix_to_bus[track_suffix], bus_track_group.sub_tracks
+    )
+    assert bus_track, f"Could not find bus track for {track.name}"
+    assert (
+        bus_track.current_monitoring_state == CurrentMonitoringStateEnum.IN
+    ), f"bus track {bus_track} has not monitor IN"
+    from protocol0.shared.logging.Logger import Logger
+
+    Logger.dev(f"found bus track : {bus_track}")
+
+    track.output_routing.track = bus_track
 
 
 class SimpleTrack(AbstractTrack):
@@ -106,10 +141,9 @@ class SimpleTrack(AbstractTrack):
     device_insert_mode = cast(int, ForwardTo("_view", "device_insert_mode"))
 
     def on_added(self) -> Optional[Sequence]:
-        if self.group_track is not None:
-            if self.group_track.color != self.color:
-                self.color = self.group_track.color
+        super(SimpleTrack, self).on_added()
 
+        route_track_to_bus(self)
         return None
 
     def on_tracks_change(self) -> None:
