@@ -1,29 +1,30 @@
-from _Framework.SubjectSlot import subject_slot
 from typing import Optional, Type
+
+from _Framework.SubjectSlot import subject_slot
 
 from protocol0.domain.lom.instrument.InstrumentInterface import InstrumentInterface
 from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
 from protocol0.domain.lom.track.group_track.AbstractGroupTrack import AbstractGroupTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.utils.timing import defer
+from protocol0.shared.sequence.Sequence import Sequence
 
 
 class NormalGroupTrack(AbstractGroupTrack):
     @classmethod
     def make(cls, base_group_track: SimpleTrack) -> "NormalGroupTrack":
-        from protocol0.domain.lom.track.group_track.DrumsTrack import DrumsTrack
-        from protocol0.domain.lom.track.group_track.VocalsTrack import VocalsTrack
+        from protocol0.domain.lom.track.group_track.MixBusesTrack import MixBusesTrack
 
-        if DrumsTrack.is_track_valid(base_group_track):
-            return DrumsTrack(base_group_track)
-        elif VocalsTrack.TRACK_NAME == base_group_track.name.strip():
-            return VocalsTrack(base_group_track)
+        if MixBusesTrack.TRACK_NAME == base_group_track.name.strip():
+            return MixBusesTrack(base_group_track)
         else:
             return NormalGroupTrack(base_group_track)
 
-    def on_added(self) -> None:
+    def on_added(self) -> Optional[Sequence]:
         super(NormalGroupTrack, self).on_added()
         self.name = self.computed_name
+
+        return None
 
     @subject_slot("solo")
     @defer

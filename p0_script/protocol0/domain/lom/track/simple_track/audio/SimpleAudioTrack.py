@@ -7,7 +7,6 @@ from _Framework.SubjectSlot import subject_slot
 
 from protocol0.domain.lom.clip.AudioClip import AudioClip
 from protocol0.domain.lom.clip_slot.AudioClipSlot import AudioClipSlot
-from protocol0.domain.lom.track.group_track.DrumsTrack import DrumsTrack
 from protocol0.domain.lom.track.simple_track.CurrentMonitoringStateUpdatedEvent import (
     CurrentMonitoringStateUpdatedEvent,
 )
@@ -68,17 +67,6 @@ class SimpleAudioTrack(SimpleTrack):
         clip = self.clip_slots[list(self._track.clip_slots).index(clip_slot)].clip
         if not clip:
             return None
-
-        if any(isinstance(track, DrumsTrack) for track in self.group_tracks) and not clip.warping:
-
-            def make_clip_loop() -> None:
-                clip.warping = True
-                clip.loop.start = -Song.scenes()[clip.index].length
-                clip.loop.end = 0
-                clip.looping = True
-                clip.show_loop()
-
-            Scheduler.defer(make_clip_loop)
 
     @subject_slot("current_monitoring_state")
     def _current_monitoring_state_listener(self) -> None:

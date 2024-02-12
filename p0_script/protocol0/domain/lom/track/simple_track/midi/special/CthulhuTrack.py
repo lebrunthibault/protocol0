@@ -1,5 +1,7 @@
-import Live
+from functools import partial
 from typing import Optional
+
+import Live
 from _Framework.SubjectSlot import subject_slot
 
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
@@ -10,7 +12,7 @@ from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_tracks
 from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
-from protocol0.domain.shared.utils.list import find_if
+from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.timing import defer
 from protocol0.shared.Song import Song
 
@@ -76,21 +78,9 @@ class CthulhuTrack(SimpleMidiTrack):
 
         rename_tracks(list(Song.top_tracks()), self.synth_track.name)
 
-        def get_bus_track(name: str) -> Optional[SimpleAudioTrack]:
-            track = find_if(
-                lambda t: t.name.lower().strip() == name.lower().strip(), Song.simple_tracks()
-            )
-            if track:
-                assert (
-                    track.current_monitoring_state == CurrentMonitoringStateEnum.IN
-                ), f"bus track {track} has not monitor IN"
+        self.synth_track.on_added()
 
-            return track
-
-        bus_track = get_bus_track(f"{self.synth_track.name} Bus")
-        assert bus_track, f"Could not find bus track for {self.synth_track}"
-
-        self.synth_track.output_routing.track = bus_track
+        Scheduler.defer(partial(toggle_cthulhu_routing, self.synth_track))
 
     @property
     def synth_track(self) -> Optional[SimpleAudioTrack]:
