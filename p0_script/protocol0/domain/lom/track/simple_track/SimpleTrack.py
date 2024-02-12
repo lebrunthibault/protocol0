@@ -105,6 +105,13 @@ class SimpleTrack(AbstractTrack):
 
     device_insert_mode = cast(int, ForwardTo("_view", "device_insert_mode"))
 
+    def on_added(self) -> Optional[Sequence]:
+        if self.group_track is not None:
+            if self.group_track.color != self.color:
+                self.color = self.group_track.color
+
+        return None
+
     def on_tracks_change(self) -> None:
         self._link_to_group_track()
         # because we traverse the tracks left to right : sub tracks will register themselves
@@ -197,6 +204,10 @@ class SimpleTrack(AbstractTrack):
     @property
     def output_meter_left(self) -> float:
         return self._track.output_meter_left if self._track else 0
+
+    @property
+    def has_audio_output(self) -> bool:
+        return self._track.has_audio_output if self._track else False
 
     @property
     def instrument(self) -> Optional[InstrumentInterface]:

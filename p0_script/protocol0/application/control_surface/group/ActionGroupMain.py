@@ -6,7 +6,6 @@ from protocol0.domain.lom.set.MixingService import MixingService
 from protocol0.domain.lom.song.components.TempoComponent import TempoComponent
 from protocol0.domain.lom.track.simple_track.midi.special.CthulhuTrack import (
     toggle_cthulhu_routing,
-    get_cthulhu_track,
 )
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 
@@ -45,8 +44,7 @@ class ActionGroupMain(ActionGroupInterface):
         self.add_encoder(identifier=13, name="test", on_press=self.action_test)
 
         def _record_from_cthulhu() -> None:
-            cthulhu_track = get_cthulhu_track(Song.selected_track())
-            cthulhu_track.toggle_routing(force_cthulhu_routing=True)
+            toggle_cthulhu_routing(Song.selected_track(), force_cthulhu_routing=True)
             self._container.get(RecordService).record_track(
                 Song.selected_track(), RecordTypeEnum.MIDI
             )

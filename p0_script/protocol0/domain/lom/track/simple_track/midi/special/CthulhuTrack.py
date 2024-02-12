@@ -15,25 +15,32 @@ from protocol0.domain.shared.utils.timing import defer
 from protocol0.shared.Song import Song
 
 
-def get_cthulhu_track(track: SimpleTrack) -> "CthulhuTrack":
-    if isinstance(track, CthulhuTrack):
-        return track
+def _get_cthulhu_track(track: SimpleTrack) -> "CthulhuTrack":
+    if isinstance(track.input_routing.track, CthulhuTrack):
+        return track.input_routing.track
     else:
-        if isinstance(track.input_routing.track, CthulhuTrack):  # type: ignore[unreachable]
-            return track.input_routing.track
-        else:
-            try:
-                cthulhu_track = list(Song.simple_tracks())[track.index - 1]
-            except IndexError:
-                cthulhu_track = None
+        try:
+            cthulhu_track = list(Song.simple_tracks())[track.index - 1]
+        except IndexError:
+            cthulhu_track = None
 
-            assert isinstance(cthulhu_track, CthulhuTrack), "Could not find Cthulhu track"
+        assert isinstance(cthulhu_track, CthulhuTrack), "Could not find Cthulhu track"
 
-        return cthulhu_track
+    return cthulhu_track
 
 
-def toggle_cthulhu_routing(track: SimpleTrack) -> None:
-    return get_cthulhu_track(track).toggle_routing()
+def toggle_cthulhu_routing(track: SimpleTrack, force_cthulhu_routing: bool = False) -> None:
+    cthulhu_track = _get_cthulhu_track(track)
+
+    if track.input_routing.type == InputRoutingTypeEnum.ALL_INS or force_cthulhu_routing:
+        # listen to Cthulhu
+        track.current_monitoring_state = CurrentMonitoringStateEnum.IN
+        track.input_routing.track = cthulhu_track
+        track.input_routing.channel = InputRoutingChannelEnum.CTHULHU
+    else:
+        # listen to synth track
+        track.current_monitoring_state = CurrentMonitoringStateEnum.AUTO
+        track.input_routing.type = InputRoutingTypeEnum.ALL_INS
 
 
 class CthulhuTrack(SimpleMidiTrack):
@@ -91,19 +98,3 @@ class CthulhuTrack(SimpleMidiTrack):
             return list(Song.simple_tracks())[self.index + 1]
         except IndexError:
             return None
-
-    def toggle_routing(self, force_cthulhu_routing: bool = False) -> None:
-        assert self.synth_track, "No synth track"
-
-        if (
-            self.synth_track.input_routing.type == InputRoutingTypeEnum.ALL_INS
-            or force_cthulhu_routing
-        ):
-            # listen to Cthulhu
-            self.synth_track.current_monitoring_state = CurrentMonitoringStateEnum.IN
-            self.synth_track.input_routing.track = self
-            self.synth_track.input_routing.channel = InputRoutingChannelEnum.CTHULHU
-        else:
-            # listen to synth track
-            self.synth_track.current_monitoring_state = CurrentMonitoringStateEnum.AUTO
-            self.synth_track.input_routing.type = InputRoutingTypeEnum.ALL_INS
