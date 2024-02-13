@@ -22,9 +22,7 @@ def open_explorer(file_path: str, wait: bool = False) -> int:
 
     click((0, 500))  # move the cursor from the explorer window position
     folder_name = basename(os.path.split(file_path)[0])
-    from loguru import logger
 
-    logger.success(f'start "", "{file_path}"')
     if not wait:
         os.system(f'start "", "{file_path}"')
         return 0
