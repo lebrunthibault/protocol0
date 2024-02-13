@@ -1,3 +1,4 @@
+from os.path import dirname
 from typing import List
 
 from fastapi import APIRouter, Depends
@@ -23,6 +24,7 @@ from p0_backend.lib.ableton.ableton_set.ableton_set import (
 from p0_backend.lib.ableton.ableton_set.ableton_set_manager import (
     AbletonSetManager,
 )
+from p0_backend.lib.explorer import open_explorer
 from p0_backend.settings import Settings
 from protocol0.application.command.SaveSongCommand import SaveSongCommand
 
@@ -91,6 +93,11 @@ async def open_set_by_type(name: str):
 async def close_set(filename: str):
     await AbletonSetManager.remove(filename)
     await ws_manager.broadcast_active_set()
+
+
+@router.get("/open_in_explorer")
+async def open_in_explorer(path: str):
+    open_explorer(dirname(AbletonSet.create(path).path_info.filename))
 
 
 @router.post("/prepare_for_soundcloud")

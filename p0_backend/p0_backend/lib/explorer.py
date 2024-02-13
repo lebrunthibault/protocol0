@@ -16,18 +16,26 @@ from p0_backend.lib.process import kill_window_by_criteria
 from p0_backend.lib.window.window import focus_window, move_window, window_contains_coords
 
 
-def open_explorer(file_path: str) -> int:
+def open_explorer(file_path: str, wait: bool = False) -> int:
     assert os.path.exists(file_path), f"'{file_path}' does not exist"
+    file_path = file_path.replace("\\", "/")
 
     click((0, 500))  # move the cursor from the explorer window position
     folder_name = basename(os.path.split(file_path)[0])
+    from loguru import logger
+
+    logger.success(f'start "", "{file_path}"')
+    if not wait:
+        os.system(f'start "", "{file_path}"')
+        return 0
+
     try:
         handle = focus_window(folder_name)
         sleep(0.1)
         return handle
     except (AssertionError, Protocol0Error):
         os.system(f"explorer.exe /select, {file_path}")
-        handle = retry(50, 0.1)(focus_window)(name=folder_name)
+        handle = retry(10, 0.5)(focus_window)(name=folder_name)
         sleep(0.5)
 
     return handle
@@ -35,7 +43,7 @@ def open_explorer(file_path: str) -> int:
 
 @retry(2, 0)
 def _open_explorer_until_selected(file_path: str, bbox: RectCoords, dest_coords: Coords):
-    handle = open_explorer(file_path)
+    handle = open_explorer(file_path, wait=True)
 
     window_bbox = win32gui.GetWindowRect(handle)
 

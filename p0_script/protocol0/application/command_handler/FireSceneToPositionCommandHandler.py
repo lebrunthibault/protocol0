@@ -3,7 +3,6 @@ from protocol0.application.command.FireSceneToPositionCommand import FireSceneTo
 from protocol0.application.command_handler.CommandHandlerInterface import CommandHandlerInterface
 from protocol0.domain.lom.scene.ScenePlaybackService import ScenePlaybackService
 from protocol0.shared.Song import Song
-from protocol0.shared.logging.Logger import Logger
 
 
 class FireSceneToPositionCommandHandler(CommandHandlerInterface):
@@ -26,8 +25,6 @@ class FireSceneToPositionCommandHandler(CommandHandlerInterface):
         recent_command = CommandBus.get_recent_command(
             FireSceneToPositionCommand, 1, except_current=True
         )
-
-        Logger.info(f"recent_command: {recent_command}")
 
         if recent_command and recent_command.bar_length is not None:
             bar_length += (recent_command.bar_length + 1) * 10

@@ -127,12 +127,6 @@ class TrackMapperService(SlotManager):
         Undo.begin_undo_step()  # Live crashes on undo without this
         seq = Sequence()
         added_track = Song.current_track()
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(f"added track: {added_track}")
-        Logger.dev(
-            f"Song.selected_track() == Song.current_track().base_track: {Song.selected_track() == Song.current_track().base_track}"
-        )
         seq.defer()
 
         tracks = (
@@ -142,9 +136,6 @@ class TrackMapperService(SlotManager):
 
         seq.add(Song.current_track().on_added)
         if isinstance(Song.current_track(), SimpleTrack) and added_track.group_track:
-            from protocol0.shared.logging.Logger import Logger
-
-            Logger.dev(f"acting on group: {added_track.group_track.abstract_group_track}")
             seq.add(added_track.group_track.abstract_group_track.on_added)
 
         seq.add(Song.current_track().arm_state.arm)
