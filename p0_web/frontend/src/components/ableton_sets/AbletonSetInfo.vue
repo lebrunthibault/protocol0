@@ -6,7 +6,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header d-flex">
-          <h5 class="modal-title">{{ abletonSet.path_info.name }} <small>({{ modifiedSince }})</small></h5>
+          <h5 class="modal-title">{{ abletonSet.path_info.name }} <br><small class="text-muted">{{ modifiedSince }}</small></h5>
           <div>
             <button v-if="abletonSet.audio"
                 @click="prepareForSoundCloud" type="button" class="btn btn-lg btn-light mx-2">
@@ -71,6 +71,7 @@ import {AbletonSet, AbletonSetPlace} from '@/components/ableton_sets/ableton_set
 
 
 
+// noinspection TypeScriptValidateTypes
 export default defineComponent({
   name: 'AbletonSetInfo',
   props: {
@@ -149,7 +150,10 @@ export default defineComponent({
       $('#setInfoModal').modal('hide')
     },
     async createSetFolder() {
-      await api.post(`/set/create_folder?path=${this.abletonSet?.path_info.relative_name}`)
+      const abletonSet: AbletonSet = await api.post(`/set/create_folder?path=${this.abletonSet?.path_info.relative_name}`)
+      this.abletonSet.path_info = abletonSet.path_info
+      this.abletonSet.metadata = abletonSet.metadata
+      this.abletonSet.audio = abletonSet.audio
       notify("Set folder created")
       $('#setInfoModal').modal('hide')
     },
