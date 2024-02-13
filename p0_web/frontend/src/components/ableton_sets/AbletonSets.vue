@@ -10,12 +10,22 @@
           @update="sortSets"></AbletonSetStars>
         <AbletonSetInfo :ableton-set="selectedSet" @set-moved="hideSet"></AbletonSetInfo>
         <AbletonSetComment :ableton-set="selectedSet" :scene-data="currentScene"></AbletonSetComment>
-        <button @click="openInExplorer" type="button" class="btn btn-lg btn-light">
-          <i class="fa-regular fa-folder-open" data-toggle="tooltip" data-placement="top" title="Open in explorer"></i>
-        </button>
-        <button @click="openSet" type="button" class="btn btn-lg btn-light">
-          <i class="fa-solid fa-up-right-from-square" data-toggle="tooltip" data-placement="top" title="Open in Ableton"></i>
-        </button>
+
+        <div class="dropdown">
+          <button class="btn btn-lg btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            <i class="fa-regular fa-folder-open"></i>
+          </button>
+          <div class="dropdown-menu">
+            <div @click="openInExplorer" class="dropdown-item">
+              <i class="fa-regular fa-folder-open" style="width: 22px"></i>
+              Open in explorer
+            </div>
+            <div @click="openSet" class="dropdown-item">
+              <i class="fa-solid fa-up-right-from-square" style="width: 22px"></i>
+              Open ableton set
+            </div>
+          </div>
+        </div>
       </div>
     </div>
       <AbletonSetPlayer v-if="selectedSet.audio" :ableton-set="selectedSet" @sceneChange="onSceneChange" :time="playerTime"></AbletonSetPlayer>

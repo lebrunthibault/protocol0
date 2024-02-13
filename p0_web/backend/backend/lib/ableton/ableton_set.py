@@ -313,10 +313,8 @@ def _move_set_to_folder(path: str, folder_path: str):
         move_file(f"{ableton_set.path_info.mp3_filename}.mp3.asd")
 
 
-def create_set_folder(path: str):
+def create_set_folder(path: str) -> AbletonSet:
     ableton_set = AbletonSet.create(path)
-    if not ableton_set:
-        return
 
     assert not ableton_set.has_own_folder, "Set already has own folder"
     set_folder = splitext(ableton_set.path_info.filename)[0]
@@ -324,4 +322,9 @@ def create_set_folder(path: str):
     os.mkdir(set_folder)
     os.mkdir(f"{set_folder}/tracks")
     os.mkdir(f"{set_folder}/ref")
-    _move_set_to_folder(path, f"tracks/{ableton_set.path_info.name}")
+    folder_path = f"tracks/{ableton_set.path_info.name}"
+    _move_set_to_folder(path, folder_path)
+
+    new_path = path.replace(ableton_set.place.folder_name, folder_path)
+
+    return ableton_set.create(new_path)

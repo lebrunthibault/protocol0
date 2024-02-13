@@ -44,5 +44,5 @@ async def _delete_set(path: str):
 
 
 @router.post("/create_folder")
-async def create_folder(path: str):
-    create_set_folder(path)
+async def create_folder(path: str) -> AbletonSet:
+    return create_set_folder(path)
