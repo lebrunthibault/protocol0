@@ -18,7 +18,7 @@ from p0_backend.lib.ableton.interface.sample import load_sample_in_simpler
 from p0_backend.lib.ableton.interface.toggle_ableton_button import toggle_ableton_button
 from p0_backend.lib.ableton.set_profiling.ableton_set_profiler import AbletonSetProfiler
 from p0_backend.lib.enum.notification_enum import NotificationEnum
-from p0_backend.lib.explorer import close_samples_windows, close_explorer_window, open_explorer
+from p0_backend.lib.explorer import close_samples_windows, close_explorer_window
 from p0_backend.lib.keys import send_keys
 from p0_backend.lib.notification import notify
 from p0_backend.lib.process import execute_powershell_command
@@ -185,11 +185,6 @@ async def tail_logs():
 @router.get("/tail_logs_raw")
 async def tail_logs_raw():
     execute_powershell_command("poetry run logs-raw")
-
-
-@router.get("/open_in_explorer")
-async def open_in_explorer(path: str):
-    open_explorer(path)
 
 
 @router.get("/play_pause")

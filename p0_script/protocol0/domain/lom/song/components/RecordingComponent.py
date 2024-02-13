@@ -21,9 +21,6 @@ class RecordingComponent(object):
         recording_scene = Song.scenes()[event.scene_index]
 
         if not Song.is_playing():
-            from protocol0.shared.logging.Logger import Logger
-
-            Logger.dev("firing !")
             recording_scene.fire()
 
         seq = Sequence()

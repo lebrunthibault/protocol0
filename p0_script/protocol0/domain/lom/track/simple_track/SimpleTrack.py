@@ -52,35 +52,40 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 def route_track_to_bus(track: "SimpleTrack") -> None:
-    suffix_to_bus = {
-        "ARP": "PLK",
-        "PLK": "PLK",
-        "LD": "LD",
-        "CHD": "LD",
-        "BS": "BS",
-        "SUB": "BS",
+    bus_suffix_dict = {
+        "DR": ("Kick", "Snare", "Clap"),
+        "Top": ("Hat", "Closed", "Open", "Perc"),
+        "FX": ("Riser", "Trans", "Roll"),
+        "Vox": ("Vox", "Vocal"),
+        "PLK": ("PLK", "ARP"),
+        "LD": ("LD", "CHD"),
+        "BS": ("BS", "SUB"),
     }
 
-    def _track_suffix(name: str) -> str:
-        return name.strip().upper().split(" ")[0]
+    def get_bus_suffix() -> Optional[str]:
+        for suffix, track_suffixes in bus_suffix_dict.items():
+            for t_suffix in track_suffixes:
+                if track.name.strip().lower().startswith(t_suffix.lower()):
+                    return suffix
 
-    track_suffix = _track_suffix(track.name)
-    if track_suffix not in suffix_to_bus:
+        return None
+
+    bus_suffix = get_bus_suffix()
+
+    if not bus_suffix:
+        Backend.client().show_warning(f"Couldn't find bus for {track}")
         return
 
     bus_track_group = list(Song.simple_tracks())[0]
     assert bus_track_group.is_foldable, "Could not find Bus group track"
 
     bus_track = find_if(
-        lambda t: _track_suffix(t.name) == suffix_to_bus[track_suffix], bus_track_group.sub_tracks
+        lambda t: t.name.strip().lower().startswith(bus_suffix), bus_track_group.sub_tracks  # type: ignore[arg-type]
     )
     assert bus_track, f"Could not find bus track for {track.name}"
     assert (
         bus_track.current_monitoring_state == CurrentMonitoringStateEnum.IN
     ), f"bus track {bus_track} has not monitor IN"
-    from protocol0.shared.logging.Logger import Logger
-
-    Logger.dev(f"found bus track : {bus_track}")
 
     track.output_routing.track = bus_track
 

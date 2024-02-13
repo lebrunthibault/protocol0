@@ -24,16 +24,6 @@ def _should_skip_scene(track: SimpleTrack, scene: Scene) -> bool:
     cthulhu_pattern = cthulhu.get_parameter_by_name(DeviceParamEnum.PATTERN)
     assert cthulhu_pattern, "Could not find Cthulhu pattern param"
     pattern_env = cs.clip.automation.get_envelope(cthulhu_pattern)
-    from protocol0.shared.logging.Logger import Logger
-
-    Logger.dev(
-        (
-            cs.clip.name,
-            pattern_env.value_at_time(0),
-            cthulhu_pattern.max,
-            pattern_env.equals(cthulhu_pattern.max),
-        )
-    )
 
     return pattern_env.equals(cthulhu_pattern.max)
 

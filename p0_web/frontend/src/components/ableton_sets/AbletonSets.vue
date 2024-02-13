@@ -10,6 +10,9 @@
           @update="sortSets"></AbletonSetStars>
         <AbletonSetInfo :ableton-set="selectedSet" @set-moved="hideSet"></AbletonSetInfo>
         <AbletonSetComment :ableton-set="selectedSet" :scene-data="currentScene"></AbletonSetComment>
+        <button @click="openInExplorer" type="button" class="btn btn-lg btn-light">
+          <i class="fa-regular fa-folder-open" data-toggle="tooltip" data-placement="top" title="Open in explorer"></i>
+        </button>
         <button @click="openSet" type="button" class="btn btn-lg btn-light">
           <i class="fa-solid fa-up-right-from-square" data-toggle="tooltip" data-placement="top" title="Open in Ableton"></i>
         </button>
@@ -119,6 +122,9 @@ export default defineComponent({
     selectSet(abletonSet: AbletonSet) {
       this.selectedSet = abletonSet
       this.currentScene = this.selectedSet.metadata.scenes ? this.selectedSet.metadata.scenes[0] : null
+    },
+    async openInExplorer() {
+      await localApi.get(`/set/open_in_explorer?path=${this.selectedSet?.path_info.relative_name}`)
     },
     async openSet() {
       await localApi.get(`/set/open?path=${this.selectedSet?.path_info.relative_name}`)
