@@ -65,4 +65,4 @@ class ActionGroupMain(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        pass
+        Song.selected_track().muted = True

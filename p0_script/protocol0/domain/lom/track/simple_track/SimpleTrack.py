@@ -52,14 +52,17 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 def route_track_to_bus(track: "SimpleTrack") -> None:
+    if not track.has_audio_output:
+        return None
+
     bus_suffix_dict = {
         "DR": ("Kick", "Snare", "Clap"),
-        "Top": ("Hat", "Closed", "Open", "Perc"),
-        "FX": ("Riser", "Trans", "Roll"),
+        "Top": ("Hat", "Closed", "Open", "Perc", "Top"),
+        "FX": ("Riser", "Down", "Trans", "Roll"),
         "Vox": ("Vox", "Vocal"),
-        "PLK": ("PLK", "ARP"),
-        "LD": ("LD", "CHD"),
-        "BS": ("BS", "SUB"),
+        "PLK": ("PLK", "Pluck", "ARP"),
+        "LD": ("LD", "Lead", "CHD", "Chord", "PD", "Pad"),
+        "BS": ("BS", "Bass", "SUB"),
     }
 
     def get_bus_suffix() -> Optional[str]:
@@ -70,22 +73,24 @@ def route_track_to_bus(track: "SimpleTrack") -> None:
 
         return None
 
+    bus_track_group = list(Song.simple_tracks())[0]
+    assert bus_track_group.is_foldable, "Could not find Bus group track"
+
     bus_suffix = get_bus_suffix()
 
     if not bus_suffix:
         Backend.client().show_warning(f"Couldn't find bus for {track}")
+        track.muted = True
         return
 
-    bus_track_group = list(Song.simple_tracks())[0]
-    assert bus_track_group.is_foldable, "Could not find Bus group track"
-
     bus_track = find_if(
-        lambda t: t.name.strip().lower().startswith(bus_suffix), bus_track_group.sub_tracks  # type: ignore[arg-type]
+        lambda t: t.name.strip().upper().startswith(bus_suffix.upper()), bus_track_group.sub_tracks
     )
-    assert bus_track, f"Could not find bus track for {track.name}"
-    assert (
-        bus_track.current_monitoring_state == CurrentMonitoringStateEnum.IN
-    ), f"bus track {bus_track} has not monitor IN"
+
+    if not bus_track:
+        Backend.client().show_warning(f"Could not find `{bus_suffix}` bus track for {track.name}")
+        track.muted = True
+        return None
 
     track.output_routing.track = bus_track
 
@@ -148,7 +153,13 @@ class SimpleTrack(AbstractTrack):
     def on_added(self) -> Optional[Sequence]:
         super(SimpleTrack, self).on_added()
 
-        route_track_to_bus(self)
+        from protocol0.domain.lom.track.group_track.MixBusesTrack import MixBusesTrack
+
+        if self.group_track and not isinstance(
+            self.group_track.abstract_group_track, MixBusesTrack
+        ):
+            route_track_to_bus(self)
+
         return None
 
     def on_tracks_change(self) -> None:

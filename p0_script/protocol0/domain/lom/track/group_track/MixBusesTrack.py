@@ -13,7 +13,7 @@ class MixBusesTrack(NormalGroupTrack):
         super(MixBusesTrack, self).on_added()
 
         for track in Song.simple_tracks():
-            if track != self and track not in self.sub_tracks:
+            if track != self.base_track and track not in self.sub_tracks:
                 route_track_to_bus(track)
 
         return None
