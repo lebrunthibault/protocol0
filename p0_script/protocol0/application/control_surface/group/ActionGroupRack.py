@@ -52,13 +52,15 @@ class ActionGroupRack(ActionGroupInterface):
                 "Filter",
                 [
                     InstrumentParam(InstrumentParamEnum.FILTER),
-                    DeviceParam(DeviceEnum.EQ_EIGHT, DeviceParamEnum.FREQUENCY_8_A),
+                    DeviceParam(DeviceEnum.EQ_EIGHT, DeviceParamEnum.EQ_EIGHT_8_FREQUENCY_A),
                 ],
             ),
             XParam("Attack", [InstrumentParam(InstrumentParamEnum.ATTACK)]),
             XParam("Decay", [InstrumentParam(InstrumentParamEnum.DECAY)]),
             XParam("Release", [InstrumentParam(InstrumentParamEnum.RELEASE)]),
-            XParam("HPF", [DeviceParam(DeviceEnum.EQ_EIGHT, DeviceParamEnum.FREQUENCY_1_A)]),
+            XParam(
+                "HPF", [DeviceParam(DeviceEnum.EQ_EIGHT, DeviceParamEnum.EQ_EIGHT_1_FREQUENCY_A)]
+            ),
             XParam(
                 "Octava",
                 [DeviceParam(DeviceEnum.OCTAVA, DeviceParamEnum.OCTAVA_VEL, auto_disable=True)],

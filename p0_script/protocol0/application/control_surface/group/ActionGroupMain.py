@@ -13,6 +13,7 @@ from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.track_recorder.RecordService import RecordService
 from protocol0.domain.track_recorder.RecordTypeEnum import RecordTypeEnum
 from protocol0.shared.Song import Song
+from protocol0.shared.logging.Logger import Logger
 
 
 class ActionGroupMain(ActionGroupInterface):
@@ -25,6 +26,22 @@ class ActionGroupMain(ActionGroupInterface):
             name="tap tempo",
             on_press=self._container.get(TempoComponent).tap,
             on_scroll=self._container.get(TempoComponent).scroll,
+        )
+
+        def log_param() -> None:
+            param = Song.selected_parameter()
+            device_name = Song.selected_device().name
+            enum_name = f"{device_name.upper()}_{param.name.upper()}".replace(" ", "_")
+
+            Logger.info(f"enum_name: {enum_name}")
+            Logger.info(f"{param}: {param.min} - {param.max}. Default: {param.default_value}")
+            param.reset()
+
+        # PARAm encoder
+        self.add_encoder(
+            identifier=2,
+            name="log param",
+            on_press=log_param,
         )
 
         # INIT song encoder
@@ -65,4 +82,7 @@ class ActionGroupMain(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        Song.selected_track().muted = True
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev(Song.selected_device())
+        Logger.dev(Song.selected_device().automated_params)

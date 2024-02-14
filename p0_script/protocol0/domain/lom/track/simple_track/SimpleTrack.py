@@ -121,7 +121,6 @@ class SimpleTrack(AbstractTrack):
         self._view = live_track.view
 
         self.devices = SimpleTrackDevices(live_track)
-        self.devices.register_observer(self)
 
         self._clip_config = ClipConfig(self.color)
         self._clip_slots = SimpleTrackClipSlots(
@@ -130,6 +129,8 @@ class SimpleTrack(AbstractTrack):
         self._clip_slots.build()
         self._clip_slots.register_observer(self)
         self.clip_tail = ClipTail(self._clip_slots)
+
+        self.devices.register_observer(self)
 
         self.monitoring_state = SimpleTrackMonitoringState(self)
 
@@ -144,7 +145,6 @@ class SimpleTrack(AbstractTrack):
         self._output_meter_level_listener.subject = None
 
         self.devices.build()
-
         self._data = TrackData(self)
         self._data.restore()
 

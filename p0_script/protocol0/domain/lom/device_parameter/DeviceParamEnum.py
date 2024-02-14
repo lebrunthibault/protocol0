@@ -13,14 +13,14 @@ class DeviceParamEnum(AbstractEnum):
     AUTO_PAN_AMOUNT = "AUTO_PAN_AMOUNT"
     CHAIN_SELECTOR = "CHAIN_SELECTOR"
     DECAY = "DECAY"
+    DELAY_INPUT = "DELAY_INPUT"
     DEVICE_ON = "DEVICE_ON"
     DRIVE = "DRIVE"
     DRY_WET = "DRY_WET"
-    EFFECTRIX_GLOBALWET = "EFFECTRIX_GLOBALWET"
     FB = "FB"
     FILTER_SWITCH = "FILTER_SWITCH"
-    FREQUENCY_1_A = "FREQUENCY_1_A"
-    FREQUENCY_8_A = "FREQUENCY_8_A"
+    EQ_EIGHT_1_FREQUENCY_A = "FREQUENCY_1_A"
+    EQ_EIGHT_8_FREQUENCY_A = "FREQUENCY_8_A"
     GAIN = "GAIN"
     GAIN_4_A = "EQ_EIGHT_GAIN_4_A"
     INPUT = "INPUT"
@@ -29,10 +29,10 @@ class DeviceParamEnum(AbstractEnum):
     LFO_TOOL_LFO_DEPTH = "LFO_TOOL_LFO_DEPTH"
     MIX = "MIX"
     OCTAVA_VEL = "OCTAVA_VEL"
-    ORIGINAL_REFERENCE = "ORIGINAL_REFERENCE"
     OUTPUT = "OUTPUT"
     OUTPUT_GAIN = "OUTPUT_GAIN"
     PATTERN = "PATTERN"
+    REVERB_INPUT = "REVERB_INPUT"
     UTILITY_SILENT_GAIN = "UTILITY_SILENT_GAIN"
     UTILITY_MID_SIDE = "UTILITY_MID_SIDE"
     UTILITY_WIDTH = "UTILITY_WIDTH"
@@ -55,8 +55,8 @@ class DeviceParamEnum(AbstractEnum):
                 DeviceParamEnum.DRIVE: "Drive",
                 DeviceParamEnum.FB: "FB",
                 DeviceParamEnum.FILTER_SWITCH: "Filter Switch",
-                DeviceParamEnum.FREQUENCY_1_A: "1 Frequency A",
-                DeviceParamEnum.FREQUENCY_8_A: "8 Frequency A",
+                DeviceParamEnum.EQ_EIGHT_1_FREQUENCY_A: "1 Frequency A",
+                DeviceParamEnum.EQ_EIGHT_8_FREQUENCY_A: "8 Frequency A",
                 DeviceParamEnum.GAIN: "Gain",
                 DeviceParamEnum.GAIN_4_A: "4 Gain A",
                 DeviceParamEnum.INPUT: "Input",
@@ -65,7 +65,6 @@ class DeviceParamEnum(AbstractEnum):
                 DeviceParamEnum.LFO_TOOL_LFO_DEPTH: "LFO Depth",
                 DeviceParamEnum.MIX: "Mix",
                 DeviceParamEnum.OCTAVA_VEL: "Vel",
-                DeviceParamEnum.ORIGINAL_REFERENCE: "Original/Reference",
                 DeviceParamEnum.OUTPUT: "Output",
                 DeviceParamEnum.OUTPUT_GAIN: "Output Gain",
                 DeviceParamEnum.PATTERN: "Pattern",
@@ -78,7 +77,7 @@ class DeviceParamEnum(AbstractEnum):
 
     @classmethod
     def from_name(cls, device_name: str, name: str) -> Optional["DeviceParamEnum"]:
-        enum_name = f"{device_name.upper()}_{name.upper}".replace(" ", "_")
+        enum_name = f"{device_name.upper()}_{name.upper()}".replace(" ", "_")
         try:
             return DeviceParamEnum[enum_name]
         except KeyError:
@@ -90,7 +89,10 @@ class DeviceParamEnum(AbstractEnum):
             {
                 DeviceParamEnum.AUTO_FILTER_HIGH_PASS_FREQUENCY: 20,
                 DeviceParamEnum.AUTO_FILTER_LOW_PASS_FREQUENCY: 135,
-                DeviceParamEnum.EFFECTRIX_GLOBALWET: 0,
+                DeviceParamEnum.DELAY_INPUT: 0,
+                DeviceParamEnum.EQ_EIGHT_1_FREQUENCY_A: 0,
+                DeviceParamEnum.EQ_EIGHT_8_FREQUENCY_A: 1,
+                DeviceParamEnum.REVERB_INPUT: 0,
                 DeviceParamEnum.UTILITY_SILENT_GAIN: -1,
             }
         )
