@@ -1,4 +1,4 @@
-from typing import List, Any, Type, Optional, Union
+from typing import List, Any, Type, Optional, Union, Set
 
 import Live
 from _Framework.SubjectSlot import SlotManager, subject_slot
@@ -9,6 +9,7 @@ from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParamete
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.domain.shared.utils.string import smart_string
+from protocol0.shared.observer.Observable import Observable
 
 
 class Device(SlotManager):
@@ -21,6 +22,7 @@ class Device(SlotManager):
         self._parameters_listener()
         self.can_have_drum_pads: bool = self._device.can_have_drum_pads
         self.can_have_chains: bool = self._device.can_have_chains
+        self.automated_params: Set[DeviceParameter] = set()
 
     def __repr__(self) -> str:
         return "%s(%s)" % (self.__class__.__name__, smart_string(self.name))
@@ -53,6 +55,16 @@ class Device(SlotManager):
     def on_added(self) -> None:
         pass
 
+    def update(self, observable: Observable) -> None:
+        if isinstance(observable, DeviceParameter):
+            from protocol0.shared.logging.Logger import Logger
+
+            Logger.dev(
+                f"param changed: {observable} - {observable._device_parameter.automation_state}"
+            )
+
+            self.automated_params.add(observable)
+
     @property
     def enum(self) -> Optional[DeviceEnum]:
         try:
@@ -66,6 +78,8 @@ class Device(SlotManager):
             DeviceParameter.create_from_name(self.name, parameter)
             for parameter in self._device.parameters
         ]
+        for param in self.parameters:
+            param.register_observer(self)
 
     def get_parameter_by_name(
         self, device_parameter_name: Union[DeviceParamEnum, str]

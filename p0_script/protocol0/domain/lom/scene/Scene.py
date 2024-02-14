@@ -1,9 +1,9 @@
 import collections
 from functools import partial
+from typing import List, Optional, Dict, cast
 
 import Live
 from _Framework.SubjectSlot import SlotManager, subject_slot
-from typing import List, Optional, Dict, cast
 
 from protocol0.domain.lom.scene.NextSceneStartedEvent import NextSceneStartedEvent
 from protocol0.domain.lom.scene.SceneAppearance import SceneAppearance
@@ -158,6 +158,9 @@ class Scene(SlotManager):
         # stop the previous scene in advance, using clip launch quantization
         DomainEventBus.emit(SceneFiredEvent(self.index))
 
+        if not Song.is_playing() and Song.mix_buses_track():
+            Song.mix_buses_track().reset_bus_tracks_automation()
+
         if self._scene:
             self._scene.fire()
 
@@ -182,6 +185,7 @@ class Scene(SlotManager):
         seq = Sequence()
 
         self.scene_name.update(bar_position=bar_length)
+
         seq.add(self.fire)
         seq.defer()
         seq.add(partial(self.position_scroller.set_value, bar_length))

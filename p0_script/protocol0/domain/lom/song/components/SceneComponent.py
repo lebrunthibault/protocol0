@@ -6,6 +6,7 @@ from protocol0.domain.lom.scene.Scene import Scene
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.ValueScroller import ValueScroller
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
+from protocol0.domain.shared.utils.utils import timeit
 from protocol0.domain.track_recorder.event.RecordStartedEvent import RecordStartedEvent
 from protocol0.shared.Song import Song
 
@@ -37,8 +38,13 @@ class SceneComponent(object):
         )
         self.select_scene(next_scene)
 
+    @timeit
     def _on_next_scene_started_event(self, event: NextSceneStartedEvent) -> None:
         """Event is fired *before* the scene starts playing"""
+
+        if Song.mix_buses_track():
+            Song.mix_buses_track().reset_bus_tracks_automation()
+
         # Stop the previous scene : quantized or immediate
         try:
             previous_selected_scene = Song.scenes()[event.selected_scene_index]

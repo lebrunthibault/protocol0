@@ -27,6 +27,7 @@ if TYPE_CHECKING:
         ExternalSynthTrack,
     )
     from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
+    from protocol0.domain.lom.track.group_track.MixBusesTrack import MixBusesTrack
     from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
     from protocol0.domain.lom.scene.Scene import Scene
     from protocol0.domain.lom.clip.Clip import Clip
@@ -219,6 +220,16 @@ class Song(object):
     @classmethod
     def master_track(cls) -> Optional["MasterTrack"]:
         return cls._INSTANCE._track_mapper_service._master_track
+
+    @classmethod
+    def mix_buses_track(cls) -> Optional["MixBusesTrack"]:
+        first_track = next(Song.abstract_tracks())
+        from protocol0.domain.lom.track.group_track.MixBusesTrack import MixBusesTrack
+
+        if isinstance(first_track, MixBusesTrack):
+            return first_track
+        else:
+            return None
 
     @classmethod
     def reference_track(cls) -> Optional["SimpleTrack"]:
