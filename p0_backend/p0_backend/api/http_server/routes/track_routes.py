@@ -5,7 +5,11 @@ from p0_backend.lib.ableton.ableton import (
     hide_plugins,
     show_plugins,
 )
-from p0_backend.lib.ableton.interface.track import flatten_track, load_instrument_track
+from p0_backend.lib.ableton.interface.track import (
+    flatten_track,
+    load_instrument_track,
+    freeze_track,
+)
 from p0_backend.lib.keys import send_keys
 from protocol0.application.command.ToggleArmCommand import ToggleArmCommand
 from protocol0.application.command.SelectTrackCommand import SelectTrackCommand
@@ -13,7 +17,12 @@ from protocol0.application.command.SelectTrackCommand import SelectTrackCommand
 router = APIRouter()
 
 
-@router.get("/flatten_track")
+@router.get("/freeze")
+def _freeze_track():
+    freeze_track()
+
+
+@router.get("/flatten")
 def _flatten_track():
     flatten_track()
 
