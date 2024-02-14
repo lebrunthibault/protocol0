@@ -153,9 +153,12 @@ class SimpleTrack(AbstractTrack):
     def on_added(self) -> Optional[Sequence]:
         super(SimpleTrack, self).on_added()
 
+        if self.name.strip().lower() == "audio":
+            return None
+
         from protocol0.domain.lom.track.group_track.MixBusesTrack import MixBusesTrack
 
-        if self.group_track and not isinstance(
+        if not self.group_track or not isinstance(
             self.group_track.abstract_group_track, MixBusesTrack
         ):
             route_track_to_bus(self)

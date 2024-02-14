@@ -127,8 +127,6 @@ class TrackMapperService(SlotManager):
         Undo.begin_undo_step()  # Live crashes on undo without this
         seq = Sequence()
         added_track = Song.current_track()
-        from protocol0.shared.logging.Logger import Logger
-        Logger.dev(added_track)
         seq.defer()
 
         tracks = (
