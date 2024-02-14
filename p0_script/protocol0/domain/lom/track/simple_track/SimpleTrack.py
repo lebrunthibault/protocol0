@@ -1,4 +1,5 @@
 from functools import partial
+from string import ascii_lowercase
 from typing import cast, List, Optional, Dict
 
 import Live
@@ -29,9 +30,6 @@ from protocol0.domain.lom.track.simple_track.SimpleTrackFlattenedEvent import (
 )
 from protocol0.domain.lom.track.simple_track.SimpleTrackMonitoringState import (
     SimpleTrackMonitoringState,
-)
-from protocol0.domain.lom.track.simple_track.SimpleTrackSaveStartedEvent import (
-    SimpleTrackSaveStartedEvent,
 )
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.backend.Backend import Backend
@@ -432,16 +430,45 @@ class SimpleTrack(AbstractTrack):
 
         return seq.done()
 
-    def save(self) -> Sequence:
-        track_color = self.color
+    # def save(self) -> Sequence:
+    #     track_color = self.color
+    #
+    #     seq = Sequence()
+    #     seq.add(partial(DomainEventBus.emit, SimpleTrackSaveStartedEvent()))
+    #     seq.add(self.focus)
+    #     seq.add(Backend.client().save_track_to_sub_tracks)
+    #     seq.wait_for_backend_event("track_focused", timeout=3000)
+    #     seq.add(partial(setattr, self, "color", track_color))
+    #     seq.wait_for_backend_event("track_saved", timeout=10000)
+    #
+    #     return seq.done()
+
+    def freeze(self) -> Sequence:
+        # this is needed to have flattened clip of the right length
+        Song._live_song().stop_playing()
+
+        clip_hashes = {}
+        alphabet = iter(ascii_lowercase)
+        for clip in self.clips:
+            clip_hash = clip.get_hash(self.devices.parameters)
+            if clip_hash in clip_hashes:
+                clip.muted = True
+            else:
+                clip_hashes[clip_hash] = next(alphabet).upper()
+
+            clip.name = clip_hashes[clip_hash]
+
+        self.clear_arrangement()
 
         seq = Sequence()
-        seq.add(partial(DomainEventBus.emit, SimpleTrackSaveStartedEvent()))
+
+        recolor_track = partial(setattr, self, "color", self.color)
         seq.add(self.focus)
-        seq.add(Backend.client().save_track_to_sub_tracks)
-        seq.wait_for_backend_event("track_focused", timeout=3000)
-        seq.add(partial(setattr, self, "color", track_color))
-        seq.wait_for_backend_event("track_saved", timeout=10000)
+        seq.add(Backend.client().freeze_track)
+        seq.wait_for_backend_event("track_focused")
+        seq.add(recolor_track)
+        seq.wait_for_backend_event("track_freezed")
+        seq.defer()
 
         return seq.done()
 

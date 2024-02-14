@@ -44,6 +44,13 @@ class ActionGroupMain(ActionGroupInterface):
             on_press=log_param,
         )
 
+        # FREeZ encoder
+        self.add_encoder(
+            identifier=3,
+            name="freeze / unfreeze",
+            on_press=lambda: Song.selected_track().freeze,
+        )
+
         # INIT song encoder
         self.add_encoder(
             identifier=4,
@@ -82,7 +89,6 @@ class ActionGroupMain(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(Song.selected_device())
-        Logger.dev(Song.selected_device().automated_params)
+        for cs in Song.selected_track().clip_slots:
+            if not cs.clip:
+                Song.selected_track().clip_slots[0].duplicate_clip_to(cs)

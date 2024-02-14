@@ -71,7 +71,7 @@ def click_context_menu(track_coords: Coords, y_offsets: Union[int, List[int]]) -
     return menu_coords
 
 
-def flatten_track():
+def freeze_track():
     track_coords = get_focused_track_coords()
 
     freeze_coords = click_context_menu(track_coords, [98, 136, 137])
@@ -86,6 +86,16 @@ def flatten_track():
         sleep(0.2)
 
     sleep(0.3)
+
+    p0_script_client().dispatch(EmitBackendEventCommand("track_freezed"))
+
+    return freeze_coords
+
+
+def flatten_track():
+    track_coords = get_focused_track_coords()
+
+    freeze_coords = freeze_track()
 
     click(track_coords, button=pyautogui.RIGHT)
     click((freeze_coords[0], freeze_coords[1] + 20))  # flatten track

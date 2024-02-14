@@ -99,19 +99,7 @@ class P0BackendClient(object):
         Arm  # noqa: E501
         """
 
-        payload = {"method": "GET", "path": "/arm", "params": {}}
-
-        self._send_dict_as_midi(payload)
-
-    def bounce_track_to_audio(
-        self,
-    ):  # noqa: E501
-        # type: () -> None
-        """
-        Bounce Track To Audio  # noqa: E501
-        """
-
-        payload = {"method": "GET", "path": "/bounce_track_to_audio", "params": {}}
+        payload = {"method": "GET", "path": "/track/arm", "params": {}}
 
         self._send_dict_as_midi(payload)
 
@@ -157,18 +145,6 @@ class P0BackendClient(object):
                 "y": y,
             },
         }
-
-        self._send_dict_as_midi(payload)
-
-    def click_focused_track(
-        self,
-    ):  # noqa: E501
-        # type: () -> None
-        """
-        Click Focused Track  # noqa: E501
-        """
-
-        payload = {"method": "GET", "path": "/click_focused_track", "params": {}}
 
         self._send_dict_as_midi(payload)
 
@@ -267,18 +243,6 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
-    def drag_matching_track(
-        self,
-    ):  # noqa: E501
-        # type: () -> None
-        """
-        Drag Matching Track  # noqa: E501
-        """
-
-        payload = {"method": "GET", "path": "/drag_matching_track", "params": {}}
-
-        self._send_dict_as_midi(payload)
-
     def drum_rack_to_simpler(
         self,
     ):  # noqa: E501
@@ -311,7 +275,7 @@ class P0BackendClient(object):
         Edit Automation Value  # noqa: E501
         """
 
-        payload = {"method": "GET", "path": "/edit_automation_value", "params": {}}
+        payload = {"method": "GET", "path": "/clip/edit_automation_value", "params": {}}
 
         self._send_dict_as_midi(payload)
 
@@ -408,7 +372,19 @@ class P0BackendClient(object):
         Flatten Track  # noqa: E501
         """
 
-        payload = {"method": "GET", "path": "/flatten_track", "params": {}}
+        payload = {"method": "GET", "path": "/track/flatten", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
+    def freeze_track(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Freeze Track  # noqa: E501
+        """
+
+        payload = {"method": "GET", "path": "/track/freeze", "params": {}}
 
         self._send_dict_as_midi(payload)
 
@@ -421,18 +397,6 @@ class P0BackendClient(object):
         """
 
         payload = {"method": "GET", "path": "/ws/connections", "params": {}}
-
-        self._send_dict_as_midi(payload)
-
-    def go_to_group_track(
-        self,
-    ):  # noqa: E501
-        # type: () -> None
-        """
-        Go To Group Track  # noqa: E501
-        """
-
-        payload = {"method": "GET", "path": "/go_to_group_track", "params": {}}
 
         self._send_dict_as_midi(payload)
 
@@ -477,27 +441,6 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
-    def load_drum_rack(
-        self,
-        category,
-        subcategory,
-    ):  # noqa: E501
-        # type: (str, str, ) -> None
-        """
-        Load Drum Rack  # noqa: E501
-        """
-
-        payload = {
-            "method": "GET",
-            "path": "/device/load_drum_rack",
-            "params": {
-                "category": category,
-                "subcategory": subcategory,
-            },
-        }
-
-        self._send_dict_as_midi(payload)
-
     def load_instrument_track(
         self,
         instrument_name,
@@ -509,23 +452,11 @@ class P0BackendClient(object):
 
         payload = {
             "method": "GET",
-            "path": "/load_instrument_track",
+            "path": "/track/load_instrument_track",
             "params": {
                 "instrument_name": instrument_name,
             },
         }
-
-        self._send_dict_as_midi(payload)
-
-    def load_matching_track(
-        self,
-    ):  # noqa: E501
-        # type: () -> None
-        """
-        Load Matching Track  # noqa: E501
-        """
-
-        payload = {"method": "GET", "path": "/load_matching_track", "params": {}}
 
         self._send_dict_as_midi(payload)
 
@@ -596,18 +527,6 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
-    def match_clip_colors(
-        self,
-    ):  # noqa: E501
-        # type: () -> None
-        """
-        Match Clip Colors  # noqa: E501
-        """
-
-        payload = {"method": "GET", "path": "/clip/match_colors", "params": {}}
-
-        self._send_dict_as_midi(payload)
-
     def move_loop(self, forward, bar):  # noqa: E501
         # type: (bool, bool, ) -> None
         """
@@ -657,7 +576,7 @@ class P0BackendClient(object):
 
         payload = {
             "method": "GET",
-            "path": "/open_in_explorer",
+            "path": "/set/open_in_explorer",
             "params": {
                 "path": path,
             },
@@ -777,6 +696,25 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
+    def prepare_for_soundcloud(
+        self,
+        path,
+    ):  # noqa: E501
+        # type: (str, ) -> None
+        """
+        Prepare For Soundcloud  # noqa: E501
+        """
+
+        payload = {
+            "method": "POST",
+            "path": "/set/prepare_for_soundcloud",
+            "params": {
+                "path": path,
+            },
+        }
+
+        self._send_dict_as_midi(payload)
+
     def record_unlimited(
         self,
     ):  # noqa: E501
@@ -834,18 +772,6 @@ class P0BackendClient(object):
         """
 
         payload = {"method": "GET", "path": "/set/save_as_template", "params": {}}
-
-        self._send_dict_as_midi(payload)
-
-    def save_track_to_sub_tracks(
-        self,
-    ):  # noqa: E501
-        # type: () -> None
-        """
-        Save Track To Sub Tracks  # noqa: E501
-        """
-
-        payload = {"method": "GET", "path": "/save_track_to_sub_tracks", "params": {}}
 
         self._send_dict_as_midi(payload)
 
@@ -944,25 +870,6 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
-    def scroll_track_volume(
-        self,
-        direction,
-    ):  # noqa: E501
-        # type: (str, ) -> None
-        """
-        Scroll Track Volume  # noqa: E501
-        """
-
-        payload = {
-            "method": "GET",
-            "path": "/scroll_track_volume",
-            "params": {
-                "direction": direction,
-            },
-        }
-
-        self._send_dict_as_midi(payload)
-
     def search(
         self,
         text,
@@ -974,9 +881,28 @@ class P0BackendClient(object):
 
         payload = {
             "method": "GET",
-            "path": "/search",
+            "path": "/keyboard/search",
             "params": {
                 "text": text,
+            },
+        }
+
+        self._send_dict_as_midi(payload)
+
+    def select(
+        self,
+        name,
+    ):  # noqa: E501
+        # type: (str, ) -> None
+        """
+        Select  # noqa: E501
+        """
+
+        payload = {
+            "method": "GET",
+            "path": "/track/select",
+            "params": {
+                "name": name,
             },
         }
 
@@ -1034,6 +960,18 @@ class P0BackendClient(object):
                 "track_name": track_name,
             },
         }
+
+        self._send_dict_as_midi(payload)
+
+    def serum_bulk_edit(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Serum Bulk Edit  # noqa: E501
+        """
+
+        payload = {"method": "GET", "path": "/device/serum_bulk_edit", "params": {}}
 
         self._send_dict_as_midi(payload)
 
@@ -1105,7 +1043,7 @@ class P0BackendClient(object):
 
         payload = {
             "method": "GET",
-            "path": "/show_automation",
+            "path": "/clip/show_automation",
             "params": {
                 "direction": direction,
             },
@@ -1365,6 +1303,18 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
+    def toggle_rack_chain(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Toggle Rack Chain  # noqa: E501
+        """
+
+        payload = {"method": "GET", "path": "/device/toggle_rack_chain", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
     def toggle_reference(
         self,
     ):  # noqa: E501
@@ -1409,6 +1359,6 @@ class P0BackendClient(object):
         Un Group  # noqa: E501
         """
 
-        payload = {"method": "GET", "path": "/un_group", "params": {}}
+        payload = {"method": "GET", "path": "/track/un_group", "params": {}}
 
         self._send_dict_as_midi(payload)
