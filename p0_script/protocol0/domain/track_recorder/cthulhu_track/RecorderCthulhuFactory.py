@@ -19,13 +19,10 @@ class TrackRecorderCthulhuFactory(AbstractTrackRecorderFactory):
         self, track: SimpleTrack, record_type: RecordTypeEnum, recording_bar_length: int
     ) -> RecordConfig:
         return RecordConfig(
-            record_name=record_type.value,
+            record_type=record_type,
             tracks=[track],
             scene_index=Song.selected_scene().index,
             bar_length=Song.selected_scene().bar_length,
-            records_midi=True,
-            solo_count_in=False,
-            clear_clips=False,
         )
 
     def get_processors(self, record_type: RecordTypeEnum) -> RecordProcessors:

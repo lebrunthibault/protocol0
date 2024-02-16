@@ -9,7 +9,6 @@ from protocol0.shared.logging.Logger import Logger
 
 class PostRecordCthulhu(RecordProcessorInterface):
     def process(self, track: SimpleTrack, config: RecordConfig) -> None:
-        Song.set_tempo(config.original_tempo)
         toggle_cthulhu_routing(track)
 
         def set_clips_length() -> None:

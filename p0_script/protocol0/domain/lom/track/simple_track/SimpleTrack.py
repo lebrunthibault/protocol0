@@ -18,6 +18,7 @@ from protocol0.domain.lom.instrument.InstrumentInterface import InstrumentInterf
 from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitoringStateEnum
 from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
 from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
+from protocol0.domain.lom.track.routing.InputRoutingChannelEnum import InputRoutingChannelEnum
 from protocol0.domain.lom.track.routing.TrackInputRouting import TrackInputRouting
 from protocol0.domain.lom.track.routing.TrackOutputRouting import TrackOutputRouting
 from protocol0.domain.lom.track.simple_track.SimpleTrackArmState import SimpleTrackArmState
@@ -314,8 +315,10 @@ class SimpleTrack(AbstractTrack):
     def is_cthulhu_synth_track(self) -> bool:
         from protocol0.domain.lom.track.simple_track.midi.special.CthulhuTrack import CthulhuTrack
 
-        return self.input_routing.track is not None and isinstance(
-            self.input_routing.track, CthulhuTrack
+        return (
+            self.input_routing.track is not None
+            and isinstance(self.input_routing.track, CthulhuTrack)
+            and self.input_routing.channel == InputRoutingChannelEnum.CTHULHU
         )
 
     @property
@@ -446,6 +449,8 @@ class SimpleTrack(AbstractTrack):
     def freeze(self) -> Sequence:
         # this is needed to have flattened clip of the right length
         Song._live_song().stop_playing()
+
+        self.current_monitoring_state = CurrentMonitoringStateEnum.AUTO
 
         clip_hashes = {}
         alphabet = iter(ascii_lowercase)

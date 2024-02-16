@@ -17,7 +17,7 @@ def record_from_config(config: RecordConfig) -> Sequence:
     if bar_length != 0:
         if not Song.is_playing():
             seq.wait_for_event(SongStartedEvent)
-        if not config.records_midi:
+        if not config.record_type.records_midi:
             # play well with the tail recording
             bar_length -= 0.6
 
@@ -65,6 +65,8 @@ class BaseRecorder(object):
         return seq.done()
 
     def cancel_record(self) -> None:
-        for clip_slot in self.config.clip_slots:
-            clip_slot.delete_clip()
+        Song.set_tempo(self.config.original_tempo)
+        if self.config.record_type.delete_clips:
+            for clip_slot in self.config.clip_slots:
+                clip_slot.delete_clip()
         self._track.stop(immediate=True)

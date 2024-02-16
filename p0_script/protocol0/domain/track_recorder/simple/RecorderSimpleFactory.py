@@ -17,11 +17,10 @@ class TrackRecorderSimpleFactory(AbstractTrackRecorderFactory):
         self, track: SimpleTrack, record_type: RecordTypeEnum, recording_bar_length: int
     ) -> RecordConfig:
         return RecordConfig(
-            record_name=record_type.value,
+            record_type=record_type,
             tracks=[track],
             scene_index=self._get_recording_scene_index(track),
             bar_length=self._get_recording_bar_length(record_type, recording_bar_length),
-            records_midi=record_type != RecordTypeEnum.AUDIO,
         )
 
     def _get_recording_scene_index(self, track: SimpleTrack) -> Optional[int]:
@@ -36,7 +35,7 @@ class TrackRecorderSimpleFactory(AbstractTrackRecorderFactory):
             return 0
         elif record_type == RecordTypeEnum.MIDI:
             return bar_length
-        elif record_type == RecordTypeEnum.AUDIO:
+        elif record_type in (RecordTypeEnum.AUDIO, RecordTypeEnum.MIDI_RESAMPLE):
             return Song.selected_scene().bar_length
         else:
             raise Protocol0Warning("Invalid record type")

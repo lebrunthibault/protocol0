@@ -16,6 +16,7 @@ from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import 
     ExternalSynthTrack,
 )
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
+from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.ErrorRaisedEvent import ErrorRaisedEvent
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
@@ -51,6 +52,18 @@ from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
 
 
+def _get_track_recorder_factory(track: AbstractTrack) -> AbstractTrackRecorderFactory:
+    if isinstance(track, SimpleTrack):
+        if track.is_cthulhu_synth_track:
+            return TrackRecorderCthulhuFactory()
+        else:
+            return TrackRecorderSimpleFactory()
+    elif isinstance(track, ExternalSynthTrack):
+        return TrackRecorderExternalSynthFactory()
+    else:
+        raise Protocol0Warning("This track is not recordable")
+
+
 class RecordService(object):
     _DEBUG = False
 
@@ -78,17 +91,6 @@ class RecordService(object):
     def is_recording(self) -> bool:
         return self._recorder is not None
 
-    def _get_track_recorder_factory(self, track: AbstractTrack) -> AbstractTrackRecorderFactory:
-        if isinstance(track, SimpleTrack):
-            if track.is_cthulhu_synth_track:
-                return TrackRecorderCthulhuFactory()
-            else:
-                return TrackRecorderSimpleFactory()
-        elif isinstance(track, ExternalSynthTrack):
-            return TrackRecorderExternalSynthFactory()
-        else:
-            raise Protocol0Warning("This track is not recordable")
-
     def record_track(self, track: AbstractTrack, record_type: RecordTypeEnum) -> Optional[Sequence]:
         # we'll subscribe back later
         DomainEventBus.un_subscribe(SongStoppedEvent, self._on_song_stopped_event)
@@ -100,7 +102,7 @@ class RecordService(object):
         if self._quantization_component.clip_trigger_quantization != Live.Song.Quantization.q_bar:
             self._quantization_component.clip_trigger_quantization = Live.Song.Quantization.q_bar
 
-        recorder_factory = self._get_track_recorder_factory(track)
+        recorder_factory = _get_track_recorder_factory(track)
         config = recorder_factory.get_record_config(
             track=track,
             record_type=record_type,
@@ -120,7 +122,7 @@ class RecordService(object):
             Logger.info("recorder_config: %s" % config)
             Logger.info("processors: %s" % self._processors)
 
-        Backend.client().show_info(f"Rec: {config.record_name} ({config.bar_length} bars)")
+        Backend.client().show_info(f"Rec: {config.record_type.name} ({config.bar_length} bars)")
 
         seq.add(partial(self._start_recording, track, record_type, config))
         return seq.done()
@@ -135,33 +137,35 @@ class RecordService(object):
         PlayingScene.set(config.recording_scene)
         DomainEventBus.once(ErrorRaisedEvent, self._on_error_raised_event)
 
+        if record_type.speed_up_record:
+            Song.set_tempo(999)
+
         seq = Sequence()
 
         # PRE RECORD
-        seq.add(partial(self._recorder.pre_record, clear_clips=config.clear_clips))
+        seq.add(partial(self._recorder.pre_record, clear_clips=record_type.clear_clips))
         if self._processors.pre_record is not None:
             seq.add(partial(self._processors.pre_record.process, track, config))
 
         # COUNT IN
         if not Song.is_playing():
-            seq.add(
-                partial(
-                    record_type.get_count_in().launch,
-                    self._playback_component,
-                    track,
-                    config.solo_count_in,
-                )
+            count_in = partial(
+                record_type.get_count_in().launch,
+                self._playback_component,
+                track,
+                record_type.has_solo_count_in,
             )
+            seq.add(count_in)
 
         seq.add(partial(DomainEventBus.subscribe, SongStoppedEvent, self._on_song_stopped_event))
 
-        if not config.records_midi:
+        if not config.record_type.records_midi:
             seq.wait_ms(50)  # so that the record doesn't start before the clip slot is ready
 
         # RECORD
         record_event = RecordStartedEvent(
             config.scene_index,
-            has_count_in=config.records_midi,
+            has_count_in=config.record_type.records_midi,
         )
         seq.add(partial(DomainEventBus.emit, record_event))
 
@@ -176,6 +180,7 @@ class RecordService(object):
         seq.defer()
         seq.add(partial(DomainEventBus.emit, RecordEndedEvent()))
 
+        seq.add(partial(Song.set_tempo, config.original_tempo))
         # POST RECORD
         if self._processors.post_record is not None:
             seq.add(partial(self._processors.post_record.process, track, config))
@@ -206,22 +211,7 @@ class RecordService(object):
 
     def _on_song_stopped_event(self, _: SongStoppedEvent) -> None:
         """happens when manually stopping song while recording."""
-        if self._recorder is None:
-            return
-
-        if self._processors.on_record_cancelled:
-            self._processors.on_record_cancelled.process(
-                self._recorder._track, self._recorder.config
-            )
-
-        if self._recorder.config.bar_length == 0:
-            return  # already handled
-
-        # we could cancel the record here also
-        Backend.client().show_info("Recording stopped")
-        # deferring this to allow components to react to the song stopped event
-        Scheduler.defer(Scheduler.restart)
-        self._recorder = None
+        self._cancel_record()
 
     def capture_midi(self) -> None:
         scene_index = Song.selected_scene().index
@@ -274,15 +264,21 @@ class RecordService(object):
     def resample_selected_track(self) -> Optional[Sequence]:
         source_track = Song.selected_track()
         source_track.solo = True
+        record_type = RecordTypeEnum.AUDIO
 
         def resample() -> Optional[Sequence]:
             track = Song.selected_track()
             track.input_routing.track = source_track
 
-            return self.record_track(track, RecordTypeEnum.AUDIO)
+            return self.record_track(track, record_type)
 
         seq = Sequence()
-        seq.add(partial(self._track_crud_component.create_audio_track, source_track.index + 1))
+        if isinstance(source_track, SimpleMidiTrack):
+            record_type = RecordTypeEnum.MIDI_RESAMPLE
+            seq.add(partial(self._track_crud_component.create_midi_track, source_track.index + 1))
+        else:
+            seq.add(partial(self._track_crud_component.create_audio_track, source_track.index + 1))  # type: ignore[unreachable]
+
         seq.add(resample)
 
         return seq.done()
