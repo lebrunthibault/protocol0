@@ -42,11 +42,10 @@ class TrackRecorderExternalSynthFactory(AbstractTrackRecorderFactory):
         bar_length = self._get_bar_length(track, record_type, recording_bar_length)
 
         return RecordConfig(
-            record_name=record_type.value,
+            record_type=record_type,
             tracks=tracks,
             scene_index=scene_index,
             bar_length=bar_length,
-            records_midi=record_type.records_midi,
         )
 
     def _get_scene_index(

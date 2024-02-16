@@ -18,11 +18,6 @@ def get_all_automated_parameters(track: SimpleTrack, device: Device) -> Set[Devi
             set(clip.automation.get_automated_parameters(device.parameters))
         )
 
-    if automated_parameters:
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(f"{track} / {device}: {automated_parameters}")
-
     return automated_parameters
 
 
@@ -31,9 +26,6 @@ class MixBusesTrack(NormalGroupTrack):
 
     def on_tracks_change(self) -> None:
         super(MixBusesTrack, self).on_tracks_change()
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev("TRACKS CHANGE MIX BUSES TRACK")
 
         for track in self.sub_tracks:
             for device in track.base_track.devices.all:
@@ -60,11 +52,6 @@ class MixBusesTrack(NormalGroupTrack):
 
                 for device in track.devices:
                     automated_params += device.automated_params
-
-                from protocol0.shared.logging.Logger import Logger
-
-                if automated_params:
-                    Logger.dev(f"{track}: {automated_params}")
 
                 for param in automated_params:
                     param.reset()

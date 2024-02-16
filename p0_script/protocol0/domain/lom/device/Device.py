@@ -57,12 +57,6 @@ class Device(SlotManager):
 
     def update(self, observable: Observable) -> None:
         if isinstance(observable, DeviceParameter):
-            from protocol0.shared.logging.Logger import Logger
-
-            Logger.dev(
-                f"param changed: {observable} - {observable._device_parameter.automation_state}"
-            )
-
             self.automated_params.add(observable)
 
     @property

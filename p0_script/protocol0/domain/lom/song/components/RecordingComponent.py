@@ -20,8 +20,8 @@ class RecordingComponent(object):
     def _on_record_started_event(self, event: RecordStartedEvent) -> None:
         recording_scene = Song.scenes()[event.scene_index]
 
-        if not Song.is_playing():
-            recording_scene.fire()
+        # if not Song.is_playing():
+        recording_scene.fire()
 
         seq = Sequence()
         if event.has_count_in:

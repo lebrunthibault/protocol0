@@ -70,7 +70,7 @@ class ActionGroupMain(ActionGroupInterface):
         def _record_from_cthulhu() -> None:
             toggle_cthulhu_routing(Song.selected_track(), force_cthulhu_routing=True)
             self._container.get(RecordService).record_track(
-                Song.selected_track(), RecordTypeEnum.MIDI
+                Song.selected_track(), RecordTypeEnum.MIDI_OVERWRITE
             )
 
         # CThULhu encoder
