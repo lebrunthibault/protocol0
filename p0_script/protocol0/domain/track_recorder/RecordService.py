@@ -15,6 +15,7 @@ from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrac
 from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import (
     ExternalSynthTrack,
 )
+from protocol0.domain.lom.track.routing.InputRoutingChannelEnum import InputRoutingChannelEnum
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
 from protocol0.domain.shared.backend.Backend import Backend
@@ -29,9 +30,6 @@ from protocol0.domain.track_recorder.BaseRecorder import BaseRecorder, record_fr
 from protocol0.domain.track_recorder.RecordTypeEnum import RecordTypeEnum
 from protocol0.domain.track_recorder.config.RecordConfig import RecordConfig
 from protocol0.domain.track_recorder.config.RecordProcessors import RecordProcessors
-from protocol0.domain.track_recorder.cthulhu_track.RecorderCthulhuFactory import (
-    TrackRecorderCthulhuFactory,
-)
 from protocol0.domain.track_recorder.event.RecordCancelledEvent import (
     RecordCancelledEvent,
 )
@@ -39,6 +37,9 @@ from protocol0.domain.track_recorder.event.RecordEndedEvent import RecordEndedEv
 from protocol0.domain.track_recorder.event.RecordStartedEvent import RecordStartedEvent
 from protocol0.domain.track_recorder.external_synth.TrackRecorderExternalSynthFactory import (
     TrackRecorderExternalSynthFactory,
+)
+from protocol0.domain.track_recorder.midi_note_track.RecorderMidiNoteTrackFactory import (
+    TrackRecorderMidiNoteTrackFactory,
 )
 from protocol0.domain.track_recorder.recording_bar_length.RecordingBarLengthScroller import (
     RecordingBarLengthScroller,
@@ -54,8 +55,8 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 def _get_track_recorder_factory(track: AbstractTrack) -> AbstractTrackRecorderFactory:
     if isinstance(track, SimpleTrack):
-        if track.is_cthulhu_synth_track:
-            return TrackRecorderCthulhuFactory()
+        if track.has_midi_note_source_track:
+            return TrackRecorderMidiNoteTrackFactory()
         else:
             return TrackRecorderSimpleFactory()
     elif isinstance(track, ExternalSynthTrack):
@@ -65,7 +66,7 @@ def _get_track_recorder_factory(track: AbstractTrack) -> AbstractTrackRecorderFa
 
 
 class RecordService(object):
-    _DEBUG = False
+    _DEBUG = True
 
     def __init__(
         self,
@@ -136,9 +137,6 @@ class RecordService(object):
         # this will stop the previous playing scene on playback stop
         PlayingScene.set(config.recording_scene)
         DomainEventBus.once(ErrorRaisedEvent, self._on_error_raised_event)
-
-        if record_type.speed_up_record:
-            Song.set_tempo(999)
 
         seq = Sequence()
 
@@ -261,23 +259,44 @@ class RecordService(object):
         clip.quantize()
         self._scene_playback_service.fire_scene(Song.selected_scene())
 
-    def resample_selected_track(self) -> Optional[Sequence]:
+    def resample_selected_track(self, record_audio: bool = False) -> Optional[Sequence]:
         source_track = Song.selected_track()
         source_track.solo = True
-        record_type = RecordTypeEnum.AUDIO
 
         def resample() -> Optional[Sequence]:
             track = Song.selected_track()
             track.input_routing.track = source_track
+            track.input_routing.channel = InputRoutingChannelEnum.POST_FX
 
             return self.record_track(track, record_type)
 
+        def get_existing_resampling_track() -> Optional[SimpleTrack]:
+            try:
+                next_track = list(Song.simple_tracks())[source_track.index + 1]
+                if next_track.input_routing.track == source_track:
+                    return next_track
+            except IndexError:
+                pass
+
+            return None
+
+        record_type = RecordTypeEnum.AUDIO
+        track_creator = self._track_crud_component.create_audio_track
+
         seq = Sequence()
-        if isinstance(source_track, SimpleMidiTrack):
+
+        if isinstance(source_track, SimpleMidiTrack) and not record_audio:
             record_type = RecordTypeEnum.MIDI_RESAMPLE
-            seq.add(partial(self._track_crud_component.create_midi_track, source_track.index + 1))
+            track_creator = self._track_crud_component.create_midi_track
+
+        resampling_track = get_existing_resampling_track()
+        if resampling_track:
+            clip_slot = resampling_track.clip_slots[Song.selected_scene().index]
+            if clip_slot.clip:
+                seq.add(clip_slot.clip.delete)
+            seq.add(resampling_track.select)
         else:
-            seq.add(partial(self._track_crud_component.create_audio_track, source_track.index + 1))  # type: ignore[unreachable]
+            seq.add(partial(track_creator, source_track.index + 1))
 
         seq.add(resample)
 

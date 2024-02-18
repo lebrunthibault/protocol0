@@ -18,7 +18,6 @@ from protocol0.domain.lom.instrument.InstrumentInterface import InstrumentInterf
 from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitoringStateEnum
 from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
 from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
-from protocol0.domain.lom.track.routing.InputRoutingChannelEnum import InputRoutingChannelEnum
 from protocol0.domain.lom.track.routing.TrackInputRouting import TrackInputRouting
 from protocol0.domain.lom.track.routing.TrackOutputRouting import TrackOutputRouting
 from protocol0.domain.lom.track.simple_track.SimpleTrackArmState import SimpleTrackArmState
@@ -223,7 +222,7 @@ class SimpleTrack(AbstractTrack):
         if not self.solo:
             return
 
-        if self.is_cthulhu_synth_track:
+        if self.has_midi_note_source_track:
             self.input_routing.track.solo = True
             if Song.notes_track():
                 Song.notes_track().solo = True
@@ -260,6 +259,10 @@ class SimpleTrack(AbstractTrack):
     @property
     def has_audio_output(self) -> bool:
         return self._track.has_audio_output if self._track else False
+
+    @property
+    def has_midi_output(self) -> bool:
+        return self._track.has_midi_output if self._track else False
 
     @property
     def instrument(self) -> Optional[InstrumentInterface]:
@@ -312,13 +315,13 @@ class SimpleTrack(AbstractTrack):
         )
 
     @property
-    def is_cthulhu_synth_track(self) -> bool:
-        from protocol0.domain.lom.track.simple_track.midi.special.CthulhuTrack import CthulhuTrack
+    def has_midi_note_source_track(self) -> bool:
+        from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
 
         return (
             self.input_routing.track is not None
-            and isinstance(self.input_routing.track, CthulhuTrack)
-            and self.input_routing.channel == InputRoutingChannelEnum.CTHULHU
+            and isinstance(self.input_routing.track, SimpleMidiTrack)
+            and self.current_monitoring_state == CurrentMonitoringStateEnum.IN
         )
 
     @property

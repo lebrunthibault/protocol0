@@ -12,23 +12,24 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 def _should_skip_scene(track: SimpleTrack, scene: Scene) -> bool:
-    cthulhu_track = track.input_routing.track
+    midi_note_track = track.input_routing.track
 
-    cs = cthulhu_track.clip_slots[scene.index]
+    cs = midi_note_track.clip_slots[scene.index]
     if not cs.clip:
         return True
 
-    # checks if cthulhu clip is empty pattern
-    cthulhu = cthulhu_track.devices.get_one_from_enum(DeviceEnum.CTHULHU)
-    assert cthulhu, "Could not find Cthulhu track"
-    cthulhu_pattern = cthulhu.get_parameter_by_name(DeviceParamEnum.PATTERN)
-    assert cthulhu_pattern, "Could not find Cthulhu pattern param"
-    pattern_env = cs.clip.automation.get_envelope(cthulhu_pattern)
+    # checks if cthulhu and cthulhu clip is empty pattern
+    cthulhu = midi_note_track.devices.get_one_from_enum(DeviceEnum.CTHULHU)
+    if cthulhu:
+        cthulhu_pattern = cthulhu.get_parameter_by_name(DeviceParamEnum.PATTERN)
+        if cthulhu_pattern:
+            pattern_env = cs.clip.automation.get_envelope(cthulhu_pattern)
+            return pattern_env.equals(cthulhu_pattern.max)
 
-    return pattern_env.equals(cthulhu_pattern.max)
+    return False
 
 
-class RecordCthulhu(RecordProcessorInterface):
+class RecordMidiNoteTrack(RecordProcessorInterface):
     def process(self, track: SimpleTrack, config: RecordConfig) -> Sequence:
         """Workaround for un precise timing : slow down the tempo on the end"""
         seq = Sequence()

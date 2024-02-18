@@ -30,10 +30,6 @@ class RecordTypeEnum(AbstractEnum):
             return CountInShort()
 
     @property
-    def speed_up_record(self) -> bool:
-        return self == RecordTypeEnum.MIDI_OVERWRITE
-
-    @property
     def has_solo_count_in(self) -> bool:
         return self != RecordTypeEnum.MIDI_OVERWRITE
 
@@ -43,4 +39,12 @@ class RecordTypeEnum(AbstractEnum):
 
     @property
     def delete_clips(self) -> bool:
-        return self not in (RecordTypeEnum.MIDI_OVERWRITE, RecordTypeEnum.MIDI_RESAMPLE)
+        return self not in (
+            RecordTypeEnum.MIDI_OVERWRITE,
+            RecordTypeEnum.MIDI_RESAMPLE,
+            RecordTypeEnum.AUDIO,
+        )
+
+    @property
+    def should_quantize(self) -> bool:
+        return self in (RecordTypeEnum.MIDI, RecordTypeEnum.MIDI_UNLIMITED)

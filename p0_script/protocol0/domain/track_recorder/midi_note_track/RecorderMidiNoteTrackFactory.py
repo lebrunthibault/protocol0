@@ -5,16 +5,17 @@ from protocol0.domain.track_recorder.AbstractRecorderFactory import (
 from protocol0.domain.track_recorder.RecordTypeEnum import RecordTypeEnum
 from protocol0.domain.track_recorder.config.RecordConfig import RecordConfig
 from protocol0.domain.track_recorder.config.RecordProcessors import RecordProcessors
-from protocol0.domain.track_recorder.cthulhu_track.OnRecordCancelledCthulhu import (
-    OnRecordCancelledCthulhu,
+from protocol0.domain.track_recorder.midi_note_track.PostRecordMidiNoteTrack import (
+    PostRecordMidiNoteTrack,
 )
-from protocol0.domain.track_recorder.cthulhu_track.PostRecordCthulhu import PostRecordCthulhu
-from protocol0.domain.track_recorder.cthulhu_track.PreRecordCthulhu import PreRecordCthulhu
-from protocol0.domain.track_recorder.cthulhu_track.RecordCthulhu import RecordCthulhu
+from protocol0.domain.track_recorder.midi_note_track.PreRecordMidiNoteTrack import (
+    PreRecordMidiNoteTrack,
+)
+from protocol0.domain.track_recorder.midi_note_track.RecordMidiNoteTrack import RecordMidiNoteTrack
 from protocol0.shared.Song import Song
 
 
-class TrackRecorderCthulhuFactory(AbstractTrackRecorderFactory):
+class TrackRecorderMidiNoteTrackFactory(AbstractTrackRecorderFactory):
     def get_record_config(
         self, track: SimpleTrack, record_type: RecordTypeEnum, recording_bar_length: int
     ) -> RecordConfig:
@@ -27,8 +28,7 @@ class TrackRecorderCthulhuFactory(AbstractTrackRecorderFactory):
 
     def get_processors(self, record_type: RecordTypeEnum) -> RecordProcessors:
         return RecordProcessors(
-            pre_record=PreRecordCthulhu(),
-            post_record=PostRecordCthulhu(),
-            record=RecordCthulhu(),
-            on_record_cancelled=OnRecordCancelledCthulhu(),
+            pre_record=PreRecordMidiNoteTrack(),
+            post_record=PostRecordMidiNoteTrack(),
+            record=RecordMidiNoteTrack(),
         )
