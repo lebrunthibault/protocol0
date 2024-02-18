@@ -121,7 +121,6 @@ class RecordService(object):
 
         if self._DEBUG:
             Logger.info("recorder_config: %s" % config)
-            Logger.info("processors: %s" % self._processors)
 
         Backend.client().show_info(f"Rec: {config.record_type.name} ({config.bar_length} bars)")
 

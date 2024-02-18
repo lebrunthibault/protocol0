@@ -9,6 +9,7 @@ from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.clip.ClipConfig import ClipConfig
 from protocol0.domain.lom.clip.ClipInfo import ClipInfo
 from protocol0.domain.lom.clip.ClipTail import ClipTail
+from protocol0.domain.lom.clip.MidiClip import MidiClip
 from protocol0.domain.lom.clip_slot.ClipSlot import ClipSlot
 from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.device.SimpleTrackDevices import SimpleTrackDevices
@@ -458,6 +459,8 @@ class SimpleTrack(AbstractTrack):
         clip_hashes = {}
         alphabet = iter(ascii_lowercase)
         for clip in self.clips:
+            if isinstance(clip, MidiClip) and clip.is_empty:
+                clip.delete()
             clip_hash = clip.get_hash(self.devices.parameters)
             if clip_hash in clip_hashes:
                 clip.muted = True

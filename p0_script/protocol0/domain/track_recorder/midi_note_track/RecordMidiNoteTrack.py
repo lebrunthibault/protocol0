@@ -13,9 +13,10 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 def _should_skip_scene(track: SimpleTrack, scene: Scene) -> bool:
     midi_note_track = track.input_routing.track
+    cthulhu = midi_note_track.devices.get_one_from_enum(DeviceEnum.CTHULHU)
 
     cs = midi_note_track.clip_slots[scene.index]
-    if not cs.clip:
+    if cthulhu and not cs.clip:
         return True
 
     # checks if cthulhu and cthulhu clip is empty pattern
@@ -34,15 +35,26 @@ class RecordMidiNoteTrack(RecordProcessorInterface):
         """Workaround for un precise timing : slow down the tempo on the end"""
         seq = Sequence()
 
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev(
+            f"_should_skip_scene(track, config.recording_scene): {_should_skip_scene(track, config.recording_scene)}"
+        )
         if not _should_skip_scene(track, config.recording_scene):
             seq.add(partial(config.clip_slots[0].prepare_for_record, clear=False))
             seq.add(config.recording_scene.fire)
+            seq.log("scene fired")
             seq.add(config.clip_slots[0].fire)
             seq.wait_for_event(SceneLastBarPassedEvent)
+            seq.log("last bar passed")
             seq.wait_beats(2)
 
         if config.recording_scene == config.recording_scene.next_scene:
-            return seq.wait_for_event(BarChangedEvent, continue_on_song_stop=True).done()
+            from protocol0.shared.logging.Logger import Logger
+
+            Logger.dev("last scene")
+            seq.wait_for_event(BarChangedEvent, continue_on_song_stop=True)
+            return seq.done()
 
         config.scene_index = config.recording_scene.next_scene.index
         seq.add(partial(self.process, track, config))

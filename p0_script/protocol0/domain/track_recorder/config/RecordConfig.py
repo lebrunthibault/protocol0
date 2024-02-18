@@ -40,10 +40,4 @@ class RecordConfig(object):
         return [track.clip_slots[self.scene_index] for track in self.tracks]
 
     def __repr__(self) -> str:
-        # noinspection SpellCheckingInspection
-        return "RecordConfig(\nrecord_name=%s,\ntracks=%s,\nscene_index=%s,\nbar_length=%s\n" % (
-            self.record_type.name,
-            self.tracks,
-            self.scene_index,
-            self.bar_length,
-        )
+        return f"RecordConfig(\nrecord_type={self.record_type},\nscene={self.recording_scene},\nbar_length={self.bar_length}\n"
