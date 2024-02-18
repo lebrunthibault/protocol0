@@ -40,6 +40,11 @@ class MidiClip(Clip):
     def starts_at_1(self) -> bool:
         return any(note.start == 0 for note in self.get_notes())
 
+    @property
+    def is_empty(self) -> bool:
+        notes = self.get_notes()
+        return len(list(filter(lambda n: not n.muted, notes))) == 0
+
     def get_notes(self) -> List[Note]:
         if not self._clip:
             return []

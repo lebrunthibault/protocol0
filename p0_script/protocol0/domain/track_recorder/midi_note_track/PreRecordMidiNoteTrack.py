@@ -9,7 +9,7 @@ from protocol0.shared.Song import Song
 class PreRecordMidiNoteTrack(RecordProcessorInterface):
     def process(self, track: SimpleTrack, config: RecordConfig) -> None:
         if track.input_routing.track.devices.get_one_from_enum(DeviceEnum.CTHULHU):
-            Song.set_tempo(999)
+            Song.set_tempo(500)
 
         for clip in track.clips:  # type: MidiClip
             if clip.index >= config.scene_index:
