@@ -10,4 +10,6 @@ class PostRecordSimple(RecordProcessorInterface):
     def process(self, track: SimpleTrack, config: RecordConfig) -> None:
         # deferring because the clip length is not accurate right now
         clip = track.clip_slots[config.scene_index].clip
-        Scheduler.wait_ms(50, partial(clip.post_record, config.bar_length))
+        Scheduler.wait_ms(
+            50, partial(clip.post_record, config.bar_length, config.record_type.should_quantize)
+        )

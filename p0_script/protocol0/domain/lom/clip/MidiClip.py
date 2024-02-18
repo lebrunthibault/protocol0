@@ -122,16 +122,17 @@ class MidiClip(Clip):
         base_notes = [Note(pitch=pitch, velocity=127, start=0, duration=min(1, int(self.length)))]
         return self.set_notes(base_notes)
 
-    def post_record(self, bar_length: int) -> None:
-        super(MidiClip, self).post_record(bar_length)
+    def post_record(self, bar_length: int, quantize: bool) -> None:
+        super(MidiClip, self).post_record(bar_length, quantize)
 
         if bar_length == 0:  # unlimited recording
             clip_end = int(self.loop.end) - (int(self.loop.end) % Song.signature_numerator())
             self.loop.end = clip_end
 
-        self._clip.view.grid_quantization = Live.Clip.GridQuantization.g_eighth
-        self.scale_velocities(go_next=False, scaling_factor=2)
-        self.quantize()
+        if quantize:
+            self._clip.view.grid_quantization = Live.Clip.GridQuantization.g_sixteenth
+            self.scale_velocities(go_next=False, scaling_factor=2)
+            self.quantize()
 
     def scale_velocities(self, go_next: bool, scaling_factor: int = 4) -> None:
         notes = self.get_notes()

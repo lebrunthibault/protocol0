@@ -49,16 +49,13 @@ class AudioExportService(object):
         # Song.view().follow_song = True
         # self._playback_component.start_playing()
 
+        for track in Song.simple_tracks():
+            track.clear_arrangement()
         seq = Sequence()
-        seq.wait_ms(300)
-        seq.add(Backend.client().select_and_delete)
-        seq.wait_ms(200)
         seq.add(self._bounce_session_to_arrangement)
         seq.add(self._create_cue_points)
         seq.wait_ms(50)
         seq.add(self._playback_component.reset)
-        # seq.add(partial(setattr, Song.view(), "follow_song", False))
-        # seq.wait_ms(200)
         seq.add(Backend.client().export_audio)
         seq.done()
 

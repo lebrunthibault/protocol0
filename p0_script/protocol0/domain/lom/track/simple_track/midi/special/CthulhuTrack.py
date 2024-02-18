@@ -5,44 +5,15 @@ import Live
 from _Framework.SubjectSlot import subject_slot
 
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
-from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitoringStateEnum
-from protocol0.domain.lom.track.routing.InputRoutingChannelEnum import InputRoutingChannelEnum
-from protocol0.domain.lom.track.routing.InputRoutingTypeEnum import InputRoutingTypeEnum
-from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_tracks
 from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
-from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
+from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import (
+    SimpleMidiTrack,
+    toggle_note_track_routing,
+)
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.timing import defer
 from protocol0.shared.Song import Song
-
-
-def _get_cthulhu_track(track: SimpleTrack) -> "CthulhuTrack":
-    if isinstance(track.input_routing.track, CthulhuTrack):
-        return track.input_routing.track
-    else:
-        try:
-            cthulhu_track = list(Song.simple_tracks())[track.index - 1]
-        except IndexError:
-            cthulhu_track = None
-
-        assert isinstance(cthulhu_track, CthulhuTrack), "Could not find Cthulhu track"
-
-    return cthulhu_track
-
-
-def toggle_cthulhu_routing(track: SimpleTrack, force_cthulhu_routing: bool = False) -> None:
-    cthulhu_track = _get_cthulhu_track(track)
-
-    if track.input_routing.type == InputRoutingTypeEnum.ALL_INS or force_cthulhu_routing:
-        # listen to Cthulhu
-        track.current_monitoring_state = CurrentMonitoringStateEnum.IN
-        track.input_routing.track = cthulhu_track
-        track.input_routing.channel = InputRoutingChannelEnum.CTHULHU
-    else:
-        # listen to synth track
-        track.current_monitoring_state = CurrentMonitoringStateEnum.AUTO
-        track.input_routing.type = InputRoutingTypeEnum.ALL_INS
 
 
 class CthulhuTrack(SimpleMidiTrack):
@@ -80,7 +51,7 @@ class CthulhuTrack(SimpleMidiTrack):
 
         self.synth_track.on_added()
 
-        Scheduler.defer(partial(toggle_cthulhu_routing, self.synth_track))
+        Scheduler.defer(partial(toggle_note_track_routing, self.synth_track))
 
     @property
     def synth_track(self) -> Optional[SimpleAudioTrack]:

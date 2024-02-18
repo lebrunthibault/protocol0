@@ -4,7 +4,7 @@ from typing import cast
 from protocol0.domain.lom.song.SongStartedEvent import SongStartedEvent
 from protocol0.domain.lom.song.SongStoppedEvent import SongStoppedEvent
 from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
-from protocol0.domain.shared.scheduler.Last8thPassedEvent import Last8thPassedEvent
+from protocol0.domain.shared.scheduler.BarChangedEvent import BarChangedEvent
 from protocol0.domain.track_recorder.config.RecordConfig import RecordConfig
 from protocol0.shared.Song import Song
 from protocol0.shared.sequence.Sequence import Sequence
@@ -23,7 +23,7 @@ def record_from_config(config: RecordConfig) -> Sequence:
 
         # this works because the method is called before the beginning of the bar
         seq.wait_bars(bar_length)
-        seq.wait_for_event(Last8thPassedEvent)
+        seq.wait_for_event(BarChangedEvent)
     else:
         seq.wait_for_event(SongStoppedEvent)
         seq.add(lambda: Song.selected_scene().scene_name.update(""))

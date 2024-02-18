@@ -1,8 +1,9 @@
 from time import sleep
 
 from fastapi import APIRouter
-from p0_backend.lib.mouse.mouse import click, click_vertical_zone, move_to
+
 from p0_backend.lib.keys import send_keys
+from p0_backend.lib.mouse.mouse import click, click_vertical_zone, move_to
 
 router = APIRouter()
 
@@ -32,12 +33,6 @@ def select_and_copy():
 def select_and_paste():
     send_keys("^a")
     send_keys("^v")
-
-
-@router.get("/select_and_delete")
-def select_and_delete():
-    send_keys("^a")
-    send_keys("{DELETE}")
 
 
 @router.get("/search")

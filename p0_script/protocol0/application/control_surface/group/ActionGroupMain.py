@@ -4,9 +4,7 @@ from protocol0.application.ScriptResetActivatedEvent import ScriptResetActivated
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
 from protocol0.domain.lom.set.MixingService import MixingService
 from protocol0.domain.lom.song.components.TempoComponent import TempoComponent
-from protocol0.domain.lom.track.simple_track.midi.special.CthulhuTrack import (
-    toggle_cthulhu_routing,
-)
+from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import toggle_note_track_routing
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 
 # noinspection SpellCheckingInspection
@@ -63,12 +61,15 @@ class ActionGroupMain(ActionGroupInterface):
             identifier=5,
             name="Resample",
             on_press=self._container.get(RecordService).resample_selected_track,
+            on_long_press=partial(
+                self._container.get(RecordService).resample_selected_track, record_audio=True
+            ),
         )
 
         self.add_encoder(identifier=13, name="test", on_press=self.action_test)
 
-        def _record_from_cthulhu() -> None:
-            toggle_cthulhu_routing(Song.selected_track(), force_cthulhu_routing=True)
+        def _record_from_midi_note_track() -> None:
+            toggle_note_track_routing(Song.selected_track(), force_routing=True)
             self._container.get(RecordService).record_track(
                 Song.selected_track(), RecordTypeEnum.MIDI_OVERWRITE
             )
@@ -76,9 +77,9 @@ class ActionGroupMain(ActionGroupInterface):
         # CThULhu encoder
         self.add_encoder(
             identifier=15,
-            name="Cthulhu",
-            on_press=lambda: partial(toggle_cthulhu_routing, Song.selected_track()),
-            on_long_press=_record_from_cthulhu,
+            name="Midi",
+            on_press=lambda: partial(toggle_note_track_routing, Song.selected_track()),
+            on_long_press=_record_from_midi_note_track,
         )
 
         # VOLume encoder
