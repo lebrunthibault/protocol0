@@ -5,6 +5,7 @@ from protocol0.domain.lom.scene.SceneClips import SceneClips
 from protocol0.domain.lom.track.simple_track.audio.special.SimpleAutomationTrack import (
     SimpleAutomationTrack,
 )
+from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import is_midi_note_track
 from protocol0.domain.lom.track.simple_track.midi.special.CthulhuTrack import CthulhuTrack
 from protocol0.domain.shared.utils.utils import previous_power_of_2
 from protocol0.shared.Song import Song
@@ -67,8 +68,7 @@ class SceneLength(object):
             if isinstance(scene_cs.track, (SimpleAutomationTrack, CthulhuTrack)):
                 continue
 
-            track_prefix = scene_cs.track.name.strip().lower().split(" ")[0]  # type: ignore[unreachable]
-            if scene_cs.track.has_midi_output and track_prefix not in ("notes", "rhythm"):
+            if is_midi_note_track(scene_cs.track):  # type: ignore[unreachable]
                 continue
 
             if clip.is_recording and not (float(clip.length).is_integer()):

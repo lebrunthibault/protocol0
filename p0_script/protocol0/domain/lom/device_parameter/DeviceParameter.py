@@ -58,6 +58,10 @@ class DeviceParameter(SlotManager, Observable):
             return ""
 
     @property
+    def lower_name(self) -> str:
+        return self.name.strip().lower()
+
+    @property
     def original_name(self) -> str:
         if self._device_parameter:
             return self._device_parameter.original_name

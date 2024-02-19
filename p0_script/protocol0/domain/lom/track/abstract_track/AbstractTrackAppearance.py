@@ -43,6 +43,10 @@ class AbstractTrackAppearance(SlotManager, Observable):
             DomainEventBus.emit(AbstractTrackNameUpdatedEvent())
 
     @property
+    def lower_name(self) -> str:
+        return self.name.strip().lower()
+
+    @property
     def color(self) -> int:
         if self._live_track:
             return self._live_track.color_index

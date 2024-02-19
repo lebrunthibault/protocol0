@@ -88,6 +88,10 @@ class Device(SlotManager):
         return self._device.name if self._device else ""
 
     @property
+    def lower_name(self) -> str:
+        return self.name.strip().lower()
+
+    @property
     def class_name(self) -> str:
         """type of the device for live devices else PluginDevice"""
         return self._device.class_name if self._device else ""

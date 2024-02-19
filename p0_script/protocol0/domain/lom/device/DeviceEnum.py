@@ -59,6 +59,7 @@ class DeviceEnum(AbstractEnum):
     L2_LIMITER = "L2 Stereo"
     LIMITER = "Limiter"
     M_ANALYZER = "MAnalyzer"
+    MUTED = "Muted"
     NOTE_LENGTH = "Note Length"
     OCTAVA = "Octava.adg"
     OZONE = "Ozone 9"

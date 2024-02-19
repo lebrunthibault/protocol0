@@ -1,4 +1,4 @@
-from typing import Optional, Set, List
+from typing import Optional, Set
 
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
@@ -48,10 +48,8 @@ class MixBusesTrack(NormalGroupTrack):
                 continue
 
             if track not in Song.selected_scene().abstract_tracks:
-                automated_params: List[DeviceParameter] = []
+                from protocol0.shared.logging.Logger import Logger
 
-                for device in track.devices:
-                    automated_params += device.automated_params
-
-                for param in automated_params:
+                Logger.dev((track, track.devices.automated_mix_parameters))
+                for param in track.devices.automated_mix_parameters:
                     param.reset()

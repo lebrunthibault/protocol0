@@ -195,7 +195,7 @@ class RecordService(object):
         DomainEventBus.emit(RecordCancelledEvent())
         Scheduler.restart()
 
-        if self._recorder is not None:
+        if self._recorder:
             self._recorder.cancel_record()
             if self._processors.on_record_cancelled:
                 self._processors.on_record_cancelled.process(
@@ -208,7 +208,8 @@ class RecordService(object):
 
     def _on_song_stopped_event(self, _: SongStoppedEvent) -> None:
         """happens when manually stopping song while recording."""
-        self._cancel_record()
+        if self._recorder:
+            self._cancel_record()
 
     def capture_midi(self) -> None:
         scene_index = Song.selected_scene().index
