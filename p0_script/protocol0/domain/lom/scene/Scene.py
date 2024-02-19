@@ -106,12 +106,13 @@ class Scene(SlotManager):
         return bool(self._scene.is_triggered) if self._scene else False
 
     name = cast(str, ForwardTo("appearance", "name"))
+    lower_name = cast(str, ForwardTo("appearance", "lower_name"))
     length = cast(float, ForwardTo("_scene_length", "length"))
     bar_length = cast(int, ForwardTo("_scene_length", "bar_length"))
 
     @property
     def skipped(self) -> bool:
-        return self.name.strip().lower().startswith("skip")
+        return self.lower_name.startswith("skip")
 
     def on_bar_end(self) -> None:
         if Song.is_track_recording():
@@ -160,6 +161,8 @@ class Scene(SlotManager):
 
         if not Song.is_playing() and Song.mix_buses_track():
             Song.mix_buses_track().reset_bus_tracks_automation()
+            for midi_note_track in Song.midi_note_tracks():
+                midi_note_track.reset_midi_automation()
 
         if self._scene:
             self._scene.fire()

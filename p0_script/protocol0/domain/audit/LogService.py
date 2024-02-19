@@ -143,6 +143,8 @@ class LogService(object):
         Logger.info()
         Logger.info("abstract_tracks : %s" % list(Song.abstract_tracks()))
         Logger.info()
+        Logger.info("midi_note_tracks : %s" % list(Song.midi_note_tracks()))
+        Logger.info()
         Logger.info("********* SONG SCENES *************")
         Logger.info("scenes : %s" % list(Song.scenes()))
         Logger.info()

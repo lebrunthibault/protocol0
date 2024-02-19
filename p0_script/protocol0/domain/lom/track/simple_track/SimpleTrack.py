@@ -20,7 +20,6 @@ from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitor
 from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
 from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
 from protocol0.domain.lom.track.routing.TrackInputRouting import TrackInputRouting
-from protocol0.domain.lom.track.routing.TrackOutputRouting import TrackOutputRouting
 from protocol0.domain.lom.track.simple_track.SimpleTrackArmState import SimpleTrackArmState
 from protocol0.domain.lom.track.simple_track.SimpleTrackArmedEvent import SimpleTrackArmedEvent
 from protocol0.domain.lom.track.simple_track.SimpleTrackClipSlots import SimpleTrackClipSlots
@@ -67,7 +66,7 @@ def route_track_to_bus(track: "SimpleTrack") -> None:
     def get_bus_suffix() -> Optional[str]:
         for suffix, track_suffixes in bus_suffix_dict.items():
             for t_suffix in track_suffixes:
-                if track.name.strip().lower().startswith(t_suffix.lower()):
+                if track.lower_name.startswith(t_suffix.lower()):
                     return suffix
 
         return None
@@ -134,7 +133,6 @@ class SimpleTrack(AbstractTrack):
         self.monitoring_state = SimpleTrackMonitoringState(self)
 
         self.input_routing = TrackInputRouting(self._track)
-        self.output_routing = TrackOutputRouting(self._track)
 
         self.arm_state = SimpleTrackArmState(live_track)
         self.arm_state.register_observer(self)
@@ -152,7 +150,7 @@ class SimpleTrack(AbstractTrack):
     def on_added(self) -> Optional[Sequence]:
         super(SimpleTrack, self).on_added()
 
-        if self.name.strip().lower() == "audio":
+        if self.lower_name == "audio":
             return None
 
         from protocol0.domain.lom.track.group_track.MixBusesTrack import MixBusesTrack
@@ -256,10 +254,6 @@ class SimpleTrack(AbstractTrack):
     @property
     def output_meter_left(self) -> float:
         return self._track.output_meter_left if self._track else 0
-
-    @property
-    def has_audio_output(self) -> bool:
-        return self._track.has_audio_output if self._track else False
 
     @property
     def has_midi_output(self) -> bool:

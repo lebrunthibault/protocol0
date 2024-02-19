@@ -22,7 +22,17 @@ class NormalGroupTrack(AbstractGroupTrack):
 
     def on_added(self) -> Optional[Sequence]:
         super(NormalGroupTrack, self).on_added()
+
         self.name = self.computed_name
+
+        audio_tracks = [t for t in self.sub_tracks if t.has_audio_output]
+        sub_tracks_routing = set([t.output_routing.track for t in audio_tracks])
+
+        if len(sub_tracks_routing) == 1:
+            for sub_track in audio_tracks:
+                sub_track.output_routing.track = self
+
+            self.output_routing.track = list(sub_tracks_routing)[0]  # type: ignore[assignment]
 
         return None
 

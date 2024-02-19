@@ -16,6 +16,7 @@ from protocol0.domain.lom.track.abstract_track.AbstractTrackSelectedEvent import
     AbstractTrackSelectedEvent,
 )
 from protocol0.domain.lom.track.group_track.TrackCategoryEnum import TrackCategoryEnum
+from protocol0.domain.lom.track.routing.TrackOutputRouting import TrackOutputRouting
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.utils.forward_to import ForwardTo
 from protocol0.shared.sequence.Sequence import Sequence
@@ -39,6 +40,7 @@ class AbstractTrack(SlotManager):
         # MISC
         self.arm_state: AbstractTrackArmState = AbstractTrackArmState(self._track)
         self.appearance = AbstractTrackAppearance(self._track)
+        self.output_routing = TrackOutputRouting(self._track)
 
     def __repr__(self) -> str:
         return "%s : %s (%s)" % (self.__class__.__name__, self._track.name, self.index + 1)
@@ -108,6 +110,7 @@ class AbstractTrack(SlotManager):
         return None
 
     name = cast(str, ForwardTo("appearance", "name"))
+    lower_name = cast(str, ForwardTo("appearance", "lower_name"))
 
     def get_full_name(self, scene_index: int) -> str:
         full_name = " - ".join([t.name for t in self.group_tracks + [self]])
@@ -155,6 +158,10 @@ class AbstractTrack(SlotManager):
     def muted(self, mute: bool) -> None:
         if self._track:
             self._track.mute = mute
+
+    @property
+    def has_audio_output(self) -> bool:
+        return self._track.has_audio_output if self._track else False
 
     def select(self) -> None:
         DomainEventBus.emit(AbstractTrackSelectedEvent(self._track))

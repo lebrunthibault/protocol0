@@ -90,6 +90,4 @@ class ActionGroupMain(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        for cs in Song.selected_track().clip_slots:
-            if not cs.clip:
-                Song.selected_track().clip_slots[0].duplicate_clip_to(cs)
+        Logger.dev(Song.selected_track().devices.automated_mix_parameters)

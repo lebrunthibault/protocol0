@@ -27,6 +27,7 @@ if TYPE_CHECKING:
         ExternalSynthTrack,
     )
     from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
+    from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
     from protocol0.domain.lom.track.group_track.MixBusesTrack import MixBusesTrack
     from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
     from protocol0.domain.lom.scene.Scene import Scene
@@ -39,7 +40,7 @@ if TYPE_CHECKING:
 
 def _get_track_by_name(track_name: str) -> Optional["SimpleTrack"]:
     return next(
-        filter(lambda t: t.name.lower().strip() == track_name, list(Song.simple_tracks())), None  # type: ignore[arg-type]
+        filter(lambda t: t.lower_name == track_name, list(Song.simple_tracks())), None  # type: ignore[arg-type]
     )
 
 
@@ -238,6 +239,10 @@ class Song(object):
     @classmethod
     def notes_track(cls) -> Optional["SimpleTrack"]:
         return _get_track_by_name("notes")
+
+    @classmethod
+    def midi_note_tracks(cls) -> List["SimpleMidiTrack"]:
+        return cls._INSTANCE._track_mapper_service._midi_note_tracks
 
     @classmethod
     def return_tracks(cls) -> List[Live.Track.Track]:

@@ -26,7 +26,8 @@ class SceneComponent(object):
 
     def select_scene(self, scene: Scene) -> None:
         try:
-            self._song_view.selected_scene = scene._scene
+            if scene._scene:
+                self._song_view.selected_scene = scene._scene
         except RuntimeError:
             pass
 

@@ -22,5 +22,9 @@ class SceneAppearance(object):
             self._scene_name.set_name(name)
             self._live_scene.name = str(name).strip()
 
+    @property
+    def lower_name(self) -> str:
+        return self.name.strip().lower()
+
     def refresh(self) -> None:
         Scheduler.defer(self._scene_name.update)

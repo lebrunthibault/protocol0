@@ -24,7 +24,7 @@ class SetFixerService(object):
 
         def is_routed_to_master(t: SimpleTrack) -> bool:
             return (
-                t.name.lower().strip() not in ("*", "pre")
+                t.lower_name not in ("*", "pre")
                 and t.has_audio_output
                 and not isinstance(t, CthulhuTrack)
                 and t.output_routing.track == Song.master_track()  # type: ignore[unreachable]
