@@ -24,7 +24,7 @@ class SetFixerService(object):
 
         def is_routed_to_master(t: SimpleTrack) -> bool:
             return (
-                t.lower_name not in ("*", "pre")
+                t.lower_name not in ("*", "pre", "vox bus")
                 and t.has_audio_output
                 and not isinstance(t, CthulhuTrack)
                 and t.output_routing.track == Song.master_track()  # type: ignore[unreachable]
@@ -36,23 +36,8 @@ class SetFixerService(object):
             Backend.client().show_warning(f"Tracks routed to master: {routed_to_master}")
             return
 
-        if len(invalid_objects) == 0:
-            self._refresh_objects_appearance()
-        else:
+        if len(invalid_objects):
             Backend.client().show_warning("Invalid set: fixing")
             for invalid_object in invalid_objects:
                 self._validator_service.fix_object(invalid_object, log=False)
             Logger.info("set fixed")
-
-    def _refresh_objects_appearance(self) -> None:
-        clip_slots = [cs for track in Song.simple_tracks() for cs in track.clip_slots]
-        clips = [clip for track in Song.simple_tracks() for clip in track.clips]
-        # noinspection PyTypeChecker
-        objects_to_refresh_appearance = clip_slots + clips + Song.scenes()
-
-        for obj in objects_to_refresh_appearance:
-            obj.appearance.refresh()
-
-        for track in Song.external_synth_tracks():
-            track.midi_track.name = "m"
-            track.audio_track.name = "a"
