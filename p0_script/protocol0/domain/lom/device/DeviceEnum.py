@@ -59,6 +59,7 @@ class DeviceEnum(AbstractEnum):
     L2_LIMITER = "L2 Stereo"
     LIMITER = "Limiter"
     M_ANALYZER = "MAnalyzer"
+    MONO_SWITCH = "Mono"
     MUTED = "Muted"
     NOTE_LENGTH = "Note Length"
     OCTAVA = "Octava.adg"
@@ -81,6 +82,7 @@ class DeviceEnum(AbstractEnum):
     SPAN = "SPAN"
     SPLICE = "Splice Bridge"
     SPIFF = "spiff"
+    SPECTRE = "Spectre"
     SSL_COMP = "SSLComp Stereo"
     STANDARD_CLIP = "StandardCLIP.vstpreset"
     SUPER_TAP_2 = "SuperTap 2-Taps Stereo"
@@ -216,7 +218,7 @@ class DeviceEnum(AbstractEnum):
                 ),
                 DeviceEnumGroup("EQ", [cls.EQ_EIGHT, cls.PRO_Q_3, cls.CHANNEL_EQ]),
                 cls.UTILITY,
-                DeviceEnumGroup("Meter", [cls.DP_METER_5, cls.PSY_SCOPE, cls.M_ANALYZER, cls.SPAN]),
+                DeviceEnumGroup("Meter", [cls.PSY_SCOPE, cls.M_ANALYZER, cls.YOULEAN]),
             ],
             [
                 DeviceEnumGroup("Comp", [cls.H_COMP, cls.COMPRESSOR, cls.SSL_COMP, cls.C4]),
@@ -224,19 +226,16 @@ class DeviceEnum(AbstractEnum):
                     "Sat",
                     [
                         cls.BLACK_BOX,
-                        cls.SAUSAGE_FATTENER,
                         cls.SATURN_2,
-                        cls.SATURATOR,
                         cls.DECAPITATOR,
+                        cls.SPECTRE,
                     ],
                 ),
                 DeviceEnumGroup("Clip", [cls.STANDARD_CLIP]),  # for renaming
             ],
             [
                 DeviceEnumGroup("Duck", [cls.DUCK, cls.LFO_TOOL]),
-                DeviceEnumGroup(
-                    "Delay", [cls.INSERT_DELAY, cls.SUPER_TAP_6, cls.SUPER_TAP_2, cls.DELAY]
-                ),
+                DeviceEnumGroup("Delay", [cls.INSERT_DELAY, cls.DELAY]),
                 DeviceEnumGroup("Reverb", [cls.INSERT_REVERB, cls.VALHALLA_VINTAGE_VERB]),
             ],
             [

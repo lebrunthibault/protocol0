@@ -20,11 +20,12 @@ class PluginDevice(Device):
 
     @property
     def selected_preset_index(self) -> int:
-        return self._device.selected_preset_index
+        return self._device.selected_preset_index if self._device else 0
 
     @selected_preset_index.setter
     def selected_preset_index(self, selected_preset_index: int) -> None:
-        self._device.selected_preset_index = selected_preset_index
+        if self._device:
+            self._device.selected_preset_index = selected_preset_index
 
     @property
     def selected_preset(self) -> str:

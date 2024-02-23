@@ -94,3 +94,5 @@ _.test_audio_latency  # unused method (protocol0\domain\audit\AudioLatencyAnalyz
 scroll_insert_device_volumes  # unused function (protocol0\domain\lom\device\ReverbDelayService.py:11)
 _.toggle_all  # unused method (protocol0\domain\lom\device\ClipperService.py:53)
 _.scroll_all  # unused method (protocol0\domain\lom\device\ClipperService.py:57)
+SPAN  # unused variable (protocol0\domain\lom\device\DeviceEnum.py:82)
+MONO_SWITCH  # unused variable (protocol0\domain\lom\device\DeviceEnum.py:62)

@@ -17,6 +17,7 @@ const titleMapping: { [key: string]: string; } = {
     INSERT_REVERB: 'Insert',
     INSERT_DRY_WET: 'Dry / Wet',
     PRO_Q_3: 'Pro-Q 3',
+    PSY_SCOPE: 'Oscilloscope',
     SERUM_RACK: 'Serum',
     // SERUM_BASS: 'Bass',
     // SERUM_KEYS: 'Keys',
