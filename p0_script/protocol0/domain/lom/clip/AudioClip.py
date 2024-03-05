@@ -22,8 +22,8 @@ class AudioClip(Clip):
         # associate the clip with a midi content
         self.previous_file_path: Optional[str] = None
 
-        if self.name == Config.DUMMY_CLIP_NAME:
-            Scheduler.defer(self.config_dummy_clip)
+        # if self.name == Config.DUMMY_CLIP_NAME:
+        #     Scheduler.defer(self.config_dummy_clip)
 
     def get_hash(self, device_parameters: List[DeviceParameter]) -> int:
         return hash((self.file_path, self.automation.get_hash(device_parameters)))
@@ -66,6 +66,9 @@ class AudioClip(Clip):
         return seq.done()
 
     def config_dummy_clip(self) -> None:
+        if not self._clip:
+            return
+
         self._clip.warping = True
 
         self.looping = True

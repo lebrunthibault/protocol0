@@ -25,7 +25,7 @@ def _should_skip_scene(track: SimpleTrack, scene: Scene) -> bool:
         cthulhu_pattern = cthulhu.get_parameter_by_name(DeviceParamEnum.PATTERN)
         if cthulhu_pattern:
             pattern_env = cs.clip.automation.get_envelope(cthulhu_pattern)
-            return pattern_env.equals(cthulhu_pattern.max)
+            return pattern_env is not None and pattern_env.equals(cthulhu_pattern.max)
 
     return False
 

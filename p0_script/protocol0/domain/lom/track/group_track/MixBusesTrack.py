@@ -3,7 +3,7 @@ from typing import Optional, Set
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
 from protocol0.domain.lom.track.group_track.NormalGroupTrack import NormalGroupTrack
-from protocol0.domain.lom.track.simple_track.SimpleTrack import route_track_to_bus, SimpleTrack
+from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.audio.special.SimpleAutomationTrack import (
     SimpleAutomationTrack,
 )
@@ -34,9 +34,9 @@ class MixBusesTrack(NormalGroupTrack):
     def on_added(self) -> Optional[Sequence]:
         super(MixBusesTrack, self).on_added()
 
-        for track in Song.simple_tracks():
-            if track != self.base_track and track not in self.sub_tracks:
-                route_track_to_bus(track)
+        # for track in Song.simple_tracks():
+        #     if track != self.base_track and track not in self.sub_tracks:
+        #         route_track_to_bus(track)
 
         return None
 
