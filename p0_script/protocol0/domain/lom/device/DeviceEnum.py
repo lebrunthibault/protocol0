@@ -59,6 +59,7 @@ class DeviceEnum(AbstractEnum):
     L2_LIMITER = "L2 Stereo"
     LIMITER = "Limiter"
     M_ANALYZER = "MAnalyzer"
+    M_STEREO_SCOPE = "MStereoScope"
     MONO_SWITCH = "Mono"
     MUTED = "Muted"
     NOTE_LENGTH = "Note Length"
@@ -218,7 +219,9 @@ class DeviceEnum(AbstractEnum):
                 ),
                 DeviceEnumGroup("EQ", [cls.EQ_EIGHT, cls.PRO_Q_3, cls.CHANNEL_EQ]),
                 cls.UTILITY,
-                DeviceEnumGroup("Meter", [cls.PSY_SCOPE, cls.M_ANALYZER, cls.YOULEAN]),
+                DeviceEnumGroup(
+                    "Meter", [cls.PSY_SCOPE, cls.M_ANALYZER, cls.YOULEAN, cls.M_STEREO_SCOPE]
+                ),
             ],
             [
                 DeviceEnumGroup("Comp", [cls.H_COMP, cls.COMPRESSOR, cls.SSL_COMP, cls.C4]),
@@ -327,7 +330,6 @@ class DeviceEnum(AbstractEnum):
             lambda d: d.is_reverb,
             lambda d: d.is_fx,
             lambda d: d.is_limiter,
-            lambda d: d == DeviceEnum.DP_METER_5,
             lambda d: d == DeviceEnum.UTILITY,
             lambda d: d == DeviceEnum.STANDARD_CLIP,
             lambda d: d == DeviceEnum.PSY_SCOPE,

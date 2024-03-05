@@ -30,7 +30,7 @@ class AbstractTrackArmState(Observable):
             return self.arm()
 
     def arm(self) -> Optional[Sequence]:
-        if self.is_armed or not self._live_track.can_be_armed:
+        if not self._live_track or self.is_armed or not self._live_track.can_be_armed:
             return None
         if self._live_track.is_foldable:
             # resetting this would select the track

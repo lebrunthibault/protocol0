@@ -153,12 +153,12 @@ class SimpleTrack(AbstractTrack):
         if self.lower_name == "audio":
             return None
 
-        from protocol0.domain.lom.track.group_track.MixBusesTrack import MixBusesTrack
+        # from protocol0.domain.lom.track.group_track.MixBusesTrack import MixBusesTrack
 
-        if not self.group_track or not isinstance(
-            self.group_track.abstract_group_track, MixBusesTrack
-        ):
-            route_track_to_bus(self)
+        # if not self.group_track or not isinstance(
+        #     self.group_track.abstract_group_track, MixBusesTrack
+        # ):
+        #     route_track_to_bus(self)
 
         return None
 
