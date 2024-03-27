@@ -4,18 +4,20 @@ import os
 
 @cli.command(name="test")
 async def command_test() -> None:
-    directory = r"D:\ableton projects\tracks\Ay Soare\mastering stems"
+    directory = (
+        r"C:\Users\thiba\OneDrive\Documents\Xfer\Serum Presets\Presets\Audio Imperia Polaris"
+    )
 
     # Function to rename files
-    def rename_files(directory):
-        for filename in os.listdir(directory):
-            prefix = "mix "
-            if filename.startswith(prefix):
-                new_filename = filename[len(prefix) :]
+    def rename_files(dir):
+        for filename in os.listdir(dir):
+            substring = "audioimperia_polaris_serum_"
+            if substring in filename:
+                new_filename = filename.replace(substring, "").replace("_", " ").title()
 
                 # Construct the full path for the old and new filenames
-                old_filepath = os.path.join(directory, filename)
-                new_filepath = os.path.join(directory, new_filename)
+                old_filepath = os.path.join(dir, filename)
+                new_filepath = os.path.join(dir, new_filename)
 
                 # Rename the file
                 os.rename(old_filepath, new_filepath)

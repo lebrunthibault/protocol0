@@ -63,13 +63,13 @@ return
 ^Down::
 	callBackend("scene/scroll?direction=prev")
 return
-^q::
-	callBackend("clip/show_automation?direction=next")
-return
-^+q::
-	callBackend("clip/show_automation?direction=prev")
-return
-^e::
+;^q::
+;	callBackend("clip/show_automation?direction=next")
+;return
+;^+q::
+;	callBackend("clip/show_automation?direction=prev")
+;return
+~^e::
 	callBackend("clip/toggle_notes")
 return
 ;edit grid size
@@ -79,10 +79,10 @@ return
 *^NumpadDown::
     Send ^{numpad2}
 return
-^+e::
-	callBackend("clip/edit_automation_value")
-return
-^l::
+;^+e::
+;	callBackend("clip/edit_automation_value")
+;return
+~^l::
 	callBackend("scene/toggle_loop")
 return
 ^+_::

@@ -26,8 +26,8 @@ class InstrumentSerum(InstrumentInterface):
     def on_loaded(self, device_enum: DeviceEnum) -> None:
         track = Song.selected_track()
         track.arm_state.arm()
-        self.preset_list.scroll(go_next=True)
-        self.preset_list.scroll(go_next=False)
+        # self.preset_list.scroll(go_next=True)
+        # self.preset_list.scroll(go_next=False)
 
     def scroll_attack(self, go_next: bool) -> None:
         self.device.get_parameter_by_name("Env1 Atk").scroll(go_next)
