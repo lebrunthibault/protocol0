@@ -16,30 +16,22 @@ class AudioExportService(object):
     def __init__(
         self,
         song_stats_service: SongStatsService,
-        set_fixer_service: SetFixerService,
         playback_component: PlaybackComponent,
         scene_component: SceneComponent,
     ):
         self._song_stats_service = song_stats_service
-        self._set_fixer_service = set_fixer_service
         self._playback_component = playback_component
         self._scene_component = scene_component
 
     def export(self) -> None:
-        self._set_fixer_service.fix_set()
-        l2 = Song.master_track().devices.get_one_from_enum(DeviceEnum.L2_LIMITER)
         scene_stats = self._song_stats_service.get_song_structure()
 
         Backend.client().post_scene_stats(
             {
                 "scenes": scene_stats.to_full_dict()["scenes"],
                 "tempo": Song.tempo(),
-                "l2_disabled": l2 and not l2.is_enabled,
             }
         )
-
-        if l2 and not l2.is_enabled:
-            l2.is_enabled = True
 
         self._playback_component.reset()
 
