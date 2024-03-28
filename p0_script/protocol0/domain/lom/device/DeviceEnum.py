@@ -96,6 +96,7 @@ class DeviceEnum(AbstractEnum):
     SYLENTH1_LEAD = "Sylenth1 Rack.adg   "
     SYLENTH1_PLUCK = "Sylenth1 Rack.adg    "
     SYNTH_MASTER_2 = "SynthMaster 2.vstpreset"
+    TDR_KOTELNIKOV = "TDR Kotelnikov"
     TRACK_SPACER = "Trackspacer 2.5"
     TRUE_VERB = "TrueVerb Stereo"
     TUNER = "Tuner"
@@ -224,7 +225,9 @@ class DeviceEnum(AbstractEnum):
                 ),
             ],
             [
-                DeviceEnumGroup("Comp", [cls.H_COMP, cls.COMPRESSOR, cls.SSL_COMP, cls.C4]),
+                DeviceEnumGroup(
+                    "Comp", [cls.H_COMP, cls.COMPRESSOR, cls.SSL_COMP, cls.C4, cls.TDR_KOTELNIKOV]
+                ),
                 DeviceEnumGroup(
                     "Sat",
                     [
@@ -408,6 +411,7 @@ class DeviceEnum(AbstractEnum):
             DeviceEnum.H_COMP,
             DeviceEnum.L1_LIMITER,
             DeviceEnum.SSL_COMP,
+            DeviceEnum.TDR_KOTELNIKOV,
             DeviceEnum.VCOMP,
         ]
 
