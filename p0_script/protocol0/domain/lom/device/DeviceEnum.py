@@ -20,8 +20,7 @@ class DeviceEnum(AbstractEnum):
     AUTO_FILTER_LOW_PASS = "Auto Filter Low Pass"
     AUTO_PAN = "AutoPan"
     BEAT_REPEAT = "Beat Repeat"
-    BLACK_BOX = "Black Box Analog Design HG-2.2"
-    BLACK_BOX_MS = "Black Box Analog Design HG-2MS"
+    BLACK_BOX = "Black Box Analog Design HG-2"
     CHANNEL_EQ = "Channel EQ"
     C4 = "C4 Stereo"
     COMPRESSOR = "Compressor"
@@ -81,7 +80,7 @@ class DeviceEnum(AbstractEnum):
     SOOTHE2 = "soothe2"
     SOUNDID_REFERENCE_PLUGIN = "SoundID Reference Plugin"
     SPAN = "SPAN"
-    SPLICE = "Splice Bridge"
+    SPLICE_BRIDGE = "Splice Bridge"
     SPIFF = "spiff"
     SPECTRE = "Spectre"
     SSL_COMP = "SSLComp Stereo"
@@ -352,7 +351,7 @@ class DeviceEnum(AbstractEnum):
             DeviceEnum.KONTAKT,
             DeviceEnum.REV2_EDITOR,
             DeviceEnum.SERUM,
-            DeviceEnum.SPLICE,
+            DeviceEnum.SPLICE_BRIDGE,
             DeviceEnum.SYLENTH1,
             DeviceEnum.SYLENTH1_RACK,
             DeviceEnum.SYLENTH1_BASS,

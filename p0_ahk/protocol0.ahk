@@ -69,6 +69,14 @@ return
 ;^+q::
 ;	callBackend("clip/show_automation?direction=prev")
 ;return
+^+c::
+    MouseGetPos, xpos, ypos
+    ; Right-click at the current mouse position
+    Click, Right, %xpos%, %ypos%
+    Send crop
+    Sleep 5
+    Send {Enter}
+return
 ~^e::
 	callBackend("clip/toggle_notes")
 return
