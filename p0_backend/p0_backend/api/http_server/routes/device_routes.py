@@ -1,7 +1,10 @@
 from fastapi import APIRouter
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.lib.synth.serum import serum_make_filter_macro_bidirectional
+from p0_backend.lib.synth.serum import (
+    bulk_edit_presets,
+    set_preset_description,
+)
 
 from protocol0.application.command.LoadDeviceCommand import LoadDeviceCommand
 from protocol0.application.command.LoadMinitaurCommand import LoadMinitaurCommand
@@ -12,7 +15,7 @@ router = APIRouter()
 
 
 @router.get("/load")
-async def load_device(name: str, create_track: bool = False):
+async def load_device(name: str, create_track: bool = True):
     p0_script_client().dispatch(LoadDeviceCommand(name, create_track))
 
 
@@ -33,4 +36,4 @@ async def toggle_rack_chain():
 
 @router.get("/serum_bulk_edit")
 async def serum_bulk_edit():
-    serum_make_filter_macro_bidirectional()
+    bulk_edit_presets(lambda x, y: set_preset_description(x, y, "Innerbloom"))

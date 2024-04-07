@@ -52,6 +52,7 @@ class DeviceEnum(AbstractEnum):
     INSERT_VOLUME = "Volume"
     INSTRUMENT_RACK = "Instrument Rack"
     JJP_STRINGS = "JJP-Strings-Keys Stereo"
+    KICK_2 = "Kick 2"
     LFO_TOOL = "LFOTool_x64"
     L1_LIMITER = "L1 limiter Stereo"
     L1_ULTRAMAXIMIZER = "L1+ Ultramaximizer Stereo"
