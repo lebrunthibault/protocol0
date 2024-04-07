@@ -2,6 +2,7 @@ from protocol0.application.CommandBus import CommandBus
 from protocol0.application.command.FireSceneToPositionCommand import FireSceneToPositionCommand
 from protocol0.application.command_handler.CommandHandlerInterface import CommandHandlerInterface
 from protocol0.domain.lom.scene.ScenePlaybackService import ScenePlaybackService
+from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.shared.Song import Song
 
 
@@ -14,6 +15,10 @@ class FireSceneToPositionCommandHandler(CommandHandlerInterface):
         == - 1 : we fire the last bar of the previous scene
         other number : we fire the selected scene at the selected bar position
         """
+
+        if ApplicationView.is_arrangement_visible():
+            return None
+
         fire_to_position = self._container.get(ScenePlaybackService).fire_scene_to_position
         selected_scene = Song.selected_scene()
         bar_length = command.bar_length

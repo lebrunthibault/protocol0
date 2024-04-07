@@ -105,5 +105,9 @@ class ApplicationView(object):
         return cls._INSTANCE._application_view.is_view_visible("Browser")
 
     @classmethod
+    def is_arrangement_visible(cls) -> bool:
+        return cls._INSTANCE._application_view.is_view_visible("Arrangement")
+
+    @classmethod
     def toggle_browse(cls) -> bool:
         return cls._INSTANCE._application_view.toggle_browse()
