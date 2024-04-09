@@ -349,6 +349,7 @@ class DeviceEnum(AbstractEnum):
     def is_instrument(self) -> bool:
         return self in [
             DeviceEnum.DRUM_RACK,
+            DeviceEnum.KICK_2,
             DeviceEnum.KONTAKT,
             DeviceEnum.REV2_EDITOR,
             DeviceEnum.SERUM,

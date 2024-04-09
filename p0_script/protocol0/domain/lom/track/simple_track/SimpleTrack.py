@@ -368,7 +368,10 @@ class SimpleTrack(AbstractTrack):
             return
 
         # let tail play
-        clip = self.clip_slots[scene_index].clip
+        try:
+            clip = self.clip_slots[scene_index].clip
+        except IndexError:
+            return None
 
         if clip is not None and clip.is_playing:
             clip.stop(wait_until_end=True)

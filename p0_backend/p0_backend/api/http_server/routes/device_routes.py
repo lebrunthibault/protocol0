@@ -36,4 +36,5 @@ async def toggle_rack_chain():
 
 @router.get("/serum_bulk_edit")
 async def serum_bulk_edit():
-    bulk_edit_presets(lambda x, y: set_preset_description(x, y, "Innerbloom"))
+    # bulk_edit_presets(lambda x, y: set_preset_description(x, y, "Melodic Techno"))
+    bulk_edit_presets(lambda x, y: set_preset_description(x, y, "Modern Melodic Techno", "PML"))
