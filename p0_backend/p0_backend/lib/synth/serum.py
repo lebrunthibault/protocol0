@@ -1,5 +1,5 @@
 from time import sleep
-from typing import Callable
+from typing import Callable, Optional
 
 import pyautogui
 import win32gui
@@ -84,5 +84,7 @@ def make_filter_macro_bidirectional(x: int, y: int):
     _set_macro_1_value(x, y, "50")
 
 
-def set_preset_description(x: int, y: int, description: str):
+def set_preset_description(x: int, y: int, description: str, creator: Optional[str] = None):
     _set_control_value(x + 591, y + 98, description)
+    if creator:
+        _set_control_value(x + 891, y + 98, creator)

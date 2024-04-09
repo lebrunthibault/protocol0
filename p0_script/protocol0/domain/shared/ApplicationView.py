@@ -106,7 +106,8 @@ class ApplicationView(object):
 
     @classmethod
     def is_arrangement_visible(cls) -> bool:
-        return cls._INSTANCE._application_view.is_view_visible("Arrangement")
+        return False
+        # return cls._INSTANCE._application_view.is_view_visible("Arrangement")
 
     @classmethod
     def toggle_browse(cls) -> bool:
