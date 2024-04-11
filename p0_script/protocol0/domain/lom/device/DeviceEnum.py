@@ -43,6 +43,7 @@ class DeviceEnum(AbstractEnum):
     GATE = "Gate"
     GATEKEEPER = "Gatekeeper"
     GLUE_COMPRESSOR = "Glue Compressor"
+    GOD_PARTICLE = "The God Particle"
     H_COMP = "H-Comp Stereo.vstpreset"
     H_DELAY = "H-Delay Stereo"
     KONTAKT = "Kontakt 7.vstpreset"
@@ -321,6 +322,11 @@ class DeviceEnum(AbstractEnum):
             return 0
 
     @property
+    def is_exclusive(self) -> int:
+        """Only one instance by track"""
+        return self in [DeviceEnum.GOD_PARTICLE]
+
+    @property
     def device_group_position(self) -> int:
         predicates = [
             lambda d: d.is_instrument,
@@ -332,11 +338,10 @@ class DeviceEnum(AbstractEnum):
             lambda d: d.is_delay,
             lambda d: d.is_reverb,
             lambda d: d.is_fx,
+            lambda d: d.is_clipper,
             lambda d: d.is_limiter,
             lambda d: d == DeviceEnum.UTILITY,
-            lambda d: d == DeviceEnum.STANDARD_CLIP,
-            lambda d: d == DeviceEnum.PSY_SCOPE,
-            lambda d: d == DeviceEnum.M_ANALYZER,
+            lambda d: d.is_meter,
         ]
 
         for index, predicate in enumerate(predicates):
@@ -383,12 +388,19 @@ class DeviceEnum(AbstractEnum):
         ]
 
     @property
+    def is_clipper(self) -> bool:
+        return self in [
+            DeviceEnum.STANDARD_CLIP,
+        ]
+
+    @property
     def is_limiter(self) -> bool:
         return self in [
             DeviceEnum.LIMITER,
             DeviceEnum.L1_LIMITER,
             DeviceEnum.L1_ULTRAMAXIMIZER,
             DeviceEnum.L2_LIMITER,
+            DeviceEnum.GOD_PARTICLE,
         ]
 
     @property
@@ -474,6 +486,16 @@ class DeviceEnum(AbstractEnum):
             DeviceEnum.DOUBLER2,
             DeviceEnum.DOUBLER4,
             DeviceEnum.EFFECTRIX,
+        ]
+
+    @property
+    def is_meter(self) -> bool:
+        return self in [
+            DeviceEnum.PSY_SCOPE,
+            DeviceEnum.ADPTR_METRIC_AB,
+            DeviceEnum.SPAN,
+            DeviceEnum.YOULEAN,
+            DeviceEnum.M_ANALYZER,
         ]
 
     @property

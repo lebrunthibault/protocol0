@@ -157,6 +157,12 @@ class DeviceService(object):
         if len(list(track.devices)) == 0:
             return None
 
+        # if we want to "reload" an existing device (hack for The God Particle)
+        if device_enum.is_exclusive:
+            previous_device = track.devices.get_one_from_enum(device_enum)
+            if previous_device:
+                return previous_device
+
         for device in track.devices:
             if not device.enum or device.is_instrument or device.is_midi:
                 continue
