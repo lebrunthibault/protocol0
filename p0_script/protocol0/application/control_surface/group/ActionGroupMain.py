@@ -90,4 +90,4 @@ class ActionGroupMain(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        Logger.dev(Song.selected_track().devices.automated_mix_parameters)
+        pass

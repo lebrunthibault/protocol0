@@ -1,4 +1,5 @@
-from typing import Optional
+from functools import wraps
+from typing import Optional, Callable, Any
 
 import Live
 
@@ -7,6 +8,17 @@ from protocol0.domain.shared.SessionServiceInterface import SessionServiceInterf
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
+
+
+def only_in_session_view(func: Callable) -> Callable:
+    @wraps(func)
+    def decorate(*a: Any, **k: Any) -> None:
+        if not ApplicationView.is_session_visible():
+            return None
+
+        return func(*a, **k)
+
+    return decorate
 
 
 class ApplicationView(object):
@@ -95,6 +107,7 @@ class ApplicationView(object):
     @classmethod
     def is_session_visible(cls) -> bool:
         return cls._INSTANCE._application_view.is_view_visible("Session")
+        # return cls._INSTANCE._application_view.focused_document_view == "Session"
 
     @classmethod
     def is_clip_view_visible(cls) -> bool:
@@ -103,11 +116,6 @@ class ApplicationView(object):
     @classmethod
     def is_browser_visible(cls) -> bool:
         return cls._INSTANCE._application_view.is_view_visible("Browser")
-
-    @classmethod
-    def is_arrangement_visible(cls) -> bool:
-        return False
-        # return cls._INSTANCE._application_view.is_view_visible("Arrangement")
 
     @classmethod
     def toggle_browse(cls) -> bool:
