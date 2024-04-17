@@ -23,7 +23,9 @@ class LoopingSceneToggler(ValueToggler):
             return Song.selected_scene()
 
     def _value_set(self, scene: Scene) -> None:
-        scene.scene_name.update()
+        if scene:
+            scene.scene_name.update()
 
     def _value_unset(self, scene: Scene) -> None:
-        scene.scene_name.update()
+        if scene:
+            scene.scene_name.update()

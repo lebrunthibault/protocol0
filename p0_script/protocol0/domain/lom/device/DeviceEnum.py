@@ -48,6 +48,7 @@ class DeviceEnum(AbstractEnum):
     H_DELAY = "H-Delay Stereo"
     KONTAKT = "Kontakt 7.vstpreset"
     INSERT_DELAY = "Delay"
+    INSERT_ECHO = "Echo"
     INSERT_FILTER = "Auto Filter"
     INSERT_REVERB = "Reverb"
     INSERT_VOLUME = "Volume"
@@ -128,6 +129,7 @@ class DeviceEnum(AbstractEnum):
     def is_rack_preset(self) -> bool:
         return self in [
             DeviceEnum.INSERT_DELAY,
+            DeviceEnum.INSERT_ECHO,
             DeviceEnum.INSERT_FILTER,
             DeviceEnum.INSERT_REVERB,
             DeviceEnum.INSERT_VOLUME,
@@ -242,7 +244,7 @@ class DeviceEnum(AbstractEnum):
             ],
             [
                 DeviceEnumGroup("Duck", [cls.DUCK, cls.LFO_TOOL]),
-                DeviceEnumGroup("Delay", [cls.INSERT_DELAY, cls.DELAY]),
+                DeviceEnumGroup("Delay", [cls.INSERT_ECHO, cls.INSERT_DELAY]),
                 DeviceEnumGroup("Reverb", [cls.INSERT_REVERB, cls.VALHALLA_VINTAGE_VERB]),
             ],
             [
