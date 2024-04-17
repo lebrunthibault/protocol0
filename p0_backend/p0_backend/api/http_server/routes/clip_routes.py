@@ -10,6 +10,7 @@ from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from protocol0.application.command.ColorClipWithAutomationCommand import (
     ColorClipWithAutomationCommand,
 )
+from protocol0.application.command.LoopSelectedClipCommand import LoopSelectedClipCommand
 from protocol0.application.command.MoveClipLoopCommand import MoveClipLoopCommand
 from protocol0.application.command.SelectClipCommand import SelectClipCommand
 from protocol0.application.command.SetClipLoopLengthCommand import SetClipLoopLengthCommand
@@ -43,6 +44,10 @@ async def toggle_clip(track_name: str):
 @router.get("/toggle_notes")
 async def _toggle_clip_notes():
     p0_script_client().dispatch(ToggleNotesCommand())
+
+@router.get("/loop_selected")
+async def loop_selected():
+    p0_script_client().dispatch(LoopSelectedClipCommand())
 
 
 @router.get("/color_with_automation")

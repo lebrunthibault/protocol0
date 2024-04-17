@@ -23,6 +23,7 @@ class DeviceParamEnum(AbstractEnum):
     EQ_EIGHT_8_FREQUENCY_A = "FREQUENCY_8_A"
     GAIN = "GAIN"
     GAIN_4_A = "EQ_EIGHT_GAIN_4_A"
+    GOD_PARTICLE_CHARACTER = "GOD_PARTICLE_MIX"
     INPUT = "INPUT"
     INPUT_GAIN = "INPUT_GAIN"
     LENGTH = "LENGTH"
@@ -59,6 +60,7 @@ class DeviceParamEnum(AbstractEnum):
                 DeviceParamEnum.EQ_EIGHT_8_FREQUENCY_A: "8 Frequency A",
                 DeviceParamEnum.GAIN: "Gain",
                 DeviceParamEnum.GAIN_4_A: "4 Gain A",
+                DeviceParamEnum.GOD_PARTICLE_CHARACTER: "Character",
                 DeviceParamEnum.INPUT: "Input",
                 DeviceParamEnum.INPUT_GAIN: "Input Gain",
                 DeviceParamEnum.LENGTH: "Time Length",

@@ -15,7 +15,7 @@ CoordMode,mouse,screen
 
 ; loop must be before any return
 Loop, 9 {
-    HotKey ^NumPad%A_Index%, FireSceneToPosition
+    HotKey ~^NumPad%A_Index%, FireSceneToPosition
 }
 Loop, 9 {
     HotKey, ^SC%A_Index%, FireSceneToPosition
@@ -51,7 +51,7 @@ return
 	callBackend("scene/fire_selected")
 return
 +space::
-	callBackend("scene/fire_to_last_position")
+	callBackend("scene~/fire_to_last_position")
 return
 FireSceneToPosition:
     barLength:=SubStr(A_ThisHotkey,"^NumPad") - 1
@@ -76,6 +76,7 @@ return
     Send crop
     Sleep 5
     Send {Enter}
+    callBackend("clip/loop_selected")
 return
 ~^e::
 	callBackend("clip/toggle_notes")
