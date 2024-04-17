@@ -119,7 +119,9 @@ class Container(ContainerInterface):
         browser_service = BrowserService(browser, BrowserLoaderService(browser))
         device_display_service = DeviceDisplayService(browser_service)
         instrument_display_service = InstrumentDisplayService(device_display_service)
-        device_service = DeviceService(track_crud_component, device_component, browser_service)
+        device_service = DeviceService(
+            track_crud_component, device_component, browser_service, live_song.move_device
+        )
         instrument_service = InstrumentService(device_service, device_component)
         clipper_service = ClipperService(browser_service)
         drum_rack_service = DrumRackService(browser_service)

@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Optional, cast
+from typing import Optional, cast, Callable
 
 import Live
 
@@ -7,6 +7,7 @@ from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device.DeviceLoadedEvent import DeviceLoadedEvent
+from protocol0.domain.lom.device.DryWetDeviceAddedEvent import DryWetDeviceAddedEvent
 from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
 from protocol0.domain.lom.song.components.TrackComponent import get_track_by_name
@@ -44,11 +45,15 @@ class DeviceService(object):
         track_crud_component: TrackCrudComponent,
         device_component: DeviceComponent,
         browser_service: BrowserServiceInterface,
+        move_device: Callable,
     ) -> None:
         self._track_crud_component = track_crud_component
         self._device_component = device_component
         self._browser_service = browser_service
+        self._move_device = move_device
+
         DomainEventBus.subscribe(DeviceLoadedEvent, self._on_device_loaded_event)
+        DomainEventBus.subscribe(DryWetDeviceAddedEvent, self._on_dry_wet_device_added_event)
 
     def load_device(self, enum_name: str, create_track: bool = False) -> Sequence:
         Undo.begin_undo_step()
@@ -142,6 +147,19 @@ class DeviceService(object):
         if device and device.enum and device.enum.default_parameter is not None:
             parameter = device.get_parameter_by_name(device.enum.default_parameter)
             self._device_component.selected_parameter = parameter
+
+    def _on_dry_wet_device_added_event(self, _: DryWetDeviceAddedEvent) -> None:
+        dry_wet_device = Song.selected_device()
+        if not isinstance(dry_wet_device, RackDevice):
+            return None
+
+        devices = list(Song.selected_track().devices)
+        try:
+            next_device = devices[devices.index(dry_wet_device) + 1]
+        except IndexError:
+            return
+
+        self._move_device(next_device._device, dry_wet_device.chains[1]._chain, 0)
 
     def _show_default_automation(self, clip: Clip) -> None:
         device = Song.selected_track().devices.selected

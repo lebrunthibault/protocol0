@@ -15,10 +15,6 @@ class ReloadGodParticleCommandHandler(CommandHandlerInterface):
     def handle(self, command: ReloadGodParticleCommand) -> None:
         god_particle = Song.master_track().devices.get_one_from_enum(DeviceEnum.GOD_PARTICLE)
 
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(god_particle)
-
         Song.master_track().select()
 
         seq = Sequence()

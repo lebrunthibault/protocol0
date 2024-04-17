@@ -48,8 +48,5 @@ class MixBusesTrack(NormalGroupTrack):
                 continue
 
             if track not in Song.selected_scene().abstract_tracks:
-                from protocol0.shared.logging.Logger import Logger
-
-                Logger.dev((track, track.devices.automated_mix_parameters))
                 for param in track.devices.automated_mix_parameters:
                     param.reset()
