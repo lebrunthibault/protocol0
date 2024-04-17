@@ -5,7 +5,9 @@ from typing import List, Optional, Any, cast
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceChain import DeviceChain
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
+from protocol0.domain.lom.device.DryWetDeviceAddedEvent import DryWetDeviceAddedEvent
 from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
+from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.observer.Observable import Observable
 
@@ -30,6 +32,9 @@ class RackDevice(Device, Observable):
             self.remove_macro()
             self.remove_macro()
             self.remove_macro()
+
+        if self.name.lower() == "dry wet":
+            DomainEventBus.emit(DryWetDeviceAddedEvent())
 
     @subject_slot("chains")
     def _chains_listener(self) -> None:

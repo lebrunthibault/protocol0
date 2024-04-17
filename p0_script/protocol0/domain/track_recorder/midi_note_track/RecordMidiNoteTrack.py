@@ -35,11 +35,6 @@ class RecordMidiNoteTrack(RecordProcessorInterface):
         """Workaround for un precise timing : slow down the tempo on the end"""
         seq = Sequence()
 
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(
-            f"_should_skip_scene(track, config.recording_scene): {_should_skip_scene(track, config.recording_scene)}"
-        )
         if not _should_skip_scene(track, config.recording_scene):
             seq.add(partial(config.clip_slots[0].prepare_for_record, clear=False))
             seq.add(config.recording_scene.fire)
@@ -50,9 +45,6 @@ class RecordMidiNoteTrack(RecordProcessorInterface):
             seq.wait_beats(2)
 
         if config.recording_scene == config.recording_scene.next_scene:
-            from protocol0.shared.logging.Logger import Logger
-
-            Logger.dev("last scene")
             seq.wait_for_event(BarChangedEvent, continue_on_song_stop=True)
             return seq.done()
 
