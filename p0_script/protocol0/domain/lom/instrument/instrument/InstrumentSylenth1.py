@@ -27,16 +27,7 @@ class InstrumentSylenth1(InstrumentInterface):
     def on_loaded(self, device_enum: DeviceEnum) -> None:
         Song.selected_track().arm_state.arm()
 
-        if device_enum == DeviceEnum.SYLENTH1_BASS:
-            DomainEventBus.emit(PresetProgramSelectedEvent(2))
-        elif device_enum == DeviceEnum.SYLENTH1_KEYS:
-            DomainEventBus.emit(PresetProgramSelectedEvent(32))
-        elif device_enum == DeviceEnum.SYLENTH1_LEAD:
-            DomainEventBus.emit(PresetProgramSelectedEvent(64))
-        elif device_enum == DeviceEnum.SYLENTH1_PLUCK:
-            DomainEventBus.emit(PresetProgramSelectedEvent(96))
-        else:
-            DomainEventBus.emit(PresetProgramSelectedEvent(96))
+        DomainEventBus.emit(PresetProgramSelectedEvent(96))
 
     def scroll_attack(self, go_next: bool) -> None:
         self.device.get_parameter_by_name("AmpEnv A Attack").scroll(go_next)
