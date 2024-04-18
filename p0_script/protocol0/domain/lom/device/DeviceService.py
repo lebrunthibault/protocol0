@@ -10,9 +10,7 @@ from protocol0.domain.lom.device.DeviceLoadedEvent import DeviceLoadedEvent
 from protocol0.domain.lom.device.DryWetDeviceAddedEvent import DryWetDeviceAddedEvent
 from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
-from protocol0.domain.lom.song.components.TrackComponent import get_track_by_name
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
-from protocol0.domain.lom.track.group_track.TrackCategoryEnum import TrackCategoryEnum
 from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import ExternalSynthTrack
 from protocol0.domain.lom.track.group_track.ext_track.SimpleMidiExtTrack import SimpleMidiExtTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
@@ -61,7 +59,7 @@ class DeviceService(object):
         track = Song.selected_track()
         is_clip_view_visible = ApplicationView.is_clip_view_visible()
 
-        self._load_device_select_track(device_enum, create_track)
+        self._load_device_select_track(device_enum)
 
         seq = Sequence()
 
@@ -106,16 +104,11 @@ class DeviceService(object):
 
         return selected_track
 
-    def _load_device_select_track(self, device_enum: DeviceEnum, create_track: bool) -> None:
+    def _load_device_select_track(self, device_enum: DeviceEnum) -> None:
         track = self._get_instrument_track(device_enum)
 
         if device_enum.is_instrument:
-            if create_track:
-                track_to_select_for_creation = self._get_track_to_select_for_creation(device_enum)
-                if track_to_select_for_creation:
-                    track_to_select_for_creation.select()
-            else:
-                track.select()
+            track.select()
             return
 
         device_to_select = self._get_device_to_select_for_insertion(track, device_enum)
@@ -126,20 +119,6 @@ class DeviceService(object):
             track.device_insert_mode = Live.Track.DeviceInsertMode.selected_right
             if len(list(track.devices)) > 0:
                 self._device_component.select_device(track, list(track.devices)[-1])
-
-    def _get_track_to_select_for_creation(self, device_enum: DeviceEnum) -> Optional[SimpleTrack]:
-        track = None
-        if device_enum.is_harmony_instrument:
-            track = get_track_by_name(TrackCategoryEnum.HARMONY.value, True)
-        elif device_enum.is_melody_instrument:
-            track = get_track_by_name(TrackCategoryEnum.MELODY.value, True)
-        elif device_enum.is_bass_instrument:
-            track = get_track_by_name(TrackCategoryEnum.BASS.value, True)
-
-        if track:
-            return track.sub_tracks[-1]
-
-        return None
 
     def _on_device_loaded_event(self, _: DeviceLoadedEvent) -> None:
         """Select the default parameter if it exists"""

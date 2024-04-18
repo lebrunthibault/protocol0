@@ -12,7 +12,6 @@ if TYPE_CHECKING:
 
 class DeviceEnum(AbstractEnum):
     ADPTR_METRIC_AB = "ADPTR MetricAB"
-    API_2500 = "API-2500 Stereo"
     ARPEGGIATOR = "Arpeggiator"
     AUDIO_EFFECT_RACK = "Audio Effect Rack"
     AUTO_FILTER = "Auto Filter"
@@ -21,7 +20,6 @@ class DeviceEnum(AbstractEnum):
     AUTO_PAN = "AutoPan"
     BEAT_REPEAT = "Beat Repeat"
     BLACK_BOX = "Black Box Analog Design HG-2"
-    CHANNEL_EQ = "Channel EQ"
     C4 = "C4 Stereo"
     COMPRESSOR = "Compressor"
     CTHULHU = "Cthulhu_x64"
@@ -71,13 +69,12 @@ class DeviceEnum(AbstractEnum):
     PRO_Q_3 = "Pro-Q 3"
     PRO_Q_3_VST3 = "FabFilter Pro-Q 3"
     PSY_SCOPE = "PsyScope_Pro"
-    REFERENCE = "REFERENCE"
+    R_COMPRESSOR = "RCompressor Stereo"
     REVERB = "Reverb"
     REV2_EDITOR = "REV2Editor"
     R_VERB = "RVerb Stereo"
     SATURATOR = "Saturator"
     SATURN_2 = "Saturn 2"
-    SAUSAGE_FATTENER = "Sausage Fattener"
     SERUM = "Serum_x64"
     SIMPLER = "Simpler"
     SOOTHE2 = "soothe2"
@@ -93,10 +90,6 @@ class DeviceEnum(AbstractEnum):
     SURFEREQ = "SurferEQ"
     SYLENTH1 = "Sylenth1"
     SYLENTH1_RACK = "Sylenth1 Rack.adg"
-    SYLENTH1_BASS = "Sylenth1 Rack.adg "
-    SYLENTH1_KEYS = "Sylenth1 Rack.adg  "
-    SYLENTH1_LEAD = "Sylenth1 Rack.adg   "
-    SYLENTH1_PLUCK = "Sylenth1 Rack.adg    "
     SYNTH_MASTER_2 = "SynthMaster 2.vstpreset"
     TDR_KOTELNIKOV = "TDR Kotelnikov"
     TRACK_SPACER = "Trackspacer 2.5"
@@ -107,6 +100,7 @@ class DeviceEnum(AbstractEnum):
     VALHALLA_VINTAGE_VERB = "ValhallaVintageVerb"
     VCOMP = "VComp Stereo"
     VEQ = "VEQ3 Stereo"
+    WAVETABLE = "Wavetable"
     YOULEAN = "Youlean Loudness Meter 2"
 
     @classmethod
@@ -217,11 +211,7 @@ class DeviceEnum(AbstractEnum):
     def favorites(cls) -> List[List[Union["DeviceEnum", DeviceEnumGroup]]]:
         return [
             [
-                DeviceEnumGroup(
-                    "Filter",
-                    [cls.AUTO_FILTER_LOW_PASS, cls.AUTO_FILTER_HIGH_PASS],
-                ),
-                DeviceEnumGroup("EQ", [cls.EQ_EIGHT, cls.PRO_Q_3, cls.CHANNEL_EQ]),
+                DeviceEnumGroup("EQ", [cls.EQ_EIGHT, cls.PRO_Q_3]),
                 cls.UTILITY,
                 DeviceEnumGroup(
                     "Meter", [cls.PSY_SCOPE, cls.M_ANALYZER, cls.YOULEAN, cls.M_STEREO_SCOPE]
@@ -229,28 +219,23 @@ class DeviceEnum(AbstractEnum):
             ],
             [
                 DeviceEnumGroup(
-                    "Comp", [cls.H_COMP, cls.COMPRESSOR, cls.SSL_COMP, cls.C4, cls.TDR_KOTELNIKOV]
+                    "Comp",
+                    [cls.COMPRESSOR, cls.R_COMPRESSOR, cls.SSL_COMP, cls.C4, cls.TDR_KOTELNIKOV],
                 ),
                 DeviceEnumGroup(
                     "Sat",
                     [
                         cls.BLACK_BOX,
-                        cls.SATURN_2,
                         cls.DECAPITATOR,
                         cls.SPECTRE,
+                        cls.SATURN_2,
                     ],
                 ),
-                DeviceEnumGroup("Clip", [cls.STANDARD_CLIP]),  # for renaming
             ],
             [
-                DeviceEnumGroup("Duck", [cls.DUCK, cls.LFO_TOOL]),
+                DeviceEnumGroup("Duck", [cls.LFO_TOOL, cls.DUCK]),
                 DeviceEnumGroup("Delay", [cls.INSERT_ECHO, cls.INSERT_DELAY]),
                 DeviceEnumGroup("Reverb", [cls.INSERT_REVERB, cls.VALHALLA_VINTAGE_VERB]),
-            ],
-            [
-                cls.DRUM_RACK,
-                cls.KONTAKT,
-                cls.SERUM,
             ],
         ]
 
@@ -264,7 +249,6 @@ class DeviceEnum(AbstractEnum):
         try:
             return self.get_value_from_mapping(
                 {
-                    DeviceEnum.API_2500: 95,
                     DeviceEnum.AUDIO_EFFECT_RACK: 8,
                     DeviceEnum.AUTO_FILTER: 7,
                     DeviceEnum.BEAT_REPEAT: 7,
@@ -363,30 +347,8 @@ class DeviceEnum(AbstractEnum):
             DeviceEnum.SPLICE_BRIDGE,
             DeviceEnum.SYLENTH1,
             DeviceEnum.SYLENTH1_RACK,
-            DeviceEnum.SYLENTH1_BASS,
-            DeviceEnum.SYLENTH1_KEYS,
-            DeviceEnum.SYLENTH1_LEAD,
-            DeviceEnum.SYLENTH1_PLUCK,
             DeviceEnum.SYNTH_MASTER_2,
-        ]
-
-    @property
-    def is_harmony_instrument(self) -> bool:
-        return self in [
-            DeviceEnum.SYLENTH1_KEYS,
-            DeviceEnum.SYLENTH1_PLUCK,
-        ]
-
-    @property
-    def is_melody_instrument(self) -> bool:
-        return self in [
-            DeviceEnum.SYLENTH1_LEAD,
-        ]
-
-    @property
-    def is_bass_instrument(self) -> bool:
-        return self in [
-            DeviceEnum.SYLENTH1_BASS,
+            DeviceEnum.WAVETABLE,
         ]
 
     @property
@@ -420,7 +382,6 @@ class DeviceEnum(AbstractEnum):
     @property
     def is_compressor(self) -> bool:
         return self in [
-            DeviceEnum.API_2500,
             DeviceEnum.COMPRESSOR,
             DeviceEnum.GLUE_COMPRESSOR,
             DeviceEnum.H_COMP,
@@ -439,7 +400,6 @@ class DeviceEnum(AbstractEnum):
             DeviceEnum.JJP_STRINGS,
             DeviceEnum.SATURATOR,
             DeviceEnum.SATURN_2,
-            DeviceEnum.SAUSAGE_FATTENER,
         ]
 
     @property
@@ -508,10 +468,6 @@ class DeviceEnum(AbstractEnum):
         if self in [
             DeviceEnum.SYLENTH1,
             DeviceEnum.SYLENTH1_RACK,
-            DeviceEnum.SYLENTH1_BASS,
-            DeviceEnum.SYLENTH1_KEYS,
-            DeviceEnum.SYLENTH1_LEAD,
-            DeviceEnum.SYLENTH1_PLUCK,
         ]:
             return DeviceEnum.SYLENTH1
 
@@ -528,9 +484,5 @@ class DeviceEnum(AbstractEnum):
         return {
             DeviceEnum.SYLENTH1: "Sylenth1",
             DeviceEnum.SYLENTH1_RACK: "Sylenth1",
-            DeviceEnum.SYLENTH1_BASS: "Bass",
-            DeviceEnum.SYLENTH1_KEYS: "Keys",
-            DeviceEnum.SYLENTH1_LEAD: "Lead",
-            DeviceEnum.SYLENTH1_PLUCK: "Pluck",
             DeviceEnum.SERUM: "Serum",
         }.get(self, self.instrument_enum.value)
