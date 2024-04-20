@@ -1,8 +1,8 @@
 from os.path import basename
+from typing import Optional, List, cast, TYPE_CHECKING, Dict
 
 import Live
 from _Framework.SubjectSlot import SlotManager
-from typing import Optional, List, cast, TYPE_CHECKING, Dict
 
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
 from protocol0.domain.lom.instrument.InstrumentInterface import InstrumentInterface
@@ -11,9 +11,6 @@ from protocol0.domain.lom.track.TrackDisconnectedEvent import TrackDisconnectedE
 from protocol0.domain.lom.track.abstract_track.AbstrackTrackArmState import AbstractTrackArmState
 from protocol0.domain.lom.track.abstract_track.AbstractTrackAppearance import (
     AbstractTrackAppearance,
-)
-from protocol0.domain.lom.track.abstract_track.AbstractTrackSelectedEvent import (
-    AbstractTrackSelectedEvent,
 )
 from protocol0.domain.lom.track.group_track.TrackCategoryEnum import TrackCategoryEnum
 from protocol0.domain.lom.track.routing.TrackOutputRouting import TrackOutputRouting
@@ -164,7 +161,7 @@ class AbstractTrack(SlotManager):
         return self._track.has_audio_output if self._track else False
 
     def select(self) -> None:
-        DomainEventBus.emit(AbstractTrackSelectedEvent(self._track))
+        self.base_track.select()
 
     def fire(self, scene_index: int) -> None:
         raise NotImplementedError

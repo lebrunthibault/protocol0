@@ -44,6 +44,7 @@ from .device_routes import router as device_router
 from .export_routes import router as export_router
 from .keyboard_routes import router as keyboard_router
 from .record_routes import router as record_router
+from .search_routes import router as search_router
 from .scene_routes import router as scene_router
 from .set_routes import router as set_router
 from .track_routes import router as track_router
@@ -58,6 +59,7 @@ router.include_router(device_router, prefix="/device")
 router.include_router(export_router, prefix="/export")
 router.include_router(keyboard_router, prefix="/keyboard")
 router.include_router(record_router, prefix="/record")
+router.include_router(search_router, prefix="/search")
 router.include_router(scene_router, prefix="/scene")
 router.include_router(set_router, prefix="/set")
 router.include_router(track_router, prefix="/track")

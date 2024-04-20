@@ -127,6 +127,9 @@ return
 ^+d::
 	callBackend("scene/duplicate")
 return
+^+f::
+	callBackend("search/track")
+return
 
 #IfWinActive
 

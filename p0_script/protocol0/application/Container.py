@@ -53,7 +53,6 @@ from protocol0.domain.track_recorder.RecordService import RecordService
 from protocol0.infra.interface.BrowserLoaderService import BrowserLoaderService
 from protocol0.infra.interface.BrowserService import BrowserService
 from protocol0.infra.interface.InterfaceClicksService import InterfaceClicksService
-from protocol0.infra.interface.session.SessionService import SessionService
 from protocol0.infra.logging.LoggerService import LoggerService
 from protocol0.infra.midi.MidiService import MidiService
 from protocol0.infra.persistence.SongDataService import SongDataService
@@ -110,10 +109,7 @@ class Container(ContainerInterface):
 
         CommandBus(self, ableton_set)
 
-        session_service = SessionService(
-            control_surface.component_guard, control_surface.set_highlighting_session_component
-        )
-        ApplicationView(recording_component, control_surface.application().view, session_service)
+        ApplicationView(recording_component, control_surface.application().view)
 
         browser = control_surface.application().browser
         browser_service = BrowserService(browser, BrowserLoaderService(browser))

@@ -109,6 +109,7 @@ class AbletonSetCurrentState(BaseModel):
     selected_scene: AbletonScene
     current_track: AbletonTrack
     selected_track: AbletonTrack
+    track_names: List[str]
     drum_rack_visible: bool
 
 

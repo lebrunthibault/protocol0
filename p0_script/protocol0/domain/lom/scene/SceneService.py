@@ -17,8 +17,6 @@ from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.list import find_if
-from protocol0.domain.shared.utils.timing import debounce
-from protocol0.infra.interface.session.SessionUpdatedEvent import SessionUpdatedEvent
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
@@ -38,7 +36,6 @@ class SceneService(SlotManager):
         self._scene_playback_service = scene_playback_service
 
         self.scenes_listener.subject = live_song
-        self._selected_scene_listener.subject = live_song.view
         self._live_scene_id_to_scene: Dict[int, Scene] = collections.OrderedDict()
 
     def get_scene(self, live_scene: Live.Scene.Scene) -> Scene:
@@ -83,16 +80,6 @@ class SceneService(SlotManager):
         DomainEventBus.defer_emit(ScenesMappedEvent())
 
         Logger.info("mapped scenes")
-
-    @subject_slot("selected_scene")
-    @handle_errors()
-    @debounce(duration=20)
-    def _selected_scene_listener(self) -> None:
-        """
-        debounce necessary when multiple scenes are added at the same time
-        (e.g. when importing a track)
-        """
-        DomainEventBus.emit(SessionUpdatedEvent())
 
     def _generate_scenes(self) -> None:
         # save playing scene

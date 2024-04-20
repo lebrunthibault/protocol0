@@ -30,17 +30,6 @@ class SongInitService(object):
         seq = Sequence()
         seq.wait(2)
         selected_track = Song.selected_track()
-        # # activate cthulhu devices
-        # for track in Song.simple_tracks():
-        #     if isinstance(track, CthulhuTrack):
-        #         seq.add(track.select)
-        #         seq.add(
-        #             partial(
-        #                 self._device_display_service.toggle_plugin_window,
-        #                 track,
-        #                 track.devices.get_one_from_enum(DeviceEnum.CTHULHU),
-        #             )
-        #         )
         seq.add(ApplicationView.show_session)
         seq.add(selected_track.select)
         seq.wait(8)
