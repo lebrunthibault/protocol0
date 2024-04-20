@@ -45,6 +45,7 @@ async def toggle_clip(track_name: str):
 async def _toggle_clip_notes():
     p0_script_client().dispatch(ToggleNotesCommand())
 
+
 @router.get("/loop_selected")
 async def loop_selected():
     p0_script_client().dispatch(LoopSelectedClipCommand())

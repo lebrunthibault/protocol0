@@ -4,7 +4,6 @@ from typing import Optional, Callable, Any
 import Live
 
 from protocol0.domain.lom.song.components.RecordingComponent import RecordingComponent
-from protocol0.domain.shared.SessionServiceInterface import SessionServiceInterface
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
@@ -30,12 +29,10 @@ class ApplicationView(object):
         self,
         recording_component: RecordingComponent,
         application_view: Live.Application.Application.View,
-        session_service: SessionServiceInterface,
     ) -> None:
         ApplicationView._INSTANCE = self
         self._recording_component = recording_component
         self._application_view = application_view
-        self._session_service = session_service
 
     @classmethod
     def show_clip(cls) -> None:
@@ -79,16 +76,11 @@ class ApplicationView(object):
             Logger.error(str(e), show_notification=False)
             return
 
-        is_visible = Song.selected_track().is_visible
         if Song.selected_track().group_track:
             Song.selected_track().group_track.is_folded = False
             # NB : unfolding parent classes will select them
             if Song.selected_track() != selected_track:
                 selected_track.select()
-
-            if not is_visible:
-                # careful: this will impact the session display for long sets (scroll it up or down)
-                cls._INSTANCE._session_service.toggle_session_ring()
 
     @classmethod
     def _focus_view(cls, view: str) -> None:

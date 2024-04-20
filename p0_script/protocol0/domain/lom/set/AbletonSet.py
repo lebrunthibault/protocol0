@@ -18,7 +18,6 @@ from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.timing import debounce
-from protocol0.infra.interface.session.SessionUpdatedEvent import SessionUpdatedEvent
 from protocol0.shared.Song import Song
 
 
@@ -65,6 +64,7 @@ class AbletonSetCurrentState:
     selected_scene: AbletonScene
     current_track: AbletonTrack
     selected_track: AbletonTrack
+    track_names: List[str]
     drum_rack_visible: bool
 
 
@@ -74,7 +74,6 @@ class AbletonSet(object):
 
         listened_events = [
             AbstractTrackNameUpdatedEvent,
-            SessionUpdatedEvent,
             TracksMappedEvent,
             ClipSlotPlayingStatusUpdatedEvent,
             SimpleTrackArmedEvent,
@@ -95,6 +94,7 @@ class AbletonSet(object):
             selected_scene=Song.selected_scene().to_scene_state(),
             current_track=AbletonTrack(**Song.current_track().to_dict()),
             selected_track=AbletonTrack(**Song.selected_track().to_dict()),
+            track_names=[track.name for track in Song.simple_tracks()],
             drum_rack_visible=isinstance(Song.selected_track().instrument, InstrumentDrumRack),
         )
 

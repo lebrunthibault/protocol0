@@ -84,9 +84,12 @@ async def _get_state():
     p0_script_client().dispatch(GetSetStateCommand())
 
 
-@app.on_event("startup")
-async def startup_event():
-    asyncio.create_task(_get_state())
+# asyncio.create_task(_get_state())
+
+#
+# @app.on_event("startup")
+# async def startup_event():
+#     asyncio.create_task(_get_state())
 
 
 """

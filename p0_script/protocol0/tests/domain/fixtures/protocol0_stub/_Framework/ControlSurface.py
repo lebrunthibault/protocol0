@@ -4,7 +4,6 @@ from unittest.mock import Mock, MagicMock
 class ControlSurface:
     def __init__(self, *_, **__):
         self.component_guard = MagicMock()
-        self.set_highlighting_session_component = Mock()
         self.application = Mock()
 
     def disconnect(self):

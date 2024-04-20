@@ -19,6 +19,9 @@ from protocol0.domain.lom.instrument.InstrumentInterface import InstrumentInterf
 from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitoringStateEnum
 from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
 from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
+from protocol0.domain.lom.track.abstract_track.AbstractTrackSelectedEvent import (
+    AbstractTrackSelectedEvent,
+)
 from protocol0.domain.lom.track.routing.TrackInputRouting import TrackInputRouting
 from protocol0.domain.lom.track.simple_track.SimpleTrackArmState import SimpleTrackArmState
 from protocol0.domain.lom.track.simple_track.SimpleTrackArmedEvent import SimpleTrackArmedEvent
@@ -298,6 +301,14 @@ class SimpleTrack(AbstractTrack):
             self._track.fold_state = int(is_folded)
 
     @property
+    def is_collapsed(self) -> bool:
+        return bool(self._track.view.is_collapsed)
+
+    @is_collapsed.setter
+    def is_collapsed(self, is_collapsed: bool) -> None:
+        self._track.view.is_collapsed = is_collapsed
+
+    @property
     def is_triggered(self) -> bool:
         return any(clip_slot.is_triggered for clip_slot in self.clip_slots)
 
@@ -351,6 +362,15 @@ class SimpleTrack(AbstractTrack):
     @property
     def is_playing(self) -> bool:
         return any(clip.is_playing for clip in self.clips)
+
+    def select(self) -> None:
+        DomainEventBus.emit(AbstractTrackSelectedEvent(self._track))
+
+        # make it focused
+        if not self.is_collapsed:
+            self.is_collapsed = True
+
+        self.is_collapsed = False
 
     def fire(self, scene_index: int) -> None:
         clip = self.clip_slots[scene_index].clip
