@@ -36,8 +36,12 @@ async def search_track() -> None:
         logger.error(str(e))
 
     def autoclose() -> None:
-        if not entry.get():
-            root.destroy()
+        # noinspection PyBroadException
+        try:
+            if not entry.get():
+                root.destroy()
+        except Exception:
+            pass
 
     autoclose_timer = Timer(10, autoclose)
     autoclose_timer.start()

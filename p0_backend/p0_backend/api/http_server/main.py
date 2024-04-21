@@ -1,5 +1,4 @@
 """ http / websocket gateway server to the midi server. Hit by ahk and the stream deck. """
-import asyncio
 import traceback
 from contextlib import asynccontextmanager
 
@@ -22,7 +21,6 @@ from p0_backend.settings import Settings
 
 load_dotenv()
 
-from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.api.http_server.routes.routes import router  # noqa
 from p0_backend.api.http_server.ws import ws_router  # noqa
 from protocol0.application.command.GetSetStateCommand import GetSetStateCommand  # noqa
@@ -78,10 +76,10 @@ async def _catch_protocol0_errors(request: Request, call_next):
         return PlainTextResponse(str(e), status_code=500)
 
 
-async def _get_state():
-    """Delaying so the http and midi servers are up to receive set data"""
-    await asyncio.sleep(2)
-    p0_script_client().dispatch(GetSetStateCommand())
+# async def _get_state():
+#     """Delaying so the http and midi servers are up to receive set data"""
+#     await asyncio.sleep(2)
+#     p0_script_client().dispatch(GetSetStateCommand())
 
 
 # asyncio.create_task(_get_state())
