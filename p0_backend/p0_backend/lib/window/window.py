@@ -26,12 +26,19 @@ def get_window_position(handle: int) -> Tuple[int, int, int, int]:
 def focus_window(
     name: str,
     search_type: Union[SearchTypeEnum, str] = SearchTypeEnum.WINDOW_TITLE,
-    retry: bool = True,
 ) -> int:
     handle = find_window_handle_by_enum(name=name, search_type=search_type)
     if not handle:
         raise Protocol0Error(f"No window '{name}'")
+    focus_window_by_handle(handle)
 
+    return handle
+
+
+def focus_window_by_handle(
+    handle: int,
+    retry: bool = True,
+) -> int:
     # noinspection PyUnresolvedReferences
     pythoncom.CoInitialize()  # needed
     # noinspection PyBroadException
@@ -39,14 +46,14 @@ def focus_window(
         win32gui.SetForegroundWindow(handle)
         return handle
     except Exception as e:
-        logger.warning(f"couldn't focus {name} : {e}")
+        logger.warning(f"couldn't focus {handle} : {e}")
         if retry:
             # needed for SetForegroundWindow to be allowed
             shell = win32com.client.Dispatch("WScript.Shell")
             shell.SendKeys("%")
-            return focus_window(name=name, search_type=search_type, retry=False)
+            return focus_window_by_handle(handle, retry=False)
 
-    logger.error("Window not focused : %s" % name)
+    logger.error(f"Window not focused : {handle}")
     raise Protocol0Error("window is not focused")
 
 

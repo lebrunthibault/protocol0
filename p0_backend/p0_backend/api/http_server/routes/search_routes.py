@@ -1,24 +1,29 @@
+import tkinter as tk
+from threading import Timer, Thread
 from typing import List
 
-import win32gui
 from fastapi import APIRouter
-import tkinter as tk
-from threading import Timer
-
 from loguru import logger
 
-from p0_backend.lib.ableton.ableton import focus_ableton
-from p0_backend.lib.notification import notify
 from p0_backend.api.client.p0_script_api_client import p0_script_client
+from p0_backend.lib.ableton.ableton import focus_ableton
 from p0_backend.lib.ableton.ableton_set.ableton_set_manager import AbletonSetManager
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
+from p0_backend.lib.notification import notify
+from p0_backend.lib.window.window import focus_window_by_handle
 from protocol0.application.command.SelectTrackCommand import SelectTrackCommand
 
 router = APIRouter()
 
 
 @router.get("/track")
-async def search_track() -> None:
+async def _search_track() -> None:
+    thread = Thread(target=search_track)
+    thread.start()
+    thread.join()
+
+
+def search_track() -> None:
     try:
         track_list = AbletonSetManager.active().current_state.track_names
     except Protocol0Error as e:
@@ -30,10 +35,10 @@ async def search_track() -> None:
 
     root = tk.Tk()
     root.overrideredirect(True)
-    try:
-        win32gui.SetForegroundWindow(root.winfo_id())
-    except Exception as e:
-        logger.error(str(e))
+    logger.success(f"window id: {root.winfo_id()}")
+    logger.success(f"frame: {root.frame()}")
+
+    focus_window_by_handle(root.winfo_id())
 
     def autoclose() -> None:
         # noinspection PyBroadException
@@ -47,6 +52,7 @@ async def search_track() -> None:
     autoclose_timer.start()
 
     entry = tk.Entry(root, width=20)
+
     entry.focus()
     entry.pack()
     entry.bind("<Return>", (lambda event: get_input()))
