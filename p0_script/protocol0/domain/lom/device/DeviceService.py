@@ -37,6 +37,48 @@ def find_parent_rack(track: SimpleTrack, device: Device) -> Optional[RackDevice]
     raise Protocol0Error("Couldn't find device %s (may be too nested to be detected)" % device.name)
 
 
+def _switch_master_cpu_devices() -> bool:
+    god_particle = Song.master_track().devices.get_one_from_enum(DeviceEnum.GOD_PARTICLE)
+
+    # switch god particle
+    if not god_particle:
+        return False
+
+    try:
+        master_devices = list(Song.master_track().devices)
+        next_device: Device = master_devices[master_devices.index(god_particle) + 1]
+    except IndexError:
+        return False
+
+    if next_device.enum != DeviceEnum.L2_LIMITER or next_device.is_enabled == god_particle.is_enabled:
+        return False
+
+    next_device.toggle()
+    god_particle.toggle()
+
+    return True
+
+def _switch_black_box_devices():
+    for track in Song.simple_tracks():
+        black_box = track.devices.get_one_from_enum(DeviceEnum.BLACK_BOX)
+
+        if not black_box:
+            continue
+
+        try:
+            devices = list(track.devices)
+            next_device: Device = devices[devices.index(black_box) + 1]
+        except IndexError:
+            Backend.client().show_warning(f"Blackbox not set up property on {track}")
+            continue
+
+        if next_device.enum in (DeviceEnum.SATURATOR, DeviceEnum.OVERDRIVE, DeviceEnum.DYNAMIC_TUBE) or next_device.is_enabled == black_box.is_enabled:
+            Backend.client().show_warning(f"Blackbox not set up property on {track}")
+            continue
+
+        next_device.toggle()
+        black_box.toggle()
+
 class DeviceService(object):
     def __init__(
         self,
@@ -195,3 +237,12 @@ class DeviceService(object):
         device.selected_chain = device.chains[1]
 
         self._device_component.select_device(Song.selected_track(), device.chains[1].devices[-1])
+
+    def toggle_cpu_heavy_devices(self) -> None:
+        master_handled = _switch_master_cpu_devices()
+
+        if not master_handled:
+            Backend.client().show_warning("Master devices not set up properly")
+            return None
+
+        _switch_black_box_devices()
