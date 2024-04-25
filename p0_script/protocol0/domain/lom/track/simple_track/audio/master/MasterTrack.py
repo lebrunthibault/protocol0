@@ -1,6 +1,7 @@
 from functools import partial
-from typing import Any
+from typing import Any, Optional
 
+from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.track.simple_track.SimpleTrackSaveStartedEvent import (
     SimpleTrackSaveStartedEvent,
@@ -34,6 +35,10 @@ class MasterTrack(SimpleAudioTrack):
     @property
     def muted(self) -> bool:
         return self.volume != 0
+
+    @property
+    def god_particle(self) -> Optional[Device]:
+        return self.devices.get_one_from_enum(DeviceEnum.GOD_PARTICLE)
 
     def mute_for(self, duration: int) -> None:
         """

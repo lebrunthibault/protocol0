@@ -214,10 +214,10 @@ class DeviceEnum(AbstractEnum):
         return [
             [
                 DeviceEnumGroup("EQ", [cls.EQ_EIGHT, cls.PRO_Q_3]),
-                cls.UTILITY,
                 DeviceEnumGroup(
                     "Meter", [cls.PSY_SCOPE, cls.M_ANALYZER, cls.YOULEAN, cls.M_STEREO_SCOPE]
                 ),
+                cls.UTILITY,
             ],
             [
                 DeviceEnumGroup(
