@@ -10,6 +10,7 @@ from protocol0.application.command.LoadDeviceCommand import LoadDeviceCommand
 from protocol0.application.command.LoadMinitaurCommand import LoadMinitaurCommand
 from protocol0.application.command.LoadRev2Command import LoadRev2Command
 from protocol0.application.command.ReloadGodParticleCommand import ReloadGodParticleCommand
+from protocol0.application.command.ToggleCpuHeavyDevicesCommand import ToggleCpuHeavyDevicesCommand
 from protocol0.application.command.ToggleRackChainCommand import ToggleRackChainCommand
 
 router = APIRouter()
@@ -33,6 +34,11 @@ async def load_minitaur():
 @router.get("/reload_god_particle")
 async def reload_god_particle():
     p0_script_client().dispatch(ReloadGodParticleCommand())
+
+
+@router.get("/toggle_cpu_heavy")
+async def toggle_cpu_heavy():
+    p0_script_client().dispatch(ToggleCpuHeavyDevicesCommand())
 
 
 @router.get("/toggle_rack_chain")
