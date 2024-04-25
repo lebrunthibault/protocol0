@@ -38,7 +38,7 @@ def find_parent_rack(track: SimpleTrack, device: Device) -> Optional[RackDevice]
 
 
 def _switch_master_cpu_devices() -> bool:
-    god_particle = Song.master_track().devices.get_one_from_enum(DeviceEnum.GOD_PARTICLE)
+    god_particle = Song.master_track().god_particle
 
     # switch god particle
     if not god_particle:
@@ -50,7 +50,10 @@ def _switch_master_cpu_devices() -> bool:
     except IndexError:
         return False
 
-    if next_device.enum != DeviceEnum.L2_LIMITER or next_device.is_enabled == god_particle.is_enabled:
+    if (
+        next_device.enum != DeviceEnum.L2_LIMITER
+        or next_device.is_enabled == god_particle.is_enabled
+    ):
         return False
 
     next_device.toggle()
@@ -58,7 +61,8 @@ def _switch_master_cpu_devices() -> bool:
 
     return True
 
-def _switch_black_box_devices():
+
+def _switch_black_box_devices() -> None:
     for track in Song.simple_tracks():
         black_box = track.devices.get_one_from_enum(DeviceEnum.BLACK_BOX)
 
@@ -72,12 +76,17 @@ def _switch_black_box_devices():
             Backend.client().show_warning(f"Blackbox not set up property on {track}")
             continue
 
-        if next_device.enum in (DeviceEnum.SATURATOR, DeviceEnum.OVERDRIVE, DeviceEnum.DYNAMIC_TUBE) or next_device.is_enabled == black_box.is_enabled:
+        if (
+            next_device.enum
+            in (DeviceEnum.SATURATOR, DeviceEnum.OVERDRIVE, DeviceEnum.DYNAMIC_TUBE)
+            or next_device.is_enabled == black_box.is_enabled
+        ):
             Backend.client().show_warning(f"Blackbox not set up property on {track}")
             continue
 
         next_device.toggle()
         black_box.toggle()
+
 
 class DeviceService(object):
     def __init__(
@@ -246,3 +255,9 @@ class DeviceService(object):
             return None
 
         _switch_black_box_devices()
+
+        high_cpu_enabled = Song.master_track().god_particle.is_enabled
+        if high_cpu_enabled:
+            StatusBar.show_message("High CPU enabled")
+        else:
+            StatusBar.show_message("Low CPU enabled")

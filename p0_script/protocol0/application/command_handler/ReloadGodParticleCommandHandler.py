@@ -13,7 +13,7 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 class ReloadGodParticleCommandHandler(CommandHandlerInterface):
     def handle(self, command: ReloadGodParticleCommand) -> None:
-        god_particle = Song.master_track().devices.get_one_from_enum(DeviceEnum.GOD_PARTICLE)
+        god_particle = Song.master_track().god_particle
 
         Song.master_track().select()
 
