@@ -47,10 +47,6 @@ class ApplicationView(object):
         cls._INSTANCE._application_view.show_view("Detail/DeviceChain")
 
     @classmethod
-    def show_session(cls) -> None:
-        cls._INSTANCE._application_view.show_view("Session")
-
-    @classmethod
     def show_arrangement(cls) -> None:
         cls._INSTANCE._application_view.show_view("Arranger")
         cls._INSTANCE._recording_component.back_to_arranger = False

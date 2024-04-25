@@ -92,5 +92,4 @@ class ActionGroupMain(ActionGroupInterface):
     def action_test(self) -> None:
         from protocol0.shared.logging.Logger import Logger
 
-        Logger.dev(Song.selected_track().is_collapsed)
-        Song.selected_track().is_collapsed = not Song.selected_track().is_collapsed
+        Logger.dev(Song.selected_device().parameters)

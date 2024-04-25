@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import APIRouter
 from win11toast import toast_async
 
@@ -230,8 +232,8 @@ async def toggle_reference():
 
 
 @router.get("/toggle_reference_filters")
-async def toggle_reference_filters():
-    p0_script_client().dispatch(ToggleReferenceTrackFiltersCommand())
+async def toggle_reference_filters(preset: Optional[str] = None):
+    p0_script_client().dispatch(ToggleReferenceTrackFiltersCommand(preset))
 
 
 @router.get("/show_instrument")
