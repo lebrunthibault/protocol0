@@ -18,6 +18,7 @@ class DeviceParamEnum(AbstractEnum):
     DRIVE = "DRIVE"
     DRY_WET = "DRY_WET"
     FB = "FB"
+    FILTER_PRESET = "FILTER_PRESET"
     FILTER_SWITCH = "FILTER_SWITCH"
     EQ_EIGHT_1_FREQUENCY_A = "FREQUENCY_1_A"
     EQ_EIGHT_8_FREQUENCY_A = "FREQUENCY_8_A"
@@ -55,6 +56,7 @@ class DeviceParamEnum(AbstractEnum):
                 DeviceParamEnum.DEVICE_ON: "Device On",
                 DeviceParamEnum.DRIVE: "Drive",
                 DeviceParamEnum.FB: "FB",
+                DeviceParamEnum.FILTER_PRESET: "Filter Preset",
                 DeviceParamEnum.FILTER_SWITCH: "Filter Switch",
                 DeviceParamEnum.EQ_EIGHT_1_FREQUENCY_A: "1 Frequency A",
                 DeviceParamEnum.EQ_EIGHT_8_FREQUENCY_A: "8 Frequency A",
