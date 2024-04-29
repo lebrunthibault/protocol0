@@ -40,6 +40,10 @@ class MasterTrack(SimpleAudioTrack):
     def god_particle(self) -> Optional[Device]:
         return self.devices.get_one_from_enum(DeviceEnum.GOD_PARTICLE)
 
+    @property
+    def adptr(self) -> Optional[Device]:
+        return self.devices.get_one_from_enum(DeviceEnum.ADPTR_METRIC_AB)
+
     def mute_for(self, duration: int) -> None:
         """
         Master track can not be muted so we set volume to 0

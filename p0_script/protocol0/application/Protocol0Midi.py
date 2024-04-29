@@ -36,5 +36,5 @@ class Protocol0Midi(ControlSurface):
         DomainEventBus.emit(MidiBytesReceivedEvent(midi_bytes))
 
     def _on_midi_bytes_sent_event(self, event: MidiBytesSentEvent) -> None:
-        """Forward midi data to optional midi output ports (e.g. program change for Minitaur)"""
+        """Forward midi data to optional midi output ports (e.g. program change)"""
         self._send_midi(event.midi_bytes)

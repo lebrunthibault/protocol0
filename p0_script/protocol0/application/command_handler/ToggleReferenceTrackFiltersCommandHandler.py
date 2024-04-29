@@ -2,7 +2,6 @@ from protocol0.application.command.ToggleReferenceTrackFiltersCommand import (
     ToggleReferenceTrackFiltersCommand,
 )
 from protocol0.application.command_handler.CommandHandlerInterface import CommandHandlerInterface
-from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.shared.Song import Song
@@ -11,9 +10,8 @@ from protocol0.shared.logging.Logger import Logger
 
 class ToggleReferenceTrackFiltersCommandHandler(CommandHandlerInterface):
     def handle(self, command: ToggleReferenceTrackFiltersCommand) -> None:
-        adptr = Song.master_track().devices.get_one_from_enum(
-            DeviceEnum.ADPTR_METRIC_AB, all_devices=True
-        )
+        adptr = Song.master_track().adptr
+
         if adptr:
             filter_switch = adptr.get_parameter_by_name(DeviceParamEnum.FILTER_SWITCH)
 
@@ -39,8 +37,6 @@ class ToggleReferenceTrackFiltersCommandHandler(CommandHandlerInterface):
                     "high": 0.4,
                 }
 
-                Logger.dev(filter_preset)
-                Logger.dev(filter_preset_to_value[command.filter_preset.lower()])
                 filter_preset.value = filter_preset_to_value[command.filter_preset.lower()]
 
             return None

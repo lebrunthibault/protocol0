@@ -1,5 +1,3 @@
-from typing import Optional
-
 from fastapi import APIRouter
 from win11toast import toast_async
 
@@ -11,10 +9,6 @@ from p0_backend.lib.ableton.ableton import (
 )
 from p0_backend.lib.ableton.analyze_clip_jitter import analyze_test_audio_clip_jitter
 from p0_backend.lib.ableton.automation import set_envelope_loop_length
-from p0_backend.lib.ableton.external_synth_track import (
-    activate_rev2_editor,
-    post_activate_rev2_editor,
-)
 from p0_backend.lib.ableton.interface.browser import preload_sample_category
 from p0_backend.lib.ableton.interface.sample import load_sample_in_simpler
 from p0_backend.lib.ableton.interface.toggle_ableton_button import toggle_ableton_button
@@ -34,20 +28,16 @@ from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongComm
 from protocol0.application.command.ReloadScriptCommand import ReloadScriptCommand
 from protocol0.application.command.ScrollPresetsCommand import ScrollPresetsCommand
 from protocol0.application.command.ShowInstrumentCommand import ShowInstrumentCommand
-from protocol0.application.command.ToggleLimiterCommand import ToggleLimiterCommand
-from protocol0.application.command.ToggleMonoSwitchCommand import ToggleMonoSwitchCommand
-from protocol0.application.command.ToggleReferenceTrackCommand import ToggleReferenceTrackCommand
-from protocol0.application.command.ToggleReferenceTrackFiltersCommand import (
-    ToggleReferenceTrackFiltersCommand,
-)
 from .action_routes import router as action_router
 from .clip_routes import router as clip_router
 from .device_routes import router as device_router
 from .export_routes import router as export_router
 from .keyboard_routes import router as keyboard_router
+from .monitoring_routes import router as monitoring_router
+from .process_routes import router as process_router
 from .record_routes import router as record_router
-from .search_routes import router as search_router
 from .scene_routes import router as scene_router
+from .search_routes import router as search_router
 from .set_routes import router as set_router
 from .track_routes import router as track_router
 
@@ -60,6 +50,8 @@ router.include_router(clip_router, prefix="/clip")
 router.include_router(device_router, prefix="/device")
 router.include_router(export_router, prefix="/export")
 router.include_router(keyboard_router, prefix="/keyboard")
+router.include_router(monitoring_router, prefix="/monitoring")
+router.include_router(process_router, prefix="/process")
 router.include_router(record_router, prefix="/record")
 router.include_router(search_router, prefix="/search")
 router.include_router(scene_router, prefix="/scene")
@@ -120,16 +112,6 @@ def _load_sample_in_simpler(sample_path: str):
 @router.get("/set_envelope_loop_length")
 def _set_envelope_loop_length(length: int):
     set_envelope_loop_length(length)
-
-
-@router.get("/activate_rev2_editor")
-def _activate_rev2_editor():
-    activate_rev2_editor()
-
-
-@router.get("/post_activate_rev2_editor")
-def _post_activate_rev2_editor():
-    post_activate_rev2_editor()
 
 
 @router.get("/start_set_profiling")
@@ -214,26 +196,6 @@ async def drum_rack_to_simpler():
 @router.get("/scroll_presets")
 async def scroll_presets(direction: str):
     p0_script_client().dispatch(ScrollPresetsCommand(go_next=direction == "next"))
-
-
-@router.get("/toggle_mono")
-async def toggle_mono():
-    p0_script_client().dispatch(ToggleMonoSwitchCommand())
-
-
-@router.get("/toggle_limiter")
-async def toggle_limiter():
-    p0_script_client().dispatch(ToggleLimiterCommand())
-
-
-@router.get("/toggle_reference")
-async def toggle_reference():
-    p0_script_client().dispatch(ToggleReferenceTrackCommand())
-
-
-@router.get("/toggle_reference_filters")
-async def toggle_reference_filters(preset: Optional[str] = None):
-    p0_script_client().dispatch(ToggleReferenceTrackFiltersCommand(preset))
 
 
 @router.get("/show_instrument")

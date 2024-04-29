@@ -1,7 +1,6 @@
 from typing import Optional, cast
 
 from protocol0.domain.lom.instrument.InstrumentInterface import InstrumentInterface
-from protocol0.domain.lom.instrument.instrument.InstrumentMinitaur import InstrumentMinitaur
 from protocol0.domain.lom.track.group_track.AbstractGroupTrack import AbstractGroupTrack
 from protocol0.domain.lom.track.group_track.ext_track.ExtArmState import ExtArmState
 from protocol0.domain.lom.track.group_track.ext_track.ExtMonitoringState import ExtMonitoringState
@@ -94,5 +93,5 @@ class ExternalSynthTrack(AbstractGroupTrack):
             return self.base_track
 
     @property
-    def instrument(self) -> InstrumentInterface:
-        return self.midi_track.instrument or InstrumentMinitaur(device=None)
+    def instrument(self) -> Optional[InstrumentInterface]:
+        return self.midi_track.instrument

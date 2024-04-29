@@ -35,6 +35,7 @@ class DeviceParamEnum(AbstractEnum):
     OUTPUT_GAIN = "OUTPUT_GAIN"
     PATTERN = "PATTERN"
     REVERB_INPUT = "REVERB_INPUT"
+    STEREO_MODE = "STEREO_MODE"
     UTILITY_SILENT_GAIN = "UTILITY_SILENT_GAIN"
     UTILITY_MID_SIDE = "UTILITY_MID_SIDE"
     UTILITY_WIDTH = "UTILITY_WIDTH"
@@ -72,6 +73,7 @@ class DeviceParamEnum(AbstractEnum):
                 DeviceParamEnum.OUTPUT: "Output",
                 DeviceParamEnum.OUTPUT_GAIN: "Output Gain",
                 DeviceParamEnum.PATTERN: "Pattern",
+                DeviceParamEnum.STEREO_MODE: "Stereo Mode",
                 DeviceParamEnum.UTILITY_SILENT_GAIN: "Gain",
                 DeviceParamEnum.UTILITY_MID_SIDE: "Mid/Side Balance",
                 DeviceParamEnum.UTILITY_WIDTH: "Stereo Width",

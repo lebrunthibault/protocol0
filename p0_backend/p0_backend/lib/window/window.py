@@ -1,5 +1,5 @@
 from time import sleep
-from typing import Tuple, Union
+from typing import Union
 
 import psutil
 import pythoncom
@@ -12,15 +12,6 @@ from psutil import NoSuchProcess
 from p0_backend.lib.ableton.interface.coords import RectCoords, Coords
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.window.find_window import SearchTypeEnum, find_window_handle_by_enum
-
-
-def get_window_position(handle: int) -> Tuple[int, int, int, int]:
-    rect = win32gui.GetWindowRect(handle)
-    x = rect[0]
-    y = rect[1]
-    w = rect[2] - x
-    h = rect[3] - y
-    return int(x), int(y), int(w), int(h)
 
 
 def focus_window(

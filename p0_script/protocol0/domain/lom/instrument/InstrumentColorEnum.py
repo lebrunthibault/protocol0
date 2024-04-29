@@ -7,4 +7,3 @@ class InstrumentColorEnum(AbstractEnum):
     SERUM = 18
     REV2 = 23
     KONTAKT = 26
-    MINITAUR = 69

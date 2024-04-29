@@ -399,7 +399,9 @@ class DeviceEnum(AbstractEnum):
             DeviceEnum.BLACK_BOX,
             DeviceEnum.DECAPITATOR,
             DeviceEnum.DRUM_BUSS,
+            DeviceEnum.DYNAMIC_TUBE,
             DeviceEnum.JJP_STRINGS,
+            DeviceEnum.OVERDRIVE,
             DeviceEnum.SATURATOR,
             DeviceEnum.SATURN_2,
         ]

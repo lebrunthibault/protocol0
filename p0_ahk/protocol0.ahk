@@ -128,25 +128,34 @@ return
 	callBackend("scene/duplicate")
 return
 !r::
-	callBackend("toggle_reference")
+	callBackend("monitoring/toggle_reference")
 return
 !+r::
-	callBackend("toggle_reference_filters")
+	callBackend("monitoring/toggle_reference_filters")
 return
 !Numpad1::
-	callBackend("toggle_reference_filters?preset=sub")
+	callBackend("monitoring/toggle_reference_filters?preset=sub")
 return
 !Numpad2::
-	callBackend("toggle_reference_filters?preset=bass")
+	callBackend("monitoring/toggle_reference_filters?preset=bass")
 return
 !Numpad3::
-	callBackend("toggle_reference_filters?preset=low_mid")
+	callBackend("monitoring/toggle_reference_filters?preset=low_mid")
 return
 !Numpad4::
-	callBackend("toggle_reference_filters?preset=mid")
+	callBackend("monitoring/toggle_reference_filters?preset=mid")
 return
 !Numpad5::
-	callBackend("toggle_reference_filters?preset=high")
+	callBackend("monitoring/toggle_reference_filters?preset=high")
+return
+!Numpad7::
+	callBackend("monitoring/toggle_reference_stereo_mode?stereo_mode=mono")
+return
+!Numpad8::
+	callBackend("monitoring/toggle_reference_stereo_mode?stereo_mode=sides")
+return
+!Numpad9::
+	callBackend("monitoring/toggle_reference_stereo_mode?stereo_mode=stereo")
 return
 ^+f::
 	callBackend("search/track")
@@ -154,16 +163,15 @@ return
 
 #IfWinActive
 
-; minitaur editor
-#IfWinActive ahk_class JUCE_18999b05416
-^space::
-	callBackend("scene/fire_selected")
-return
-#IfWinActive
-
 ; splice window
 #IfWinActive ahk_exe Splice.exe
 ^space::
 	callBackend("scene/fire_selected")
+return
+!r::
+	callBackend("monitoring/toggle_reference")
+return
+!+r::
+	callBackend("monitoring/toggle_reference_filters")
 return
 #IfWinActive

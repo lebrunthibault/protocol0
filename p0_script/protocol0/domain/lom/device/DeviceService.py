@@ -12,7 +12,6 @@ from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
 from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import ExternalSynthTrack
-from protocol0.domain.lom.track.group_track.ext_track.SimpleMidiExtTrack import SimpleMidiExtTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.BrowserServiceInterface import BrowserServiceInterface
@@ -78,7 +77,7 @@ def _switch_black_box_devices() -> None:
 
         if (
             next_device.enum
-            in (DeviceEnum.SATURATOR, DeviceEnum.OVERDRIVE, DeviceEnum.DYNAMIC_TUBE)
+            not in (DeviceEnum.SATURATOR, DeviceEnum.OVERDRIVE, DeviceEnum.DYNAMIC_TUBE)
             or next_device.is_enabled == black_box.is_enabled
         ):
             Backend.client().show_warning(f"Blackbox not set up property on {track}")
@@ -143,20 +142,18 @@ class DeviceService(object):
         seq.add(Undo.end_undo_step)
         return seq.done()
 
-    def _get_instrument_track(self, device_enum: DeviceEnum) -> SimpleTrack:
+    def _get_instrument_track(self) -> SimpleTrack:
         selected_track = Song.selected_track()
         current_track = Song.current_track()
 
         # only case when we want to select the midi track of an ext track
-        if isinstance(selected_track, SimpleMidiExtTrack) and device_enum == DeviceEnum.REV2_EDITOR:
-            return selected_track
-        elif isinstance(current_track, ExternalSynthTrack):
+        if isinstance(current_track, ExternalSynthTrack):
             return current_track.audio_track
 
         return selected_track
 
     def _load_device_select_track(self, device_enum: DeviceEnum) -> None:
-        track = self._get_instrument_track(device_enum)
+        track = self._get_instrument_track()
 
         if device_enum.is_instrument:
             track.select()
