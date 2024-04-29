@@ -1,12 +1,15 @@
 import subprocess
 import sys
 
+import psutil
 import win32process
 from loguru import logger
 from psutil import Process, NoSuchProcess
 
-from p0_backend.settings import Settings
+from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.window.find_window import find_window_handle_by_enum, SearchTypeEnum
+from p0_backend.settings import Settings
+from p0_backend.lib.notification import notify
 
 settings = Settings()
 
@@ -46,3 +49,18 @@ def kill_window_by_criteria(name: str, search_type: SearchTypeEnum = SearchTypeE
                 return
         else:
             return
+
+
+def get_ableton_pid() -> int:
+    for proc in psutil.process_iter():
+        if "Ableton Live" in proc.name():
+            return proc.pid
+
+    raise Protocol0Error("Ableton process not found")
+
+
+def measure_cpu_usage(interval: float = 10) -> float:
+    p = psutil.Process(get_ableton_pid())
+    notify(f"Measuring cpu usage for the next {interval} seconds")
+
+    return p.cpu_percent(interval=interval) / psutil.cpu_count()

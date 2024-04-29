@@ -6,13 +6,12 @@ from typing import List, Optional, Tuple, Iterator
 from PIL import ImageGrab
 from loguru import logger
 
-from p0_backend.settings import Settings
 from p0_backend.lib.ableton.interface.coords import Coords, RectCoords
 from p0_backend.lib.ableton.interface.pixel_color_enum import PixelColorEnum, RGBColor
 from p0_backend.lib.decorators import timeit
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.mouse.mouse import move_to
-from p0_backend.lib.window.window import get_window_position
+from p0_backend.settings import Settings
 
 settings = Settings()
 _DEBUG = False
@@ -108,13 +107,6 @@ def get_coords_for_color(
         return pixel_box.get_coords(i)
 
     raise Protocol0Error(f"colors not found in screen: {colors}")
-
-
-def get_absolute_coords(handle: int, coords: Coords) -> Coords:
-    (x, y, w, h) = get_window_position(handle)
-    (x_coords, y_coords) = coords
-
-    return x + x_coords, y + y_coords
 
 
 def get_pixel_color_at(coords: Coords) -> Optional[PixelColorEnum]:

@@ -5,7 +5,6 @@ from typing import Optional
 from protocol0.application.CommandBus import CommandBus
 from protocol0.application.command.ResetPlaybackCommand import ResetPlaybackCommand
 from protocol0.domain.lom.instrument.InstrumentActivatedEvent import InstrumentActivatedEvent
-from protocol0.domain.lom.instrument.instrument.InstrumentMinitaur import InstrumentMinitaur
 from protocol0.domain.lom.instrument.preset.PresetProgramSelectedEvent import (
     PresetProgramSelectedEvent,
 )
@@ -75,8 +74,6 @@ class AudioLatencyAnalyzerService(object):
     def _generate_test_notes(self) -> Sequence:
         track = Song.current_external_synth_track()
         pitch = 84
-        if isinstance(track.instrument, InstrumentMinitaur):
-            pitch += 24
         notes = [
             Note(pitch=pitch, velocity=127, start=float(i) / 2, duration=0.25) for i in range(0, 8)
         ]

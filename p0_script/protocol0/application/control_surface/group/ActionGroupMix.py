@@ -12,3 +12,10 @@ class ActionGroupClip(ActionGroupInterface):
             name="log mix state",
             on_press=self._container.get(MixingService).log_state,
         )
+
+        # VOLume encoder
+        self.add_encoder(
+            identifier=2,
+            name="volume",
+            on_scroll=self._container.get(MixingService).scroll_all_tracks_volume,
+        )

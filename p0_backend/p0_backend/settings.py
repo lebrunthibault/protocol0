@@ -52,7 +52,6 @@ class Settings(BaseSettings):
 
     http_api_url: str = "http://127.0.0.1:8000"
 
-    rev2_editor_window_title: str = "REV2Editor/m"
     instrument_tracks_folder: str = "other\\instruments\\default"
     log_window_title: str = "Protocol0 logs"
 
