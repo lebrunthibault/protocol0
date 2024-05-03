@@ -133,6 +133,9 @@ return
 !+r::
 	callBackend("monitoring/toggle_reference_filters")
 return
+!Numpad0::
+	callBackend("monitoring/toggle_reference_filters")
+return
 !Numpad1::
 	callBackend("monitoring/toggle_reference_filters?preset=sub")
 return
