@@ -38,11 +38,11 @@ class MasterTrack(SimpleAudioTrack):
 
     @property
     def god_particle(self) -> Optional[Device]:
-        return self.devices.get_one_from_enum(DeviceEnum.GOD_PARTICLE)
+        return self.devices.get_one_from_enum(DeviceEnum.GOD_PARTICLE, all_devices=True)
 
     @property
     def adptr(self) -> Optional[Device]:
-        return self.devices.get_one_from_enum(DeviceEnum.ADPTR_METRIC_AB)
+        return self.devices.get_one_from_enum(DeviceEnum.ADPTR_METRIC_AB, all_devices=True)
 
     def mute_for(self, duration: int) -> None:
         """
