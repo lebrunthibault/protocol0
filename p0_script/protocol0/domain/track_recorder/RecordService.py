@@ -11,6 +11,7 @@ from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackCompo
 from protocol0.domain.lom.song.components.QuantizationComponent import QuantizationComponent
 from protocol0.domain.lom.song.components.SceneCrudComponent import SceneCrudComponent
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
+from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitoringStateEnum
 from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
 from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import (
     ExternalSynthTrack,
@@ -18,6 +19,7 @@ from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import 
 from protocol0.domain.lom.track.routing.InputRoutingChannelEnum import InputRoutingChannelEnum
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
+from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.ErrorRaisedEvent import ErrorRaisedEvent
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
@@ -263,13 +265,6 @@ class RecordService(object):
         source_track = Song.selected_track()
         source_track.solo = True
 
-        def resample() -> Optional[Sequence]:
-            track = Song.selected_track()
-            track.input_routing.track = source_track
-            track.input_routing.channel = InputRoutingChannelEnum.POST_FX
-
-            return self.record_track(track, record_type)
-
         def get_existing_resampling_track() -> Optional[SimpleTrack]:
             try:
                 next_track = list(Song.simple_tracks())[source_track.index + 1]
@@ -298,6 +293,16 @@ class RecordService(object):
         else:
             seq.add(partial(track_creator, source_track.index + 1))
 
-        seq.add(resample)
+        def set_routing() -> None:
+            track = Song.selected_track()
+            track.input_routing.track = source_track
+            track.input_routing.channel = InputRoutingChannelEnum.POST_FX
+            track.current_monitoring_state = CurrentMonitoringStateEnum.OFF
+            track.arm_state.arm()
+
+        seq.add(set_routing)
+
+        if ApplicationView.is_session_visible():
+            seq.add(lambda: self.record_track(Song.selected_track(), record_type))
 
         return seq.done()

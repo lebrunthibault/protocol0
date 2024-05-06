@@ -26,6 +26,7 @@ class DeviceEnum(AbstractEnum):
     DECAPITATOR = "Decapitator"
     DE_ESSER = "DeEsser Stereo"
     DELAY = "Delay"
+    DIVA = "Diva"
     DP_METER_5 = "dpMeter5"
     DRUM_BUSS = "Drum Buss"
     DOUBLER2 = "Doubler2 Stereo"
