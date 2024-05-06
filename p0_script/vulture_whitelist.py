@@ -105,3 +105,4 @@ _.has_category  # unused method (protocol0\domain\lom\track\abstract_track\Abstr
 only_in_session_view  # unused function (protocol0\domain\shared\ApplicationView.py:13)
 _.toggle_cpu_heavy_devices  # unused method (protocol0\domain\lom\device\DeviceService.py:250)
 _.freeze  # unused method (protocol0\domain\lom\track\simple_track\SimpleTrack.py:470)
+DIVA  # unused variable (protocol0\domain\lom\device\DeviceEnum.py:29)
