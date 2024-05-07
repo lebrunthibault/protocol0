@@ -44,6 +44,11 @@ def _switch_master_cpu_devices() -> bool:
     if not god_particle:
         return False
 
+    god_particle_rack = find_parent_rack(Song.master_track(), god_particle)
+
+    if god_particle_rack:
+        god_particle = god_particle_rack
+
     try:
         master_devices = list(Song.master_track().devices)
         next_device: Device = master_devices[master_devices.index(god_particle) + 1]
@@ -51,9 +56,8 @@ def _switch_master_cpu_devices() -> bool:
         return False
 
     if (
-        next_device.enum != DeviceEnum.L2_LIMITER
-        or next_device.is_enabled == god_particle.is_enabled
-    ):
+        next_device.enum != DeviceEnum.L2_LIMITER and not isinstance(next_device, RackDevice)
+    ) or next_device.is_enabled == god_particle.is_enabled:
         return False
 
     next_device.toggle()
