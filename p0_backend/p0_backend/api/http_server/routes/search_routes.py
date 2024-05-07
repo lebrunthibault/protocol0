@@ -3,7 +3,6 @@ from threading import Timer, Thread
 from typing import List
 
 from fastapi import APIRouter
-from loguru import logger
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.lib.ableton.ableton import focus_ableton
@@ -35,8 +34,6 @@ def search_track() -> None:
 
     root = tk.Tk()
     root.overrideredirect(True)
-    logger.success(f"window id: {root.winfo_id()}")
-    logger.success(f"frame: {root.frame()}")
 
     focus_window_by_handle(root.winfo_id())
 

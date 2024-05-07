@@ -13,7 +13,4 @@ async def _measure_cpu_usage():
     p0_script_client().dispatch(PlayPauseSongCommand())
 
     cpu_usage = measure_cpu_usage()
-    from loguru import logger
-
-    logger.success(cpu_usage)
     notify(f"Ableton Cpu usage : {cpu_usage}%")

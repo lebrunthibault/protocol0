@@ -219,8 +219,10 @@ class Song(object):
         return (track for track in cls.abstract_tracks() if track.arm_state.is_armed)
 
     @classmethod
-    def master_track(cls) -> Optional["MasterTrack"]:
-        return cls._INSTANCE._track_mapper_service._master_track
+    def master_track(cls) -> "MasterTrack":
+        from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
+
+        return cast(MasterTrack, cls._INSTANCE._track_mapper_service._master_track)
 
     @classmethod
     def mix_buses_track(cls) -> Optional["MixBusesTrack"]:

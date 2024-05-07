@@ -47,7 +47,7 @@ class TrackMapperService(SlotManager):
 
         self._live_track_id_to_simple_track: Dict[int, SimpleTrack] = collections.OrderedDict()
         self._midi_note_tracks: List[SimpleMidiTrack] = []
-        self._master_track: Optional[SimpleTrack] = None
+        self._master_track: Optional[MasterTrack] = None
 
         self.tracks_listener.subject = self._live_song
         DomainEventBus.subscribe(SimpleTrackCreatedEvent, self._on_simple_track_created_event)
