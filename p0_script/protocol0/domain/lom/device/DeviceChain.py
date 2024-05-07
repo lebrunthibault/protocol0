@@ -18,11 +18,7 @@ class DeviceChain(SlotManager, Observable):
         self._devices_listener()
 
     def __repr__(self) -> str:
-        out = "DeviceChain(name=%s" % smart_string(self.name)
-        if len(self.devices):
-            out += ", first_device=%s" % self.devices[0]
-
-        return out + ")"
+        return f"DeviceChain(name={smart_string(self.name)})"
 
     @property
     def name(self) -> str:
@@ -30,10 +26,15 @@ class DeviceChain(SlotManager, Observable):
 
     @subject_slot("devices")
     def _devices_listener(self) -> None:
+        """NB: This listener seems broken and should be called manually"""
         from protocol0.domain.lom.device.Device import Device
 
         self.devices = [Device.make(device) for device in self._chain.devices]
         self.notify_observers()
+
+    def delete_device(self, device_index: int) -> None:
+        self._chain.delete_device(device_index)
+        self._devices_listener()
 
     def disconnect(self) -> None:
         super(DeviceChain, self).disconnect()

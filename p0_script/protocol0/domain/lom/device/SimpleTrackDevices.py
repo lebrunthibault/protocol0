@@ -1,10 +1,11 @@
 from itertools import chain
-from typing import List, Optional, Iterator, cast
+from typing import List, Optional, Iterator, cast, Dict
 
 import Live
 from _Framework.SubjectSlot import subject_slot, SlotManager
 
 from protocol0.domain.lom.device.Device import Device
+from protocol0.domain.lom.device.DeviceChain import DeviceChain
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device.MixerDevice import MixerDevice
 from protocol0.domain.lom.device.RackDevice import RackDevice
@@ -15,13 +16,15 @@ from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.observer.Observable import Observable
 
+DeviceWithChainMapping = Dict[Device, Optional[DeviceChain]]
+
 
 class SimpleTrackDevices(SlotManager, Observable):
     def __init__(self, live_track: Live.Track.Track) -> None:
         super(SimpleTrackDevices, self).__init__()
         self._track = live_track
         self._devices: List[Device] = []
-        self._all_devices: List[Device] = []
+        self._all_devices: DeviceWithChainMapping = {}
         self._devices_listener.subject = live_track
         self._devices_mapping = LiveObjectMapping(Device.make)
         self.mixer_device = MixerDevice(live_track.mixer_device)
@@ -49,7 +52,8 @@ class SimpleTrackDevices(SlotManager, Observable):
             Scheduler.defer(added_device.on_added)  # type: ignore[attr-defined]
         self._devices = cast(List[Device], self._devices_mapping.all)
         self._all_devices = self._find_all_devices(self._devices)
-        for device in self._all_devices:
+
+        for device in self.all:
             if isinstance(device, RackDevice):
                 device.register_observer(self)
 
@@ -57,6 +61,10 @@ class SimpleTrackDevices(SlotManager, Observable):
 
     @property
     def all(self) -> List[Device]:
+        return list(self._all_devices.keys())
+
+    @property
+    def all_devices_with_chain(self) -> DeviceWithChainMapping:
         return self._all_devices
 
     @property
@@ -81,32 +89,33 @@ class SimpleTrackDevices(SlotManager, Observable):
         self, device_enum: DeviceEnum, all_devices: bool = False
     ) -> Optional[Device]:
         if all_devices:
-            return find_if(device_enum.matches, self._all_devices)
+            return find_if(device_enum.matches, self.all)
         else:
             return find_if(device_enum.matches, self._devices)
 
     def _find_all_devices(
         self, devices: Optional[List[Device]], only_visible: bool = False
-    ) -> List[Device]:
+    ) -> DeviceWithChainMapping:
         """Returns a list with all devices from a track or chain"""
-        all_devices = []
+        all_devices: DeviceWithChainMapping = {}
         if devices is None:
-            return []
+            return {}
         for device in filter(None, devices):  # type: Device
+            all_devices[device] = None
+
             if not isinstance(device, RackDevice):
-                all_devices += [device]
                 continue
 
             if device.can_have_drum_pads and device.can_have_chains and device.selected_chain:
-                all_devices += chain(
-                    [device], self._find_all_devices(device.selected_chain.devices)
-                )
-            elif isinstance(device, RackDevice):
-                all_devices += [device]
-                for device_chain in device.chains:
-                    all_devices += self._find_all_devices(
-                        device_chain.devices, only_visible=only_visible
-                    )
+                chains = [device.selected_chain]
+            else:
+                chains = device.chains
+
+            for device_chain in chains:
+                for chain_device in self._find_all_devices(
+                    device_chain.devices, only_visible=only_visible
+                ):
+                    all_devices[chain_device] = device_chain
 
         return all_devices
 
@@ -129,9 +138,17 @@ class SimpleTrackDevices(SlotManager, Observable):
         if device not in self.all:
             return None
 
-        device_index = self._devices.index(device)
-        self._track.delete_device(device_index)  # noqa
+        device_chain = self.all_devices_with_chain[device]
+
+        if device_chain:
+            device_chain.delete_device(device_chain.devices.index(device))
+        else:
+            device_index = self._devices.index(device)
+            self._track.delete_device(device_index)  # noqa
+
         self.build()
+
+        return None
 
     @property
     def parameters(self) -> List[DeviceParameter]:
