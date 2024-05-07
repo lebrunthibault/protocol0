@@ -4,6 +4,7 @@ from typing import List, Optional, Union, Any, TYPE_CHECKING
 from protocol0.domain.lom.device.DeviceEnumGroup import DeviceEnumGroup
 from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
+from protocol0.domain.shared.ui.ColorEnum import ColorEnum
 from protocol0.shared.AbstractEnum import AbstractEnum
 
 if TYPE_CHECKING:
@@ -485,4 +486,12 @@ class DeviceEnum(AbstractEnum):
             DeviceEnum.SYLENTH1: "Sylenth1",
             DeviceEnum.SYLENTH1_RACK: "Sylenth1",
             DeviceEnum.SERUM: "Serum",
+            DeviceEnum.SPLICE_BRIDGE: "Splice",
         }.get(self, self.instrument_enum.value)
+
+    @property
+    def track_color(self) -> int:
+        assert self.is_instrument
+        return {
+            DeviceEnum.SPLICE_BRIDGE: ColorEnum.FOCUSED.value,
+        }.get(self, 0)

@@ -119,13 +119,14 @@ class DeviceService(object):
         seq = Sequence()
 
         if device_enum.is_instrument:
-            if create_track and track.instrument:
+            if create_track:
                 seq.add(self._track_crud_component.create_midi_track)
                 seq.add(lambda: setattr(Song.selected_track(), "name", device_enum.track_name))
+                if device_enum.track_color:
+                    seq.add(
+                        lambda: setattr(Song.selected_track(), "color", device_enum.track_color)
+                    )
 
-                # if selected track is empty, delete it to make some room
-                # if len(track.clips) == 0 and not track.has_category(TrackCategoryEnum.BASS):
-                #     seq.add(track.delete)
             elif track.instrument:
                 instrument_device = track.instrument_rack_device or track.instrument.device
                 if instrument_device:
