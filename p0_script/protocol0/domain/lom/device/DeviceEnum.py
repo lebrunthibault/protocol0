@@ -311,11 +311,6 @@ class DeviceEnum(AbstractEnum):
             return 0
 
     @property
-    def is_exclusive(self) -> int:
-        """Only one instance by track"""
-        return self in [DeviceEnum.GOD_PARTICLE]
-
-    @property
     def device_group_position(self) -> int:
         predicates = [
             lambda d: d.is_instrument,

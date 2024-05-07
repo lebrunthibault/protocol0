@@ -5,6 +5,7 @@ import Live
 
 from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.device.Device import Device
+from protocol0.domain.lom.device.DeviceChain import DeviceChain
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device.DeviceLoadedEvent import DeviceLoadedEvent
 from protocol0.domain.lom.device.DryWetDeviceAddedEvent import DryWetDeviceAddedEvent
@@ -161,8 +162,9 @@ class DeviceService(object):
 
         device_to_select = self._get_device_to_select_for_insertion(track, device_enum)
         if device_to_select:
-            track.device_insert_mode = Live.Track.DeviceInsertMode.selected_left
+            track.device_insert_mode = Live.Track.DeviceInsertMode.selected_right
             self._device_component.select_device(track, device_to_select)
+
         else:
             track.device_insert_mode = Live.Track.DeviceInsertMode.selected_right
             if len(list(track.devices)) > 0:
@@ -175,6 +177,11 @@ class DeviceService(object):
             parameter = device.get_parameter_by_name(device.enum.default_parameter)
             self._device_component.selected_parameter = parameter
 
+    def move_device(self, device: Device, chain: DeviceChain, position: int) -> Sequence:
+        self._move_device(device._device, chain._chain, position)
+        chain._devices_listener()  # workaround as chain devices listener doesn't seem to be called
+        return Sequence().defer().done()
+
     def _on_dry_wet_device_added_event(self, _: DryWetDeviceAddedEvent) -> None:
         dry_wet_device = Song.selected_device()
         if not isinstance(dry_wet_device, RackDevice):
@@ -186,7 +193,7 @@ class DeviceService(object):
         except IndexError:
             return
 
-        self._move_device(next_device._device, dry_wet_device.chains[1]._chain, 0)
+        self.move_device(next_device, dry_wet_device.chains[1], 0)
 
     def _show_default_automation(self, clip: Clip) -> None:
         device = Song.selected_track().devices.selected
@@ -202,17 +209,11 @@ class DeviceService(object):
         if len(list(track.devices)) == 0:
             return None
 
-        # if we want to "reload" an existing device (hack for The God Particle)
-        if device_enum.is_exclusive:
-            previous_device = track.devices.get_one_from_enum(device_enum)
-            if previous_device:
-                return previous_device
-
         for device in track.devices:
             if not device.enum or device.is_instrument or device.is_midi:
                 continue
 
-            if device.enum.device_group_position > device_enum.device_group_position:
+            if device.enum.device_group_position >= device_enum.device_group_position:
                 return device
 
         return None
