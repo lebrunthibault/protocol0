@@ -160,8 +160,9 @@ return
 !Numpad9::
 	callBackend("monitoring/toggle_reference_stereo_mode?stereo_mode=stereo")
 return
-^+f::
+~^+f::
 	callBackend("search/track")
+	Send ^+f  ; cancel Ableton Follow
 return
 
 #IfWinActive
