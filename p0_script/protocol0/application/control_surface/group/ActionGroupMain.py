@@ -6,6 +6,8 @@ from protocol0.domain.lom.song.components.TempoComponent import TempoComponent
 
 # noinspection SpellCheckingInspection
 from protocol0.domain.track_recorder.RecordService import RecordService
+from protocol0.shared.Song import Song
+from protocol0.shared.sequence.Sequence import Sequence
 
 
 class ActionGroupMain(ActionGroupInterface):
@@ -43,4 +45,12 @@ class ActionGroupMain(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        pass
+        seq = Sequence()
+
+        for track in Song.simple_tracks():
+            if track.is_foldable or track.has_midi_output:
+                continue
+
+            seq.add(track.add_to_selection)
+
+        seq.done()

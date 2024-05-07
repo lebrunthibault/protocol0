@@ -48,18 +48,6 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
-    def activate_rev2_editor(
-        self,
-    ):  # noqa: E501
-        # type: () -> None
-        """
-        Activate Rev2 Editor  # noqa: E501
-        """
-
-        payload = {"method": "GET", "path": "/activate_rev2_editor", "params": {}}
-
-        self._send_dict_as_midi(payload)
-
     def active_set(
         self,
     ):  # noqa: E501
@@ -69,6 +57,18 @@ class P0BackendClient(object):
         """
 
         payload = {"method": "GET", "path": "/set/active", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
+    def add_track_to_selection(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Add Track To Selection  # noqa: E501
+        """
+
+        payload = {"method": "GET", "path": "/track/add_track_to_selection", "params": {}}
 
         self._send_dict_as_midi(payload)
 
@@ -460,30 +460,6 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
-    def load_minitaur(
-        self,
-    ):  # noqa: E501
-        # type: () -> None
-        """
-        Load Minitaur  # noqa: E501
-        """
-
-        payload = {"method": "GET", "path": "/device/load_minitaur", "params": {}}
-
-        self._send_dict_as_midi(payload)
-
-    def load_rev2(
-        self,
-    ):  # noqa: E501
-        # type: () -> None
-        """
-        Load Rev2  # noqa: E501
-        """
-
-        payload = {"method": "GET", "path": "/device/load_rev2", "params": {}}
-
-        self._send_dict_as_midi(payload)
-
     def load_sample_in_simpler(
         self,
         sample_path,
@@ -524,6 +500,30 @@ class P0BackendClient(object):
         """
 
         payload = {"method": "GET", "path": "/log_song_stats", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
+    def loop_selected(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Loop Selected  # noqa: E501
+        """
+
+        payload = {"method": "GET", "path": "/clip/loop_selected", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
+    def measure_cpu_usage(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Measure Cpu Usage  # noqa: E501
+        """
+
+        payload = {"method": "GET", "path": "/process/measure_cpu_usage", "params": {}}
 
         self._send_dict_as_midi(payload)
 
@@ -646,18 +646,6 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
-    def post_activate_rev2_editor(
-        self,
-    ):  # noqa: E501
-        # type: () -> None
-        """
-        Post Activate Rev2 Editor  # noqa: E501
-        """
-
-        payload = {"method": "GET", "path": "/post_activate_rev2_editor", "params": {}}
-
-        self._send_dict_as_midi(payload)
-
     def post_current_state(
         self,
         post_current_state_payload,
@@ -736,6 +724,18 @@ class P0BackendClient(object):
         """
 
         payload = {"method": "GET", "path": "/reload_ableton", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
+    def reload_god_particle(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Reload God Particle  # noqa: E501
+        """
+
+        payload = {"method": "GET", "path": "/device/reload_god_particle", "params": {}}
 
         self._send_dict_as_midi(payload)
 
@@ -889,6 +889,18 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
+    def search_track(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Search Track  # noqa: E501
+        """
+
+        payload = {"method": "GET", "path": "/search/track", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
     def select(
         self,
         name,
@@ -917,18 +929,6 @@ class P0BackendClient(object):
         """
 
         payload = {"method": "GET", "path": "/keyboard/select_and_copy", "params": {}}
-
-        self._send_dict_as_midi(payload)
-
-    def select_and_delete(
-        self,
-    ):  # noqa: E501
-        # type: () -> None
-        """
-        Select And Delete  # noqa: E501
-        """
-
-        payload = {"method": "GET", "path": "/keyboard/select_and_delete", "params": {}}
 
         self._send_dict_as_midi(payload)
 
@@ -1279,15 +1279,15 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
-    def toggle_limiter(
+    def toggle_cpu_heavy(
         self,
     ):  # noqa: E501
         # type: () -> None
         """
-        Toggle Limiter  # noqa: E501
+        Toggle Cpu Heavy  # noqa: E501
         """
 
-        payload = {"method": "GET", "path": "/toggle_limiter", "params": {}}
+        payload = {"method": "GET", "path": "/device/toggle_cpu_heavy", "params": {}}
 
         self._send_dict_as_midi(payload)
 
@@ -1299,7 +1299,7 @@ class P0BackendClient(object):
         Toggle Mono  # noqa: E501
         """
 
-        payload = {"method": "GET", "path": "/toggle_mono", "params": {}}
+        payload = {"method": "GET", "path": "/monitoring/toggle_mono", "params": {}}
 
         self._send_dict_as_midi(payload)
 
@@ -1323,19 +1323,42 @@ class P0BackendClient(object):
         Toggle Reference  # noqa: E501
         """
 
-        payload = {"method": "GET", "path": "/toggle_reference", "params": {}}
+        payload = {"method": "GET", "path": "/monitoring/toggle_reference", "params": {}}
 
         self._send_dict_as_midi(payload)
 
-    def toggle_reference_filters(
-        self,
-    ):  # noqa: E501
-        # type: () -> None
+    def toggle_reference_filters(self, preset):  # noqa: E501
+        # type: (str, ) -> None
         """
         Toggle Reference Filters  # noqa: E501
         """
 
-        payload = {"method": "GET", "path": "/toggle_reference_filters", "params": {}}
+        payload = {
+            "method": "GET",
+            "path": "/monitoring/toggle_reference_filters",
+            "params": {
+                "preset": preset,
+            },
+        }
+
+        self._send_dict_as_midi(payload)
+
+    def toggle_reference_stereo_mode(
+        self,
+        stereo_mode,
+    ):  # noqa: E501
+        # type: (str, ) -> None
+        """
+        Toggle Reference Stereo Mode  # noqa: E501
+        """
+
+        payload = {
+            "method": "GET",
+            "path": "/monitoring/toggle_reference_stereo_mode",
+            "params": {
+                "stereo_mode": stereo_mode,
+            },
+        }
 
         self._send_dict_as_midi(payload)
 

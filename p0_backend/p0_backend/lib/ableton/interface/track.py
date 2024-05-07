@@ -28,12 +28,13 @@ settings = Settings()
 def get_focused_track_coords(box_boundary="left") -> Coords:
     x, y = get_coords_for_color(
         [PixelColorEnum.ELEMENT_FOCUSED, PixelColorEnum.ELEMENT_SELECTED],
-        bbox=(40, 45, 1870, 110),
+        # bbox=(40, 45, 1870, 110), # session view
+        bbox=(1502, 108, 1800, 720),
         from_right=box_boundary == "right",
     )
     p0_script_client().dispatch(EmitBackendEventCommand("track_focused"))
 
-    return x, y + 5  # drag works better here
+    return x + 30, y + 5  # drag works better here
 
 
 @timeit
@@ -101,6 +102,13 @@ def flatten_track():
     click((freeze_coords[0], freeze_coords[1] + 20))  # flatten track
 
     p0_script_client().dispatch(EmitBackendEventCommand("track_flattened"))
+
+
+def add_track_to_selection():
+    track_coords = get_focused_track_coords()
+    click(track_coords)
+
+    p0_script_client().dispatch(EmitBackendEventCommand("track_selected"))
 
 
 def load_instrument_track(instrument_name: str):

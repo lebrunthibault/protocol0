@@ -50,6 +50,7 @@ numpy = "^1.26.3"
 librosa = "^0.10.1"
 asyncer = "^0.0.2"
 fastapi-limiter = "^0.1.6"
+ahk = "^1.7.1"
 
 [tool.poetry.dev-dependencies]
 flake8 = "*"
