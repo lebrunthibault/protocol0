@@ -435,6 +435,7 @@ class SimpleTrack(AbstractTrack):
         track_color = self.color
 
         self.color = ColorEnum.FOCUSED.value
+        self.is_collapsed = True
 
         seq = Sequence()
 
@@ -454,18 +455,17 @@ class SimpleTrack(AbstractTrack):
 
         return seq.done()
 
-    # def save(self) -> Sequence:
-    #     track_color = self.color
-    #
-    #     seq = Sequence()
-    #     seq.add(partial(DomainEventBus.emit, SimpleTrackSaveStartedEvent()))
-    #     seq.add(self.focus)
-    #     seq.add(Backend.client().save_track_to_sub_tracks)
-    #     seq.wait_for_backend_event("track_focused", timeout=3000)
-    #     seq.add(partial(setattr, self, "color", track_color))
-    #     seq.wait_for_backend_event("track_saved", timeout=10000)
-    #
-    #     return seq.done()
+    def add_to_selection(self) -> Sequence:
+        track_color = self.color
+
+        seq = Sequence()
+        self.focus()
+        # seq.add(self.focus)
+        seq.add(Backend.client().add_track_to_selection)
+        seq.wait_for_backend_event("track_selected", timeout=3000)
+        seq.add(partial(setattr, self, "color", track_color))
+
+        return seq.done()
 
     def freeze(self) -> Sequence:
         # this is needed to have flattened clip of the right length
