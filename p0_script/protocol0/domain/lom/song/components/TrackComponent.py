@@ -111,7 +111,7 @@ class TrackComponent(SlotManager):
             yield track
 
     def un_focus_all_tracks(self, including_current: bool = False) -> None:
-        self._un_solo_all_tracks(including_current)
+        self.un_solo_all_tracks(including_current)
         self._un_arm_all_tracks(including_current)
 
     def _un_arm_all_tracks(self, including_current: bool) -> None:
@@ -120,7 +120,7 @@ class TrackComponent(SlotManager):
                 continue
             t.arm_state.unarm()
 
-    def _un_solo_all_tracks(self, including_current: bool) -> None:
+    def un_solo_all_tracks(self, including_current: bool = True) -> None:
         for track in Song.abstract_tracks():
             if not including_current and track == Song.current_track():
                 continue
