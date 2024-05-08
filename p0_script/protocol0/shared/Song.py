@@ -1,4 +1,4 @@
-from typing import Iterator, Union
+from typing import Iterator, Union, Any
 from typing import TYPE_CHECKING, Optional, List, cast, Type
 
 import Live
@@ -27,7 +27,6 @@ if TYPE_CHECKING:
         ExternalSynthTrack,
     )
     from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
-    from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
     from protocol0.domain.lom.track.group_track.MixBusesTrack import MixBusesTrack
     from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
     from protocol0.domain.lom.scene.Scene import Scene
@@ -38,10 +37,26 @@ if TYPE_CHECKING:
     from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
 
 
-def _get_track_by_name(track_name: str) -> Optional["SimpleTrack"]:
-    return next(
-        filter(lambda t: t.lower_name == track_name, list(Song.simple_tracks())), None  # type: ignore[arg-type]
-    )
+def find_track_or_none(name: str, *a: Any, **k: Any) -> "SimpleTrack":
+    track = find_track(name, *a, **k)
+
+    if not track:
+        raise Protocol0Error(f"Cannot find track '{name}'")
+
+    return track
+
+
+def find_track(name: str, exact: bool = True, foldable: bool = False) -> Optional["SimpleTrack"]:
+    for track in Song.simple_tracks():
+        if foldable and not track.is_foldable:
+            continue
+
+        if exact and name.lower().strip() == track.lower_name:
+            return track
+        elif not exact and name.lower().strip() in track.lower_name:
+            return track
+
+    return None
 
 
 class Song(object):
@@ -235,16 +250,12 @@ class Song(object):
             return None
 
     @classmethod
-    def reference_track(cls) -> Optional["SimpleTrack"]:
-        return _get_track_by_name("ref")
+    def drums_track(cls) -> Optional["SimpleTrack"]:
+        return find_track_or_none("drums")
 
     @classmethod
     def notes_track(cls) -> Optional["SimpleTrack"]:
-        return _get_track_by_name("notes")
-
-    @classmethod
-    def midi_note_tracks(cls) -> List["SimpleMidiTrack"]:
-        return cls._INSTANCE._track_mapper_service._midi_note_tracks
+        return find_track_or_none("notes")
 
     @classmethod
     def return_tracks(cls) -> List[Live.Track.Track]:

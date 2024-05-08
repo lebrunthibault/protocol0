@@ -159,11 +159,6 @@ class Scene(SlotManager):
         # stop the previous scene in advance, using clip launch quantization
         DomainEventBus.emit(SceneFiredEvent(self.index))
 
-        if not Song.is_playing() and Song.mix_buses_track():
-            Song.mix_buses_track().reset_bus_tracks_automation()
-            for midi_note_track in Song.midi_note_tracks():
-                midi_note_track.reset_midi_automation()
-
         if self._scene:
             self._scene.fire()
 
