@@ -21,6 +21,7 @@ from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.shared.Song import Song
 from protocol0.shared.Undo import Undo
+from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.logging.StatusBar import StatusBar
 from protocol0.shared.sequence.Sequence import Sequence
 
@@ -77,11 +78,15 @@ def _switch_black_box_devices(enable_blackbox: bool) -> None:
             devices = list(track.devices)
             next_device: Device = devices[devices.index(black_box) + 1]
         except IndexError:
-            Backend.client().show_warning(f"Cannot find device next to blackbox on {track}")
+            Logger.warning(f"Cannot find device next to blackbox on {track}")
             continue
 
-        if not next_device.enum.is_saturator or next_device.is_enabled == black_box.is_enabled:
-            Backend.client().show_warning(f"Blackbox next device is not a saturator on {track}")
+        if (
+            not next_device.enum
+            or not next_device.enum.is_saturator
+            or next_device.is_enabled == black_box.is_enabled
+        ):
+            Logger.warning(f"Blackbox next device is not a saturator on {track}")
             continue
 
         if enable_blackbox:
