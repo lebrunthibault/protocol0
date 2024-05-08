@@ -3,10 +3,9 @@ from typing import List
 from protocol0.application.command.SoloTracksCommand import SoloTracksCommand
 from protocol0.application.command_handler.CommandHandlerInterface import CommandHandlerInterface
 from protocol0.domain.lom.song.components.TrackComponent import TrackComponent
-from protocol0.domain.lom.track.TrackMapperService import TrackMapperService
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
-from protocol0.shared.Song import Song
+from protocol0.shared.Song import Song, find_track
 
 
 class SoloTracksCommandHandler(CommandHandlerInterface):
@@ -14,8 +13,6 @@ class SoloTracksCommandHandler(CommandHandlerInterface):
 
     def handle(self, command: SoloTracksCommand) -> None:
         solo_tracks = [t for t in Song.simple_tracks() if t.solo]
-
-        find_track = self._container.get(TrackMapperService).find
 
         if command.solo_type == "UN_SOLO":
             if solo_tracks:

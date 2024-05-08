@@ -64,7 +64,6 @@ class DeviceEnum(AbstractEnum):
     M_ANALYZER = "MAnalyzer"
     M_STEREO_SCOPE = "MStereoScope"
     MONO_SWITCH = "Mono"
-    MUTED = "Muted"
     NOTE_LENGTH = "Note Length"
     OCTAVA = "Octava.adg"
     OZONE = "Ozone 9"
@@ -80,6 +79,7 @@ class DeviceEnum(AbstractEnum):
     SATURATOR = "Saturator"
     SATURN_2 = "Saturn 2"
     SERUM = "Serum_x64"
+    SHADOW_HILLS_COMP = "Shadow Hills Class A Mastering Comp"
     SIMPLER = "Simpler"
     SOOTHE2 = "soothe2"
     SOUNDID_REFERENCE_PLUGIN = "SoundID Reference Plugin"
@@ -397,7 +397,6 @@ class DeviceEnum(AbstractEnum):
             DeviceEnum.DECAPITATOR,
             DeviceEnum.DRUM_BUSS,
             DeviceEnum.DYNAMIC_TUBE,
-            DeviceEnum.JJP_STRINGS,
             DeviceEnum.OVERDRIVE,
             DeviceEnum.SATURATOR,
             DeviceEnum.SATURN_2,

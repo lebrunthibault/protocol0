@@ -26,13 +26,8 @@ from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import Mas
 from protocol0.domain.lom.track.simple_track.audio.special.SimpleAutomationTrack import (
     SimpleAutomationTrack,
 )
-from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import (
-    SimpleMidiTrack,
-    is_midi_note_track,
-)
 from protocol0.domain.lom.track.simple_track.midi.special.CthulhuTrack import CthulhuTrack
 from protocol0.domain.shared.backend.Backend import Backend
-from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.shared.Song import Song
@@ -47,7 +42,6 @@ class TrackMapperService(SlotManager):
         self._track_factory = track_factory
 
         self._live_track_id_to_simple_track: Dict[int, SimpleTrack] = collections.OrderedDict()
-        self._midi_note_tracks: List[SimpleMidiTrack] = []
         self._master_track: Optional[MasterTrack] = None
 
         self.tracks_listener.subject = self._live_song
@@ -121,9 +115,6 @@ class TrackMapperService(SlotManager):
             self._live_song.master_track, 0, cls=MasterTrack
         )
 
-        self._midi_note_tracks = list(
-            filter(is_midi_note_track, Song.simple_tracks(SimpleMidiTrack))
-        )
         self._sort_simple_tracks()
 
         for track in Song.simple_tracks():
@@ -222,15 +213,3 @@ class TrackMapperService(SlotManager):
                 previous_abstract_group_track.disconnect()
 
             abstract_group_track.on_tracks_change()
-
-    def find(self, name: str, exact: bool = True, foldable: bool = False) -> SimpleTrack:
-        for track in Song.simple_tracks():
-            if foldable and not track.is_foldable:
-                continue
-
-            if exact and name.lower().strip() == track.lower_name:
-                return track
-            elif not exact and name.lower().strip() in track.lower_name:
-                return track
-
-        raise Protocol0Error(f"Cannot find track '{name}'")

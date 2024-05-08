@@ -66,7 +66,7 @@ def _switch_master_cpu_devices() -> bool:
     return True
 
 
-def _switch_black_box_devices() -> None:
+def _switch_black_box_devices(enable_blackbox: bool) -> None:
     for track in Song.simple_tracks():
         black_box = track.devices.get_one_from_enum(DeviceEnum.BLACK_BOX)
 
@@ -77,19 +77,19 @@ def _switch_black_box_devices() -> None:
             devices = list(track.devices)
             next_device: Device = devices[devices.index(black_box) + 1]
         except IndexError:
-            Backend.client().show_warning(f"Blackbox not set up property on {track}")
+            Backend.client().show_warning(f"Cannot find device next to blackbox on {track}")
             continue
 
-        if (
-            next_device.enum
-            not in (DeviceEnum.SATURATOR, DeviceEnum.OVERDRIVE, DeviceEnum.DYNAMIC_TUBE)
-            or next_device.is_enabled == black_box.is_enabled
-        ):
-            Backend.client().show_warning(f"Blackbox not set up property on {track}")
+        if not next_device.enum.is_saturator or next_device.is_enabled == black_box.is_enabled:
+            Backend.client().show_warning(f"Blackbox next device is not a saturator on {track}")
             continue
 
-        next_device.toggle()
-        black_box.toggle()
+        if enable_blackbox:
+            next_device.is_enabled = False
+            black_box.is_enabled = True
+        else:
+            next_device.is_enabled = True
+            black_box.is_enabled = False
 
 
 class DeviceService(object):
@@ -251,16 +251,25 @@ class DeviceService(object):
         self._device_component.select_device(Song.selected_track(), device.chains[1].devices[-1])
 
     def toggle_cpu_heavy_devices(self) -> None:
+        toggle_cpu_heavy = bool(
+            Song.master_track().god_particle and not Song.master_track().god_particle.is_enabled
+        )
+
         master_handled = _switch_master_cpu_devices()
 
         if not master_handled:
             Backend.client().show_warning("Master devices not set up properly")
             return None
 
-        _switch_black_box_devices()
+        drums_track = Song.drums_track()
+        if drums_track:
+            shadow_hills = drums_track.devices.get_one_from_enum(DeviceEnum.SHADOW_HILLS_COMP)
+            if shadow_hills:
+                shadow_hills.is_enabled = toggle_cpu_heavy
 
-        high_cpu_enabled = Song.master_track().god_particle.is_enabled
-        if high_cpu_enabled:
+        _switch_black_box_devices(toggle_cpu_heavy)
+
+        if toggle_cpu_heavy:
             StatusBar.show_message("High CPU enabled")
         else:
             StatusBar.show_message("Low CPU enabled")

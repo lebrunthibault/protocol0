@@ -1,6 +1,5 @@
 from functools import partial
 
-from protocol0.domain.audit.SetFixerService import SetFixerService
 from protocol0.domain.audit.SongStatsService import SongStatsService
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
@@ -37,10 +36,6 @@ class AudioExportService(object):
 
         ApplicationView.show_arrangement()
 
-        # hack to show 1.1.1 in the arrangement
-        # Song.view().follow_song = True
-        # self._playback_component.start_playing()
-
         for track in Song.simple_tracks():
             track.clear_arrangement()
         seq = Sequence()
@@ -64,19 +59,12 @@ class AudioExportService(object):
 
         self._scene_component.looping_scene_toggler.reset()
 
-        excluded_tracks = []
-        if Song.reference_track():
-            excluded_tracks.append(Song.reference_track())
-
         song_time = 0.0
         for scene in Song.active_scenes():
             scene_start = song_time
             scene_end = song_time + scene.length
 
             for scene_cs in scene.clips.clip_slot_tracks:
-                if scene_cs.track in excluded_tracks:
-                    continue
-
                 clip = scene_cs.clip
                 if not clip:
                     continue
