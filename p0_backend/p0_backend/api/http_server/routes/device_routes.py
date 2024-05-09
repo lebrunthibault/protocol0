@@ -20,8 +20,8 @@ settings = Settings()
 
 
 @router.get("/load")
-async def load_device(name: str, create_track: bool = True):
-    p0_script_client().dispatch(LoadDeviceCommand(name, create_track))
+async def load_device(name: str):
+    p0_script_client().dispatch(LoadDeviceCommand(name))
 
     if name == "SPLICE_BRIDGE" and not is_process_running("Splice.exe"):
         subprocess.run(settings.splice_executable)
