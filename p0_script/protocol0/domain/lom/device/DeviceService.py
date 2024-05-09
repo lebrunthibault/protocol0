@@ -14,6 +14,7 @@ from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
 from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import ExternalSynthTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
+from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.BrowserServiceInterface import BrowserServiceInterface
 from protocol0.domain.shared.backend.Backend import Backend
@@ -123,14 +124,18 @@ class DeviceService(object):
 
         seq = Sequence()
 
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev((device_enum, Song.splice_track()))
         if device_enum == DeviceEnum.SPLICE_BRIDGE and Song.splice_track():
             Song.splice_track().delete()
 
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev((device_enum.is_instrument, create_track, Song.selected_track().instrument))
         if device_enum.is_instrument:
-            if create_track and not Song.selected_track().instrument:
+            # reuse empty midi tracks
+            if create_track and not (
+                isinstance(Song.selected_track(), SimpleMidiTrack)
+                and not Song.selected_track().instrument
+            ):
                 seq.add(self._track_crud_component.create_midi_track)
                 seq.add(lambda: setattr(Song.selected_track(), "name", device_enum.track_name))
                 if device_enum.track_color:
