@@ -1,10 +1,14 @@
+import subprocess
+
 from fastapi import APIRouter
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
+from p0_backend.lib.process import is_process_running
 from p0_backend.lib.synth.serum import (
     bulk_edit_presets,
     set_preset_description,
 )
+from p0_backend.settings import Settings
 from protocol0.application.command.LoadDeviceCommand import LoadDeviceCommand
 from protocol0.application.command.ReloadGodParticleCommand import ReloadGodParticleCommand
 from protocol0.application.command.ToggleCpuHeavyDevicesCommand import ToggleCpuHeavyDevicesCommand
@@ -12,10 +16,15 @@ from protocol0.application.command.ToggleRackChainCommand import ToggleRackChain
 
 router = APIRouter()
 
+settings = Settings()
+
 
 @router.get("/load")
 async def load_device(name: str, create_track: bool = True):
     p0_script_client().dispatch(LoadDeviceCommand(name, create_track))
+
+    if name == "SPLICE_BRIDGE" and not is_process_running("Splice.exe"):
+        subprocess.run(settings.splice_executable)
 
 
 @router.get("/reload_god_particle")

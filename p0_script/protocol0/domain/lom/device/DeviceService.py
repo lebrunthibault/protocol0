@@ -123,8 +123,14 @@ class DeviceService(object):
 
         seq = Sequence()
 
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev((device_enum, Song.splice_track()))
+        if device_enum == DeviceEnum.SPLICE_BRIDGE and Song.splice_track():
+            Song.splice_track().delete()
+
         if device_enum.is_instrument:
-            if create_track:
+            if create_track and not Song.selected_track().instrument:
                 seq.add(self._track_crud_component.create_midi_track)
                 seq.add(lambda: setattr(Song.selected_track(), "name", device_enum.track_name))
                 if device_enum.track_color:

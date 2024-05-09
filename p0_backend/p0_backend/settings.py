@@ -36,6 +36,8 @@ class Settings(BaseSettings):
     def ableton_process_name(self) -> str:
         return f"Ableton Live {self.ableton_major_version} Suite.exe"
 
+    splice_executable: str = "C:\\Users\\thiba\\AppData\\Local\\splice\\Splice.exe"
+
     @property
     def preferences_directory(self) -> str:
         return (

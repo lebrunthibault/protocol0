@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Optional, List, cast, Type
 
 import Live
 
+from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.utils.list import find_if
@@ -46,9 +47,9 @@ def find_track_or_none(name: str, *a: Any, **k: Any) -> "SimpleTrack":
     return track
 
 
-def find_track(name: str, exact: bool = True, foldable: bool = False) -> Optional["SimpleTrack"]:
+def find_track(name: str, exact: bool = True, is_foldable: bool = False) -> Optional["SimpleTrack"]:
     for track in Song.simple_tracks():
-        if foldable and not track.is_foldable:
+        if is_foldable and not track.is_foldable:
             continue
 
         if exact and name.lower().strip() == track.lower_name:
@@ -252,6 +253,13 @@ class Song(object):
     @classmethod
     def drums_track(cls) -> Optional["SimpleTrack"]:
         return find_track_or_none("drums")
+
+    @classmethod
+    def splice_track(cls) -> Optional["SimpleTrack"]:
+        return find_if(
+            lambda t: t.instrument is not None and t.instrument.enum == DeviceEnum.SPLICE_BRIDGE,
+            cls.simple_tracks(),
+        )
 
     @classmethod
     def notes_track(cls) -> Optional["SimpleTrack"]:
