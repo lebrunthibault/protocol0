@@ -26,17 +26,3 @@ class InstrumentSerum(InstrumentInterface):
     def on_loaded(self, device_enum: DeviceEnum) -> None:
         track = Song.selected_track()
         track.arm_state.arm()
-        # self.preset_list.scroll(go_next=True)
-        # self.preset_list.scroll(go_next=False)
-
-    def scroll_attack(self, go_next: bool) -> None:
-        self.device.get_parameter_by_name("Env1 Atk").scroll(go_next)
-        self.device.get_parameter_by_name("Env2 Atk").scroll(go_next)
-
-    def scroll_decay(self, go_next: bool) -> None:
-        self.device.get_parameter_by_name("Env1 Dec").scroll(go_next)
-        self.device.get_parameter_by_name("Env2 Dec").scroll(go_next)
-
-    def scroll_release(self, go_next: bool) -> None:
-        self.device.get_parameter_by_name("Env1 Rel").scroll(go_next)
-        self.device.get_parameter_by_name("Env2 Rel").scroll(go_next)

@@ -19,4 +19,4 @@ class ToggleBusCommandHandler(CommandHandlerInterface):
 
         assert bus_track, f"Cannot find bus {command.bus_name}"
 
-        bus_track.muted = not bus_track.muted
+        bus_track.toggle()
