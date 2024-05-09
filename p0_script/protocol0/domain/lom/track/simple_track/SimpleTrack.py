@@ -372,6 +372,9 @@ class SimpleTrack(AbstractTrack):
 
         self.is_collapsed = False
 
+    def toggle(self) -> None:
+        self.muted = not self.muted
+
     def fire(self, scene_index: int) -> None:
         clip = self.clip_slots[scene_index].clip
         if clip is not None:

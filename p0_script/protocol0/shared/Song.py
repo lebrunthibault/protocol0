@@ -257,7 +257,8 @@ class Song(object):
     @classmethod
     def splice_track(cls) -> Optional["SimpleTrack"]:
         return find_if(
-            lambda t: t.instrument is not None and t.instrument.enum == DeviceEnum.SPLICE_BRIDGE,
+            lambda t: t.instrument is not None
+            and t.instrument.device.enum == DeviceEnum.SPLICE_BRIDGE,
             cls.simple_tracks(),
         )
 

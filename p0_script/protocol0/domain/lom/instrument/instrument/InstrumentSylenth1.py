@@ -28,18 +28,3 @@ class InstrumentSylenth1(InstrumentInterface):
         Song.selected_track().arm_state.arm()
 
         DomainEventBus.emit(PresetProgramSelectedEvent(96))
-
-    def scroll_attack(self, go_next: bool) -> None:
-        self.device.get_parameter_by_name("AmpEnv A Attack").scroll(go_next)
-        self.device.get_parameter_by_name("ModEnv 1 Attack").scroll(go_next)
-        self.device.get_parameter_by_name("AmpEnv B Attack").scroll(go_next)
-
-    def scroll_decay(self, go_next: bool) -> None:
-        self.device.get_parameter_by_name("AmpEnv A Decay").scroll(go_next)
-        self.device.get_parameter_by_name("ModEnv 1 Decay").scroll(go_next)
-        self.device.get_parameter_by_name("AmpEnv B Decay").scroll(go_next)
-
-    def scroll_release(self, go_next: bool) -> None:
-        self.device.get_parameter_by_name("AmpEnv A Release").scroll(go_next)
-        self.device.get_parameter_by_name("ModEnv 1 Release").scroll(go_next)
-        self.device.get_parameter_by_name("AmpEnv B Release").scroll(go_next)
