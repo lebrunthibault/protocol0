@@ -32,6 +32,6 @@ class SoloTracksCommandHandler(CommandHandlerInterface):
             find_track("sub").solo = True
         elif command.solo_type == "KICK_BASS":
             find_track("kick").solo = True
-            find_track("bass", exact=False, foldable=True).solo = True
+            find_track("bass", exact=False, is_foldable=True).solo = True
         else:
             raise Protocol0Error(f"Unhandled solo type: '{command.solo_type}'")

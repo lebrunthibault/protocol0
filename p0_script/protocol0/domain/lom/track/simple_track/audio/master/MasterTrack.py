@@ -42,7 +42,9 @@ class MasterTrack(SimpleAudioTrack):
 
     @property
     def adptr(self) -> Optional[Device]:
-        return self.devices.get_one_from_enum(DeviceEnum.ADPTR_METRIC_AB, all_devices=True)
+        return self.devices.get_one_from_enum(
+            DeviceEnum.ADPTR_METRIC_AB, all_devices=True, enabled=True
+        )
 
     def mute_for(self, duration: int) -> None:
         """

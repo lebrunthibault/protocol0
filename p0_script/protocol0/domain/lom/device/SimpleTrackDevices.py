@@ -86,12 +86,17 @@ class SimpleTrackDevices(SlotManager, Observable):
             return None
 
     def get_one_from_enum(
-        self, device_enum: DeviceEnum, all_devices: bool = False
+        self, device_enum: DeviceEnum, all_devices: bool = False, enabled: bool = False
     ) -> Optional[Device]:
         if all_devices:
-            return find_if(device_enum.matches, self.all)
+            devices = self.all
         else:
-            return find_if(device_enum.matches, self._devices)
+            devices = self._devices
+
+        if enabled:
+            devices = [d for d in devices if d.is_enabled]
+
+        return find_if(device_enum.matches, devices)
 
     def _find_all_devices(
         self, devices: Optional[List[Device]], only_visible: bool = False
