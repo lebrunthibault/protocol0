@@ -229,15 +229,17 @@ class DeviceEnum(AbstractEnum):
                 DeviceEnumGroup(
                     "Sat",
                     [
-                        cls.BLACK_BOX,
-                        cls.DECAPITATOR,
                         cls.SPECTRE,
+                        cls.DECAPITATOR,
+                        cls.DYNAMIC_TUBE,
                         cls.SATURN_2,
+                        cls.SATURATOR,
+                        cls.BLACK_BOX,
                     ],
                 ),
             ],
             [
-                DeviceEnumGroup("Duck", [cls.LFO_TOOL, cls.DUCK]),
+                DeviceEnumGroup("Volume", [cls.LFO_TOOL, cls.DUCK]),
                 DeviceEnumGroup("Delay", [cls.INSERT_ECHO, cls.INSERT_DELAY]),
                 DeviceEnumGroup("Reverb", [cls.INSERT_REVERB, cls.VALHALLA_VINTAGE_VERB]),
             ],

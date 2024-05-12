@@ -120,7 +120,7 @@ class DeviceService(object):
         track = Song.selected_track()
         is_clip_view_visible = ApplicationView.is_clip_view_visible()
 
-        self._load_device_select_track(device_enum)
+        self._select_track_and_device(device_enum)
 
         seq = Sequence()
 
@@ -174,12 +174,16 @@ class DeviceService(object):
 
         return selected_track
 
-    def _load_device_select_track(self, device_enum: DeviceEnum) -> None:
+    def _select_track_and_device(self, device_enum: DeviceEnum) -> None:
         track = self._get_instrument_track()
 
         if device_enum.is_instrument:
             track.select()
             return
+
+        if Song.selected_device():
+            track.device_insert_mode = Live.Track.DeviceInsertMode.selected_right
+            return None
 
         device_to_select = self._get_device_to_select_for_insertion(track, device_enum)
         if device_to_select:

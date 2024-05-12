@@ -29,10 +29,6 @@ class ReloadGodParticleCommandHandler(CommandHandlerInterface):
         Song.master_track().select()
 
         seq = Sequence()
-        seq.add(partial(Song.master_track().devices.delete, god_particle))
-        seq.add(
-            partial(self._container.get(DeviceService).load_device, DeviceEnum.GOD_PARTICLE.name)
-        )
 
         def move_device() -> Sequence:
             return self._container.get(DeviceService).move_device(
@@ -42,7 +38,20 @@ class ReloadGodParticleCommandHandler(CommandHandlerInterface):
             )
 
         if god_particle_chain:
+            seq.add(partial(Song.master_track().devices.delete, god_particle))
+            seq.add(
+                partial(
+                    self._container.get(DeviceService).load_device, DeviceEnum.GOD_PARTICLE.name
+                )
+            )
             seq.add(move_device)
+        else:
+            seq.add(
+                partial(
+                    self._container.get(DeviceService).load_device, DeviceEnum.GOD_PARTICLE.name
+                )
+            )
+            seq.add(partial(Song.master_track().devices.delete, god_particle))
 
         def update_from_previous() -> None:
             Song.selected_device().is_enabled = god_particle_enabled
