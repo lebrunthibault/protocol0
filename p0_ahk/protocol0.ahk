@@ -28,24 +28,14 @@ return
 ^#+n::
 	callBackend("reload_ableton")
 return
-^#+l::
-	callBackend("tail_logs")
-return
 #e::
-    Run, explorer.exe "D:\ableton projects"
+    Run, explorer.exe "D:\ableton projects\tracks"
 return
 
 ; ableton hotkeys
 #IfWinActive, ahk_exe Ableton Live 11 Suite.exe
 ^+z::
     Send ^y  ; redo
-return
-^#+s::
-    Send ^,  ; works best from ahk
-    callBackend("set/save_as_template")
-return
-^+a::
-	callBackend("track/arm")
 return
 ^space::
 	callBackend("scene/fire_selected")
@@ -57,18 +47,6 @@ FireSceneToPosition:
     barLength:=SubStr(A_ThisHotkey,"^NumPad") - 1
 	callBackend("scene/fire_to_position?bar_length="barLength)
 Return
-^Up::
-	callBackend("scene/scroll?direction=next")
-return
-^Down::
-	callBackend("scene/scroll?direction=prev")
-return
-;^q::
-;	callBackend("clip/show_automation?direction=next")
-;return
-;^+q::
-;	callBackend("clip/show_automation?direction=prev")
-;return
 ^+c::
     MouseGetPos, xpos, ypos
     ; Right-click at the current mouse position
@@ -94,15 +72,6 @@ return
 ~^l::
 	callBackend("scene/toggle_loop")
 return
-^+_::
-    Send {Up}
-return
-^+&::
-    Send {Down}
-return
-^+$::
-    Send {Left}
-return
 ^+*::
     Send {Right}
 return
@@ -116,13 +85,6 @@ return
 return
 ^!q::
     Send ^!p  ; left hand shortcut
-return
-!f:: ; fold / unfold set
-	Send `t
-	Send !u
-	Sleep 50
-	Send !u
-	Send `t
 return
 ^+d::
 	callBackend("scene/duplicate")
