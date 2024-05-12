@@ -14,21 +14,6 @@ def send_keys(keys: str) -> None:
     shell.SendKeys(keys, 0)
 
 
-def send_up():
-    send_keys("^+_")
-    sleep(0.01)
-
-
-def send_down():
-    send_keys("^+&")
-    sleep(0.01)
-
-
-def send_left():
-    send_keys("^+$")
-    sleep(0.01)
-
-
 def send_right():
     send_keys("^+*")
     sleep(0.01)

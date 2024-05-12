@@ -12,6 +12,14 @@ class SoloTracksCommandHandler(CommandHandlerInterface):
     _PREVIOUS_SOLO_TRACKS: List[SimpleTrack] = []
 
     def handle(self, command: SoloTracksCommand) -> None:
+        if command.bus_name:
+            bus_track = find_track(command.bus_name, exact=False, is_foldable=True)
+
+            assert bus_track, f"Cannot find bus {command.bus_name}"
+
+            bus_track.toggle()
+            return None
+
         solo_tracks = [t for t in Song.simple_tracks() if t.solo]
 
         if command.solo_type == "UN_SOLO":

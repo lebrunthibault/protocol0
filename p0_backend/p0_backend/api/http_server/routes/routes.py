@@ -9,7 +9,6 @@ from p0_backend.lib.ableton.ableton import (
 )
 from p0_backend.lib.ableton.analyze_clip_jitter import analyze_test_audio_clip_jitter
 from p0_backend.lib.ableton.automation import set_envelope_loop_length
-from p0_backend.lib.ableton.interface.browser import preload_sample_category
 from p0_backend.lib.ableton.interface.sample import load_sample_in_simpler
 from p0_backend.lib.ableton.interface.toggle_ableton_button import toggle_ableton_button
 from p0_backend.lib.ableton.set_profiling.ableton_set_profiler import AbletonSetProfiler
@@ -67,11 +66,6 @@ def home() -> str:
 @router.get("/ping")
 def ping():
     AbletonSetProfiler.end_measurement()
-
-
-@router.get("/show_sample_category")
-def show_sample_category(category: str):
-    preload_sample_category(category)
 
 
 @router.get("/reload_ableton")

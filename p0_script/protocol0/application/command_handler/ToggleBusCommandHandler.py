@@ -7,6 +7,7 @@ from protocol0.shared.Song import find_track
 
 class ToggleBusCommandHandler(CommandHandlerInterface):
     def handle(self, command: ToggleBusCommand) -> None:
+        # unmute all buses
         if not command.bus_name:
             for bus in ("drums", "bass", "vocals", "lead", "fx", "background"):
                 bus_track = find_track(bus, exact=False, is_foldable=True)
