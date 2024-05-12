@@ -16,8 +16,13 @@ class SoloTracksCommandHandler(CommandHandlerInterface):
             bus_track = find_track(command.bus_name, exact=False, is_foldable=True)
 
             assert bus_track, f"Cannot find bus {command.bus_name}"
+            solo_active = bus_track.solo
 
-            bus_track.toggle()
+            self._container.get(TrackComponent).un_solo_all_tracks()
+
+            if not solo_active:
+                bus_track.solo = not bus_track.solo
+
             return None
 
         solo_tracks = [t for t in Song.simple_tracks() if t.solo]
@@ -33,13 +38,17 @@ class SoloTracksCommandHandler(CommandHandlerInterface):
 
             return
 
-        self._container.get(TrackComponent).un_solo_all_tracks()
-
         if command.solo_type == "KICK_SUB":
-            find_track("kick").solo = True
-            find_track("sub").solo = True
+            tracks_to_solo = (find_track("kick"), find_track("sub"))
         elif command.solo_type == "KICK_BASS":
-            find_track("kick").solo = True
-            find_track("bass", exact=False, is_foldable=True).solo = True
+            tracks_to_solo = (find_track("kick"), find_track("bass", exact=False, is_foldable=True))
         else:
             raise Protocol0Error(f"Unhandled solo type: '{command.solo_type}'")
+
+        solo_active = all(t.solo for t in tracks_to_solo)
+
+        self._container.get(TrackComponent).un_solo_all_tracks()
+
+        if not solo_active:
+            for track_to_solo in tracks_to_solo:
+                track_to_solo.solo = True

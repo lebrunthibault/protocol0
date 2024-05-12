@@ -38,8 +38,8 @@ async def toggle_reference_stereo_mode(stereo_mode: str):
 
 
 @router.get("/solo")
-async def solo(solo_type: str):
-    p0_script_client().dispatch(SoloTracksCommand(solo_type))
+async def solo(solo_type: Optional[str] = None, bus_name: Optional[str] = None):
+    p0_script_client().dispatch(SoloTracksCommand(solo_type, bus_name))
 
 
 @router.get("/toggle_bus")
