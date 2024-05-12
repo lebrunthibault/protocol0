@@ -42,10 +42,10 @@ class ActionGroupMain(ActionGroupInterface):
         self.add_encoder(
             identifier=5,
             name="Resample",
-            on_press=self._container.get(RecordService).resample_selected_track,
-            on_long_press=partial(
+            on_press=partial(
                 self._container.get(RecordService).resample_selected_track, record_audio=True
             ),
+            on_long_press=self._container.get(RecordService).resample_selected_track,
         )
 
         self.add_encoder(identifier=13, name="test", on_press=self.action_test)
