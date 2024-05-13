@@ -28,6 +28,7 @@ from protocol0.application.command.ReloadScriptCommand import ReloadScriptComman
 from protocol0.application.command.ScrollPresetsCommand import ScrollPresetsCommand
 from protocol0.application.command.ShowInstrumentCommand import ShowInstrumentCommand
 from .action_routes import router as action_router
+from .audio_routes import router as audio_router
 from .clip_routes import router as clip_router
 from .device_routes import router as device_router
 from .export_routes import router as export_router
@@ -45,6 +46,7 @@ router = APIRouter()
 settings = Settings()
 
 router.include_router(action_router, prefix="/actions")
+router.include_router(audio_router, prefix="/audio")
 router.include_router(clip_router, prefix="/clip")
 router.include_router(device_router, prefix="/device")
 router.include_router(export_router, prefix="/export")
