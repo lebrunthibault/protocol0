@@ -1,13 +1,11 @@
 from functools import partial
 
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
-from protocol0.domain.lom.set.MixingService import MixingService
 from protocol0.domain.lom.song.components.TempoComponent import TempoComponent
 
 # noinspection SpellCheckingInspection
 from protocol0.domain.track_recorder.RecordService import RecordService
 from protocol0.shared.Song import Song
-from protocol0.shared.sequence.Sequence import Sequence
 
 
 class ActionGroupMain(ActionGroupInterface):
@@ -50,23 +48,6 @@ class ActionGroupMain(ActionGroupInterface):
 
         self.add_encoder(identifier=13, name="test", on_press=self.action_test)
 
-        # ADPTr Metric AB stereo mode
-        self.add_encoder(
-            identifier=16,
-            name="test",
-            on_press=partial(self._container.get(MixingService).toggle_adptr_stereo_mode, "mono"),
-            on_long_press=partial(
-                self._container.get(MixingService).toggle_adptr_stereo_mode, "sides"
-            ),
-        )
-
     def action_test(self) -> None:
-        seq = Sequence()
-
         for track in Song.simple_tracks():
-            if track.is_foldable or track.has_midi_output:
-                continue
-
-            seq.add(track.add_to_selection)
-
-        seq.done()
+            track.remove_arrangement_muted_clips(Song.loop_start(), Song.loop_end())

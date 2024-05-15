@@ -162,23 +162,6 @@ class SimpleTrackDevices(SlotManager, Observable):
         )
 
     @property
-    def automated_mix_parameters(self) -> List[DeviceParameter]:
-        automated_parameters: List[DeviceParameter] = []
-        handled_mix_racks = ("filtered",)
-        for device in self:
-            params = list(device.automated_params)
-            if (
-                len(params) == 1
-                and params[0].lower_name == "mix"
-                and device.lower_name not in handled_mix_racks
-            ):
-                continue
-
-            automated_parameters += params
-
-        return automated_parameters
-
-    @property
     def load_time(self) -> int:
         return sum(d.enum.load_time for d in self if d.enum is not None)
 

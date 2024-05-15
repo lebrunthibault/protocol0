@@ -127,9 +127,6 @@ class DeviceService(object):
         if device_enum == DeviceEnum.SPLICE_BRIDGE and Song.splice_track():
             Song.splice_track().delete()
 
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev((device_enum.is_instrument, create_track, Song.selected_track().instrument))
         if device_enum.is_instrument:
             # reuse empty midi tracks
             if create_track and not (
