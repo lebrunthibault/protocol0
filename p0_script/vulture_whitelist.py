@@ -102,3 +102,4 @@ _.toggle_cpu_heavy_devices  # unused method (protocol0\domain\lom\device\DeviceS
 _.freeze  # unused method (protocol0\domain\lom\track\simple_track\SimpleTrack.py:470)
 DIVA  # unused variable (protocol0\domain\lom\device\DeviceEnum.py:29)
 InstrumentSpliceBridge  # unused class (protocol0\domain\lom\instrument\instrument\InstrumentSpliceBridge.py:5)
+_.toggle_ext_out_routing  # unused method (protocol0\domain\lom\track\simple_track\SimpleTrack.py:438)

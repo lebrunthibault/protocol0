@@ -20,11 +20,3 @@ class ActionGroupClip(ActionGroupInterface):
             name="midi clip to mono",
             on_press=lambda: Song.selected_clip(MidiClip).to_mono,
         )
-
-        # midi clip to MONO
-        # todo: remove
-        self.add_encoder(
-            identifier=13,
-            name="link clips automation",
-            on_press=lambda: Song.selected_track().link_automation,
-        )

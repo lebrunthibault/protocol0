@@ -272,7 +272,7 @@ def list_sets(set_place: AbletonSetPlace = None) -> List[AbletonSet]:
             continue
 
         # skip sub folders
-        ignored_folders = ("tracks/", "ref/")
+        ignored_folders = ("tracks/", "ref/", "takes/")
         if any(name in als_file.replace(top_folder_path, "") for name in ignored_folders):
             continue
 
