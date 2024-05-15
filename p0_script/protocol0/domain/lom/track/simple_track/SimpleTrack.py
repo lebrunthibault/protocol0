@@ -375,6 +375,9 @@ class SimpleTrack(AbstractTrack):
     def toggle(self) -> None:
         self.muted = not self.muted
 
+    def solo_toggle(self) -> None:
+        self.solo = not self.solo
+
     def fire(self, scene_index: int) -> None:
         clip = self.clip_slots[scene_index].clip
         if clip is not None:

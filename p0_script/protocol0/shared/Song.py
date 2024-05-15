@@ -46,8 +46,12 @@ def find_track_or_none(name: str, *a: Any, **k: Any) -> "SimpleTrack":
     return track
 
 
-def find_track(name: str, exact: bool = True, is_foldable: bool = False) -> Optional["SimpleTrack"]:
-    for track in Song.simple_tracks():
+def find_track(
+    name: str, exact: bool = True, is_foldable: bool = False, is_top: bool = False
+) -> Optional["SimpleTrack"]:
+    tracks = Song.top_tracks() if is_top else Song.simple_tracks()
+
+    for track in tracks:
         if is_foldable and not track.is_foldable:
             continue
 

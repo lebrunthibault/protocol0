@@ -21,7 +21,7 @@ from protocol0.shared.Song import Song
 
 
 class ActionGroupRack(ActionGroupInterface):
-    CHANNEL = 2
+    CHANNEL = 3
 
     def configure(self) -> None:
         instrument_service = self._container.get(InstrumentService)

@@ -21,7 +21,7 @@ class SoloTracksCommandHandler(CommandHandlerInterface):
             self._container.get(TrackComponent).un_solo_all_tracks()
 
             if not solo_active:
-                bus_track.solo = not bus_track.solo
+                bus_track.solo_toggle()
 
             return None
 
