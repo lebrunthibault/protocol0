@@ -158,13 +158,6 @@ class SimpleTrack(AbstractTrack):
         if self.lower_name == "audio":
             return None
 
-        # from protocol0.domain.lom.track.group_track.MixBusesTrack import MixBusesTrack
-
-        # if not self.group_track or not isinstance(
-        #     self.group_track.abstract_group_track, MixBusesTrack
-        # ):
-        #     route_track_to_bus(self)
-
         return None
 
     def on_tracks_change(self) -> None:
@@ -366,6 +359,11 @@ class SimpleTrack(AbstractTrack):
         return any(clip.is_playing for clip in self.clips)
 
     def select(self) -> None:
+        # hack to have the track fully shown
+        last_track = list(Song.simple_tracks())[-1]
+        if Song.selected_track().index < self.index and self != last_track:
+            last_track.select()
+
         DomainEventBus.emit(AbstractTrackSelectedEvent(self._track))
 
         # make it focused
@@ -432,6 +430,14 @@ class SimpleTrack(AbstractTrack):
         try:
             for clip in self._track.arrangement_clips:
                 self._track.delete_clip(clip)
+        except RuntimeError:
+            pass
+
+    def remove_arrangement_muted_clips(self, start_time: float, end_time: float) -> None:
+        try:
+            for clip in self._track.arrangement_clips:
+                if clip.start_time >= start_time and clip.end_time <= end_time and clip.muted:
+                    self._track.delete_clip(clip)
         except RuntimeError:
             pass
 

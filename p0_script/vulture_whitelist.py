@@ -103,3 +103,5 @@ _.freeze  # unused method (protocol0\domain\lom\track\simple_track\SimpleTrack.p
 DIVA  # unused variable (protocol0\domain\lom\device\DeviceEnum.py:29)
 InstrumentSpliceBridge  # unused class (protocol0\domain\lom\instrument\instrument\InstrumentSpliceBridge.py:5)
 _.toggle_ext_out_routing  # unused method (protocol0\domain\lom\track\simple_track\SimpleTrack.py:438)
+_.add_to_selection  # unused method (protocol0\domain\lom\track\simple_track\SimpleTrack.py:477)
+_.toggle_adptr_stereo_mode  # unused method (protocol0\domain\lom\set\MixingService.py:35)

@@ -3,21 +3,11 @@ from typing import Optional
 from _Framework.SubjectSlot import subject_slot
 
 from protocol0.domain.lom.track.group_track.AbstractGroupTrack import AbstractGroupTrack
-from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.utils.timing import defer
 from protocol0.shared.sequence.Sequence import Sequence
 
 
 class NormalGroupTrack(AbstractGroupTrack):
-    @classmethod
-    def make(cls, base_group_track: SimpleTrack) -> "NormalGroupTrack":
-        from protocol0.domain.lom.track.group_track.MixBusesTrack import MixBusesTrack
-
-        if MixBusesTrack.TRACK_NAME == base_group_track.name.strip():
-            return MixBusesTrack(base_group_track)
-        else:
-            return NormalGroupTrack(base_group_track)
-
     def on_added(self) -> Optional[Sequence]:
         super(NormalGroupTrack, self).on_added()
 

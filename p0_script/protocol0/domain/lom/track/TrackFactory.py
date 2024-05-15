@@ -96,4 +96,4 @@ class TrackFactory(object):
         if isinstance(previous_abstract_group_track, NormalGroupTrack):
             return previous_abstract_group_track
         else:
-            return NormalGroupTrack.make(base_group_track)
+            return NormalGroupTrack(base_group_track)

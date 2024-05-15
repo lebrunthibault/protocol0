@@ -42,10 +42,6 @@ class SceneComponent(object):
     @timeit
     def _on_next_scene_started_event(self, event: NextSceneStartedEvent) -> None:
         """Event is fired *before* the scene starts playing"""
-
-        if Song.mix_buses_track():
-            Song.mix_buses_track().reset_bus_tracks_automation()
-
         # Stop the previous scene : quantized or immediate
         try:
             previous_selected_scene = Song.scenes()[event.selected_scene_index]
