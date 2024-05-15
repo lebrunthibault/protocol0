@@ -12,8 +12,9 @@ from p0_backend.lib.ableton.interface.track import (
     add_track_to_selection,
 )
 from p0_backend.lib.keys import send_keys
-from protocol0.application.command.ToggleArmCommand import ToggleArmCommand
+from protocol0.application.command.CollapseSelectedTrackCommand import CollapseSelectedTrackCommand
 from protocol0.application.command.SelectTrackCommand import SelectTrackCommand
+from protocol0.application.command.ToggleArmCommand import ToggleArmCommand
 
 router = APIRouter()
 
@@ -55,3 +56,8 @@ async def arm():
 @router.get("/select")
 async def select(name: str):
     p0_script_client().dispatch(SelectTrackCommand(name.replace("_", " ")))
+
+
+@router.get("/collapse_selected")
+async def collapse_selected():
+    p0_script_client().dispatch(CollapseSelectedTrackCommand())

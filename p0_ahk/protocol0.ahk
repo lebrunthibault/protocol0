@@ -126,6 +126,8 @@ return
 	callBackend("search/track")
 	Send ^+f  ; cancel Ableton Follow
 return
+^NumpadSub::
+    callBackend("track/collapse_selected")
 
 #IfWinActive
 
