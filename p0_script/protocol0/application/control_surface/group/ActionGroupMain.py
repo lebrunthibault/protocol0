@@ -12,7 +12,6 @@ class ActionGroupMain(ActionGroupInterface):
     CHANNEL = 4
 
     def configure(self) -> None:
-        # TAP tempo encoder
         self.add_encoder(
             identifier=1,
             name="tap tempo",
@@ -28,15 +27,6 @@ class ActionGroupMain(ActionGroupInterface):
             if Song.splice_track():
                 Song.splice_track().devices.mixer_device.volume.scroll(go_next)
 
-        # SPLIce bridge encoder
-        self.add_encoder(
-            identifier=4,
-            name="Splice Bridge",
-            on_press=toggle_splice_track,
-            on_scroll=scroll_splice_track,
-        )
-
-        # RESAmple encoder
         self.add_encoder(
             identifier=5,
             name="Resample",
@@ -46,7 +36,20 @@ class ActionGroupMain(ActionGroupInterface):
             on_long_press=self._container.get(RecordService).resample_selected_track,
         )
 
-        self.add_encoder(identifier=13, name="test", on_press=self.action_test)
+        self.add_encoder(
+            identifier=4,
+            name="Splice Bridge",
+            on_press=toggle_splice_track,
+            on_scroll=scroll_splice_track,
+        )
+
+        self.add_encoder(
+            identifier=15,
+            name="track volume",
+            on_scroll=lambda: Song.selected_track().scroll_volume,
+        )
+
+        self.add_encoder(identifier=16, name="test", on_press=self.action_test)
 
     def action_test(self) -> None:
         Song.selected_track().is_collapsed = True

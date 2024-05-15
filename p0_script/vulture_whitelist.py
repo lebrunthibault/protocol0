@@ -107,3 +107,4 @@ _.add_to_selection  # unused method (protocol0\domain\lom\track\simple_track\Sim
 _.toggle_adptr_stereo_mode  # unused method (protocol0\domain\lom\set\MixingService.py:35)
 _.remove_arrangement_muted_clips  # unused method (protocol0\domain\lom\track\simple_track\SimpleTrack.py:436)
 _.record_mode  # unused attribute (protocol0\shared\Song.py:368)
+_.toggle_clip  # unused method (protocol0\domain\lom\track\ClipPlayerService.py:24)
