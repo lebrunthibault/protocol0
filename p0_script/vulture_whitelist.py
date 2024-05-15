@@ -105,3 +105,4 @@ InstrumentSpliceBridge  # unused class (protocol0\domain\lom\instrument\instrume
 _.toggle_ext_out_routing  # unused method (protocol0\domain\lom\track\simple_track\SimpleTrack.py:438)
 _.add_to_selection  # unused method (protocol0\domain\lom\track\simple_track\SimpleTrack.py:477)
 _.toggle_adptr_stereo_mode  # unused method (protocol0\domain\lom\set\MixingService.py:35)
+_.remove_arrangement_muted_clips  # unused method (protocol0\domain\lom\track\simple_track\SimpleTrack.py:436)

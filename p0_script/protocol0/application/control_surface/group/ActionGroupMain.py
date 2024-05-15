@@ -49,5 +49,4 @@ class ActionGroupMain(ActionGroupInterface):
         self.add_encoder(identifier=13, name="test", on_press=self.action_test)
 
     def action_test(self) -> None:
-        for track in Song.simple_tracks():
-            track.remove_arrangement_muted_clips(Song.loop_start(), Song.loop_end())
+        Song.selected_track().is_collapsed = True
