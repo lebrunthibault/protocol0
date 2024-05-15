@@ -22,6 +22,7 @@ from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrac
 from protocol0.domain.lom.track.abstract_track.AbstractTrackSelectedEvent import (
     AbstractTrackSelectedEvent,
 )
+from protocol0.domain.lom.track.routing.OutputRoutingTypeEnum import OutputRoutingTypeEnum
 from protocol0.domain.lom.track.routing.TrackInputRouting import TrackInputRouting
 from protocol0.domain.lom.track.simple_track.SimpleTrackArmState import SimpleTrackArmState
 from protocol0.domain.lom.track.simple_track.SimpleTrackArmedEvent import SimpleTrackArmedEvent
@@ -136,6 +137,7 @@ class SimpleTrack(AbstractTrack):
         self.monitoring_state = SimpleTrackMonitoringState(self)
 
         self.input_routing = TrackInputRouting(self._track)
+        self._previous_output_routing_track: Optional[SimpleTrack] = None
 
         self.arm_state = SimpleTrackArmState(live_track)
         self.arm_state.register_observer(self)
@@ -433,6 +435,14 @@ class SimpleTrack(AbstractTrack):
         except RuntimeError:
             pass
 
+    def toggle_ext_out_routing(self) -> None:
+        if self.output_routing.type != OutputRoutingTypeEnum.EXT_OUT:
+            self._previous_output_routing_track = self.output_routing.track
+            self.output_routing.type = OutputRoutingTypeEnum.EXT_OUT
+        else:
+            if self._previous_output_routing_track:
+                self.output_routing.track = self._previous_output_routing_track
+
     def focus(self) -> Sequence:
         # track can disappear out of view if this is done later
         track_color = self.color
@@ -548,36 +558,6 @@ class SimpleTrack(AbstractTrack):
         seq.add(lambda: next_cs.clip.crop())
 
         return seq.done()
-
-    def link_automation(self) -> None:
-        clip = self.clip_slots[Song.selected_scene().index].clip
-        if not clip or len(self.clip_slots) <= clip.index + 1:
-            return None
-        next_clip = self.clip_slots[clip.index + 1].clip
-        if not next_clip:
-            return
-
-        clip_parameters = clip.automation.get_automated_parameters(self.devices.parameters)
-        next_clip_parameters = next_clip.automation.get_automated_parameters(
-            self.devices.parameters
-        )
-
-        common_parameters = [p for p in clip_parameters if p in next_clip_parameters]
-
-        for parameter in common_parameters:
-            clip_env = clip.automation.get_envelope(parameter)
-            next_clip_env = next_clip.automation.get_envelope(parameter)
-            if not next_clip_env.is_linear:
-                Logger.info(f"{next_clip_env} is not linear")
-                continue
-
-            end = next_clip_env.end
-            next_clip.automation.clear_envelope(parameter)
-            next_clip_env = next_clip.automation.create_envelope(parameter)
-            next_clip_env.insert_step(0, 0, clip_env.value_at_time(clip.length))
-            next_clip_env.insert_step(next_clip.length, 0, end)
-
-        return None
 
     @property
     def load_time(self) -> int:
