@@ -360,8 +360,12 @@ class Song(object):
         return cls._INSTANCE._playback_component.is_playing
 
     @classmethod
-    def session_record(cls) -> bool:
+    def is_session_recording(cls) -> bool:
         return cls._INSTANCE._recording_component.session_record
+
+    @classmethod
+    def record(cls) -> None:
+        cls._live_song().record_mode = True
 
     @classmethod
     def is_track_recording(cls) -> bool:

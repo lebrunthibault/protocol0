@@ -304,5 +304,7 @@ class RecordService(object):
 
         if ApplicationView.is_session_visible():
             seq.add(lambda: self.record_track(Song.selected_track(), record_type))
+        else:
+            seq.add(Song.record)
 
         return seq.done()

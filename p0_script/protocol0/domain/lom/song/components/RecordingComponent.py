@@ -47,19 +47,11 @@ class RecordingComponent(object):
 
     @property
     def session_record(self) -> bool:
-        return self._live_song.session_record
+        return self._live_song.is_session_recording
 
     @session_record.setter
     def session_record(self, session_record: bool) -> None:
-        self._live_song.session_record = session_record
-
-    @property
-    def record_mode(self) -> bool:
-        return self._live_song.record_mode
-
-    @record_mode.setter
-    def record_mode(self, record_mode: bool) -> None:
-        self._live_song.record_mode = record_mode
+        self._live_song.is_session_recording = session_record
 
     @property
     def session_automation_record(self) -> bool:
