@@ -118,7 +118,7 @@ export default defineComponent({
     },
     setPlace(): string | null {
       return this.$route.query.place ? this.$route.query.place.toUpperCase(): null
-    }
+    },
   },
   watch: {
     filterType() {
@@ -142,12 +142,6 @@ export default defineComponent({
     onSceneChange(sceneData: SceneData) {
       this.currentScene = sceneData
     },
-    onSceneSkip(increment: number) {
-      this.currentScene = this.selectedSet?.metadata.scenes[this.currentScene.index + increment]
-      if (this.selectedSet?.metadata.tempo) {
-        this.playerTime = this.currentScene?.start * (60 / this.selectedSet.metadata.tempo)
-      }
-    },
     sortSets() {
       if (!this.filterType) {
         return
@@ -163,7 +157,6 @@ export default defineComponent({
               return a.metadata?.stars < b.metadata?.stars ? 1: - 1
             }
           } else if (filterType === "commented") {
-            console.log("commented")
             return (a: AbletonSet, b: AbletonSet) => {
               if (!b.metadata.comment) {
                 return -1;
@@ -184,11 +177,17 @@ export default defineComponent({
       this.abletonSets.sort(getPredicate(this.filterType))
     },
     async fetchSets() {
-      let url = '/set/all'
+      const params = new URLSearchParams()
       if (this.setPlace) {
-        url += `?place=${this.setPlace}`
+        params.set("place", this.setPlace)
       }
-      this.abletonSets = await api.get(url)
+      if (this.$route.query.backup) {
+        params.set("use_backup", "true")
+      }
+
+      const url = `/set/all?${params.toString()}`
+      const abletonSets: AbletonSet[] = (await api.get(url) as AbletonSet[])
+      this.abletonSets = abletonSets.filter((ableton_set: AbletonSet) => ableton_set.audio)
 
       // add index to scenes
       for (const abletonSet of this.abletonSets) {

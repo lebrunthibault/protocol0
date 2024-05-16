@@ -256,7 +256,7 @@ def rename_set(ableton_set: AbletonSet, name: str):
         rename(dirname(str(ableton_set.path_info.filename)))
 
 
-def list_sets(set_place: AbletonSetPlace = None) -> List[AbletonSet]:
+def list_sets(set_place: AbletonSetPlace) -> List[AbletonSet]:
     excluded_sets = ["Backup", "test", "tests"]
     ableton_sets = []
 

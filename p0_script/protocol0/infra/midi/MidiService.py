@@ -1,4 +1,3 @@
-from _Framework.ControlSurface import get_control_surfaces
 from typing import Optional, Tuple, Callable
 
 from protocol0.application.CommandBus import CommandBus
@@ -13,7 +12,6 @@ from protocol0.domain.lom.song.SongInitializedEvent import SongInitializedEvent
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
-from protocol0.domain.shared.utils.list import find_if
 from protocol0.infra.midi.MidiBytesReceivedEvent import MidiBytesReceivedEvent
 from protocol0.infra.midi.MidiBytesSentEvent import MidiBytesSentEvent
 from protocol0.shared.logging.Logger import Logger
@@ -77,12 +75,3 @@ class MidiService(object):
 
     def _on_song_initialized_event(self, _: SongInitializedEvent) -> None:
         Backend.client().ping()
-        Scheduler.wait(10, self._check_protocol_midi_is_up)  # waiting for Protocol0_midi to boot
-
-    def _check_protocol_midi_is_up(self) -> None:
-        from protocol0.application.Protocol0Midi import Protocol0Midi
-
-        protocol0_midi = find_if(lambda cs: isinstance(cs, Protocol0Midi), get_control_surfaces())
-
-        if protocol0_midi is None:
-            Logger.error("Protocol0Midi is not loaded")

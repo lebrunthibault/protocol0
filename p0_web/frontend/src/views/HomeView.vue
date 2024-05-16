@@ -11,15 +11,6 @@
         <li>
           <router-link v-if="$route.query.place != 'archive'" to="/?place=archive" class="nav-item nav-link m-3">Archive</router-link>
         </li>
-        <li>
-          <router-link v-if="$route.query.place != 'released'" to="/?place=released" class="nav-item nav-link m-3">Released</router-link>
-        </li>
-      </ul>
-      <ul class="navbar-nav">
-        <li>
-          <router-link to="/actions" class="nav-item nav-link m-3">Actions</router-link>
-        </li>
-        <Settings></Settings>
       </ul>
     </div>
   </nav>
@@ -31,11 +22,10 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
 import AbletonSets from "@/components/ableton_sets/AbletonSets.vue";
-import Settings from "@/components/Settings.vue";
 
 export default defineComponent({
   name: 'HomeView',
-  components: {AbletonSets, Settings},
+  components: {AbletonSets},
   data: () => ({}),
 })
 </script>
