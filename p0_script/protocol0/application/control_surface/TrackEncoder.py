@@ -60,9 +60,6 @@ class TrackEncoder(SlotManager):
     @subject_slot("value")
     @log_exceptions
     def _solo_mute_listener(self, value: int) -> None:
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(f"_solo_mute_listener: {self}, {value}")
         if value:
             self._pressed_at = time.time()
         else:
@@ -74,23 +71,11 @@ class TrackEncoder(SlotManager):
     @subject_slot("value")
     @log_exceptions
     def _track_select_listener(self, value: int) -> None:
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(f"_track_select_listener: {self}, {value}")
         if not value:
             self.track.select()
 
     @subject_slot("value")
     @log_exceptions
     def _volume_listener(self, value: int) -> None:
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(f"volume cc value: {self}, {value}")
-        pass
-
-
-#
-#  @subject_slot("value")
-#  def _scroll_listener(self, value: int) -> None:
-#      self._find_and_execute_action(move_type=EncoderMoveEnum.SCROLL, go_next=value == 1)
-#
+        scaled_value = ((value / 127) * 0.6) + 0.35
+        self.track.devices.mixer_device.volume.value = scaled_value
