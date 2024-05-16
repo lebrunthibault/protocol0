@@ -14,10 +14,6 @@ from typing import Any, Tuple
 class Protocol0Midi(ControlSurface):
     def __init__(self: Any, c_instance: bool = None) -> None:
         # hide initializing message
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(self)
-
         log_message = self.log_message
         self.log_message = lambda a: True
         super(Protocol0Midi, self).__init__(c_instance=c_instance)
@@ -27,10 +23,6 @@ class Protocol0Midi(ControlSurface):
         self.main_p0_script: Protocol0 = find_if(
             lambda s: type(s) == Protocol0, get_control_surfaces()
         )
-
-        # self._logger.log("Error: couldn't find main Protocol0 script", level=LogLevelEnum.ERROR)
-
-        Logger.dev((self, self.main_p0_script))
 
         self._logger = LoggerService()
 
