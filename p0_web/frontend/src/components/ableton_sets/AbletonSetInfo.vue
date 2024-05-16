@@ -103,7 +103,7 @@ export default defineComponent({
         return this.abletonSet.metadata.scenes.at(-1).end / 4
     },
     canArchive(): boolean {
-      return this.abletonSet.metadata.stars < 4
+      return this.abletonSet.metadata.stars < 5
     },
     canUnArchive(): boolean {
       return this.abletonSet.place == AbletonSetPlace.ARCHIVE && (this.abletonSet.metadata.stars < 4)

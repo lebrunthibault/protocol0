@@ -127,13 +127,11 @@
             var ihr_att_ref = document.getElementById("hr_att_ref");
             var ihr_rel_ref = document.getElementById("hr_rel_ref");
             if (is_checked) { 
-                //console.log("show ref");
                 imain_ref.className = "";
                 if (ihr_att_visible) { ihr_att_ref.className=""; }
                 if (ihr_rel_visible) { ihr_rel_ref.className=""; }
                 iref_visible = true;
             } else {
-                //console.log("hide ref");
                 imain_ref.className = "hidden";
                 ihr_att_ref.className = "hidden";
                 ihr_rel_ref.className = "hidden";
@@ -144,12 +142,10 @@
             var layer = document.getElementById("hr_att");
             var layerb = document.getElementById("hr_att_ref");
             if (is_checked) { 
-                //console.log("show hr att");
                 layer.className = "";
                 if (iref_visible) { layerb.className = ""; }
                 ihr_att_visible = true;
             } else {
-                //console.log("hide hr att");
                 layer.className = "hidden";
                 layerb.className = "hidden";
                 ihr_att_visible = false;
