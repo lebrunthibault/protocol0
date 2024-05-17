@@ -19,14 +19,6 @@ class ActionGroupMain(ActionGroupInterface):
             on_scroll=self._container.get(TempoComponent).scroll,
         )
 
-        def toggle_splice_track() -> None:
-            if Song.splice_track():
-                Song.splice_track().toggle()
-
-        def scroll_splice_track(go_next: bool) -> None:
-            if Song.splice_track():
-                Song.splice_track().devices.mixer_device.volume.scroll(go_next)
-
         self.add_encoder(
             identifier=5,
             name="Resample",
@@ -36,10 +28,23 @@ class ActionGroupMain(ActionGroupInterface):
             on_long_press=self._container.get(RecordService).resample_selected_track,
         )
 
+        def toggle_splice_track() -> None:
+            if Song.splice_track():
+                Song.splice_track().toggle()
+
+        def solo_splice_track() -> None:
+            if Song.splice_track():
+                Song.splice_track().solo_toggle()
+
+        def scroll_splice_track(go_next: bool) -> None:
+            if Song.splice_track():
+                Song.splice_track().devices.mixer_device.volume.scroll(go_next)
+
         self.add_encoder(
-            identifier=4,
+            identifier=13,
             name="Splice Bridge",
             on_press=toggle_splice_track,
+            on_long_press=solo_splice_track,
             on_scroll=scroll_splice_track,
         )
 
