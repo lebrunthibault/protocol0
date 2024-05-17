@@ -18,6 +18,12 @@ def focus_window(
     name: str,
     search_type: Union[SearchTypeEnum, str] = SearchTypeEnum.WINDOW_TITLE,
 ) -> int:
+    """
+
+    Returns
+    -------
+    object
+    """
     handle = find_window_handle_by_enum(name=name, search_type=search_type)
     if not handle:
         raise Protocol0Error(f"No window '{name}'")
