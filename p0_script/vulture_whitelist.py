@@ -108,3 +108,5 @@ _.toggle_adptr_stereo_mode  # unused method (protocol0\domain\lom\set\MixingServ
 _.remove_arrangement_muted_clips  # unused method (protocol0\domain\lom\track\simple_track\SimpleTrack.py:436)
 _.record_mode  # unused attribute (protocol0\shared\Song.py:368)
 _.toggle_clip  # unused method (protocol0\domain\lom\track\ClipPlayerService.py:24)
+InstrumentDiva  # unused class (protocol0\domain\lom\instrument\instrument\InstrumentDiva.py:5)
+InstrumentWavetable  # unused class (protocol0\domain\lom\instrument\instrument\InstrumentWavetable.py:5)

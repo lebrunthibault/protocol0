@@ -340,6 +340,7 @@ class DeviceEnum(AbstractEnum):
     @property
     def is_instrument(self) -> bool:
         return self in [
+            DeviceEnum.DIVA,
             DeviceEnum.DRUM_RACK,
             DeviceEnum.KICK_2,
             DeviceEnum.KONTAKT,
