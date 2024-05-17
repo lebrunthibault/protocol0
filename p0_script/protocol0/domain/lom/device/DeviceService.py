@@ -134,16 +134,19 @@ class DeviceService(object):
                 and not Song.selected_track().instrument
             ):
                 seq.add(self._track_crud_component.create_midi_track)
-                seq.add(lambda: setattr(Song.selected_track(), "name", device_enum.track_name))
-                if device_enum.track_color:
-                    seq.add(
-                        lambda: setattr(Song.selected_track(), "color", device_enum.track_color)
-                    )
 
             elif track.instrument:
                 instrument_device = track.instrument_rack_device or track.instrument.device
                 if instrument_device:
                     track.devices.delete(instrument_device)
+
+        def rename_default_midi_track() -> None:
+            if Song.selected_track().lower_name == "midi":
+                Song.selected_track().name = device_enum.track_name
+                if device_enum.track_color:
+                    Song.selected_track().color = device_enum.track_color
+
+        seq.add(rename_default_midi_track)
 
         seq.add(partial(self._browser_service.load_device_from_enum, device_enum))
 
