@@ -3,7 +3,6 @@ import subprocess
 from fastapi import APIRouter
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.lib.process import is_process_running
 from p0_backend.lib.synth.serum import (
     bulk_edit_presets,
     set_preset_description,
@@ -23,7 +22,8 @@ settings = Settings()
 async def load_device(name: str):
     p0_script_client().dispatch(LoadDeviceCommand(name))
 
-    if name == "SPLICE_BRIDGE" and not is_process_running("Splice.exe"):
+    if name == "SPLICE_BRIDGE":
+        # will focus if it's hidden or in sys tray
         subprocess.run(settings.splice_executable)
 
 
