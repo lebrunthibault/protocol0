@@ -178,6 +178,7 @@ class Container(ContainerInterface):
         self._register(playback_component)
         self._register(scene_component)
         self._register(scene_crud_component)
+        self._register(device_component)
         self._register(ableton_set)
         self._register(track_component)
         self._register(track_crud_component)
