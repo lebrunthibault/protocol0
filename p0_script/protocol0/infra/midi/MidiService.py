@@ -14,6 +14,7 @@ from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.infra.midi.MidiBytesReceivedEvent import MidiBytesReceivedEvent
 from protocol0.infra.midi.MidiBytesSentEvent import MidiBytesSentEvent
+from protocol0.infra.midi.NoteSentEvent import NoteSentEvent
 from protocol0.shared.logging.Logger import Logger
 
 
@@ -27,6 +28,7 @@ class MidiService(object):
         DomainEventBus.subscribe(MidiBytesReceivedEvent, self._on_midi_bytes_received_event)
         DomainEventBus.subscribe(PresetProgramSelectedEvent, self._on_preset_program_selected_event)
         DomainEventBus.subscribe(PresetProgramScrolledEvent, self._on_preset_program_scrolled_event)
+        DomainEventBus.subscribe(NoteSentEvent, self._on_note_sent_event)
         DomainEventBus.once(SongInitializedEvent, self._on_song_initialized_event)
 
     def _sysex_to_string(self, sysex: Tuple) -> str:
@@ -69,6 +71,11 @@ class MidiService(object):
 
     def _on_preset_program_selected_event(self, event: PresetProgramSelectedEvent) -> None:
         self._send_program_change(event.preset_index)
+
+    def _on_note_sent_event(self, event: NoteSentEvent) -> None:
+        self._send_formatted_midi_message(
+            "note", event.midi_channel, event.note_number, event.velocity
+        )
 
     def _on_preset_program_scrolled_event(self, event: PresetProgramScrolledEvent) -> None:
         self._send_cc(event.cc_value)

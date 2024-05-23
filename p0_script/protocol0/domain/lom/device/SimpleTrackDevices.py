@@ -85,6 +85,27 @@ class SimpleTrackDevices(SlotManager, Observable):
         else:
             return None
 
+    @property
+    def prev(self) -> Optional[Device]:
+        return self._get_sibling(-1)
+
+    @property
+    def next(self) -> Optional[Device]:
+        return self._get_sibling(1)
+
+    def _get_sibling(self, offset: int) -> Optional[Device]:
+        if not self._devices:
+            return None
+
+        if not self.selected:
+            return self._devices[0]
+
+        selected_index = self._devices.index(self.selected)
+        try:
+            return self._devices[selected_index + offset]
+        except IndexError:
+            return self._devices[0]
+
     def get_one_from_enum(
         self, device_enum: DeviceEnum, all_devices: bool = False, enabled: bool = False
     ) -> Optional[Device]:
