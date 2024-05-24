@@ -61,11 +61,11 @@ class RackDevice(Device, Observable):
 
     @property
     def has_macro_mappings(self) -> bool:
-        return (
-            self._device
-            and self._device.has_macro_mappings
-            and set(self._device.macros_mapped) != {False}
-        )
+        return self._device and self._device.has_macro_mappings and self.macros_count != 0
+
+    @property
+    def macros_count(self) -> int:
+        return len(list(filter(lambda m: m, self._device.macros_mapped)))
 
     def remove_macro(self) -> None:
         try:

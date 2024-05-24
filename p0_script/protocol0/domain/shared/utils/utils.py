@@ -129,6 +129,10 @@ def previous_power_of_2(x: int) -> int:
         return int(res / 2)
 
 
+def scale(x: float, x_min: float, x_max: float, y_min: float, y_max: float) -> float:
+    return (((x - x_min) / (x_max - x_min)) * (y_max - y_min)) + y_min
+
+
 def timeit(func: Callable) -> Callable:
     def decorate(*a: Any, **k: Any) -> None:
         start_at = time.time()
