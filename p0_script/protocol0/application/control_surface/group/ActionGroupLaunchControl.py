@@ -6,12 +6,39 @@ from _Framework.SubjectSlot import subject_slot, SlotManager
 
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
 from protocol0.application.control_surface.TrackEncoder import TrackEncoder
+from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
 from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
 from protocol0.domain.lom.song.components.TrackComponent import TrackComponent
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.shared.Song import Song
+
+
+def _scroll_macro_control(macro_index: int, value: int) -> None:
+    device = Song.selected_device()
+    assert isinstance(device, RackDevice), "Device is not a rack"
+
+    macro_index += 1
+
+    macros_count = device.macros_count
+
+    index_to_macro = {}
+    if macros_count == 1:
+        index_to_macro = {1: 1}
+    elif macros_count == 2:
+        index_to_macro = {1: 1, 5: 2}
+    elif macros_count == 3 or macros_count == 4:
+        index_to_macro = {1: 1, 2: 2, 5: 3, 6: 4}
+    elif macros_count == 5 or macros_count == 6:
+        index_to_macro = {1: 1, 2: 2, 3: 3, 5: 4, 6: 5, 7: 6}
+    elif macros_count == 7 or macros_count == 8:
+        index_to_macro = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8}
+
+    assert macro_index in index_to_macro, "Macro not mapped"
+
+    param = device.parameters[index_to_macro[macro_index]]
+    param.set_value(value, 0, 127)
 
 
 class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
@@ -31,6 +58,11 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
             self._scroll_device_next.subject = ButtonElement(True, MIDI_CC_TYPE, 1, 107)
 
             self._toggle_master_view.subject = ButtonElement(True, MIDI_NOTE_TYPE, 1, 108)
+
+            for macro_index, cc_number in enumerate((29, 30, 31, 32, 49, 50, 51, 52)):
+                getattr(self, f"_scroll_macro_control_{macro_index}").subject = ButtonElement(
+                    True, MIDI_CC_TYPE, 1, cc_number
+                )
 
         track_to_control_values = {
             "Kick": (73, 41, 13, False),
@@ -95,8 +127,6 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
             Song.set_loop_length(loop_length)
 
             self._container.get(PlaybackComponent).restart()
-            # time = (60.0 / Song.tempo()) * Song.loop_start()
-            # Song.set_current_song_time(time)
 
     @subject_slot("value")
     def _scroll_device_prev(self, value: int) -> None:
@@ -130,3 +160,39 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
                     self._PREVIOUS_SELECTED_TRACK.select()
                     if self._PREVIOUS_SELECTED_TRACK_CLIP_VIEW:
                         ApplicationView.show_clip()
+
+    @subject_slot("value")
+    def _scroll_macro_control_0(self, value: int) -> None:
+        _scroll_macro_control(0, value)
+
+    @subject_slot("value")
+    def _scroll_macro_control_1(self, value: int) -> None:
+        _scroll_macro_control(1, value)
+
+    @subject_slot("value")
+    def _scroll_macro_control_2(self, value: int) -> None:
+        _scroll_macro_control(2, value)
+
+    @subject_slot("value")
+    def _scroll_macro_control_3(self, value: int) -> None:
+        _scroll_macro_control(3, value)
+
+    @subject_slot("value")
+    def _scroll_macro_control_4(self, value: int) -> None:
+        _scroll_macro_control(4, value)
+
+    @subject_slot("value")
+    def _scroll_macro_control_5(self, value: int) -> None:
+        _scroll_macro_control(5, value)
+
+    @subject_slot("value")
+    def _scroll_macro_control_6(self, value: int) -> None:
+        _scroll_macro_control(6, value)
+
+    @subject_slot("value")
+    def _scroll_macro_control_7(self, value: int) -> None:
+        _scroll_macro_control(7, value)
+
+    @subject_slot("value")
+    def _scroll_macro_control_8(self, value: int) -> None:
+        _scroll_macro_control(8, value)
