@@ -113,6 +113,10 @@ class PlaybackComponent(SlotManager):
         else:
             self.start_playing()
 
+    def restart(self) -> None:
+        self.stop_playing()
+        Scheduler.defer(self.start_playing)
+
     def reset(self) -> None:
         """stopping immediately"""
         self.stop_playing()

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from _Framework.ButtonElement import ButtonElement
 from _Framework.InputControlElement import MIDI_NOTE_TYPE, MIDI_CC_TYPE
@@ -7,12 +7,17 @@ from _Framework.SubjectSlot import subject_slot, SlotManager
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
 from protocol0.application.control_surface.TrackEncoder import TrackEncoder
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
+from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
 from protocol0.domain.lom.song.components.TrackComponent import TrackComponent
+from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
+from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.shared.Song import Song
 
 
 class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
     CHANNEL = 2
+    _PREVIOUS_SELECTED_TRACK: Optional[SimpleTrack] = None
+    _PREVIOUS_SELECTED_TRACK_CLIP_VIEW = False
 
     def configure(self) -> None:
         with self._component_guard():
@@ -24,6 +29,8 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
 
             self._scroll_device_prev.subject = ButtonElement(True, MIDI_CC_TYPE, 1, 106)
             self._scroll_device_next.subject = ButtonElement(True, MIDI_CC_TYPE, 1, 107)
+
+            self._toggle_master_view.subject = ButtonElement(True, MIDI_NOTE_TYPE, 1, 108)
 
         track_to_control_values = {
             "Kick": (73, 41, 13, False),
@@ -76,6 +83,7 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
             Song.set_loop_start(max(0.0, Song.loop_start() - Song.loop_length()))
             Song.set_loop_length(loop_length)
 
+            self._container.get(PlaybackComponent).restart()
             # time = (60.0 / Song.tempo()) * Song.loop_start()
             # Song.set_current_song_time(time)
 
@@ -86,6 +94,7 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
             Song.set_loop_start(Song.loop_start() + Song.loop_length())
             Song.set_loop_length(loop_length)
 
+            self._container.get(PlaybackComponent).restart()
             # time = (60.0 / Song.tempo()) * Song.loop_start()
             # Song.set_current_song_time(time)
 
@@ -106,3 +115,18 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
                 self._container.get(DeviceComponent).select_device(
                     Song.selected_track(), next_device
                 )
+
+    @subject_slot("value")
+    def _toggle_master_view(self, value: int) -> None:
+        if not value:
+            if Song.selected_track() != Song.master_track():
+                self._PREVIOUS_SELECTED_TRACK = Song.selected_track()
+                self._PREVIOUS_SELECTED_TRACK_CLIP_VIEW = ApplicationView.is_clip_view_visible()
+
+                Song.master_track().select()
+                ApplicationView.show_device()
+            else:
+                if self._PREVIOUS_SELECTED_TRACK:
+                    self._PREVIOUS_SELECTED_TRACK.select()
+                    if self._PREVIOUS_SELECTED_TRACK_CLIP_VIEW:
+                        ApplicationView.show_clip()

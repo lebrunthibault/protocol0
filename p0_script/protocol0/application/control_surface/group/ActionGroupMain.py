@@ -19,6 +19,8 @@ class ActionGroupMain(ActionGroupInterface):
             on_scroll=self._container.get(TempoComponent).scroll,
         )
 
+        self.add_encoder(identifier=4, name="test", on_press=self.action_test)
+
         self.add_encoder(
             identifier=5,
             name="Resample",
@@ -54,7 +56,15 @@ class ActionGroupMain(ActionGroupInterface):
             on_scroll=lambda: Song.selected_track().scroll_volume,
         )
 
-        self.add_encoder(identifier=16, name="test", on_press=self.action_test)
+        def scroll_selected_parameter(go_next: bool) -> None:
+            assert Song.selected_parameter(), "No selected parameter"
+            Song.selected_parameter().scroll(go_next)
+
+        self.add_encoder(identifier=16, name="test", on_scroll=scroll_selected_parameter)
 
     def action_test(self) -> None:
-        pass
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev(Song.selected_parameter())
+        Logger.dev(Song.selected_device())
+        Logger.dev(Song.selected_track().devices.selected)

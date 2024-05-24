@@ -33,13 +33,12 @@ class DeviceComponent(SlotManager):
 
     @property
     def selected_parameter(self) -> Optional[DeviceParameter]:
-        if self._overridden_selected_parameter is not None:
+        if self._overridden_selected_parameter:
             return self._overridden_selected_parameter
-        all_parameters = [
-            param for track in Song.simple_tracks() for param in track.devices.parameters
-        ]
+
         return find_if(
-            lambda p: p._device_parameter == self._view.selected_parameter, all_parameters
+            lambda p: p._device_parameter == self._view.selected_parameter,
+            Song.selected_track().devices.parameters,
         )
 
     @selected_parameter.setter

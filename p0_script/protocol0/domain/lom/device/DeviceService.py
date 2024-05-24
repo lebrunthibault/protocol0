@@ -141,7 +141,7 @@ class DeviceService(object):
                     track.devices.delete(instrument_device)
 
         def rename_default_midi_track() -> None:
-            if Song.selected_track().lower_name == "midi":
+            if Song.selected_track().lower_name == "midi" and device_enum.is_instrument:
                 Song.selected_track().name = device_enum.track_name
                 if device_enum.track_color:
                     Song.selected_track().color = device_enum.track_color
