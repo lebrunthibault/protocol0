@@ -111,3 +111,4 @@ _.toggle_clip  # unused method (protocol0\domain\lom\track\ClipPlayerService.py:
 InstrumentDiva  # unused class (protocol0\domain\lom\instrument\instrument\InstrumentDiva.py:5)
 InstrumentWavetable  # unused class (protocol0\domain\lom\instrument\instrument\InstrumentWavetable.py:5)
 _.clear_muted_notes  # unused method (protocol0\domain\lom\clip\MidiClip.py:90)
+_.set_current_song_time  # unused method (protocol0\shared\Song.py:430)

@@ -428,6 +428,10 @@ class Song(object):
         return cls._live_song().get_current_beats_song_time()
 
     @classmethod
+    def set_current_song_time(cls, time: float) -> None:
+        cls._live_song().current_song_time = time
+
+    @classmethod
     def draw_mode(cls, draw_mode: bool) -> None:
         cls._INSTANCE._clip_component.draw_mode = draw_mode
 
