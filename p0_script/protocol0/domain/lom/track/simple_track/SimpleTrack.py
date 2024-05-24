@@ -1,10 +1,11 @@
 from functools import partial
 from string import ascii_lowercase
-from typing import cast, List, Optional, Dict
+from typing import cast, List, Optional, Dict, Iterable
 
 import Live
 from _Framework.SubjectSlot import subject_slot
 
+from protocol0.domain.lom.clip.AudioClip import AudioClip
 from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.clip.ClipConfig import ClipConfig
 from protocol0.domain.lom.clip.ClipInfo import ClipInfo
@@ -192,6 +193,17 @@ class SimpleTrack(AbstractTrack):
             for clip_slot in self.clip_slots
             if clip_slot.has_clip and clip_slot.clip is not None
         ]
+
+    @property
+    def arrangement_clips(self) -> Iterable[Clip]:
+        from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
+
+        clip_class = MidiClip if isinstance(self, SimpleMidiTrack) else AudioClip
+
+        try:
+            return (clip_class(clip, 0, ClipConfig()) for clip in self._track.arrangement_clips)
+        except RuntimeError:
+            return []
 
     def update(self, observable: Observable) -> None:
         if isinstance(observable, SimpleTrackDevices):
@@ -409,6 +421,9 @@ class SimpleTrack(AbstractTrack):
         DomainEventBus.emit(SimpleTrackDeletedEvent(self))
         return Sequence().wait_for_event(TracksMappedEvent).done()
 
+    def delete_clip(self, clip: Clip) -> None:
+        self._track.delete_clip(clip._clip)
+
     def get_automated_parameters(self, scene_index: int) -> Dict[DeviceParameter, "SimpleTrack"]:
         if len(self.clip_slots) < scene_index + 1:
             return {}
@@ -431,16 +446,16 @@ class SimpleTrack(AbstractTrack):
 
     def clear_arrangement(self) -> None:
         try:
-            for clip in self._track.arrangement_clips:
-                self._track.delete_clip(clip)
+            for clip in self.arrangement_clips:
+                self.delete_clip(clip)
         except RuntimeError:
             pass
 
     def remove_arrangement_muted_clips(self, start_time: float, end_time: float) -> None:
         try:
-            for clip in self._track.arrangement_clips:
-                if clip.start_time >= start_time and clip.end_time <= end_time and clip.muted:
-                    self._track.delete_clip(clip)
+            for clip in self.arrangement_clips:
+                if clip.start_marker >= start_time and clip.end_marker <= end_time and clip.muted:
+                    self.delete_clip(clip)
         except RuntimeError:
             pass
 

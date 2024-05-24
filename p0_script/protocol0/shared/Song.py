@@ -327,6 +327,29 @@ class Song(object):
     def selected_clip(
         cls, clip_cls: Optional[Type[T]] = None, raise_if_none: bool = True
     ) -> Optional[Union[T, "Clip"]]:
+        from protocol0.domain.shared.ApplicationView import ApplicationView
+
+        if ApplicationView.is_session_visible():
+            return cls._selected_session_clip(clip_cls, raise_if_none)
+        else:
+            return cls._selected_arrangement_clip()
+
+    @classmethod
+    def _selected_arrangement_clip(cls) -> Optional[Union[T, "Clip"]]:
+        from protocol0.infra.scheduler.BeatTime import BeatTime
+
+        beat_position = BeatTime.from_song_beat_time(Song.current_beats_song_time()).to_beats
+
+        for clip in Song.selected_track().arrangement_clips:
+            if clip.start_time <= beat_position <= clip.end_time:
+                return clip
+
+        return None
+
+    @classmethod
+    def _selected_session_clip(
+        cls, clip_cls: Optional[Type[T]] = None, raise_if_none: bool = True
+    ) -> Optional[Union[T, "Clip"]]:
         from protocol0.domain.lom.clip.Clip import Clip
 
         clip_cls = clip_cls or Clip

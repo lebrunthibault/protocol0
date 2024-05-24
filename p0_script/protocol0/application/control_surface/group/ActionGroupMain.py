@@ -5,7 +5,6 @@ from protocol0.domain.lom.song.components.TempoComponent import TempoComponent
 
 # noinspection SpellCheckingInspection
 from protocol0.domain.track_recorder.RecordService import RecordService
-from protocol0.infra.midi.MidiService import MidiService
 from protocol0.shared.Song import Song
 
 
@@ -58,5 +57,4 @@ class ActionGroupMain(ActionGroupInterface):
         self.add_encoder(identifier=16, name="test", on_press=self.action_test)
 
     def action_test(self) -> None:
-        self._container.get(MidiService)._send_formatted_midi_message("note", 1, 73, 29)
-        Song.selected_track().is_collapsed = True
+        pass

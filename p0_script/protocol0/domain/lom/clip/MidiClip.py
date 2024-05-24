@@ -87,6 +87,10 @@ class MidiClip(Clip):
     def clear_notes(self) -> Optional[Sequence]:
         return self.set_notes([], replace=True)
 
+    def clear_muted_notes(self) -> Optional[Sequence]:
+        notes = self.get_notes()
+        return self.set_notes([n for n in notes if not n.muted], replace=True)
+
     def on_added(self) -> Optional[Sequence]:
         if len(self.get_notes()) > 0 or self.is_recording:
             return None

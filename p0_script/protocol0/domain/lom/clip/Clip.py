@@ -51,6 +51,8 @@ class Clip(SlotManager, Observable):
     length = cast(float, ForwardTo("loop", "length"))
     bar_length = cast(float, ForwardTo("loop", "bar_length"))
     looping = cast(bool, ForwardTo("loop", "looping"))
+    start_marker = cast(float, ForwardTo("loop", "start_marker"))
+    end_marker = cast(float, ForwardTo("loop", "end_marker"))
 
     def get_hash(self, device_parameters: List[DeviceParameter]) -> int:
         raise NotImplementedError
@@ -59,6 +61,14 @@ class Clip(SlotManager, Observable):
         return self.get_hash(device_parameters) == other.get_hash(
             device_parameters
         ) and self.loop.matches(other.loop)
+
+    @property
+    def start_time(self) -> float:
+        return self._clip and self._clip.start_time
+
+    @property
+    def end_time(self) -> float:
+        return self._clip and self._clip.end_time
 
     @property
     def is_triggered(self) -> bool:
