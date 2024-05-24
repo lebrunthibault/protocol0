@@ -76,12 +76,18 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
             Song.set_loop_start(max(0.0, Song.loop_start() - Song.loop_length()))
             Song.set_loop_length(loop_length)
 
+            # time = (60.0 / Song.tempo()) * Song.loop_start()
+            # Song.set_current_song_time(time)
+
     @subject_slot("value")
     def _move_loop_right(self, value: int) -> None:
         if not value:
             loop_length = Song.loop_length()
             Song.set_loop_start(Song.loop_start() + Song.loop_length())
             Song.set_loop_length(loop_length)
+
+            # time = (60.0 / Song.tempo()) * Song.loop_start()
+            # Song.set_current_song_time(time)
 
     @subject_slot("value")
     def _scroll_device_prev(self, value: int) -> None:
