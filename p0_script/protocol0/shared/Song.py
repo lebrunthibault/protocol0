@@ -379,8 +379,20 @@ class Song(object):
         return cls._live_song().loop_start
 
     @classmethod
+    def set_loop_start(cls, loop_start: float) -> None:
+        cls._live_song().loop_start = loop_start
+
+    @classmethod
     def loop_end(cls) -> float:
         return cls.loop_start() + cls._live_song().loop_length
+
+    @classmethod
+    def loop_length(cls) -> float:
+        return cls._live_song().loop_length
+
+    @classmethod
+    def set_loop_length(cls, loop_length: float) -> None:
+        cls._live_song().loop_length = loop_length
 
     @classmethod
     def is_playing(cls) -> bool:
