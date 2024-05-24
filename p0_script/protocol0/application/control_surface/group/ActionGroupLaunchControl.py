@@ -18,6 +18,10 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
         with self._component_guard():
             self._un_solo_listener.subject = ButtonElement(True, MIDI_NOTE_TYPE, 1, 107)
             self._toggle_device_listener.subject = ButtonElement(True, MIDI_NOTE_TYPE, 1, 105)
+
+            self._move_loop_left.subject = ButtonElement(True, MIDI_CC_TYPE, 1, 104)
+            self._move_loop_right.subject = ButtonElement(True, MIDI_CC_TYPE, 1, 105)
+
             self._scroll_device_prev.subject = ButtonElement(True, MIDI_CC_TYPE, 1, 106)
             self._scroll_device_next.subject = ButtonElement(True, MIDI_CC_TYPE, 1, 107)
 
@@ -64,6 +68,20 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
     def _toggle_device_listener(self, value: int) -> None:
         if not value and Song.selected_device():
             Song.selected_device().toggle()
+
+    @subject_slot("value")
+    def _move_loop_left(self, value: int) -> None:
+        if not value:
+            loop_length = Song.loop_length()
+            Song.set_loop_start(max(0.0, Song.loop_start() - Song.loop_length()))
+            Song.set_loop_length(loop_length)
+
+    @subject_slot("value")
+    def _move_loop_right(self, value: int) -> None:
+        if not value:
+            loop_length = Song.loop_length()
+            Song.set_loop_start(Song.loop_start() + Song.loop_length())
+            Song.set_loop_length(loop_length)
 
     @subject_slot("value")
     def _scroll_device_prev(self, value: int) -> None:
