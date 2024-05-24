@@ -484,6 +484,7 @@ class DeviceEnum(AbstractEnum):
     @property
     def track_name(self) -> str:
         assert self.is_instrument
+
         return {
             DeviceEnum.SYLENTH1: "Sylenth1",
             DeviceEnum.SYLENTH1_RACK: "Sylenth1",
