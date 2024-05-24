@@ -36,10 +36,14 @@ class BeatTime(object):
         bar_coeff = beat_coeff * Song.signature_numerator()
         return (
             self._ticks
-            + self._sixteenths * sixteenths_coeff
-            + self.beats * beat_coeff
-            + self.bars * bar_coeff
+            + (self._sixteenths - 1) * sixteenths_coeff
+            + (self.beats - 1) * beat_coeff
+            + (self.bars - 1) * bar_coeff
         )
+
+    @property
+    def to_beats(self) -> float:
+        return self._to_tick_count / (60 * 4)
 
     @property
     def is_start(self) -> bool:
