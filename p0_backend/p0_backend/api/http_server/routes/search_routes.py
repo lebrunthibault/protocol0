@@ -1,6 +1,8 @@
+import ctypes
+import queue
 import tkinter as tk
 from threading import Timer, Thread
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter
 
@@ -14,28 +16,32 @@ from p0_backend.lib.window.window import focus_window_by_handle
 from protocol0.application.command.SelectTrackCommand import SelectTrackCommand
 
 router = APIRouter()
+thread: Optional[Thread] = None
+track_list_search_history: set[str] = set()
+task_queue = queue.Queue()
 
 
 @router.get("/track")
 async def _search_track() -> None:
+    from loguru import logger
+
+    logger.success("search")
+    _create_thread()
+    task_queue.put("show_window")
+
+
+def _create_thread() -> None:
+    global thread
+
+    if thread:
+        return None
+
     thread = Thread(target=search_track)
+    thread.daemon = True
     thread.start()
-    thread.join()
 
 
-track_list_search_history: set[str] = set()
-
-
-def search_track() -> None:
-    try:
-        track_list = AbletonSetManager.active().current_state.track_names
-    except Protocol0Error as e:
-        notify(str(e))
-        return
-
-    if "Master" not in track_list:
-        track_list.append("Master")
-
+def _get_search_window() -> tk.Tk:
     root = tk.Tk()
     w = 160  # width for the Tk root
     h = 450  # height for the Tk root
@@ -52,27 +58,42 @@ def search_track() -> None:
     # and where it is placed
     root.geometry("%dx%d+%d+%d" % (w, h, x, y))
     root.overrideredirect(True)
-    root.bind("<Escape>", (lambda event: root.destroy()))
+    root.bind("<Escape>", (lambda event: root.withdraw()))
 
     focus_window_by_handle(root.winfo_id())
+
+    return root
+
+
+def search_track() -> None:
+    try:
+        track_list = AbletonSetManager.active().current_state.track_names
+    except Protocol0Error as e:
+        notify(str(e))
+        return
+
+    if "Master" not in track_list:
+        track_list.append("Master")
+
+    root = _get_search_window()
 
     def autoclose() -> None:
         # noinspection PyBroadException
         try:
             if not entry.get():
-                root.destroy()
+                root.withdraw()
         except Exception:
             pass
 
     autoclose_timer = Timer(10, autoclose)
     autoclose_timer.start()
 
-    entry = tk.Entry(root, width=20)
+    entry = tk.Entry(root, width=20, font=("Arial", 12))
 
     entry.focus()
     entry.pack()
     entry.bind("<Return>", (lambda event: get_input()))
-    entry.bind("<Escape>", (lambda event: root.destroy()))
+    entry.bind("<Escape>", (lambda event: root.withdraw()))
 
     def track_list_from_substring(value: str) -> List[str]:
         if value == "":
@@ -83,7 +104,7 @@ def search_track() -> None:
 
         data = []
         for item in track_list:
-            if value.lower() in item.lower():
+            if item.lower().startswith(value.lower()):
                 data.append(item)
 
         return data
@@ -141,6 +162,39 @@ def search_track() -> None:
 
         focus_ableton()
 
-        root.destroy()  # Close the window after getting the input
+        root.withdraw()  # Close the window after getting the input
 
-    root.mainloop()
+    set_to_foreground = ctypes.windll.user32.SetForegroundWindow
+    keybd_event = ctypes.windll.user32.keybd_event
+    alt_key = 0x12
+    extended_key = 0x0001
+    key_up = 0x0002
+
+    def steal_focus():
+        keybd_event(alt_key, 0, extended_key | 0, 0)
+        set_to_foreground(root.winfo_id())
+        keybd_event(alt_key, 0, extended_key | key_up, 0)
+
+        entry.focus_set()
+
+    def check_queue():
+        try:
+            task = task_queue.get_nowait()
+            if task == "show_window":
+                root.deiconify()
+
+                from loguru import logger
+
+                logger.success("shown")
+                update_autocomplete(track_list_from_substring(""))
+                entry.delete(0, tk.END)
+                steal_focus()
+
+        except queue.Empty:
+            pass
+
+        root.after(5, check_queue)
+
+    check_queue()
+    tk.mainloop()
+    # root.mainloop()

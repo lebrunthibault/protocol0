@@ -373,20 +373,6 @@ class SimpleTrack(AbstractTrack):
     def is_playing(self) -> bool:
         return any(clip.is_playing for clip in self.clips)
 
-    def select(self) -> None:
-        # hack to have the track fully shown
-        last_track = list(Song.simple_tracks())[-1]
-        if Song.selected_track().index < self.index and self != last_track:
-            last_track.select()
-
-        DomainEventBus.emit(AbstractTrackSelectedEvent(self._track))
-
-        # make it focused
-        if not self.is_collapsed:
-            self.is_collapsed = True
-
-        self.is_collapsed = False
-
     def toggle(self) -> None:
         self.muted = not self.muted
 
@@ -469,6 +455,30 @@ class SimpleTrack(AbstractTrack):
         else:
             if self._previous_output_routing_track:
                 self.output_routing.track = self._previous_output_routing_track
+
+    def select(self) -> None:
+        # hack to have the track fully shown
+        last_track = list(Song.simple_tracks())[-1]
+        if Song.selected_track().index < self.index and self != last_track:
+            last_track.select()
+
+        # hack : group tracks are not shown, only selected
+        if self.is_foldable:
+            if self.index == 0:
+                self.sub_tracks[0].select()
+            else:
+                previous_track = list(Song.simple_tracks())[self.index - 1]
+                previous_track.select()
+                previous_track.is_collapsed = True
+                Backend.client().scroll(-1)
+
+        DomainEventBus.emit(AbstractTrackSelectedEvent(self._track))
+
+        # make it focused
+        if not self.is_collapsed:
+            self.is_collapsed = True
+
+        self.is_collapsed = False
 
     def focus(self) -> Sequence:
         # track can disappear out of view if this is done later

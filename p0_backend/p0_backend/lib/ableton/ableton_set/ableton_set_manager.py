@@ -61,7 +61,9 @@ class AbletonSetManager:
             await ws_manager.broadcast_active_set()
 
         # keep a selected track history
+        logger.success(cls.SELECTED_TRACKS_HISTORY)
         selected_track_name = current_state.current_track.name.strip()
+        logger.success(selected_track_name)
         if selected_track_name in cls.SELECTED_TRACKS_HISTORY:
             cls.SELECTED_TRACKS_HISTORY.remove(selected_track_name)
 
