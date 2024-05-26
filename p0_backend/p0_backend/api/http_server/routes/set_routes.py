@@ -42,9 +42,19 @@ class PostCurrentStatePayload(BaseModel):
     post_current_state_payload: AbletonSetCurrentState
 
 
-@router.post("/current_state", dependencies=[Depends(RateLimiter(times=1, seconds=1))])
+@router.post("/current_state", dependencies=[Depends(RateLimiter(times=1, milliseconds=50))])
 async def post_current_state(payload: PostCurrentStatePayload):
     await AbletonSetManager.create_from_current_state(payload.post_current_state_payload)
+
+
+@router.delete("/track")
+async def delete_track(track_name: str):
+    AbletonSetManager.delete_track(track_name)
+
+
+@router.post("/clear_state")
+async def clear_state():
+    AbletonSetManager.clear_state()
 
 
 class SceneStatsPayload(BaseModel):

@@ -23,7 +23,7 @@ async def _search_track() -> None:
     thread.join()
 
 
-track_list_history: set[str] = set()
+track_list_search_history: set[str] = set()
 
 
 def search_track() -> None:
@@ -37,7 +37,22 @@ def search_track() -> None:
         track_list.append("Master")
 
     root = tk.Tk()
+    w = 160  # width for the Tk root
+    h = 450  # height for the Tk root
+
+    # get screen width and height
+    ws = root.winfo_screenwidth()  # width of the screen
+    hs = root.winfo_screenheight()  # height of the screen
+
+    # calculate x and y coordinates for the Tk root window
+    x = (ws / 2) - (w / 2)
+    y = (hs / 2) - (h / 2)
+
+    # set the dimensions of the screen
+    # and where it is placed
+    root.geometry("%dx%d+%d+%d" % (w, h, x, y))
     root.overrideredirect(True)
+    root.bind("<Escape>", (lambda event: root.destroy()))
 
     focus_window_by_handle(root.winfo_id())
 
@@ -61,8 +76,8 @@ def search_track() -> None:
 
     def track_list_from_substring(value: str) -> List[str]:
         if value == "":
-            if track_list_history:
-                return list(track_list_history)
+            if AbletonSetManager.SELECTED_TRACKS_HISTORY:
+                return AbletonSetManager.SELECTED_TRACKS_HISTORY
             else:
                 return track_list
 
@@ -86,7 +101,7 @@ def search_track() -> None:
         for item in data:
             list_box.insert("end", item)
 
-    list_box = tk.Listbox(root)
+    list_box = tk.Listbox(root, height=20, font=("Arial", 12))
     list_box.pack()
     update_autocomplete(track_list)
 
@@ -103,6 +118,12 @@ def search_track() -> None:
 
     list_box.bind_all("<Down>", on_down)
 
+    def on_tab(_) -> str:
+        send_keys("{DOWN}")
+        return "break"
+
+    list_box.bind("<Tab>", on_tab)
+
     def get_input() -> None:
         submit(entry.get())
 
@@ -113,7 +134,7 @@ def search_track() -> None:
             if track_sub_list:
                 track_name = track_sub_list[0]
 
-        track_list_history.add(track_name)
+        track_list_search_history.add(track_name)
         p0_script_client().dispatch(SelectTrackCommand(track_name))
 
         autoclose_timer.cancel()

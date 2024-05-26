@@ -1,5 +1,5 @@
 import re
-from typing import Optional
+from typing import Optional, List
 
 from loguru import logger
 
@@ -21,6 +21,7 @@ settings = Settings()
 class AbletonSetManager:
     DEBUG = True
     _ACTIVE_SET: Optional[AbletonSet] = None
+    SELECTED_TRACKS_HISTORY: List[str] = []
 
     @classmethod
     async def create_from_current_state(cls, current_state: AbletonSetCurrentState) -> None:
@@ -59,6 +60,13 @@ class AbletonSetManager:
         ):
             await ws_manager.broadcast_active_set()
 
+        # keep a selected track history
+        selected_track_name = current_state.current_track.name.strip()
+        if selected_track_name in cls.SELECTED_TRACKS_HISTORY:
+            cls.SELECTED_TRACKS_HISTORY.remove(selected_track_name)
+
+        cls.SELECTED_TRACKS_HISTORY.insert(0, selected_track_name)
+
     @classmethod
     async def remove(cls, filename: str):
         if cls._ACTIVE_SET is None:
@@ -78,6 +86,15 @@ class AbletonSetManager:
     @classmethod
     def has_active_set(cls) -> bool:
         return cls._ACTIVE_SET is not None
+
+    @classmethod
+    def clear_state(cls) -> None:
+        cls.SELECTED_TRACKS_HISTORY = []
+
+    @classmethod
+    def delete_track(cls, track_name: str) -> None:
+        if track_name.strip() in cls.SELECTED_TRACKS_HISTORY:
+            cls.SELECTED_TRACKS_HISTORY.remove(track_name.strip())
 
 
 def get_focused_set() -> Optional[AbletonSet]:

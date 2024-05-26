@@ -127,6 +127,30 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
+    def clear_muted_notes(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Clear Muted Notes  # noqa: E501
+        """
+
+        payload = {"method": "GET", "path": "/clip/clear_muted_notes", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
+    def clear_state(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Clear State  # noqa: E501
+        """
+
+        payload = {"method": "POST", "path": "/set/clear_state", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
     def click(
         self,
         x,
@@ -219,6 +243,18 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
+    def collapse_selected(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Collapse Selected  # noqa: E501
+        """
+
+        payload = {"method": "GET", "path": "/track/collapse_selected", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
     def color_clip_with_automation(
         self,
     ):  # noqa: E501
@@ -240,6 +276,25 @@ class P0BackendClient(object):
         """
 
         payload = {"method": "GET", "path": "/clip/crop", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
+    def delete_track(
+        self,
+        track_name,
+    ):  # noqa: E501
+        # type: (str, ) -> None
+        """
+        Delete Track  # noqa: E501
+        """
+
+        payload = {
+            "method": "DELETE",
+            "path": "/set/track",
+            "params": {
+                "track_name": track_name,
+            },
+        }
 
         self._send_dict_as_midi(payload)
 
@@ -424,8 +479,11 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
-    def load_device(self, name, create_track):  # noqa: E501
-        # type: (str, bool, ) -> None
+    def load_device(
+        self,
+        name,
+    ):  # noqa: E501
+        # type: (str, ) -> None
         """
         Load Device  # noqa: E501
         """
@@ -435,7 +493,6 @@ class P0BackendClient(object):
             "path": "/device/load",
             "params": {
                 "name": name,
-                "create_track": create_track,
             },
         }
 
@@ -748,6 +805,30 @@ class P0BackendClient(object):
         """
 
         payload = {"method": "GET", "path": "/reload_script", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
+    def remove_arrangement_muted_clips(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Remove Arrangement Muted Clips  # noqa: E501
+        """
+
+        payload = {"method": "GET", "path": "/clip/remove_arrangement_muted_clips", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
+    def restart_ableton_audio(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Restart Ableton Audio  # noqa: E501
+        """
+
+        payload = {"method": "GET", "path": "/audio/restart_ableton_audio", "params": {}}
 
         self._send_dict_as_midi(payload)
 
@@ -1125,25 +1206,6 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
-    def show_sample_category(
-        self,
-        category,
-    ):  # noqa: E501
-        # type: (str, ) -> None
-        """
-        Show Sample Category  # noqa: E501
-        """
-
-        payload = {
-            "method": "GET",
-            "path": "/show_sample_category",
-            "params": {
-                "category": category,
-            },
-        }
-
-        self._send_dict_as_midi(payload)
-
     def show_success(
         self,
         message,
@@ -1177,6 +1239,23 @@ class P0BackendClient(object):
             "path": "/show_warning",
             "params": {
                 "message": message,
+            },
+        }
+
+        self._send_dict_as_midi(payload)
+
+    def solo(self, solo_type, bus_name):  # noqa: E501
+        # type: (str, str, ) -> None
+        """
+        Solo  # noqa: E501
+        """
+
+        payload = {
+            "method": "GET",
+            "path": "/monitoring/solo",
+            "params": {
+                "solo_type": solo_type,
+                "bus_name": bus_name,
             },
         }
 
@@ -1248,6 +1327,25 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
+    def toggle_bus(
+        self,
+        bus_name,
+    ):  # noqa: E501
+        # type: (str, ) -> None
+        """
+        Toggle Bus  # noqa: E501
+        """
+
+        payload = {
+            "method": "GET",
+            "path": "/monitoring/toggle_bus",
+            "params": {
+                "bus_name": bus_name,
+            },
+        }
+
+        self._send_dict_as_midi(payload)
+
     def toggle_clip(
         self,
         track_name,
@@ -1288,6 +1386,18 @@ class P0BackendClient(object):
         """
 
         payload = {"method": "GET", "path": "/device/toggle_cpu_heavy", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
+    def toggle_ext_out(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Toggle Ext Out  # noqa: E501
+        """
+
+        payload = {"method": "GET", "path": "/monitoring/toggle_ext_out", "params": {}}
 
         self._send_dict_as_midi(payload)
 

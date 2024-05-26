@@ -14,6 +14,10 @@ from protocol0.domain.lom.track.abstract_track.AbstractTrackNameUpdatedEvent imp
 from protocol0.domain.lom.track.group_track.TrackCategoryEnum import TrackCategoryEnum
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrackArmedEvent import SimpleTrackArmedEvent
+from protocol0.domain.lom.track.simple_track.SimpleTrackDeletedEvent import SimpleTrackDeletedEvent
+from protocol0.domain.lom.track.simple_track.SimpleTrackDisconnectedEvent import (
+    SimpleTrackDisconnectedEvent,
+)
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
@@ -86,8 +90,20 @@ class AbletonSet(object):
         for event in (SelectedTrackChangedEvent,):
             Scheduler.wait(2, partial(DomainEventBus.subscribe, event, lambda _: self.notify()))
 
+        DomainEventBus.subscribe(
+            SimpleTrackDisconnectedEvent, self._on_simple_track_disconnected_event
+        )
+
+        Backend.client().clear_state()
+
     def __repr__(self) -> str:
         return "AbletonSet"
+
+    def _on_simple_track_disconnected_event(self, event: SimpleTrackDeletedEvent) -> None:
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev(event)
+        Backend.client().delete_track(event.track.name)
 
     def to_model(self) -> AbletonSetCurrentState:
         return AbletonSetCurrentState(
