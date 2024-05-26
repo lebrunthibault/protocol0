@@ -1,5 +1,7 @@
 from functools import wraps
 from time import sleep
+import win32api
+from win32con import MOUSEEVENTF_WHEEL
 
 import pyautogui
 from loguru import logger
@@ -43,6 +45,10 @@ def click_vertical_zone(coords: Coords) -> None:
     x, y = coords
     for i in range(120, -40, -20):
         pyautogui.click(x, y + i)
+
+
+def scroll(steps: int):
+    win32api.mouse_event(MOUSEEVENTF_WHEEL, 960, 540, steps, 0)
 
 
 def get_mouse_position() -> Coords:

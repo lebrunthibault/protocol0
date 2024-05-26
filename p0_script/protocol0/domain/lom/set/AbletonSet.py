@@ -93,6 +93,9 @@ class AbletonSet(object):
         DomainEventBus.subscribe(
             SimpleTrackDisconnectedEvent, self._on_simple_track_disconnected_event
         )
+        DomainEventBus.subscribe(
+            AbstractTrackNameUpdatedEvent, self._on_abstract_track_name_updated_event
+        )
 
         Backend.client().clear_state()
 
@@ -104,6 +107,9 @@ class AbletonSet(object):
 
         Logger.dev(event)
         Backend.client().delete_track(event.track.name)
+
+    def _on_abstract_track_name_updated_event(self, event: AbstractTrackNameUpdatedEvent) -> None:
+        Backend.client().delete_track(event.previous_name)
 
     def to_model(self) -> AbletonSetCurrentState:
         return AbletonSetCurrentState(

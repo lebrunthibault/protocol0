@@ -40,8 +40,9 @@ class AbstractTrackAppearance(SlotManager, Observable):
     @name.setter
     def name(self, name: str) -> None:
         if self._live_track and name:
+            previous_name = self._live_track.name
             self._live_track.name = str(name).strip()
-            DomainEventBus.emit(AbstractTrackNameUpdatedEvent())
+            DomainEventBus.emit(AbstractTrackNameUpdatedEvent(previous_name=previous_name))
 
     @property
     def lower_name(self) -> str:

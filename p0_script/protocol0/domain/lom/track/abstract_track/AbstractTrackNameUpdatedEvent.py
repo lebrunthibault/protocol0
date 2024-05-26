@@ -1,2 +1,3 @@
 class AbstractTrackNameUpdatedEvent(object):
-    pass
+    def __init__(self, previous_name: str):
+        self.previous_name = previous_name

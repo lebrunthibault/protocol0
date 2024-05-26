@@ -4,8 +4,9 @@ from protocol0.application.control_surface.ActionGroupInterface import ActionGro
 from protocol0.domain.lom.song.components.TempoComponent import TempoComponent
 
 # noinspection SpellCheckingInspection
+from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.track_recorder.RecordService import RecordService
-from protocol0.shared.Song import Song
+from protocol0.shared.Song import Song, find_track
 
 
 class ActionGroupMain(ActionGroupInterface):
@@ -63,7 +64,13 @@ class ActionGroupMain(ActionGroupInterface):
         self.add_encoder(identifier=16, name="test", on_scroll=scroll_selected_parameter)
 
     def action_test(self) -> None:
+        perc_track = find_track("Perc")
         from protocol0.shared.logging.Logger import Logger
 
-        Logger.dev(Song.selected_track())
-        Logger.dev(Song.selected_track().to_dict())
+        Logger.dev(perc_track)
+        perc_track.is_collapsed = True
+
+        def un_collapse() -> None:
+            perc_track.is_collapsed = False
+
+        Scheduler.wait_ms(1000, un_collapse)
