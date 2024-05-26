@@ -30,6 +30,9 @@ from protocol0.domain.lom.track.simple_track.SimpleTrackArmedEvent import Simple
 from protocol0.domain.lom.track.simple_track.SimpleTrackClipSlots import SimpleTrackClipSlots
 from protocol0.domain.lom.track.simple_track.SimpleTrackCreatedEvent import SimpleTrackCreatedEvent
 from protocol0.domain.lom.track.simple_track.SimpleTrackDeletedEvent import SimpleTrackDeletedEvent
+from protocol0.domain.lom.track.simple_track.SimpleTrackDisconnectedEvent import (
+    SimpleTrackDisconnectedEvent,
+)
 from protocol0.domain.lom.track.simple_track.SimpleTrackFlattenedEvent import (
     SimpleTrackFlattenedEvent,
 )
@@ -617,6 +620,7 @@ class SimpleTrack(AbstractTrack):
 
         tracks = self.group_track.sub_tracks if self.group_track else Song.top_tracks()
         Scheduler.defer(partial(rename_tracks, tracks, self.name))
+        DomainEventBus.emit(SimpleTrackDisconnectedEvent(self))
 
         super(SimpleTrack, self).disconnect()
         self.devices.disconnect()

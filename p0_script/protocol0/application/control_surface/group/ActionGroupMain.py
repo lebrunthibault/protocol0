@@ -65,7 +65,5 @@ class ActionGroupMain(ActionGroupInterface):
     def action_test(self) -> None:
         from protocol0.shared.logging.Logger import Logger
 
-        Logger.dev(Song.selected_device())
-        for p in Song.selected_device().parameters:
-            Logger.dev((p, p.is_enabled, p._device_parameter.state))
-        Logger.dev(Song.selected_device().macros_count)  # noqa
+        Logger.dev(Song.selected_track())
+        Logger.dev(Song.selected_track().to_dict())
