@@ -37,8 +37,8 @@ if TYPE_CHECKING:
     from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
 
 
-def find_track_or_none(name: str, *a: Any, **k: Any) -> "SimpleTrack":
-    track = find_track(name, *a, **k)
+def find_track(name: str, *a: Any, **k: Any) -> "SimpleTrack":
+    track = find_track_or_none(name, *a, **k)
 
     if not track:
         raise Protocol0Error(f"Cannot find track '{name}'")
@@ -46,13 +46,15 @@ def find_track_or_none(name: str, *a: Any, **k: Any) -> "SimpleTrack":
     return track
 
 
-def find_track(
-    name: str, exact: bool = True, is_foldable: bool = False, is_top: bool = False
+def find_track_or_none(
+    name: str, exact: bool = True, is_foldable: Optional[bool] = None, is_top: bool = False
 ) -> Optional["SimpleTrack"]:
     tracks = Song.top_tracks() if is_top else Song.simple_tracks()
 
     for track in tracks:
         if is_foldable and not track.is_foldable:
+            continue
+        elif is_foldable is False and track.is_foldable:
             continue
 
         if exact and name.lower().strip() == track.lower_name:

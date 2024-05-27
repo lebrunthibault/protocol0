@@ -12,7 +12,7 @@ from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.error import log_exceptions
 from protocol0.infra.midi.NoteSentEvent import NoteSentEvent
 from protocol0.shared.AbstractEnum import AbstractEnum
-from protocol0.shared.Song import find_track
+from protocol0.shared.Song import find_track_or_none, find_track
 
 
 class LEDColorVelocities(AbstractEnum):
@@ -30,13 +30,11 @@ class ControlledTrack:
     volume_cc: int
     is_top_track: bool
     track_names: List[str] = field(default_factory=lambda: [])
+    select_getter: Optional[Callable] = None
 
     @property
     def _main_track(self) -> SimpleTrack:
-        track = find_track(self.name, exact=False, is_top=self.is_top_track)
-        assert track, f"Couldn't find track for '{self.name}'"
-
-        return track
+        return find_track(self.name, exact=False, is_top=self.is_top_track)
 
     @property
     def _tracks(self) -> List[SimpleTrack]:
@@ -44,7 +42,10 @@ class ControlledTrack:
         return list(
             filter(
                 None,
-                [find_track(name, exact=False, is_top=self.is_top_track) for name in track_names],
+                [
+                    find_track_or_none(name, exact=False, is_top=self.is_top_track)
+                    for name in track_names
+                ],
             )
         )
 
@@ -69,8 +70,10 @@ class ControlledTrack:
             track.solo_toggle()
 
     def select(self) -> None:
-        """Select the first track"""
-        self._main_track.select()
+        if self.select_getter:
+            self.select_getter().select()
+        else:
+            self._main_track.select()
 
     def set_volume(self, value: float) -> None:
         self._main_track.devices.mixer_device.volume.value = value
@@ -158,6 +161,8 @@ class TrackEncoder(SlotManager):
     def _track_select_listener(self, value: int) -> None:
         if not value:
             self._controlled_track.select()
+            if self._controlled_track.has_tracks:
+                self._set_led(LEDColorVelocities.MUTED, self._controlled_track.track_select_note)
 
     @subject_slot("value")
     @log_exceptions

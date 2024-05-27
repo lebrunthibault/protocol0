@@ -12,7 +12,9 @@ from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackCompo
 from protocol0.domain.lom.song.components.TrackComponent import TrackComponent
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
-from protocol0.shared.Song import Song
+from protocol0.domain.shared.utils.timing import debounce
+from protocol0.domain.shared.utils.utils import map_to_range
+from protocol0.shared.Song import Song, find_track_or_none, find_track
 
 
 def _scroll_macro_control(macro_index: int, value: int) -> None:
@@ -64,8 +66,13 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
                     True, MIDI_CC_TYPE, 1, cc_number
                 )
 
+            self._scroll_loop_length.subject = ButtonElement(True, MIDI_CC_TYPE, 1, 36)
+
+        def find_kick() -> SimpleTrack:
+            return find_track("Kick", is_foldable=False)
+
         controlled_tracks = (
-            ControlledTrack("Kick", 73, 41, 13, False),
+            ControlledTrack("Kick", 73, 41, 13, False, select_getter=find_kick),
             ControlledTrack("Hat", 74, 42, 14, False),
             ControlledTrack("Perc", 75, 43, 15, False, track_names=["Perc", "FX"]),
             ControlledTrack("Vocals", 76, 44, 16, True),
@@ -149,7 +156,7 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
                 self._PREVIOUS_SELECTED_TRACK = Song.selected_track()
                 self._PREVIOUS_SELECTED_TRACK_CLIP_VIEW = ApplicationView.is_clip_view_visible()
 
-                Song.master_track().select()
+                Song.master_track().select(un_collapse=False)
                 ApplicationView.show_device()
             else:
                 if self._PREVIOUS_SELECTED_TRACK:
@@ -192,3 +199,10 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
     @subject_slot("value")
     def _scroll_macro_control_8(self, value: int) -> None:
         _scroll_macro_control(8, value)
+
+    @subject_slot("value")
+    @debounce(duration=50)
+    def _scroll_loop_length(self, value: int) -> None:
+        values = (1, 2, 4, 8, 16)
+        loop_index = map_to_range(value, 0, 127, 0, 4)
+        Song.set_loop_length(values[loop_index] * Song.signature_numerator())
