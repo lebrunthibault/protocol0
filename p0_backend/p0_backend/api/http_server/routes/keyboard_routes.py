@@ -24,8 +24,8 @@ def _click_vertical_zone(x: int, y: int):
 
 
 @router.get("/scroll")
-def _scroll(steps: int = 1):
-    scroll(steps)
+def _scroll(pixels: int = 1):
+    scroll(pixels)
 
 
 @router.get("/select_and_copy")

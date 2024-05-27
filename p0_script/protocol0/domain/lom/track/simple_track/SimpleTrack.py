@@ -462,6 +462,14 @@ class SimpleTrack(AbstractTrack):
         if Song.selected_track().index < self.index and self != last_track:
             last_track.select()
 
+        DomainEventBus.emit(AbstractTrackSelectedEvent(self._track))
+
+        # make it focused
+        if not self.is_collapsed:
+            self.is_collapsed = True
+
+        self.is_collapsed = False
+
         # hack : group tracks are not shown, only selected
         if self.is_foldable:
             if self.index == 0:
@@ -470,15 +478,7 @@ class SimpleTrack(AbstractTrack):
                 previous_track = list(Song.simple_tracks())[self.index - 1]
                 previous_track.select()
                 previous_track.is_collapsed = True
-                Backend.client().scroll(-1)
-
-        DomainEventBus.emit(AbstractTrackSelectedEvent(self._track))
-
-        # make it focused
-        if not self.is_collapsed:
-            self.is_collapsed = True
-
-        self.is_collapsed = False
+                Backend.client().scroll(-35)
 
     def focus(self) -> Sequence:
         # track can disappear out of view if this is done later

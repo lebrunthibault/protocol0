@@ -5,7 +5,7 @@ from _Framework.InputControlElement import MIDI_NOTE_TYPE, MIDI_CC_TYPE
 from _Framework.SubjectSlot import subject_slot, SlotManager
 
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
-from protocol0.application.control_surface.TrackEncoder import TrackEncoder
+from protocol0.application.control_surface.TrackEncoder import TrackEncoder, ControlledTrack
 from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
 from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
@@ -64,29 +64,25 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
                     True, MIDI_CC_TYPE, 1, cc_number
                 )
 
-        track_to_control_values = {
-            "Kick": (73, 41, 13, False),
-            "Hat": (74, 42, 14, False),
-            "Perc": (75, 43, 15, False),
-            "FX": (76, 44, 16, True),
-            "Harmony": (89, 57, 17, True),
-            "Lead": (90, 58, 18, True),
-            "Bass": (91, 59, 19, True),
-            "Sub": (92, 60, 20, False),
-        }
+        controlled_tracks = (
+            ControlledTrack("Kick", 73, 41, 13, False),
+            ControlledTrack("Hat", 74, 42, 14, False),
+            ControlledTrack("Perc", 75, 43, 15, False, track_names=["Perc", "FX"]),
+            ControlledTrack("Vocals", 76, 44, 16, True),
+            ControlledTrack("Harmony", 89, 57, 17, True),
+            ControlledTrack("Lead", 90, 58, 18, True),
+            ControlledTrack("Bass", 91, 59, 19, True),
+            ControlledTrack("Sub", 92, 60, 20, False),
+        )
 
         # noinspection PyAttributeOutsideInit
         self.encoders: List[TrackEncoder] = []
 
-        for track_name, config in track_to_control_values.items():
+        for controlled_track in controlled_tracks:
             self.encoders.append(
                 TrackEncoder(
                     channel=self.CHANNEL,
-                    track_select_note=config[1],
-                    solo_mute_note=config[0],
-                    volume_cc=config[2],
-                    track_name=track_name,
-                    is_top_track=config[3],
+                    controlled_track=controlled_track,
                     component_guard=self._component_guard,
                 )
             )

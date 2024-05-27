@@ -856,7 +856,7 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
-    def scroll(self, steps):  # noqa: E501
+    def scroll(self, pixels):  # noqa: E501
         # type: (int, ) -> None
         """
         Scroll  # noqa: E501
@@ -866,7 +866,7 @@ class P0BackendClient(object):
             "method": "GET",
             "path": "/keyboard/scroll",
             "params": {
-                "steps": steps,
+                "pixels": pixels,
             },
         }
 
