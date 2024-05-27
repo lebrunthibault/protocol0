@@ -5,7 +5,7 @@ from protocol0.application.command_handler.CommandHandlerInterface import Comman
 from protocol0.domain.lom.song.components.TrackComponent import TrackComponent
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
-from protocol0.shared.Song import Song, find_track
+from protocol0.shared.Song import Song, find_track_or_none
 
 
 class SoloTracksCommandHandler(CommandHandlerInterface):
@@ -13,7 +13,7 @@ class SoloTracksCommandHandler(CommandHandlerInterface):
 
     def handle(self, command: SoloTracksCommand) -> None:
         if command.bus_name:
-            bus_track = find_track(command.bus_name, exact=False, is_foldable=True)
+            bus_track = find_track_or_none(command.bus_name, exact=False, is_foldable=True)
 
             assert bus_track, f"Cannot find bus {command.bus_name}"
             solo_active = bus_track.solo
@@ -39,9 +39,12 @@ class SoloTracksCommandHandler(CommandHandlerInterface):
             return
 
         if command.solo_type == "KICK_SUB":
-            tracks_to_solo = (find_track("kick"), find_track("sub"))
+            tracks_to_solo = (find_track_or_none("kick"), find_track_or_none("sub"))
         elif command.solo_type == "KICK_BASS":
-            tracks_to_solo = (find_track("kick"), find_track("bass", exact=False, is_foldable=True))
+            tracks_to_solo = (
+                find_track_or_none("kick"),
+                find_track_or_none("bass", exact=False, is_foldable=True),
+            )
         else:
             raise Protocol0Error(f"Unhandled solo type: '{command.solo_type}'")
 

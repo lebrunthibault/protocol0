@@ -103,9 +103,6 @@ class AbletonSet(object):
         return "AbletonSet"
 
     def _on_simple_track_disconnected_event(self, event: SimpleTrackDeletedEvent) -> None:
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(event)
         Backend.client().delete_track(event.track.name)
 
     def _on_abstract_track_name_updated_event(self, event: AbstractTrackNameUpdatedEvent) -> None:
