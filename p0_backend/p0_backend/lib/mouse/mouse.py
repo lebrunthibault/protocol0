@@ -47,8 +47,11 @@ def click_vertical_zone(coords: Coords) -> None:
         pyautogui.click(x, y + i)
 
 
-def scroll(steps: int):
-    win32api.mouse_event(MOUSEEVENTF_WHEEL, 960, 540, steps, 0)
+def scroll(pixels: int):
+    from loguru import logger
+
+    logger.success(pixels)
+    win32api.mouse_event(MOUSEEVENTF_WHEEL, 960, 540, pixels, 0)
 
 
 def get_mouse_position() -> Coords:

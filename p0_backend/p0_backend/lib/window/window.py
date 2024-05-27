@@ -1,3 +1,5 @@
+import ctypes
+import tkinter
 from time import sleep
 from typing import Union
 
@@ -52,6 +54,18 @@ def focus_window_by_handle(
 
     logger.error(f"Window not focused : {handle}")
     raise Protocol0Error("window is not focused")
+
+
+def focus_tkinter_window(root: tkinter.Tk):
+    set_to_foreground = ctypes.windll.user32.SetForegroundWindow
+    keyboard_event = ctypes.windll.user32.keybd_event
+    alt_key = 0x12
+    extended_key = 0x0001
+    key_up = 0x0002
+
+    keyboard_event(alt_key, 0, extended_key | 0, 0)
+    set_to_foreground(root.winfo_id())
+    keyboard_event(alt_key, 0, extended_key | key_up, 0)
 
 
 def move_window(handle, rect_coords: RectCoords):

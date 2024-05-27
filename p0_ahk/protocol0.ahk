@@ -126,6 +126,9 @@ return
 	callBackend("search/track")
 	Send ^+f  ; cancel Ableton Follow
 return
+^+!f::
+	callBackend("search/track?reset=true")
+return
 ^NumpadSub::
     callBackend("track/collapse_selected")
 

@@ -1,4 +1,3 @@
-import ctypes
 import queue
 import tkinter as tk
 from threading import Timer, Thread
@@ -12,7 +11,7 @@ from p0_backend.lib.ableton.ableton_set.ableton_set_manager import AbletonSetMan
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.keys import send_keys
 from p0_backend.lib.notification import notify
-from p0_backend.lib.window.window import focus_window_by_handle
+from p0_backend.lib.window.window import focus_window_by_handle, focus_tkinter_window
 from protocol0.application.command.SelectTrackCommand import SelectTrackCommand
 
 router = APIRouter()
@@ -22,19 +21,23 @@ task_queue = queue.Queue()
 
 
 @router.get("/track")
-async def _search_track() -> None:
+async def _search_track(reset: bool = False) -> None:
     from loguru import logger
 
     logger.success("search")
-    _create_thread()
+    _create_thread(reset)
     task_queue.put("show_window")
 
 
-def _create_thread() -> None:
+def _create_thread(reset: bool) -> None:
     global thread
 
     if thread:
-        return None
+        if reset:
+            task_queue.put("stop")
+            thread.join()
+        else:
+            return None
 
     thread = Thread(target=search_track)
     thread.daemon = True
@@ -110,11 +113,11 @@ def search_track() -> None:
         return data
 
     def check_key(event) -> None:
-        update_autocomplete(track_list_from_substring(event.widget.get()))
+        update_search_results(track_list_from_substring(event.widget.get()))
 
     entry.bind("<KeyRelease>", check_key)
 
-    def update_autocomplete(data) -> None:
+    def update_search_results(data) -> None:
         # clear previous data
         list_box.delete(0, "end")
 
@@ -124,7 +127,7 @@ def search_track() -> None:
 
     list_box = tk.Listbox(root, height=20, font=("Arial", 12))
     list_box.pack()
-    update_autocomplete(track_list)
+    update_search_results(track_list)
 
     def on_select(evt) -> None:
         index = int(evt.widget.curselection()[0])
@@ -164,31 +167,24 @@ def search_track() -> None:
 
         root.withdraw()  # Close the window after getting the input
 
-    set_to_foreground = ctypes.windll.user32.SetForegroundWindow
-    keybd_event = ctypes.windll.user32.keybd_event
-    alt_key = 0x12
-    extended_key = 0x0001
-    key_up = 0x0002
-
-    def steal_focus():
-        keybd_event(alt_key, 0, extended_key | 0, 0)
-        set_to_foreground(root.winfo_id())
-        keybd_event(alt_key, 0, extended_key | key_up, 0)
-
+    def show_search_window():
+        root.deiconify()
+        update_search_results(track_list_from_substring(""))
+        entry.delete(0, tk.END)
+        focus_tkinter_window(root)
         entry.focus_set()
 
     def check_queue():
         try:
             task = task_queue.get_nowait()
             if task == "show_window":
-                root.deiconify()
-
+                show_search_window()
+            elif task == "stop":
+                root.destroy()
                 from loguru import logger
 
-                logger.success("shown")
-                update_autocomplete(track_list_from_substring(""))
-                entry.delete(0, tk.END)
-                steal_focus()
+                logger.success("gui thread stopped")
+                return
 
         except queue.Empty:
             pass
@@ -197,4 +193,3 @@ def search_track() -> None:
 
     check_queue()
     tk.mainloop()
-    # root.mainloop()

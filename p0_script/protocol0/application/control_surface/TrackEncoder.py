@@ -1,5 +1,6 @@
 import time
-from typing import Optional, Callable
+from dataclasses import dataclass, field
+from typing import Optional, Callable, List
 
 from _Framework.ButtonElement import ButtonElement
 from _Framework.InputControlElement import MIDI_NOTE_TYPE, MIDI_CC_TYPE
@@ -21,36 +22,83 @@ class LEDColorVelocities(AbstractEnum):
     SOLO = 60
 
 
+@dataclass(frozen=True)
+class ControlledTrack:
+    name: str
+    solo_mute_note: int
+    track_select_note: int
+    volume_cc: int
+    is_top_track: bool
+    track_names: List[str] = field(default_factory=lambda: [])
+
+    @property
+    def _main_track(self) -> SimpleTrack:
+        track = find_track(self.name, exact=False, is_top=self.is_top_track)
+        assert track, f"Couldn't find track for '{self.name}'"
+
+        return track
+
+    @property
+    def _tracks(self) -> List[SimpleTrack]:
+        track_names = self.track_names or [self.name]
+        return list(
+            filter(
+                None,
+                [find_track(name, exact=False, is_top=self.is_top_track) for name in track_names],
+            )
+        )
+
+    @property
+    def has_tracks(self) -> bool:
+        return bool(self._tracks)
+
+    @property
+    def muted(self) -> bool:
+        return any(t.muted for t in self._tracks)
+
+    @property
+    def soloed(self) -> bool:
+        return any(t.solo for t in self._tracks)
+
+    def toggle(self) -> None:
+        for track in self._tracks:
+            track.toggle()
+
+    def solo_toggle(self) -> None:
+        for track in self._tracks:
+            track.solo_toggle()
+
+    def select(self) -> None:
+        """Select the first track"""
+        self._main_track.select()
+
+    def set_volume(self, value: float) -> None:
+        self._main_track.devices.mixer_device.volume.value = value
+
+
 class TrackEncoder(SlotManager):
     LONG_PRESS_THRESHOLD = 0.25  # maximum time in seconds we consider a simple press
 
     def __init__(
         self,
         channel: int,
-        track_select_note: int,
-        solo_mute_note: int,
-        volume_cc: int,
-        track_name: str,
-        is_top_track: bool,
+        controlled_track: ControlledTrack,
         component_guard: Callable,
     ) -> None:
         super(TrackEncoder, self).__init__()
 
         self.channel = channel - 1
-        self._track_name = track_name
-        self._is_top_track = is_top_track
-        self._track_select_note = track_select_note
-        self._solo_mute_note = solo_mute_note
+        self._controlled_track = controlled_track
 
         with component_guard():
-            self._track_select_listener.subject = ButtonElement(
-                True, MIDI_NOTE_TYPE, self.channel, track_select_note
-            )
             self._solo_mute_listener.subject = ButtonElement(
-                True, MIDI_NOTE_TYPE, self.channel, solo_mute_note
+                True, MIDI_NOTE_TYPE, self.channel, controlled_track.solo_mute_note
+            )
+            self._track_select_listener.subject = ButtonElement(
+                True, MIDI_NOTE_TYPE, self.channel, controlled_track.track_select_note
             )
             self._volume_listener.subject = ButtonElement(
-                True, MIDI_CC_TYPE, self.channel, volume_cc
+                True, MIDI_CC_TYPE, self.channel, controlled_track.volume_cc
             )
 
         self._pressed_at: Optional[float] = None
@@ -58,18 +106,7 @@ class TrackEncoder(SlotManager):
         Scheduler.defer(self.init_leds)
 
     def __repr__(self) -> str:
-        return f"TrackEncoder('{self._track_name}')"
-
-    @property
-    def track(self) -> SimpleTrack:
-        track = self._track_or_none
-        assert track, f"Couldn't find track '{self._track_name}'"
-
-        return track
-
-    @property
-    def _track_or_none(self) -> Optional[SimpleTrack]:
-        return find_track(self._track_name, exact=False, is_top=self._is_top_track)
+        return f"TrackEncoder('{self._controlled_track.name}')"
 
     @property
     def _is_long_pressed(self) -> bool:
@@ -78,20 +115,18 @@ class TrackEncoder(SlotManager):
         )
 
     def _set_led(self, color: LEDColorVelocities, note: Optional[int] = None) -> None:
-        note = note or self._solo_mute_note
+        note = note or self._controlled_track.solo_mute_note
         DomainEventBus.emit(NoteSentEvent(self.channel, note, color.value))
 
     def init_leds(self) -> None:
-        track = self._track_or_none
-
-        if not track:
+        if not self._controlled_track.has_tracks:
             self._set_led(LEDColorVelocities.OFF)
-            self._set_led(LEDColorVelocities.OFF, self._track_select_note)
+            self._set_led(LEDColorVelocities.OFF, self._controlled_track.track_select_note)
             return None
 
-        self._set_led(LEDColorVelocities.MUTED, self._track_select_note)
+        self._set_led(LEDColorVelocities.MUTED, self._controlled_track.track_select_note)
 
-        if track.muted:
+        if self._controlled_track.muted:
             self._set_led(LEDColorVelocities.MUTED)
         else:
             self._set_led(LEDColorVelocities.ACTIVE)
@@ -103,17 +138,17 @@ class TrackEncoder(SlotManager):
             self._pressed_at = time.time()
             return None
 
-        if not self._track_or_none:
+        if not self._controlled_track.has_tracks:
             self._set_led(LEDColorVelocities.OFF)
 
         if self._is_long_pressed:
-            self.track.solo_toggle()
+            self._controlled_track.solo_toggle()
         else:
-            self.track.toggle()
+            self._controlled_track.toggle()
 
-        if self.track.solo:
+        if self._controlled_track.soloed:
             self._set_led(LEDColorVelocities.SOLO)
-        elif self.track.muted:
+        elif self._controlled_track.muted:
             self._set_led(LEDColorVelocities.MUTED)
         else:
             self._set_led(LEDColorVelocities.ACTIVE)
@@ -122,10 +157,10 @@ class TrackEncoder(SlotManager):
     @log_exceptions
     def _track_select_listener(self, value: int) -> None:
         if not value:
-            self.track.select()
+            self._controlled_track.select()
 
     @subject_slot("value")
     @log_exceptions
     def _volume_listener(self, value: int) -> None:
         scaled_value = ((value / 127) * 0.6) + 0.35
-        self.track.devices.mixer_device.volume.value = scaled_value
+        self._controlled_track.set_volume(scaled_value)
