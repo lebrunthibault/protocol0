@@ -111,7 +111,7 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
             Song.set_loop_start(max(0.0, Song.loop_start() - Song.loop_length()))
             Song.set_loop_length(loop_length)
 
-            self._container.get(PlaybackComponent).restart()
+            # self._container.get(PlaybackComponent).restart()
             # time = (60.0 / Song.tempo()) * Song.loop_start()
             # Song.set_current_song_time(time)
 

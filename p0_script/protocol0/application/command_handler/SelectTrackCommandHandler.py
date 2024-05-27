@@ -20,4 +20,4 @@ class SelectTrackCommandHandler(CommandHandlerInterface):
 
         assert track is not None, "Couldn't find track %s" % command.track_name
 
-        track.select()
+        track.select(un_collapse=track != Song.master_track())
