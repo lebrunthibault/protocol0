@@ -153,7 +153,10 @@ class AbletonSetTracks:
         self._tracks = tracks
         self._selection_history = [t for t in self._selection_history if t in tracks]
 
-    def flag_selected(self, track: AbletonTrack):
+    def flag_selected(self, track: AbletonTrack) -> None:
+        if track.name.lower() == "master":
+            return None
+
         track = self.get(track)
 
         if track in self.selection_history:

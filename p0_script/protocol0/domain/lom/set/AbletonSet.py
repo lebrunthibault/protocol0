@@ -95,9 +95,12 @@ class AbletonSet(object):
             tracks=tracks,
         )
 
-    @debounce(duration=20)
+    # @debounce(duration=20)
     def notify(self, full: bool = True, force: bool = False) -> None:
         model = self.to_model(full)
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev((full, model))
 
         if force or not full or self._model_cached != model:
             Backend.client().post_current_state(asdict(model))

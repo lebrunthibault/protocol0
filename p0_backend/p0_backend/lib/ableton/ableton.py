@@ -39,17 +39,16 @@ def is_ableton_focused() -> bool:
 
 
 def plugins_shown() -> bool:
-    return (
+    return bool(
         find_window_handle_by_enum(
             "AbletonVstPlugClass", search_type=SearchTypeEnum.WINDOW_CLASS_NAME
         )
-        is not None
     )
 
 
-def show_plugins(force: bool = False) -> None:
-    if force or not plugins_shown():
-        keyboard.press_and_release("ctrl+alt+p")
+def show_plugins() -> None:
+    # if force or not plugins_shown():
+    keyboard.press_and_release("ctrl+alt+p")
 
 
 def hide_plugins():

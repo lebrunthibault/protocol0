@@ -463,7 +463,11 @@ class SimpleTrack(AbstractTrack):
 
         self.is_collapsed = False
 
-    def select(self, un_collapse: bool = True) -> None:
+    def select(self) -> None:
+        if self == Song.master_track():
+            DomainEventBus.emit(AbstractTrackSelectedEvent(self._track))
+            return None
+
         # hack to have the track fully shown
         last_track = list(Song.simple_tracks())[-1]
         if Song.selected_track().index < self.index and self != last_track:
