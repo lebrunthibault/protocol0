@@ -23,9 +23,6 @@ task_queue = queue.Queue()
 
 @router.get("/track")
 async def _search_track(reset: bool = False) -> None:
-    from loguru import logger
-
-    logger.success("search")
     _create_thread(reset)
     task_queue.put("show_window")
 
@@ -98,15 +95,15 @@ def search_track() -> None:
 
     def track_list_from_substring(search: str) -> List[AbletonTrack]:
         if search == "":
-            if AbletonSetManager.SELECTED_TRACKS_HISTORY:
-                return AbletonSetManager.SELECTED_TRACKS_HISTORY
+            if AbletonSetManager.active().tracks.selection_history:
+                return AbletonSetManager.active().tracks.selection_history
             else:
                 return track_list
 
         data = []
         from loguru import logger
 
-        logger.success((track_list, search))
+        logger.success((len(track_list), search))
         for item in track_list:
             if item.name.lower().startswith(search.lower()):
                 data.append(item)
@@ -191,9 +188,6 @@ def search_track() -> None:
                 show_search_window()
             elif task == "stop":
                 root.destroy()
-                from loguru import logger
-
-                logger.success("gui thread stopped")
                 return
 
         except queue.Empty:

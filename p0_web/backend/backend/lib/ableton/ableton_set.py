@@ -114,23 +114,7 @@ class AbletonTrack(BaseModel):
     name: str
 
 
-class SceneTrackState(BaseModel):
-    track_name: str
-    group_name: str
-    has_clip: bool
-    is_playing: bool
-    is_armed: bool
-
-
-class AbletonScene(BaseModel):
-    drums: List[SceneTrackState]
-    harmony: List[SceneTrackState]
-    melody: List[SceneTrackState]
-    bass: List[SceneTrackState]
-
-
 class AbletonSetCurrentState(BaseModel):
-    selected_scene: AbletonScene
     selected_track: AbletonTrack
 
 
@@ -297,7 +281,7 @@ def _move_set_to_folder(path: str, folder_path: str):
         if not exists(filename):
             return
 
-        dest = filename.replace(ableton_set.place.folder_name, folder_path)
+        dest = filename.replace(ableton_set.path_info.place.folder_name, folder_path)
         shutil.move(filename, dest)
 
     if ableton_set.path_info.has_own_folder:
@@ -323,6 +307,6 @@ def create_set_folder(path: str) -> AbletonSet:
     folder_path = f"tracks/{ableton_set.path_info.name}"
     _move_set_to_folder(path, folder_path)
 
-    new_path = path.replace(ableton_set.place.folder_name, folder_path)
+    new_path = path.replace(ableton_set.path_info.place.folder_name, folder_path)
 
     return ableton_set.create(new_path)

@@ -3,6 +3,7 @@ interface PathInfo {
     name: string
     has_own_folder: boolean
     saved_at: number
+    place: AbletonSetPlace
 }
 
 interface SceneData {
@@ -45,7 +46,6 @@ interface AudioInfo {
 }
 
 interface AbletonSet {
-    place: AbletonSetPlace
     path_info: PathInfo
     metadata: AbletonSetMetadata
     audio?: AudioInfo

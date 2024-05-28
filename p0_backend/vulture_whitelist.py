@@ -90,7 +90,6 @@ add_track_to_selection  # unused function (p0_backend\lib\ableton\interface\trac
 splice_executable  # unused variable (p0_backend\settings.py:39)
 is_process_running  # unused function (p0_backend\lib\process.py:62)
 _.clear_state  # unused method (p0_backend\lib\ableton\ableton_set\ableton_set_manager.py:90)
-_.delete_track  # unused method (p0_backend\lib\ableton\ableton_set\ableton_set_manager.py:94)
 scroll  # unused function (p0_backend\lib\mouse\mouse.py:50)
 focus_tkinter_window  # unused function (p0_backend\lib\window\window.py:59)
 _.update_track_color  # unused method (p0_backend\lib\ableton\ableton_set\ableton_set_manager.py:96)

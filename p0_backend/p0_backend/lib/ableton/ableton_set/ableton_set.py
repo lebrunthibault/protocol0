@@ -18,33 +18,6 @@ from p0_backend.settings import Settings
 settings = Settings()
 
 
-class PathInfo(BaseModel):
-    filename: str
-    name: str
-    saved_at: Optional[float] = 0
-
-    @property
-    def metadata_filename(self) -> str:
-        return self.filename.replace(".als", ".json")
-
-    @property
-    def audio_filename(self) -> str:
-        return self.filename.replace(".als", ".wav")
-
-    @classmethod
-    def create(cls, filename: str) -> "PathInfo":
-        path = Path(filename)
-
-        return cls(filename=filename, name=path.stem, saved_at=path.stat().st_mtime)
-
-
-class SceneStat(BaseModel):
-    name: str
-    start: int
-    end: int
-    track_names: List[str]
-
-
 class AbletonSetPlace(Enum):
     TRACKS = "TRACKS"
     ARCHIVE = "ARCHIVE"
@@ -72,6 +45,44 @@ class AbletonSetPlace(Enum):
         logger.warning(f"Cannot find AbletonSetPlace for {directory}")
 
         return None
+
+
+class PathInfo(BaseModel):
+    filename: str
+    name: str
+    saved_at: Optional[float] = 0
+    place: AbletonSetPlace
+
+    @property
+    def metadata_filename(self) -> str:
+        return self.filename.replace(".als", ".json")
+
+    @property
+    def audio_filename(self) -> str:
+        return self.filename.replace(".als", ".wav")
+
+    @classmethod
+    def create(cls, filename: str) -> "PathInfo":
+        if not isabs(filename):
+            filename = f"{settings.ableton_set_directory}\\{filename}"
+
+        assert os.path.exists(filename), f"fichier introuvable : {filename}"
+
+        path = Path(filename)
+
+        return cls(
+            filename=filename,
+            name=path.stem,
+            saved_at=path.stat().st_mtime,
+            place=AbletonSetPlace.from_directory(dirname(filename)) or AbletonSetPlace.TRACKS,
+        )
+
+
+class SceneStat(BaseModel):
+    name: str
+    start: int
+    end: int
+    track_names: List[str]
 
 
 class AbletonSetMetadata(BaseModel):
@@ -102,61 +113,92 @@ class AbletonTrack(BaseModel):
         }.get(self.color, "#FFFFFF")
 
 
-class SceneTrackState(BaseModel):
-    track_name: str
-    group_name: str
-    has_clip: bool
-    is_playing: bool
-    is_armed: bool
-
-
-class AbletonScene(BaseModel):
-    drums: List[SceneTrackState]
-    harmony: List[SceneTrackState]
-    melody: List[SceneTrackState]
-    bass: List[SceneTrackState]
-
-
 class AbletonSetCurrentState(BaseModel):
-    selected_scene: AbletonScene
     selected_track: AbletonTrack
     tracks: List[AbletonTrack]
 
 
-class AbletonSet(BaseModel):
+class AbletonSetTracks:
+    def __init__(self, tracks: List[AbletonTrack]):
+        self._tracks = tracks
+        self._selection_history: List[AbletonTrack] = []
+
+    def __repr__(self):
+        return f"AbletonSetTracks('{len(self.all)}')"
+
+    def __bool__(self) -> bool:
+        return len(self.all) > 0
+
+    @property
+    def all(self) -> List[AbletonTrack]:
+        return self._tracks
+
+    @property
+    def selection_history(self) -> List[AbletonTrack]:
+        return self._selection_history
+
+    def get(self, f: AbletonTrack) -> AbletonTrack:
+        track = next(
+            filter(
+                lambda t: f == t,  # noqa
+                self.all,
+            ),
+            None,  # type: ignore[arg-type]
+        )
+
+        assert track, f"Couldn't find {f} in AbletonSetTracks : {self.all}"
+        return track
+
+    def update(self, tracks: List[AbletonTrack]):
+        self._tracks = tracks
+        self._selection_history = [t for t in self._selection_history if t in tracks]
+
+    def flag_selected(self, track: AbletonTrack):
+        track = self.get(track)
+
+        if track in self.selection_history:
+            self.selection_history.remove(track)
+
+        self.selection_history.insert(0, track)
+
+    def clear_selection_history(self) -> None:
+        self._selection_history = []
+
+    def update_track_color(self, track: AbletonTrack, color: int) -> None:
+        self.get(track).color = color
+
+
+class AbletonSet:
+    def __init__(
+        self, path_info: PathInfo, metadata: AbletonSetMetadata, audio: Optional[AudioInfo]
+    ):
+        self.path_info = path_info
+        self.metadata = metadata
+        self.audio = audio
+
+        self.current_state: Optional[AbletonSetCurrentState] = None
+        self.tracks: Optional[AbletonSetTracks] = AbletonSetTracks([])
+
     def __repr__(self):
         return f"AbletonSet('{self.path_info.name if self.path_info else ''}')"
 
     def __str__(self):
         return self.__repr__()
 
-    place: Optional[AbletonSetPlace]
-    path_info: Optional[PathInfo] = None
-    audio: Optional[AudioInfo] = None
-    metadata: Optional[AbletonSetMetadata] = None
-    current_state: Optional[AbletonSetCurrentState] = None
-
     @classmethod
-    def create(cls, set_filename: str, set_place: AbletonSetPlace = None) -> "AbletonSet":
-        if not isabs(set_filename):
-            set_filename = f"{settings.ableton_set_directory}\\{set_filename}"
-
-        assert os.path.exists(set_filename), f"fichier introuvable : {set_filename}"
-
-        ableton_set = AbletonSet(
-            place=set_place or AbletonSetPlace.from_directory(dirname(set_filename)),
-            path_info=PathInfo.create(set_filename),
-        )
-        ableton_set.metadata = AbletonSetMetadata()
+    def create(cls, set_filename: str) -> "AbletonSet":
+        path_info = PathInfo.create(set_filename)
+        metadata = AbletonSetMetadata()
+        audio_info = None
 
         # restore from file
-        if os.path.exists(ableton_set.path_info.metadata_filename):
-            with open(ableton_set.path_info.metadata_filename, "r") as f:
+        if os.path.exists(path_info.metadata_filename):
+            with open(path_info.metadata_filename, "r") as f:
                 try:
                     data = json.load(f)
-                    ableton_set.metadata = AbletonSetMetadata(
+                    metadata = AbletonSetMetadata(
                         **data,
-                        path_info=PathInfo.create(ableton_set.path_info.metadata_filename),
+                        path_info=PathInfo.create(path_info.metadata_filename),
                     )
                 except JSONDecodeError as e:
                     from loguru import logger
@@ -165,17 +207,36 @@ class AbletonSet(BaseModel):
                     pass
 
         # handle audio info
-        if os.path.exists(ableton_set.path_info.audio_filename):
-            audio_url = f"http://localhost:8000/static/{os.path.relpath(ableton_set.path_info.audio_filename, settings.ableton_set_directory)}"
+        if os.path.exists(path_info.audio_filename):
+            audio_url = f"http://localhost:8000/static/{os.path.relpath(path_info.audio_filename, settings.ableton_set_directory)}"
 
-            audio_saved_at = os.path.getmtime(ableton_set.path_info.audio_filename)
-            assert ableton_set.path_info.saved_at, "saved_at not computed"
-            ableton_set.audio = AudioInfo(
+            audio_saved_at = os.path.getmtime(path_info.audio_filename)
+            assert path_info.saved_at, "saved_at not computed"
+            audio_info = AudioInfo(
                 url=audio_url,
-                outdated=ableton_set.path_info.saved_at - audio_saved_at > 30 * 60,  # 30 min
+                outdated=path_info.saved_at - audio_saved_at > 30 * 60,  # 30 min
             )
 
-        return ableton_set
+        return AbletonSet(path_info=path_info, metadata=metadata, audio=audio_info)
+
+    def update_current_state(self, current_state: AbletonSetCurrentState):
+        from loguru import logger
+
+        logger.success(f"previous track_count: {self.tracks}, new: {len(current_state.tracks)}")
+        if not self.current_state:
+            self.current_state = current_state
+        else:
+            self.current_state.selected_track = current_state.selected_track
+
+        if current_state.tracks:
+            self.tracks.update(current_state.tracks)
+            from loguru import logger
+
+            logger.success(f"updated tracks of {self.tracks}")
+
+        assert current_state.selected_track, f"selected track is None in {current_state}"
+
+        self.tracks.flag_selected(current_state.selected_track)
 
     def save(self):
         with open(self.path_info.metadata_filename, "w") as f:
@@ -196,15 +257,15 @@ def set_scene_stats(tempo: float, scene_stats: List[SceneStat]):
 
 
 def prepare_for_soundcloud(path: str):
-    ableton_set = AbletonSet.create(path)
-    assert ableton_set.path_info.audio_filename, "Track has not wav file"
-    audio_output = ableton_set.path_info.audio_filename.replace(".wav", "-streaming.wav")
+    path_info = PathInfo.create(path)
+    assert path_info.audio_filename, "Track has not wav file"
+    audio_output = path_info.audio_filename.replace(".wav", "-streaming.wav")
     subprocess.run(
         [
             "ffmpeg",
             "-y",
             "-i",
-            ableton_set.path_info.audio_filename,
+            path_info.audio_filename,
             "-af",
             "adelay=500|500",
             audio_output,
