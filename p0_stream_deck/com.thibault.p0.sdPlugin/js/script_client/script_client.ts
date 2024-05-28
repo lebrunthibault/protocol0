@@ -2,7 +2,6 @@ import Config from '../config'
 import EventBus from '../event_bus'
 import FavoriteDeviceNamesUpdatedEvent from '../domain/device/favorite_device_names_updated_event'
 import { injectable } from 'tsyringe'
-import DrumRackVisibleUpdatedEvent from './event/drum_rack_visible_updated_event'
 import AbletonSetCurrentStateSchema, { AbletonSetCurrentState } from './ableton_set'
 import SelectedSceneUpdated from '../domain/scene/selected_scene_updated_event'
 
@@ -58,7 +57,6 @@ class ScriptClient {
                 setCurrentState.selected_scene.melody,
                 setCurrentState.selected_scene.bass
             ]))
-            EventBus.emit(new DrumRackVisibleUpdatedEvent(setCurrentState.drum_rack_visible))
         } else {
             console.warn('No active set')
         }

@@ -27,6 +27,4 @@ class SongInitService(object):
         seq.add(selected_track.select)
         seq.wait(8)
 
-        seq.add(self._ableton_set.loop_notify_selected_scene)
-
         return seq.done()

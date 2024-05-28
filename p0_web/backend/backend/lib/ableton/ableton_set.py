@@ -112,7 +112,6 @@ class AudioInfo(BaseModel):
 
 class AbletonTrack(BaseModel):
     name: str
-    index: int
 
 
 class SceneTrackState(BaseModel):
@@ -132,9 +131,7 @@ class AbletonScene(BaseModel):
 
 class AbletonSetCurrentState(BaseModel):
     selected_scene: AbletonScene
-    current_track: AbletonTrack
     selected_track: AbletonTrack
-    drum_rack_visible: bool
 
 
 def _has_own_folder(filename: str) -> bool:

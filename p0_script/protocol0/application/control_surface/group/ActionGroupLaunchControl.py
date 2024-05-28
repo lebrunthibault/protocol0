@@ -14,7 +14,7 @@ from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.utils.timing import debounce
 from protocol0.domain.shared.utils.utils import map_to_range
-from protocol0.shared.Song import Song, find_track_or_none, find_track
+from protocol0.shared.Song import Song, find_track
 
 
 def _scroll_macro_control(macro_index: int, value: int) -> None:

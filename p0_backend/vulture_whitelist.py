@@ -4,7 +4,6 @@ _.add_encoder  # unused attribute (p0_backend\api\http_server\script_actions\rou
 SEPARATOR  # unused variable (p0_backend\lib\ableton\interface\pixel_color_enum.py:47)
 LEFT_SIZE  # unused variable (p0_backend\lib\ableton\interface\pixel_color_enum.py:48)
 muted  # unused variable (p0_backend\lib\ableton_set.py:47)
-drum_rack_visible  # unused variable (p0_backend\lib\ableton_set.py:51)
 sample_categories  # unused variable (p0_backend\lib\server_state.py:14)
 favorite_device_names  # unused variable (p0_backend\lib\server_state.py:15)
 env_file  # unused variable (p0_backend\settings.py:12)
@@ -94,3 +93,4 @@ _.clear_state  # unused method (p0_backend\lib\ableton\ableton_set\ableton_set_m
 _.delete_track  # unused method (p0_backend\lib\ableton\ableton_set\ableton_set_manager.py:94)
 scroll  # unused function (p0_backend\lib\mouse\mouse.py:50)
 focus_tkinter_window  # unused function (p0_backend\lib\window\window.py:59)
+_.update_track_color  # unused method (p0_backend\lib\ableton\ableton_set\ableton_set_manager.py:96)

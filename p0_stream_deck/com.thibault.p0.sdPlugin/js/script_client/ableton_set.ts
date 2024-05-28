@@ -18,8 +18,7 @@ const AbletonSceneSchema = z.object({
 })
 
 const AbletonSetCurrentStateSchema = z.object({
-    selected_scene: AbletonSceneSchema,
-    drum_rack_visible: z.boolean()
+    selected_scene: AbletonSceneSchema
 })
 
 // extract the inferred type

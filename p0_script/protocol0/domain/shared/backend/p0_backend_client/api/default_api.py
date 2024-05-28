@@ -281,9 +281,9 @@ class P0BackendClient(object):
 
     def delete_track(
         self,
-        track_name,
+        delete_track_payload,
     ):  # noqa: E501
-        # type: (str, ) -> None
+        # type: (DeleteTrackPayload, ) -> None
         """
         Delete Track  # noqa: E501
         """
@@ -292,7 +292,7 @@ class P0BackendClient(object):
             "method": "DELETE",
             "path": "/set/track",
             "params": {
-                "track_name": track_name,
+                "delete_track_payload": delete_track_payload,
             },
         }
 
@@ -986,15 +986,19 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
-    def search_track(
-        self,
-    ):  # noqa: E501
-        # type: () -> None
+    def search_track(self, reset):  # noqa: E501
+        # type: (bool, ) -> None
         """
         Search Track  # noqa: E501
         """
 
-        payload = {"method": "GET", "path": "/search/track", "params": {}}
+        payload = {
+            "method": "GET",
+            "path": "/search/track",
+            "params": {
+                "reset": reset,
+            },
+        }
 
         self._send_dict_as_midi(payload)
 
@@ -1509,5 +1513,24 @@ class P0BackendClient(object):
         """
 
         payload = {"method": "GET", "path": "/track/un_group", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
+    def update_track_color(
+        self,
+        update_track_payload,
+    ):  # noqa: E501
+        # type: (UpdateTrackPayload, ) -> None
+        """
+        Update Track Color  # noqa: E501
+        """
+
+        payload = {
+            "method": "PUT",
+            "path": "/set/track_color",
+            "params": {
+                "update_track_payload": update_track_payload,
+            },
+        }
 
         self._send_dict_as_midi(payload)
