@@ -182,9 +182,6 @@ class AbstractTrack(SlotManager):
     def load_time(self) -> int:
         raise NotImplementedError
 
-    def to_dict(self) -> Dict:
-        return {"name": self.name, "type": self.__class__.__name__, "index": self.index}
-
     def disconnect(self) -> None:
         super(AbstractTrack, self).disconnect()
         self.appearance.disconnect()

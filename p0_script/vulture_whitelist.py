@@ -67,7 +67,6 @@ _.check_automated_parameters  # unused method (protocol0\domain\lom\track\TrackA
 ActionGroupLaunchControl  # unused class (protocol0\application\control_surface\group\ActionGroupLaunchControl.py:7)
 _.on_set_save  # unused method (protocol0\domain\lom\track\simple_track\SimpleTrack.py:424)
 track_names  # unused variable (protocol0\domain\lom\set\AbletonSet.py:68)
-drum_rack_visible  # unused variable (protocol0\domain\lom\set\AbletonSet.py:32)
 drums  # unused variable (protocol0\domain\lom\set\AbletonSet.py:28)
 harmony  # unused variable (protocol0\domain\lom\set\AbletonSet.py:29)
 melody  # unused variable (protocol0\domain\lom\set\AbletonSet.py:30)

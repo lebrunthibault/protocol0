@@ -87,7 +87,19 @@ class AudioInfo(BaseModel):
 
 class AbletonTrack(BaseModel):
     name: str
-    index: int
+    color: int
+
+    @property
+    def rgb_color(self) -> str:
+        return {
+            2: "#CC9927",
+            13: "#FFFFFF",
+            20: "#00BFAF",
+            23: "#007DC0",
+            45: "#BFBA69",
+            61: "#539F31",
+            69: "#3C3C3C",
+        }.get(self.color, "#FFFFFF")
 
 
 class SceneTrackState(BaseModel):
@@ -107,10 +119,8 @@ class AbletonScene(BaseModel):
 
 class AbletonSetCurrentState(BaseModel):
     selected_scene: AbletonScene
-    current_track: AbletonTrack
     selected_track: AbletonTrack
-    track_names: List[str]
-    drum_rack_visible: bool
+    tracks: List[AbletonTrack]
 
 
 class AbletonSet(BaseModel):

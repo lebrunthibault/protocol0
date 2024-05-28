@@ -50,6 +50,8 @@ class LogService(object):
         Logger.info("********* SELECTED_TRACK *************")
         Logger.info("selected_track: %s" % Song.selected_track())
         Logger.info()
+        Logger.info("selected_track.color: %s" % Song.selected_track().color)
+        Logger.info()
         Logger.info("selected_track.group_track: %s" % Song.selected_track().group_track)
         Logger.info()
         if Song.selected_track().group_track:

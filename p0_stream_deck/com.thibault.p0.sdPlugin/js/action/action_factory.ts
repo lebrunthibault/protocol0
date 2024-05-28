@@ -7,8 +7,6 @@ import ActionGroup from './action_group/action_group'
 import FavoriteDeviceNamesUpdatedEvent from '../domain/device/favorite_device_names_updated_event'
 import Icons from '../service/icons'
 import { inject, injectable } from 'tsyringe'
-import ToggleAction from './toggle_action'
-import DrumRackVisibleUpdatedEvent from '../script_client/event/drum_rack_visible_updated_event'
 import { actionTypes } from './action_type'
 import { loadDevice, loadInstruments, selectOrLoadDevice } from '../domain/device/load_device'
 import SelectedGroupedDevicesUpdatedEvent from '../domain/device/selected_grouped_devices_updated_event'
@@ -45,14 +43,6 @@ class ActionFactory {
             SelectedSceneUpdated,
             API.selectClip,
             API.toggleClip
-        )
-        new ToggleAction(new Action(
-            actionTypes.DRUM_RACK_TO_SIMPLER,
-            API.drumRackToSimpler,
-            null,
-            Icons.drumRackToSimpler
-        ),
-        DrumRackVisibleUpdatedEvent
         )
         new ActionGroup(
             this.actionRepository,

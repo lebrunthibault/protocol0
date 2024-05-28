@@ -23,6 +23,7 @@ load_dotenv()
 
 from p0_backend.api.http_server.routes.routes import router  # noqa
 from p0_backend.api.http_server.ws import ws_router  # noqa
+from p0_backend.api.client.p0_script_api_client import p0_script_client
 from protocol0.application.command.GetSetStateCommand import GetSetStateCommand  # noqa
 
 settings = Settings()
@@ -32,7 +33,11 @@ settings = Settings()
 async def lifespan(_: FastAPI):
     redis_connection = redis.from_url("redis://localhost:6379", encoding="utf8")
     await FastAPILimiter.init(redis_connection)
+
+    p0_script_client().dispatch(GetSetStateCommand())
+
     yield
+
     await FastAPILimiter.close()
 
 
@@ -74,20 +79,6 @@ async def _catch_protocol0_errors(request: Request, call_next):
                 notify(str(e))
 
         return PlainTextResponse(str(e), status_code=500)
-
-
-# async def _get_state():
-#     """Delaying so the http and midi servers are up to receive set data"""
-#     await asyncio.sleep(2)
-#     p0_script_client().dispatch(GetSetStateCommand())
-
-
-# asyncio.create_task(_get_state())
-
-#
-# @app.on_event("startup")
-# async def startup_event():
-#     asyncio.create_task(_get_state())
 
 
 """

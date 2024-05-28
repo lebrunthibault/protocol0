@@ -40,8 +40,7 @@ if TYPE_CHECKING:
 def find_track(name: str, *a: Any, **k: Any) -> "SimpleTrack":
     track = find_track_or_none(name, *a, **k)
 
-    if not track:
-        raise Protocol0Error(f"Cannot find track '{name}'")
+    assert track, f"Cannot find track '{name}'"
 
     return track
 

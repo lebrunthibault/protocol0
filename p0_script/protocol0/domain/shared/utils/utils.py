@@ -3,7 +3,6 @@ import pkgutil
 import re
 import time
 import types
-
 from typing import Any, List, Callable, Iterable
 
 from protocol0.domain.shared.utils.func import get_callable_repr

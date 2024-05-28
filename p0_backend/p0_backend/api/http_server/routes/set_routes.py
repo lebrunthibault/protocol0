@@ -20,6 +20,7 @@ from p0_backend.lib.ableton.ableton_set.ableton_set import (
     SceneStat,
     AbletonSetCurrentState,
     prepare_for_soundcloud,
+    AbletonTrack,
 )
 from p0_backend.lib.ableton.ableton_set.ableton_set_manager import (
     AbletonSetManager,
@@ -47,9 +48,33 @@ async def post_current_state(payload: PostCurrentStatePayload):
     await AbletonSetManager.create_from_current_state(payload.post_current_state_payload)
 
 
+class UpdateTrackPayload(BaseModel):
+    track: AbletonTrack
+    previous_color: int
+
+
+@router.put("/track_color")
+async def update_track_color(payload: UpdateTrackPayload):
+    from loguru import logger
+
+    logger.success("update track color !!")
+
+    logger.success(payload)
+    AbletonSetManager.update_track_color(
+        payload.track.name, payload.track.color, payload.previous_color
+    )
+
+
+class DeleteTrackPayload(BaseModel):
+    track: AbletonTrack
+
+
 @router.delete("/track")
-async def delete_track(track_name: str):
-    AbletonSetManager.delete_track(track_name)
+async def delete_track(payload: DeleteTrackPayload):
+    from loguru import logger
+
+    logger.success(payload)
+    AbletonSetManager.delete_track(payload.track)
 
 
 @router.post("/clear_state")

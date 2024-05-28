@@ -628,6 +628,12 @@ class SimpleTrack(AbstractTrack):
         seq.add([partial(selected_cs.duplicate_clip_to, cs) for cs in matching_clip_slots])
         return seq.done()
 
+    def to_dict(self) -> Dict:
+        return {
+            "name": self.name,
+            "color": self.color,
+        }
+
     def disconnect(self) -> None:
         from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_tracks
 

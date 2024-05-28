@@ -7,6 +7,7 @@ from p0_backend.lib.ableton.ableton import is_ableton_focused
 from p0_backend.lib.ableton.ableton_set.ableton_set import (
     AbletonSet,
     AbletonSetCurrentState,
+    AbletonTrack,
 )
 from p0_backend.lib.ableton.get_set import (
     get_launched_set_path,
@@ -21,7 +22,7 @@ settings = Settings()
 class AbletonSetManager:
     DEBUG = True
     _ACTIVE_SET: Optional[AbletonSet] = None
-    SELECTED_TRACKS_HISTORY: List[str] = []
+    SELECTED_TRACKS_HISTORY: List[AbletonTrack] = []
 
     @classmethod
     async def create_from_current_state(cls, current_state: AbletonSetCurrentState) -> None:
@@ -38,12 +39,18 @@ class AbletonSetManager:
                 return
 
         ableton_set.current_state = current_state
+        logger.success(current_state.tracks)
 
         # deduplicate on set title
         existing_set = cls._ACTIVE_SET
-        if existing_set is not None:
+        if existing_set:
+            logger.success((existing_set, existing_set.current_state.tracks))
             if existing_set.path_info.filename != ableton_set.path_info.filename:
                 logger.info(f"overwriting active set: {existing_set}")
+
+            if existing_set.current_state.tracks and not current_state.tracks:
+                logger.success("replacing tracks !")
+                ableton_set.current_state.tracks = current_state.tracks
 
             if existing_set.current_state == ableton_set.current_state:
                 logger.info("No change")
@@ -62,12 +69,11 @@ class AbletonSetManager:
 
         # keep a selected track history
         logger.success(cls.SELECTED_TRACKS_HISTORY)
-        selected_track_name = current_state.current_track.name.strip()
-        logger.success(selected_track_name)
-        if selected_track_name in cls.SELECTED_TRACKS_HISTORY:
-            cls.SELECTED_TRACKS_HISTORY.remove(selected_track_name)
+        logger.success(current_state.selected_track)
+        if current_state.selected_track in cls.SELECTED_TRACKS_HISTORY:
+            cls.SELECTED_TRACKS_HISTORY.remove(current_state.selected_track)
 
-        cls.SELECTED_TRACKS_HISTORY.insert(0, selected_track_name)
+        cls.SELECTED_TRACKS_HISTORY.insert(0, current_state.selected_track)
 
     @classmethod
     async def remove(cls, filename: str):
@@ -94,9 +100,19 @@ class AbletonSetManager:
         cls.SELECTED_TRACKS_HISTORY = []
 
     @classmethod
-    def delete_track(cls, track_name: str) -> None:
-        if track_name.strip() in cls.SELECTED_TRACKS_HISTORY:
-            cls.SELECTED_TRACKS_HISTORY.remove(track_name.strip())
+    def update_track_color(cls, track_name: str, previous_color: int, new_color: int) -> None:
+        track = next(
+            filter(
+                lambda t: AbletonTrack(name=track_name, color=previous_color) == t,  # noqa
+                cls.SELECTED_TRACKS_HISTORY,
+            )
+        )
+        track.color = new_color
+
+    @classmethod
+    def delete_track(cls, track: AbletonTrack) -> None:
+        if track in cls.SELECTED_TRACKS_HISTORY:
+            cls.SELECTED_TRACKS_HISTORY.remove(track)
 
 
 def get_focused_set() -> Optional[AbletonSet]:

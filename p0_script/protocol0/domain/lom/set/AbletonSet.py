@@ -2,18 +2,16 @@ from dataclasses import dataclass, asdict, field
 from functools import partial
 from typing import Optional, List
 
-from protocol0.domain.lom.clip_slot.ClipSlotPlayingStatusUpdatedEvent import (
-    ClipSlotPlayingStatusUpdatedEvent,
-)
-from protocol0.domain.lom.instrument.instrument.InstrumentDrumRack import InstrumentDrumRack
 from protocol0.domain.lom.track.SelectedTrackChangedEvent import SelectedTrackChangedEvent
 from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
+from protocol0.domain.lom.track.abstract_track.AbstractTrackColorUpdatedEvent import (
+    AbstractTrackColorUpdatedEvent,
+)
 from protocol0.domain.lom.track.abstract_track.AbstractTrackNameUpdatedEvent import (
     AbstractTrackNameUpdatedEvent,
 )
 from protocol0.domain.lom.track.group_track.TrackCategoryEnum import TrackCategoryEnum
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
-from protocol0.domain.lom.track.simple_track.SimpleTrackArmedEvent import SimpleTrackArmedEvent
 from protocol0.domain.lom.track.simple_track.SimpleTrackDeletedEvent import SimpleTrackDeletedEvent
 from protocol0.domain.lom.track.simple_track.SimpleTrackDisconnectedEvent import (
     SimpleTrackDisconnectedEvent,
@@ -59,17 +57,13 @@ class AbletonScene:
 @dataclass
 class AbletonTrack:
     name: str
-    type: str
-    index: int
+    color: str
 
 
 @dataclass
 class AbletonSetCurrentState:
-    selected_scene: AbletonScene
-    current_track: AbletonTrack
     selected_track: AbletonTrack
-    track_names: List[str]
-    drum_rack_visible: bool
+    tracks: List[AbletonTrack]
 
 
 class AbletonSet(object):
@@ -79,8 +73,6 @@ class AbletonSet(object):
         listened_events = [
             AbstractTrackNameUpdatedEvent,
             TracksMappedEvent,
-            ClipSlotPlayingStatusUpdatedEvent,
-            SimpleTrackArmedEvent,
         ]
 
         for event in listened_events:
@@ -88,7 +80,9 @@ class AbletonSet(object):
 
         # fixes multiple notification on startup
         for event in (SelectedTrackChangedEvent,):
-            Scheduler.wait(2, partial(DomainEventBus.subscribe, event, lambda _: self.notify()))
+            Scheduler.wait(
+                2, partial(DomainEventBus.subscribe, event, lambda _: self.notify(full=False))
+            )
 
         DomainEventBus.subscribe(
             SimpleTrackDisconnectedEvent, self._on_simple_track_disconnected_event
@@ -96,8 +90,12 @@ class AbletonSet(object):
         DomainEventBus.subscribe(
             AbstractTrackNameUpdatedEvent, self._on_abstract_track_name_updated_event
         )
+        DomainEventBus.subscribe(
+            AbstractTrackColorUpdatedEvent, self._on_abstract_track_color_updated_event
+        )
 
         Backend.client().clear_state()
+        Scheduler.defer(self.notify)
 
     def __repr__(self) -> str:
         return "AbletonSet"
@@ -108,29 +106,33 @@ class AbletonSet(object):
     def _on_abstract_track_name_updated_event(self, event: AbstractTrackNameUpdatedEvent) -> None:
         Backend.client().delete_track(event.previous_name)
 
-    def to_model(self) -> AbletonSetCurrentState:
+    def _on_abstract_track_color_updated_event(self, event: AbstractTrackColorUpdatedEvent) -> None:
+        Backend.client().update_track_color(
+            {
+                "track": asdict(AbletonTrack(**Song.selected_track().to_dict())),
+                "previous_color": event.previous_color,
+            }
+        )
+
+    def to_model(self, full: bool = True) -> AbletonSetCurrentState:
+        tracks = []
+
+        if full:
+            tracks = [AbletonTrack(**track.to_dict()) for track in Song.simple_tracks()]
+
         return AbletonSetCurrentState(
-            selected_scene=Song.selected_scene().to_scene_state(),
-            current_track=AbletonTrack(**Song.current_track().to_dict()),
             selected_track=AbletonTrack(**Song.selected_track().to_dict()),
-            track_names=[track.name for track in Song.simple_tracks()],
-            drum_rack_visible=isinstance(Song.selected_track().instrument, InstrumentDrumRack),
+            tracks=tracks,
         )
 
     @debounce(duration=20)
-    def notify(self, force: bool = False) -> None:
-        model = self.to_model()
+    def notify(self, full: bool = True, force: bool = False) -> None:
+        model = self.to_model(full)
 
         if self._model_cached != model or force:
+            from protocol0.shared.logging.Logger import Logger
+
+            Logger.dev(asdict(model))
             Backend.client().post_current_state(asdict(model))
 
         self._model_cached = model
-
-    def loop_notify_selected_scene(self) -> None:
-        if (
-            self._model_cached
-            and self._model_cached.selected_scene != Song.selected_scene().to_scene_state()
-        ):
-            self.notify()
-
-        Scheduler.wait_ms(1000, self.loop_notify_selected_scene)

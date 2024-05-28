@@ -84,11 +84,13 @@ def _execute_midi_message(message: Message):
 
     endpoint = f"{settings.http_api_url}{path}"
 
-    assert method in ("GET", "POST", "DELETE"), f"unknown method {method}"
+    assert method in ("GET", "POST", "PUT", "DELETE"), f"unknown method {method}"
 
     if method == "GET":
         requests.get(endpoint, params=params)
     elif method == "POST":
         requests.post(endpoint, json=params)
+    elif method == "PUT":
+        requests.put(endpoint, json=params)
     elif method == "DELETE":
         requests.delete(endpoint, params=params)
