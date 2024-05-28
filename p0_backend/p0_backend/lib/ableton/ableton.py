@@ -6,8 +6,8 @@ import win32gui  # noqa
 from loguru import logger
 from ratelimit import limits
 
-from p0_backend.lib.ableton.ableton_set.ableton_set import AbletonSet
 from p0_backend.api.client.p0_script_api_client import p0_script_client
+from p0_backend.lib.ableton.ableton_set.ableton_set import PathInfo
 from p0_backend.lib.ableton.interface.pixel import get_pixel_color_at
 from p0_backend.lib.ableton.interface.pixel_color_enum import PixelColorEnum
 from p0_backend.lib.enum.notification_enum import NotificationEnum
@@ -87,11 +87,11 @@ def reload_ableton() -> None:
 def open_set(filename: str, confirm_dialog=True):
     logger.info(f"opening {filename}")
 
-    ableton_set = AbletonSet.create(filename)
+    path_info = PathInfo.create(filename)
 
-    relative_path = ableton_set.path_info.filename.replace(
-        f"{settings.ableton_set_directory}\\", ""
-    ).replace("//", "\\")
+    relative_path = path_info.filename.replace(f"{settings.ableton_set_directory}\\", "").replace(
+        "//", "\\"
+    )
     notify(f"Opening '{relative_path}'")
 
     try:
@@ -99,9 +99,7 @@ def open_set(filename: str, confirm_dialog=True):
     except Protocol0Error:
         pass
 
-    execute_powershell_command(
-        f'& "{settings.ableton_exe}" "{ableton_set.path_info.filename}"', minimized=True
-    )
+    execute_powershell_command(f'& "{settings.ableton_exe}" "{path_info.filename}"', minimized=True)
     time.sleep(1.5)
 
     if confirm_dialog:

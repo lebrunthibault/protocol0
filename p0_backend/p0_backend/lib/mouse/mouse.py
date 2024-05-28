@@ -48,9 +48,6 @@ def click_vertical_zone(coords: Coords) -> None:
 
 
 def scroll(pixels: int):
-    from loguru import logger
-
-    logger.success(pixels)
     win32api.mouse_event(MOUSEEVENTF_WHEEL, 960, 540, pixels, 0)
 
 

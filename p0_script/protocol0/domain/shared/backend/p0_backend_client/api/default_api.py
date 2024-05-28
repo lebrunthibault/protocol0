@@ -48,18 +48,6 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
-    def active_set(
-        self,
-    ):  # noqa: E501
-        # type: () -> None
-        """
-        Active Set  # noqa: E501
-        """
-
-        payload = {"method": "GET", "path": "/set/active", "params": {}}
-
-        self._send_dict_as_midi(payload)
-
     def add_track_to_selection(
         self,
     ):  # noqa: E501
@@ -276,25 +264,6 @@ class P0BackendClient(object):
         """
 
         payload = {"method": "GET", "path": "/clip/crop", "params": {}}
-
-        self._send_dict_as_midi(payload)
-
-    def delete_track(
-        self,
-        delete_track_payload,
-    ):  # noqa: E501
-        # type: (DeleteTrackPayload, ) -> None
-        """
-        Delete Track  # noqa: E501
-        """
-
-        payload = {
-            "method": "DELETE",
-            "path": "/set/track",
-            "params": {
-                "delete_track_payload": delete_track_payload,
-            },
-        }
 
         self._send_dict_as_midi(payload)
 
@@ -1518,9 +1487,9 @@ class P0BackendClient(object):
 
     def update_track_color(
         self,
-        update_track_payload,
+        update_track_color_payload,
     ):  # noqa: E501
-        # type: (UpdateTrackPayload, ) -> None
+        # type: (UpdateTrackColorPayload, ) -> None
         """
         Update Track Color  # noqa: E501
         """
@@ -1529,7 +1498,7 @@ class P0BackendClient(object):
             "method": "PUT",
             "path": "/set/track_color",
             "params": {
-                "update_track_payload": update_track_payload,
+                "update_track_color_payload": update_track_color_payload,
             },
         }
 

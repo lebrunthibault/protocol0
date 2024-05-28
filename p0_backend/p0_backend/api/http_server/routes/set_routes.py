@@ -15,12 +15,12 @@ from p0_backend.lib.ableton.ableton import (
     save_set_as_template,
 )
 from p0_backend.lib.ableton.ableton_set.ableton_set import (
-    AbletonSet,
     set_scene_stats,
     SceneStat,
     AbletonSetCurrentState,
     prepare_for_soundcloud,
     AbletonTrack,
+    PathInfo,
 )
 from p0_backend.lib.ableton.ableton_set.ableton_set_manager import (
     AbletonSetManager,
@@ -34,11 +34,6 @@ router = APIRouter()
 settings = Settings()
 
 
-@router.get("/active")
-async def active_set() -> AbletonSet:
-    return AbletonSetManager.active()
-
-
 class PostCurrentStatePayload(BaseModel):
     post_current_state_payload: AbletonSetCurrentState
 
@@ -48,33 +43,20 @@ async def post_current_state(payload: PostCurrentStatePayload):
     await AbletonSetManager.create_from_current_state(payload.post_current_state_payload)
 
 
-class UpdateTrackPayload(BaseModel):
+class UpdateTrackColorInnerPayload(BaseModel):
     track: AbletonTrack
-    previous_color: int
+    new_color: int
+
+
+class UpdateTrackColorPayload(BaseModel):
+    update_track_color_payload: UpdateTrackColorInnerPayload
 
 
 @router.put("/track_color")
-async def update_track_color(payload: UpdateTrackPayload):
-    from loguru import logger
+async def update_track_color(payload: UpdateTrackColorPayload):
+    payload = payload.update_track_color_payload
 
-    logger.success("update track color !!")
-
-    logger.success(payload)
-    AbletonSetManager.update_track_color(
-        payload.track.name, payload.track.color, payload.previous_color
-    )
-
-
-class DeleteTrackPayload(BaseModel):
-    track: AbletonTrack
-
-
-@router.delete("/track")
-async def delete_track(payload: DeleteTrackPayload):
-    from loguru import logger
-
-    logger.success(payload)
-    AbletonSetManager.delete_track(payload.track)
+    AbletonSetManager.update_track_color(payload.track, payload.new_color)
 
 
 @router.post("/clear_state")
@@ -130,7 +112,7 @@ async def close_set(filename: str):
 
 @router.get("/open_in_explorer")
 async def open_in_explorer(path: str):
-    open_explorer(dirname(AbletonSet.create(path).path_info.filename))
+    open_explorer(dirname(PathInfo.create(path).filename))
 
 
 @router.post("/prepare_for_soundcloud")

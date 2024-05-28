@@ -106,10 +106,10 @@ export default defineComponent({
       return this.abletonSet.metadata.stars < 5
     },
     canUnArchive(): boolean {
-      return this.abletonSet.place == AbletonSetPlace.ARCHIVE && (this.abletonSet.metadata.stars < 4)
+      return this.abletonSet.path_info.place == AbletonSetPlace.ARCHIVE && (this.abletonSet.metadata.stars < 4)
     },
     canDelete(): boolean {
-      return this.abletonSet.place == AbletonSetPlace.ARCHIVE && (this.abletonSet.metadata.stars < 4)
+      return this.abletonSet.path_info.place == AbletonSetPlace.ARCHIVE && (this.abletonSet.metadata.stars < 4)
     },
     modifiedSince(): string {
       const savedAt = moment(this.abletonSet?.path_info.saved_at * 1000)

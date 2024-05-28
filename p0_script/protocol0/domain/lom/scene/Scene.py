@@ -14,10 +14,7 @@ from protocol0.domain.lom.scene.SceneLength import SceneLength
 from protocol0.domain.lom.scene.SceneName import SceneName
 from protocol0.domain.lom.scene.ScenePlayingState import ScenePlayingState
 from protocol0.domain.lom.scene.ScenePositionScroller import ScenePositionScroller
-from protocol0.domain.lom.set.AbletonSet import SceneTrackState, AbletonScene
-from protocol0.domain.lom.song.components.TrackComponent import find_top_group_sub_tracks
 from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
-from protocol0.domain.lom.track.group_track.TrackCategoryEnum import TrackCategoryEnum
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.ValueScroller import ValueScroller
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
@@ -178,7 +175,6 @@ class Scene(SlotManager):
         seq.add(self.scene_name.update)
         seq.done()
 
-    # @throttle(duration=40)
     def fire_to_position(self, bar_length: int) -> Sequence:
         seq = Sequence()
 
@@ -210,16 +206,6 @@ class Scene(SlotManager):
                 track.base_track.is_folded = False
             if track.group_track:
                 track.base_track.group_track.is_folded = False
-
-    def to_scene_state(self) -> AbletonScene:
-        scene_state = AbletonScene()
-        for group_enum in list(TrackCategoryEnum):
-            for track in find_top_group_sub_tracks(group_enum.value):
-                getattr(scene_state, group_enum.value).append(
-                    SceneTrackState.create(track, group_enum, self.index)
-                )
-
-        return scene_state
 
     def disconnect(self) -> None:
         super(Scene, self).disconnect()

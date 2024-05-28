@@ -1,5 +1,5 @@
 import re
-from typing import Optional, List
+from typing import Optional
 
 from loguru import logger
 
@@ -8,6 +8,8 @@ from p0_backend.lib.ableton.ableton_set.ableton_set import (
     AbletonSet,
     AbletonSetCurrentState,
     AbletonTrack,
+    AbletonSetTracks,
+    PathInfo,
 )
 from p0_backend.lib.ableton.get_set import (
     get_launched_set_path,
@@ -22,58 +24,29 @@ settings = Settings()
 class AbletonSetManager:
     DEBUG = True
     _ACTIVE_SET: Optional[AbletonSet] = None
-    SELECTED_TRACKS_HISTORY: List[AbletonTrack] = []
+    _ACTIVE_SET_TRACKS: Optional[AbletonSetTracks] = None
 
     @classmethod
     async def create_from_current_state(cls, current_state: AbletonSetCurrentState) -> None:
         if cls.DEBUG:
             logger.info("registering current state")
 
-        try:
-            ableton_set = AbletonSet.create(get_launched_set_path())
-        except AssertionError:
+        path_info = PathInfo.create(get_launched_set_path())
+
+        ableton_set = cls._ACTIVE_SET
+        if not ableton_set or ableton_set.path_info.filename != path_info.filename:
             try:
-                ableton_set = AbletonSet.create(settings.ableton_test_set_path)
-            except AssertionError as e:
-                logger.error(e)
-                return
+                ableton_set = AbletonSet.create(get_launched_set_path())
+            except AssertionError:
+                try:
+                    ableton_set = AbletonSet.create(settings.ableton_test_set_path)
+                except AssertionError as e:
+                    logger.error(e)
+                    return
 
-        ableton_set.current_state = current_state
-        logger.success(current_state.tracks)
-
-        # deduplicate on set title
-        existing_set = cls._ACTIVE_SET
-        if existing_set:
-            logger.success((existing_set, existing_set.current_state.tracks))
-            if existing_set.path_info.filename != ableton_set.path_info.filename:
-                logger.info(f"overwriting active set: {existing_set}")
-
-            if existing_set.current_state.tracks and not current_state.tracks:
-                logger.success("replacing tracks !")
-                ableton_set.current_state.tracks = current_state.tracks
-
-            if existing_set.current_state == ableton_set.current_state:
-                logger.info("No change")
-                return
+        ableton_set.update_current_state(current_state)
 
         cls._ACTIVE_SET = ableton_set
-
-        from p0_backend.api.http_server.ws import ws_manager
-
-        if (
-            existing_set
-            and existing_set.current_state.selected_scene
-            != ableton_set.current_state.selected_scene
-        ):
-            await ws_manager.broadcast_active_set()
-
-        # keep a selected track history
-        logger.success(cls.SELECTED_TRACKS_HISTORY)
-        logger.success(current_state.selected_track)
-        if current_state.selected_track in cls.SELECTED_TRACKS_HISTORY:
-            cls.SELECTED_TRACKS_HISTORY.remove(current_state.selected_track)
-
-        cls.SELECTED_TRACKS_HISTORY.insert(0, current_state.selected_track)
 
     @classmethod
     async def remove(cls, filename: str):
@@ -97,22 +70,11 @@ class AbletonSetManager:
 
     @classmethod
     def clear_state(cls) -> None:
-        cls.SELECTED_TRACKS_HISTORY = []
+        cls.active().tracks.clear_selection_history()
 
     @classmethod
-    def update_track_color(cls, track_name: str, previous_color: int, new_color: int) -> None:
-        track = next(
-            filter(
-                lambda t: AbletonTrack(name=track_name, color=previous_color) == t,  # noqa
-                cls.SELECTED_TRACKS_HISTORY,
-            )
-        )
-        track.color = new_color
-
-    @classmethod
-    def delete_track(cls, track: AbletonTrack) -> None:
-        if track in cls.SELECTED_TRACKS_HISTORY:
-            cls.SELECTED_TRACKS_HISTORY.remove(track)
+    def update_track_color(cls, track: AbletonTrack, new_color: int) -> None:
+        cls.active().tracks.update_track_color(track, new_color)
 
 
 def get_focused_set() -> Optional[AbletonSet]:
