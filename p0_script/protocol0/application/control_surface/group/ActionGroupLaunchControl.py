@@ -12,6 +12,7 @@ from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackCompo
 from protocol0.domain.lom.song.components.TrackComponent import TrackComponent
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
+from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.utils.timing import debounce
 from protocol0.domain.shared.utils.utils import map_to_range
 from protocol0.shared.Song import Song, find_track
@@ -156,8 +157,9 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
                 self._PREVIOUS_SELECTED_TRACK = Song.selected_track()
                 self._PREVIOUS_SELECTED_TRACK_CLIP_VIEW = ApplicationView.is_clip_view_visible()
 
-                Song.master_track().select(un_collapse=False)
+                Song.master_track().select()
                 ApplicationView.show_device()
+                Backend.client().show_plugins()
             else:
                 if self._PREVIOUS_SELECTED_TRACK:
                     self._PREVIOUS_SELECTED_TRACK.select()

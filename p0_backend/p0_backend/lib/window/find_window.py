@@ -48,6 +48,7 @@ def _find_window_handle_by_criteria(
         handle_app_name = _get_app_name(hwnd)
         if handle_app_name == "chrome.exe":
             return
+
         if (
             win32gui.IsWindowVisible(hwnd)
             and (not class_name or win32gui.GetClassName(hwnd) == class_name)

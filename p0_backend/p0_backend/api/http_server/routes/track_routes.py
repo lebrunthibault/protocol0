@@ -40,7 +40,7 @@ async def un_group():
     send_keys("+{TAB}")
     send_keys("+{TAB}")
     send_keys("^+g")
-    show_plugins(force=True)
+    show_plugins()
 
 
 @router.get("/load_instrument_track")
