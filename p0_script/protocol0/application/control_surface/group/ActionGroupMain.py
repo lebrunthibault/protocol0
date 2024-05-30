@@ -5,11 +5,8 @@ from protocol0.domain.lom.song.components.TempoComponent import TempoComponent
 
 # noinspection SpellCheckingInspection
 from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
-from protocol0.domain.shared.backend.Backend import Backend
-from protocol0.domain.shared.utils.utils import db_to_volume
 from protocol0.domain.track_recorder.RecordService import RecordService
 from protocol0.shared.Song import Song
-from protocol0.shared.sequence.Sequence import Sequence
 
 
 class ActionGroupMain(ActionGroupInterface):
@@ -71,8 +68,11 @@ class ActionGroupMain(ActionGroupInterface):
         self.add_encoder(identifier=16, name="test", on_scroll=scroll_selected_parameter)
 
     def action_test(self) -> None:
+        Song.selected_track().volume = 0
+
         from protocol0.shared.logging.Logger import Logger
 
-        Logger.dev(
-            f"{Song.selected_track()._track.mixer_device.volume.value} -> {Song.selected_track().volume} -> {db_to_volume(Song.selected_track().volume)}"
-        )
+        Logger.dev(Song.selected_device().parameters)
+        Logger.dev(Song.selected_parameter())
+        Logger.dev(Song.selected_parameter().name)
+        Logger.dev(Song.selected_parameter().value)

@@ -4,6 +4,7 @@ from _Framework.SubjectSlot import subject_slot
 
 from protocol0.domain.lom.track.group_track.AbstractGroupTrack import AbstractGroupTrack
 from protocol0.domain.shared.utils.timing import defer
+from protocol0.shared.Undo import Undo
 from protocol0.shared.sequence.Sequence import Sequence
 
 
@@ -31,7 +32,10 @@ class NormalGroupTrack(AbstractGroupTrack):
 
     def balance_levels_to_zero(self) -> None:
         bus_volume = self.base_track.volume
+        Undo.begin_undo_step()
 
         self.base_track.volume = 0
         for sub_track in self.base_track.sub_tracks:
-            sub_track.volume -= bus_volume
+            sub_track.volume += bus_volume
+
+        Undo.end_undo_step()
