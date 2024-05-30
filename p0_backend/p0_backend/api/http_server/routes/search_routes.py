@@ -101,9 +101,7 @@ def search_track() -> None:
                 return track_list
 
         data = []
-        from loguru import logger
 
-        logger.success((len(track_list), search))
         for item in track_list:
             if item.name.lower().startswith(search.lower()):
                 data.append(item)

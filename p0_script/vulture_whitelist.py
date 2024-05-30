@@ -120,3 +120,5 @@ _._scroll_macro_control_5  # unused method (protocol0\application\control_surfac
 _._scroll_macro_control_6  # unused method (protocol0\application\control_surface\group\ActionGroupLaunchControl.py:188)
 _._scroll_macro_control_7  # unused method (protocol0\application\control_surface\group\ActionGroupLaunchControl.py:192)
 _._scroll_macro_control_8  # unused method (protocol0\application\control_surface\group\ActionGroupLaunchControl.py:196)
+_.balance_levels_to_zero  # unused method (protocol0\domain\lom\track\group_track\NormalGroupTrack.py:32)
+_.balance_levels_to_zero  # unused method (protocol0\domain\lom\track\simple_track\audio\master\MasterTrack.py:63)

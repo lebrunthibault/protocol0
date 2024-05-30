@@ -3,10 +3,11 @@ import pkgutil
 import re
 import time
 import types
+from bisect import bisect_left
 from typing import Any, List, Callable, Iterable
 
+from protocol0.domain.shared.utils.db_to_volume_data import db_to_volume_data, volume_to_db_data
 from protocol0.domain.shared.utils.func import get_callable_repr
-from protocol0.shared.Config import Config
 from protocol0.shared.logging.Logger import Logger
 
 
@@ -62,58 +63,48 @@ def get_minutes_legend(seconds: float) -> str:
 
 
 def volume_to_db(vol: float) -> float:
-    if round(vol, 3) == round(Config.ZERO_VOLUME, 3):
-        return 0
+    rounded_vol = round(vol, 4)
+    if rounded_vol not in volume_to_db_data:
+        rounded_vol = take_closest(list(reversed(list(volume_to_db_data.keys()))), vol)
+        from protocol0.shared.logging.Logger import Logger
 
-    return polynomial(
-        vol,
-        [
-            3593.2,
-            -18265.9,
-            39231,
-            -45962.3,
-            31461.7,
-            -12322.4,
-            2371.63,
-            -39.9082,
-            Config.ZERO_VOLUME_DB,
-        ],
-    )
+        Logger.dev(f"got {rounded_vol}")
+
+    return volume_to_db_data[rounded_vol]
 
 
 def db_to_volume(db: float) -> float:
-    if db == 0:
-        return Config.ZERO_VOLUME
+    db = round(db, 2)
 
-    if db < -60:
+    if db <= -70:
         return 0
-
-    return polynomial(
-        db,
-        [
-            -1.419398502456 * pow(10, -10),
-            -1.8321104871497 * pow(10, -8),
-            -7.93316011830 * pow(10, -7),
-            -0.0000133509,
-            -0.0000590049,
-            0.000480888,
-            0.0282999,
-            0.85,
-        ],
-    )
+    else:
+        return db_to_volume_data[db]
 
 
-def polynomial(x: float, coeffs: List[float]) -> float:
-    """Using polynomial interpolation"""
-    coeffs = list(reversed(coeffs))
+def take_closest(sorted_list: [List[float]], value: float) -> float:
+    """
+    Assumes myList is sorted. Returns closest value to myNumber.
 
-    def make_term(val: float, index: int) -> float:
-        term = coeffs[index]
-        if index > 0:
-            term *= pow(val, index)
-        return term
+    If two numbers are equally close, return the smallest number.
+    """
+    from protocol0.shared.logging.Logger import Logger
 
-    return sum([make_term(x, i) for i in range(len(coeffs))])
+    Logger.dev(f"bisecting on {value} : {sorted_list}")
+    pos = bisect_left(sorted_list, value)
+    from protocol0.shared.logging.Logger import Logger
+
+    Logger.dev(pos)
+    if pos == 0:
+        return sorted_list[0]
+    if pos == len(sorted_list):
+        return sorted_list[-1]
+    before = sorted_list[pos - 1]
+    after = sorted_list[pos]
+    if after - value < value - before:
+        return after
+    else:
+        return before
 
 
 def previous_power_of_2(x: int) -> int:

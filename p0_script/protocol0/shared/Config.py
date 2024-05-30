@@ -23,16 +23,9 @@ class Config(object):
 
     LOG_LEVEL = LogLevelEnum.DEV
 
-    TRACK_VOLUME_MONITORING = False
-
     DEFAULT_WARP_MODE = Live.Clip.WarpMode.beats
 
     CLIP_MAX_LENGTH = 63072000
-
-    # VOLUME CONSTANTS
-    ZERO_VOLUME = 0.850000023842
-    ZERO_VOLUME_DB = -60.9928
-    CLIPPING_TRACK_VOLUME = 0.91
 
     DUMMY_CLIP_NAME = "dummy clip"
 

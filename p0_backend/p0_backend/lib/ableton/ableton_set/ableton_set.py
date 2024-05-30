@@ -223,9 +223,6 @@ class AbletonSet:
         return AbletonSet(path_info=path_info, metadata=metadata, audio=audio_info)
 
     def update_current_state(self, current_state: AbletonSetCurrentState):
-        from loguru import logger
-
-        logger.success(f"previous track_count: {self.tracks}, new: {len(current_state.tracks)}")
         if not self.current_state:
             self.current_state = current_state
         else:
@@ -233,9 +230,6 @@ class AbletonSet:
 
         if current_state.tracks:
             self.tracks.update(current_state.tracks)
-            from loguru import logger
-
-            logger.success(f"updated tracks of {self.tracks}")
 
         assert current_state.selected_track, f"selected track is None in {current_state}"
 
