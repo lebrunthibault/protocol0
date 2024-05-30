@@ -47,7 +47,7 @@ class DeviceEnum(AbstractEnum):
     GOD_PARTICLE = "The God Particle"
     H_COMP = "H-Comp Stereo.vstpreset"
     H_DELAY = "H-Delay Stereo"
-    KONTAKT = "Kontakt 7.vstpreset"
+    KONTAKT = "Kontakt"
     INSERT_DELAY = "Delay"
     INSERT_ECHO = "Echo"
     INSERT_FILTER = "Auto Filter"
@@ -60,6 +60,7 @@ class DeviceEnum(AbstractEnum):
     L1_LIMITER = "L1 limiter Stereo"
     L1_ULTRAMAXIMIZER = "L1+ Ultramaximizer Stereo"
     L2_LIMITER = "L2 Stereo"
+    LABS = "LABS"
     LIMITER = "Limiter"
     M_ANALYZER = "MAnalyzer"
     M_STEREO_SCOPE = "MStereoScope"
@@ -81,6 +82,7 @@ class DeviceEnum(AbstractEnum):
     SERUM = "Serum_x64"
     SHADOW_HILLS_COMP = "Shadow Hills Class A Mastering Comp"
     SIMPLER = "Simpler"
+    SINE_PLAYER = "SINE Player"
     SOOTHE2 = "soothe2"
     SOUNDID_REFERENCE_PLUGIN = "SoundID Reference Plugin"
     SPAN = "SPAN"
@@ -200,6 +202,7 @@ class DeviceEnum(AbstractEnum):
                     DeviceEnum.AUTO_FILTER_HIGH_PASS: DeviceParamEnum.AUTO_FILTER_HIGH_PASS_FREQUENCY,
                     DeviceEnum.AUTO_FILTER_LOW_PASS: DeviceParamEnum.AUTO_FILTER_LOW_PASS_FREQUENCY,
                     DeviceEnum.AUTO_PAN: DeviceParamEnum.AUTO_PAN_AMOUNT,
+                    DeviceEnum.EQ_EIGHT: DeviceParamEnum.EQ_EIGHT_1_FREQUENCY_A,
                     DeviceEnum.INSERT_DELAY: DeviceParamEnum.INPUT,
                     DeviceEnum.INSERT_REVERB: DeviceParamEnum.INPUT,
                     DeviceEnum.LIMITER: DeviceParamEnum.GAIN,
@@ -346,8 +349,10 @@ class DeviceEnum(AbstractEnum):
             DeviceEnum.DRUM_RACK,
             DeviceEnum.KICK_2,
             DeviceEnum.KONTAKT,
+            DeviceEnum.LABS,
             DeviceEnum.REV2_EDITOR,
             DeviceEnum.SERUM,
+            DeviceEnum.SINE_PLAYER,
             DeviceEnum.SPLICE_BRIDGE,
             DeviceEnum.SYLENTH1,
             DeviceEnum.SYLENTH1_RACK,
@@ -488,10 +493,14 @@ class DeviceEnum(AbstractEnum):
         assert self.is_instrument
 
         return {
+            DeviceEnum.DIVA: "Diva",
+            DeviceEnum.KONTAKT: "Kontakt",
+            DeviceEnum.LABS: "LABS",
+            DeviceEnum.SERUM: "Serum",
+            DeviceEnum.SINE_PLAYER: "Sine Player",
+            DeviceEnum.SPLICE_BRIDGE: "Splice",
             DeviceEnum.SYLENTH1: "Sylenth1",
             DeviceEnum.SYLENTH1_RACK: "Sylenth1",
-            DeviceEnum.SERUM: "Serum",
-            DeviceEnum.SPLICE_BRIDGE: "Splice",
         }.get(self, self.instrument_enum.value)
 
     @property

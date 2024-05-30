@@ -4,6 +4,7 @@ from protocol0.application.control_surface.ActionGroupInterface import ActionGro
 from protocol0.domain.lom.song.components.TempoComponent import TempoComponent
 
 # noinspection SpellCheckingInspection
+from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
 from protocol0.domain.track_recorder.RecordService import RecordService
 from protocol0.shared.Song import Song
 
@@ -50,10 +51,14 @@ class ActionGroupMain(ActionGroupInterface):
             on_scroll=scroll_splice_track,
         )
 
+        def scroll_selected_track_volume(go_next: bool) -> None:
+            assert not isinstance(Song.selected_track(), MasterTrack), "Cannot scroll master volume"
+            Song.selected_track().scroll_volume(go_next)
+
         self.add_encoder(
             identifier=15,
             name="track volume",
-            on_scroll=lambda: Song.selected_track().scroll_volume,
+            on_scroll=scroll_selected_track_volume,
         )
 
         def scroll_selected_parameter(go_next: bool) -> None:

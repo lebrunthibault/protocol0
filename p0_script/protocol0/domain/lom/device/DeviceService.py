@@ -116,6 +116,7 @@ class DeviceService(object):
 
     def load_device(self, enum_name: str, create_track: bool = False) -> Sequence:
         Undo.begin_undo_step()
+        assert enum_name in DeviceEnum, f"Unknown device {enum_name}"
         device_enum = DeviceEnum[enum_name]
         track = Song.selected_track()
         is_clip_view_visible = ApplicationView.is_clip_view_visible()
@@ -131,7 +132,7 @@ class DeviceService(object):
             # reuse empty midi tracks
             if create_track and not (
                 isinstance(Song.selected_track(), SimpleMidiTrack)
-                and not Song.selected_track().instrument
+                and not Song.selected_track().devices.has_instrument
             ):
                 seq.add(self._track_crud_component.create_midi_track)
 
@@ -157,6 +158,9 @@ class DeviceService(object):
             and is_clip_view_visible
         ):
             seq.add(partial(self._show_default_automation, Song.selected_clip()))
+
+        if device_enum.is_rack_preset:
+            seq.add(self.toggle_selected_rack_chain)
 
         seq.add(Undo.end_undo_step)
         return seq.done()

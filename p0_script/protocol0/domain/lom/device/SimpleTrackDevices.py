@@ -86,6 +86,10 @@ class SimpleTrackDevices(SlotManager, Observable):
             return None
 
     @property
+    def has_instrument(self) -> bool:
+        return any(d.is_instrument for d in self)
+
+    @property
     def prev(self) -> Optional[Device]:
         return self._get_sibling(-1)
 

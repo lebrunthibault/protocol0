@@ -10,14 +10,9 @@ from protocol0.domain.lom.track.abstract_track.AbstractTrackColorUpdatedEvent im
 from protocol0.domain.lom.track.abstract_track.AbstractTrackNameUpdatedEvent import (
     AbstractTrackNameUpdatedEvent,
 )
-from protocol0.domain.lom.track.simple_track.SimpleTrackDeletedEvent import SimpleTrackDeletedEvent
-from protocol0.domain.lom.track.simple_track.SimpleTrackDisconnectedEvent import (
-    SimpleTrackDisconnectedEvent,
-)
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
-from protocol0.domain.shared.utils.timing import debounce
 from protocol0.shared.Song import Song
 
 
@@ -47,16 +42,16 @@ class AbletonSet(object):
 
         # fixes multiple notification on startup
         for event in (SelectedTrackChangedEvent,):
+            # deferring so that it happens *after* the tracks are mapped
             Scheduler.wait(
-                2, partial(DomainEventBus.subscribe, event, lambda _: self.notify(full=False))
+                2,
+                partial(
+                    DomainEventBus.subscribe,
+                    event,
+                    lambda _: Scheduler.defer(partial(self.notify, full=False)),
+                ),
             )
 
-        # DomainEventBus.subscribe(
-        #     SimpleTrackDisconnectedEvent, self._on_simple_track_disconnected_event
-        # )
-        # DomainEventBus.subscribe(
-        #     AbstractTrackNameUpdatedEvent, self._on_abstract_track_name_updated_event
-        # )
         DomainEventBus.subscribe(
             AbstractTrackColorUpdatedEvent, self._on_abstract_track_color_updated_event
         )
@@ -66,13 +61,6 @@ class AbletonSet(object):
 
     def __repr__(self) -> str:
         return "AbletonSet"
-
-    #
-    # def _on_simple_track_disconnected_event(self, event: SimpleTrackDeletedEvent) -> None:
-    #     Backend.client().delete_track(event.track.name)
-    #
-    # def _on_abstract_track_name_updated_event(self, event: AbstractTrackNameUpdatedEvent) -> None:
-    #     Backend.client().delete_track(event.previous_name)
 
     def _on_abstract_track_color_updated_event(self, event: AbstractTrackColorUpdatedEvent) -> None:
         Backend.client().update_track_color(
@@ -98,9 +86,6 @@ class AbletonSet(object):
     # @debounce(duration=20)
     def notify(self, full: bool = True, force: bool = False) -> None:
         model = self.to_model(full)
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev((full, model))
 
         if force or not full or self._model_cached != model:
             Backend.client().post_current_state(asdict(model))

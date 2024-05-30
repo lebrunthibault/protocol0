@@ -12,6 +12,7 @@ from protocol0.domain.shared.errors.ErrorRaisedEvent import ErrorRaisedEvent
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
+from protocol0.domain.shared.utils.timing import debounce
 from protocol0.shared.Config import Config
 from protocol0.shared.Undo import Undo
 from protocol0.shared.logging.Logger import Logger
@@ -43,9 +44,13 @@ class ErrorService(object):
             error_message = str(exc_value or exc_type).strip()
             if issubclass(exc_type, AssertionError) and not error_message:
                 error_message = "Unknown assertion error"
-            Backend.client().show_error(error_message)
+            self._show_error(error_message)
         else:
             self._handle_exception(exc_type, exc_value, tb, event.context, event.reset)
+
+    @debounce(duration=50)
+    def _show_error(self, error_message: str) -> None:
+        Backend.client().show_error(error_message)
 
     def _on_backend_event(self, event: BackendEvent) -> None:
         if event.event == "error":
