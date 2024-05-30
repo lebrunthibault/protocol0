@@ -28,3 +28,10 @@ class NormalGroupTrack(AbstractGroupTrack):
         if self.solo:
             for sub_track in self.sub_tracks:
                 sub_track.solo = True
+
+    def balance_levels_to_zero(self) -> None:
+        bus_volume = self.base_track.volume
+
+        self.base_track.volume = 0
+        for sub_track in self.base_track.sub_tracks:
+            sub_track.volume -= bus_volume

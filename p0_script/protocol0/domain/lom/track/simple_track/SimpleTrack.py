@@ -50,7 +50,6 @@ from protocol0.domain.shared.utils.list import find_if
 from protocol0.domain.shared.utils.timing import defer
 from protocol0.domain.shared.utils.utils import volume_to_db, db_to_volume
 from protocol0.infra.persistence.TrackData import TrackData
-from protocol0.shared.Config import Config
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.observer.Observable import Observable
@@ -148,7 +147,6 @@ class SimpleTrack(AbstractTrack):
 
         self._name_listener.subject = live_track
         self._solo_listener.subject = live_track
-        self._output_meter_level_listener.subject = None
 
         self.devices.build()
         self._data = TrackData(self)
@@ -238,18 +236,6 @@ class SimpleTrack(AbstractTrack):
             self.input_routing.track.solo = True
             if Song.notes_track():
                 Song.notes_track().solo = True
-
-    @subject_slot("output_meter_level")
-    def _output_meter_level_listener(self) -> None:
-        if not Config.TRACK_VOLUME_MONITORING:
-            return
-        if self._track.output_meter_level > Config.CLIPPING_TRACK_VOLUME:
-            # some clicks e.g. when starting / stopping the song have this value
-            if round(self._track.output_meter_level, 3) == 0.921:
-                return
-            Backend.client().show_warning(
-                "%s is clipping (%.3f)" % (self.abstract_track.name, self._track.output_meter_level)
-            )
 
     @property
     def current_monitoring_state(self) -> CurrentMonitoringStateEnum:

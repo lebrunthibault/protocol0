@@ -45,3 +45,8 @@ def search(text: str):
     send_keys("^f")
     sleep(0.1)
     send_keys(text)
+
+
+@router.get("/shift_down")
+def shift_down():
+    send_keys("+{DOWN}")

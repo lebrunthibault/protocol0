@@ -91,6 +91,18 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
+    def bus_to_zero_db(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Bus To Zero Db  # noqa: E501
+        """
+
+        payload = {"method": "GET", "path": "/track/bus_to_zero_db", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
     def capture_midi(
         self,
     ):  # noqa: E501
@@ -1099,6 +1111,18 @@ class P0BackendClient(object):
                 "bar_length": bar_length,
             },
         }
+
+        self._send_dict_as_midi(payload)
+
+    def shift_down(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Shift Down  # noqa: E501
+        """
+
+        payload = {"method": "GET", "path": "/keyboard/shift_down", "params": {}}
 
         self._send_dict_as_midi(payload)
 

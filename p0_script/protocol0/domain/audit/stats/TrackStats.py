@@ -5,7 +5,6 @@ from protocol0.domain.lom.track.group_track.NormalGroupTrack import NormalGroupT
 from protocol0.domain.lom.track.group_track.ext_track.SimpleMidiExtTrack import SimpleMidiExtTrack
 from protocol0.domain.lom.track.simple_track.midi.special.UsamoTrack import UsamoTrack
 from protocol0.domain.shared.utils.list import find_if
-from protocol0.shared.Config import Config
 from protocol0.shared.Song import Song
 
 
@@ -39,7 +38,7 @@ class TrackStats(object):
             and (
                 all(clip.muted for clip in track.clips)
                 or track.muted
-                or track.volume == Config.ZERO_VOLUME_DB
+                or track.volume == 0
                 or any(t.muted for t in track.group_tracks)
             )
         ]

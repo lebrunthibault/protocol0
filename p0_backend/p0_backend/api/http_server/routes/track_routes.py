@@ -12,6 +12,7 @@ from p0_backend.lib.ableton.interface.track import (
     add_track_to_selection,
 )
 from p0_backend.lib.keys import send_keys
+from protocol0.application.command.BusTrackToZeroDBCommand import BusTrackToZeroDBCommand
 from protocol0.application.command.CollapseSelectedTrackCommand import CollapseSelectedTrackCommand
 from protocol0.application.command.SelectTrackCommand import SelectTrackCommand
 from protocol0.application.command.ToggleArmCommand import ToggleArmCommand
@@ -61,3 +62,8 @@ async def select(name: str):
 @router.get("/collapse_selected")
 async def collapse_selected():
     p0_script_client().dispatch(CollapseSelectedTrackCommand())
+
+
+@router.get("/bus_to_zero_db")
+async def bus_to_zero_db():
+    p0_script_client().dispatch(BusTrackToZeroDBCommand())
