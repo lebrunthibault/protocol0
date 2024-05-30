@@ -65,15 +65,21 @@ def get_minutes_legend(seconds: float) -> str:
 def volume_to_db(vol: float) -> float:
     rounded_vol = round(vol, 4)
     if rounded_vol not in volume_to_db_data:
-        rounded_vol = take_closest(list(reversed(list(volume_to_db_data.keys()))), vol)
         from protocol0.shared.logging.Logger import Logger
 
-        Logger.dev(f"got {rounded_vol}")
+        rounded_vol = take_closest(list(reversed(list(volume_to_db_data.keys()))), vol)
+
+        Logger.dev(
+            f"bisecting on {vol} -> {rounded_vol} -> {volume_to_db_data[rounded_vol]} db",
+            debug=False,
+        )
 
     return volume_to_db_data[rounded_vol]
 
 
 def db_to_volume(db: float) -> float:
+    assert db <= 6, f"Got track volume overflow: {round(db, 2)} db"
+
     db = round(db, 2)
 
     if db <= -70:
@@ -88,13 +94,7 @@ def take_closest(sorted_list: [List[float]], value: float) -> float:
 
     If two numbers are equally close, return the smallest number.
     """
-    from protocol0.shared.logging.Logger import Logger
-
-    Logger.dev(f"bisecting on {value} : {sorted_list}")
     pos = bisect_left(sorted_list, value)
-    from protocol0.shared.logging.Logger import Logger
-
-    Logger.dev(pos)
     if pos == 0:
         return sorted_list[0]
     if pos == len(sorted_list):

@@ -241,7 +241,11 @@ class SimpleTrack(AbstractTrack):
     def current_monitoring_state(self) -> CurrentMonitoringStateEnum:
         if self._track is None:
             return CurrentMonitoringStateEnum.AUTO
-        return CurrentMonitoringStateEnum.from_value(self._track.current_monitoring_state)
+
+        try:
+            return CurrentMonitoringStateEnum.from_value(self._track.current_monitoring_state)
+        except RuntimeError:
+            return CurrentMonitoringStateEnum.AUTO
 
     @current_monitoring_state.setter
     def current_monitoring_state(self, monitoring_state: CurrentMonitoringStateEnum) -> None:
@@ -328,12 +332,20 @@ class SimpleTrack(AbstractTrack):
 
     @property
     def volume(self) -> float:
-        volume = self._track.mixer_device.volume.value if self._track else 0
+        volume = self.devices.mixer_device.volume.value if self._track else 0
+        Logger.dev((volume, volume_to_db(volume)))
         return volume_to_db(volume)
 
     @volume.setter
-    def volume(self, volume: float) -> None:
-        volume = db_to_volume(volume)
+    def volume(self, db_volume: float) -> None:
+        volume = db_to_volume(db_volume)
+
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev(
+            (self._track, self.devices.mixer_device.volume.value, db_volume, volume), debug=False
+        )
+
         if self._track:
             Scheduler.defer(
                 partial(

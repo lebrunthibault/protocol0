@@ -1,4 +1,3 @@
-from functools import partial
 from typing import Any, Optional
 
 from protocol0.domain.lom.device.Device import Device
@@ -12,9 +11,8 @@ from protocol0.domain.lom.track.simple_track.SimpleTrackSaveStartedEvent import 
 )
 from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 from protocol0.domain.shared.backend.Backend import Backend
+from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
-from protocol0.domain.shared.scheduler.Scheduler import Scheduler
-from protocol0.domain.shared.utils.utils import volume_to_db
 from protocol0.shared.Song import Song
 
 
@@ -51,25 +49,19 @@ class MasterTrack(SimpleAudioTrack):
             DeviceEnum.ADPTR_METRIC_AB, all_devices=True, enabled=True
         )
 
-    def mute_for(self, duration: int) -> None:
-        """
-        Master track can not be muted so we set volume to 0
-        duration: ms
-        """
-        self.volume = volume_to_db(0)
-        Scheduler.wait_ms(duration, (partial(setattr, self, "volume", 0)))
-        Scheduler.wait_ms(500, self._check_volume, unique=True)
-
     def balance_levels_to_zero(self) -> None:
         assert (
-            self.devices and list(self.devices)[0].enum == DeviceEnum.UTILITY
+            len(list(self.devices)) and list(self.devices)[0].enum == DeviceEnum.UTILITY
         ), "Expected first device to be utility"
 
         utility: Device = list(self.devices)[0]
-        gain = utility.get_parameter_by_name(DeviceParamEnum.GAIN).value
+        gain = utility.get_parameter_by_name(DeviceParamEnum.GAIN)
+        assert gain.value >= 0, "Gain is negative"
+        gain_db = gain.value * 35
+
         from protocol0.shared.logging.Logger import Logger
 
-        Logger.dev(f"master gain: {gain}")
+        Logger.dev(f"master gain: {gain_db}")
 
         def is_template_bus_track(t: SimpleTrack) -> bool:
             return (
@@ -77,20 +69,28 @@ class MasterTrack(SimpleAudioTrack):
                 and t.current_monitoring_state == CurrentMonitoringStateEnum.IN
             )
 
+        tracks = []
+
         for track in Song.top_tracks():
             if (
                 track.output_routing.type == OutputRoutingTypeEnum.MASTER
                 and not is_template_bus_track(track)
             ):
-                pass
-            elif track.output_routing.track and is_template_bus_track(track.output_routing.track):
-                pass
-            else:
-                break
+                tracks.append(track)
+            elif (
+                track.output_routing.track
+                and track.output_routing.track != OutputRoutingTypeEnum.MASTER
+                and is_template_bus_track(track.output_routing.track)
+            ):
+                tracks.append(track)
 
-            Logger.dev(f"-> {track}")
+        Logger.dev(tracks)
 
-    def _check_volume(self) -> None:
-        if self.volume != 0:
-            Backend.client().show_warning("Master volume is not at 0 db, fixing")
-            self.volume = 0
+        for track in tracks:
+            if track.volume + gain_db > 6:
+                raise Protocol0Error(f"{track.name} is too hot")
+
+        for track in tracks:
+            track.volume += gain_db
+
+        gain.value = 0

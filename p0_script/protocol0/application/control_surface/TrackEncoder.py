@@ -7,12 +7,13 @@ from _Framework.InputControlElement import MIDI_NOTE_TYPE, MIDI_CC_TYPE
 from _Framework.SubjectSlot import subject_slot, SlotManager
 
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
+from protocol0.domain.shared.ValueScroller import ValueScroller
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.error import log_exceptions
 from protocol0.infra.midi.NoteSentEvent import NoteSentEvent
 from protocol0.shared.AbstractEnum import AbstractEnum
-from protocol0.shared.Song import find_track_or_none, find_track
+from protocol0.shared.Song import find_track_or_none, find_track, Song
 
 
 class LEDColorVelocities(AbstractEnum):
@@ -73,7 +74,8 @@ class ControlledTrack:
         if self.select_getter:
             self.select_getter().select()
         else:
-            self._main_track.select()
+            tracks = [self._main_track] + self._main_track.sub_tracks
+            ValueScroller.scroll_values(tracks, Song.selected_track(), True).select()
 
     def set_volume(self, value: float) -> None:
         self._main_track.devices.mixer_device.volume.value = value
