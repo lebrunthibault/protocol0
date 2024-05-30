@@ -6,6 +6,8 @@ from _Framework.SubjectSlot import subject_slot, SlotManager
 
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
 from protocol0.application.control_surface.TrackEncoder import TrackEncoder, ControlledTrack
+from protocol0.domain.lom.device.Device import Device
+from protocol0.domain.lom.device.DeviceService import find_parent_rack
 from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
 from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
@@ -13,14 +15,20 @@ from protocol0.domain.lom.song.components.TrackComponent import TrackComponent
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.backend.Backend import Backend
+from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.utils.timing import debounce
 from protocol0.domain.shared.utils.utils import map_to_range
 from protocol0.shared.Song import Song, find_track
 
 
+@handle_errors()
 def _scroll_macro_control(macro_index: int, value: int) -> None:
-    device = Song.selected_device()
-    assert isinstance(device, RackDevice), "Device is not a rack"
+    device: Optional[Device] = Song.selected_device()
+
+    if device and not isinstance(device, RackDevice):
+        device = find_parent_rack(Song.selected_track(), device)
+
+    assert device, "Device is not a rack"
 
     macro_index += 1
 
