@@ -12,8 +12,8 @@ from protocol0.application.command.ColorClipWithAutomationCommand import (
 )
 from protocol0.application.command.LoopSelectedClipCommand import LoopSelectedClipCommand
 from protocol0.application.command.MoveClipLoopCommand import MoveClipLoopCommand
-from protocol0.application.command.RemoveArrangementMutedClipsCommand import (
-    RemoveArrangementMutedClipsCommand,
+from protocol0.application.command.CleanLoopCommand import (
+    CleanLoopCommand,
 )
 from protocol0.application.command.RemoveMutedNotesCommand import (
     RemoveMutedNotesCommand,
@@ -95,9 +95,9 @@ async def _edit_automation_value():
     edit_automation_value()
 
 
-@router.get("/remove_arrangement_muted_clips")
-async def remove_arrangement_muted_clips():
-    p0_script_client().dispatch(RemoveArrangementMutedClipsCommand())
+@router.get("/clean_arrangement_loop")
+async def clean_arrangement_loop():
+    p0_script_client().dispatch(CleanLoopCommand())
 
 
 @router.get("/clear_muted_notes")

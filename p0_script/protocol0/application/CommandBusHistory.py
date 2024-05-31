@@ -1,9 +1,10 @@
 import time
 
-from typing import List, Optional, Type
+from typing import List, Optional, Type, TypeVar
 
 from protocol0.application.command.SerializableCommand import SerializableCommand
-from protocol0.shared.AbstractEnum import T
+
+T = TypeVar("T")
 
 
 class HistoryEntry(object):
@@ -35,7 +36,7 @@ class CommandBusHistory(object):
             if entry.executed_at < time_limit:
                 return None
             if isinstance(entry.command, command_class):
-                if except_current and entry.executed_at > time.time() - 0.005:  # type: ignore[unreachable]
+                if except_current and entry.executed_at > time.time() - 0.005:
                     continue
                 return entry.command
 

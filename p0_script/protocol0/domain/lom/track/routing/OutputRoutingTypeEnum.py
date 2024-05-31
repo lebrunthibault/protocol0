@@ -1,7 +1,7 @@
-from protocol0.shared.AbstractEnum import AbstractEnum
+from enum import Enum
 
 
-class OutputRoutingTypeEnum(AbstractEnum):
+class OutputRoutingTypeEnum(Enum):
     EXT_OUT = "Ext. Out"
     MASTER = "Master"
     SENDS_ONLY = "Sends Only"

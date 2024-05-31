@@ -6,7 +6,6 @@ from _Framework.SubjectSlot import SlotManager, subject_slot
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
-from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.domain.shared.utils.string import smart_string
 from protocol0.shared.observer.Observable import Observable
@@ -61,10 +60,7 @@ class Device(SlotManager):
 
     @property
     def enum(self) -> Optional[DeviceEnum]:
-        try:
-            return DeviceEnum.from_value(self.name)
-        except Protocol0Error:
-            return None
+        return DeviceEnum(self.name)
 
     @subject_slot("parameters")
     def _parameters_listener(self) -> None:

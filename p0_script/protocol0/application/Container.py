@@ -52,7 +52,6 @@ from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.track_recorder.RecordService import RecordService
 from protocol0.infra.interface.BrowserLoaderService import BrowserLoaderService
 from protocol0.infra.interface.BrowserService import BrowserService
-from protocol0.infra.interface.InterfaceClicksService import InterfaceClicksService
 from protocol0.infra.logging.LoggerService import LoggerService
 from protocol0.infra.midi.MidiService import MidiService
 from protocol0.infra.persistence.SongDataService import SongDataService
@@ -161,13 +160,12 @@ class Container(ContainerInterface):
         song_service = SongInitService(playback_component, device_display_service, ableton_set)
         instrument_preset_scroller_service = InstrumentPresetScrollerService()
         mixing_service = MixingService()
-        interface_clicks_service = InterfaceClicksService()
 
         song_data_service = SongDataService(live_song.get_data, live_song.set_data, scene_component)
 
         # audit
         audio_latency_service = AudioLatencyAnalyzerService(
-            track_recorder_service, interface_clicks_service, track_crud_component, tempo_component
+            track_recorder_service, track_crud_component, tempo_component
         )
         log_service = LogService(ableton_set, track_mapper_service)
 

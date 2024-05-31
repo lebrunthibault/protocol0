@@ -1,7 +1,7 @@
-from protocol0.shared.AbstractEnum import AbstractEnum
+from enum import Enum
 
 
-class InputRoutingChannelEnum(AbstractEnum):
+class InputRoutingChannelEnum(Enum):
     # AUDIO
     PRE_FX = "Pre FX"
     POST_FX = "Post FX"

@@ -1,7 +1,7 @@
-from protocol0.shared.AbstractEnum import AbstractEnum
+from enum import Enum
 
 
-class LogLevelEnum(AbstractEnum):
+class LogLevelEnum(Enum):
     DEV = 1
     INFO = 2
     WARNING = 3

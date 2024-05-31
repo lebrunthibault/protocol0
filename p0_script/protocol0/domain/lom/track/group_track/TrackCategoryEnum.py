@@ -1,7 +1,7 @@
-from protocol0.shared.AbstractEnum import AbstractEnum
+from enum import Enum
 
 
-class TrackCategoryEnum(AbstractEnum):
+class TrackCategoryEnum(Enum):
     DRUMS = "drums"
     HARMONY = "harmony"
     MELODY = "melody"

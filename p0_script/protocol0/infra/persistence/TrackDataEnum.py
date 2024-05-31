@@ -1,5 +1,5 @@
-from protocol0.shared.AbstractEnum import AbstractEnum
+from enum import Enum
 
 
-class TrackDataEnum(AbstractEnum):
+class TrackDataEnum(Enum):
     SELECTED_MACRO_VARIATION_INDEX = "SELECTED_MACRO_VARIATION_INDEX"

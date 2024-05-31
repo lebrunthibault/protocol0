@@ -1,7 +1,7 @@
-from protocol0.shared.AbstractEnum import AbstractEnum
+from enum import Enum
 
 
-class InstrumentParamEnum(AbstractEnum):
+class InstrumentParamEnum(Enum):
     ATTACK = "ATTACK"
     DECAY = "DECAY"
     DELAY = "DELAY"

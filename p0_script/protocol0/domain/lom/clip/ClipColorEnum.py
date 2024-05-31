@@ -1,7 +1,7 @@
-from protocol0.shared.AbstractEnum import AbstractEnum
+from enum import Enum
 
 
-class ClipColorEnum(AbstractEnum):
+class ClipColorEnum(Enum):
     DISABLED = 13
     AUDIO_UN_QUANTIZED = 14
     BLINK = 28

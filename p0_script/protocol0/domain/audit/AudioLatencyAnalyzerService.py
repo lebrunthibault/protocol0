@@ -1,5 +1,4 @@
 from functools import partial
-
 from typing import Optional
 
 from protocol0.application.CommandBus import CommandBus
@@ -15,11 +14,10 @@ from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import 
     ExternalSynthTrack,
 )
 from protocol0.domain.lom.track.routing.InputRoutingTypeEnum import InputRoutingTypeEnum
-from protocol0.domain.shared.InterfaceClicksServiceInterface import InterfaceClicksServiceInterface
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
-from protocol0.domain.track_recorder.RecordTypeEnum import RecordTypeEnum
 from protocol0.domain.track_recorder.RecordService import RecordService
+from protocol0.domain.track_recorder.RecordTypeEnum import RecordTypeEnum
 from protocol0.shared.Song import Song
 from protocol0.shared.sequence.Sequence import Sequence
 
@@ -28,12 +26,10 @@ class AudioLatencyAnalyzerService(object):
     def __init__(
         self,
         track_recorder_service: RecordService,
-        interface_clicks_service: InterfaceClicksServiceInterface,
         track_crud_component: TrackCrudComponent,
         tempo_component: TempoComponent,
     ) -> None:
         self._track_recorder_service = track_recorder_service
-        self._interface_clicks_service = interface_clicks_service
         self._track_crud_component = track_crud_component
         self._tempo_component = tempo_component
 
@@ -96,7 +92,7 @@ class AudioLatencyAnalyzerService(object):
         audio_clip = track.audio_track.clips[0]
         seq = Sequence()
         seq.add(partial(audio_clip.quantize, depth=0))
-        seq.add(self._interface_clicks_service.save_sample)
+        seq.add(partial(Backend.client().click_vertical_zone, 534, 1316))
         seq.add(
             partial(Backend.client().analyze_test_audio_clip_jitter, clip_path=audio_clip.file_path)
         )

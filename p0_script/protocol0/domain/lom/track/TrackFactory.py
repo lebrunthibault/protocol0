@@ -45,7 +45,7 @@ def _get_simple_track_class(track: Live.Track.Track) -> Type[SimpleTrack]:
     try:
         if (
             track.has_audio_input
-            and CurrentMonitoringStateEnum.from_value(track.current_monitoring_state)
+            and CurrentMonitoringStateEnum(track.current_monitoring_state)
             == CurrentMonitoringStateEnum.IN
         ):
             cls = SimpleAutomationTrack

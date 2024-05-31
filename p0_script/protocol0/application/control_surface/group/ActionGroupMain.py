@@ -68,11 +68,4 @@ class ActionGroupMain(ActionGroupInterface):
         self.add_encoder(identifier=16, name="test", on_scroll=scroll_selected_parameter)
 
     def action_test(self) -> None:
-        Song.selected_track().volume = 0
-
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(Song.selected_device().parameters)
-        Logger.dev(Song.selected_parameter())
-        Logger.dev(Song.selected_parameter().name)
-        Logger.dev(Song.selected_parameter().value)
+        pass

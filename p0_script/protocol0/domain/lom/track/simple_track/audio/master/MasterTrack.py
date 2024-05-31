@@ -59,10 +59,6 @@ class MasterTrack(SimpleAudioTrack):
         assert gain.value >= 0, "Gain is negative"
         gain_db = gain.value * 35
 
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(f"master gain: {gain_db}")
-
         def is_template_bus_track(t: SimpleTrack) -> bool:
             return (
                 t.output_routing.type == OutputRoutingTypeEnum.MASTER
@@ -83,8 +79,6 @@ class MasterTrack(SimpleAudioTrack):
                 and is_template_bus_track(track.output_routing.track)
             ):
                 tracks.append(track)
-
-        Logger.dev(tracks)
 
         for track in tracks:
             if track.volume + gain_db > 6:

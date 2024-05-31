@@ -1,13 +1,13 @@
+from enum import Enum
 from typing import Type, Any, Optional
 
 from protocol0.domain.lom.track.routing.TrackRoutingInterface import TrackRoutingInterface
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.utils.list import find_if
-from protocol0.shared.AbstractEnum import AbstractEnum
 
 
 class RoutingDisplayNameDescriptor(object):
-    def __init__(self, routing_attribute_name: str, routing_enum_class: Type[AbstractEnum]) -> None:
+    def __init__(self, routing_attribute_name: str, routing_enum_class: Type[Enum]) -> None:
         self.routing_enum_class = routing_enum_class
         self.routing_attribute_name = routing_attribute_name
         self.available_routings_attribute_name = "available_%ss" % routing_attribute_name
@@ -17,13 +17,13 @@ class RoutingDisplayNameDescriptor(object):
 
     def __get__(self, track_routing: TrackRoutingInterface, _: Type) -> Optional[Any]:
         try:
-            return self.routing_enum_class.from_value(
+            return self.routing_enum_class(
                 getattr(track_routing.live_track, self.routing_attribute_name).display_name
             )
-        except Protocol0Error:
+        except ValueError:
             return None
 
-    def __set__(self, track_routing: TrackRoutingInterface, routing_enum: AbstractEnum) -> None:
+    def __set__(self, track_routing: TrackRoutingInterface, routing_enum: Enum) -> None:
         routing = find_if(
             lambda r: r.display_name == routing_enum.value,
             getattr(track_routing.live_track, self.available_routings_attribute_name),

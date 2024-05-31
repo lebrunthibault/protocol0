@@ -1,7 +1,7 @@
-from protocol0.shared.AbstractEnum import AbstractEnum
+from enum import Enum
 
 
-class ColorEnum(AbstractEnum):
+class ColorEnum(Enum):
     WARNING = 12
     DISABLED = 13
     FOCUSED = 26

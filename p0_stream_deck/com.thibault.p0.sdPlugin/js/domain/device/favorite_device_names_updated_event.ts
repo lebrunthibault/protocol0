@@ -12,7 +12,7 @@ class FavoriteDeviceNameItem extends ActionSlotItem {
         if (typeof this._item === 'string') {
             return this._item
         } else {
-            return this._item.name + '*'
+            return this._item.name
         }
     }
 }
