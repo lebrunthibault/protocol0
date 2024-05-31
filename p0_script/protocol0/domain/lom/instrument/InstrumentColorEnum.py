@@ -1,7 +1,7 @@
-from protocol0.shared.AbstractEnum import AbstractEnum
+from enum import Enum
 
 
-class InstrumentColorEnum(AbstractEnum):
+class InstrumentColorEnum(Enum):
     UNKNOWN = 13
     SIMPLER = 2
     SERUM = 18

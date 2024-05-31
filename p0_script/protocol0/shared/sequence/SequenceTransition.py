@@ -1,10 +1,10 @@
+from enum import Enum
 from typing import Optional, List
 
 from protocol0.domain.shared.utils.list import find_if
-from protocol0.shared.AbstractEnum import AbstractEnum
 
 
-class SequenceStateEnum(AbstractEnum):
+class SequenceStateEnum(Enum):
     UN_STARTED = "UN_STARTED"
     STARTED = "STARTED"
     TERMINATED = "TERMINATED"

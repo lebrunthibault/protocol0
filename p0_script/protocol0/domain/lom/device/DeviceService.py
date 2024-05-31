@@ -116,7 +116,7 @@ class DeviceService(object):
 
     def load_device(self, enum_name: str, create_track: bool = False) -> Sequence:
         Undo.begin_undo_step()
-        assert enum_name in DeviceEnum, f"Unknown device {enum_name}"
+
         device_enum = DeviceEnum[enum_name]
         track = Song.selected_track()
         is_clip_view_visible = ApplicationView.is_clip_view_visible()

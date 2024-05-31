@@ -1,7 +1,7 @@
-from protocol0.shared.AbstractEnum import AbstractEnum
+from enum import Enum
 
 
-class PresetDisplayOptionEnum(AbstractEnum):
+class PresetDisplayOptionEnum(Enum):
     NONE = "NONE"
     NAME = "NAME"
     CATEGORY = "CATEGORY"

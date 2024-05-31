@@ -1,7 +1,7 @@
-from protocol0.shared.AbstractEnum import AbstractEnum
+from enum import Enum
 
 
-class SongDataEnum(AbstractEnum):
+class SongDataEnum(Enum):
     SELECTED_SCENE_INDEX = "SELECTED_SCENE_INDEX"
     SELECTED_SCENE_POSITION = "SELECTED_SCENE_POSITION"
     SELECTED_TRACK_INDEX = "SELECTED_TRACK_INDEX"

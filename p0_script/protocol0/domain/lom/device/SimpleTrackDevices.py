@@ -104,6 +104,15 @@ class SimpleTrackDevices(SlotManager, Observable):
         if not self.selected:
             return self._devices[0]
 
+        # do not loop over list
+        if (
+            offset < 0
+            and self.selected == self._devices[0]
+            or offset > 1
+            and self.selected == self._devices[-1]
+        ):
+            return self.selected
+
         selected_index = self._devices.index(self.selected)
         try:
             return self._devices[selected_index + offset]

@@ -1,7 +1,7 @@
-from protocol0.shared.AbstractEnum import AbstractEnum
+from enum import Enum
 
 
-class RecordingBarLengthEnum(AbstractEnum):
+class RecordingBarLengthEnum(Enum):
     _order_ = "ONE, TWO, FOUR, EIGHT, SIXTEEN, TWENTY_FOUR, THIRTY_TWO, SIXTY_FOUR"
 
     ONE = 1

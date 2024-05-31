@@ -1,8 +1,9 @@
+from enum import Enum
+
 from protocol0.domain.track_recorder.count_in.CountInInterface import CountInInterface
-from protocol0.shared.AbstractEnum import AbstractEnum
 
 
-class RecordTypeEnum(AbstractEnum):
+class RecordTypeEnum(Enum):
     MIDI = "Midi"
     MIDI_OVERWRITE = "Midi overwrite"
     MIDI_RESAMPLE = "Midi resample"

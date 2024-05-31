@@ -1,17 +1,15 @@
-from pathlib import Path
-from typing import List, Optional, Union, Any, TYPE_CHECKING
+from enum import Enum
+from typing import List, Optional, Union, TYPE_CHECKING
 
 from protocol0.domain.lom.device.DeviceEnumGroup import DeviceEnumGroup
 from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
-from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.ui.ColorEnum import ColorEnum
-from protocol0.shared.AbstractEnum import AbstractEnum
 
 if TYPE_CHECKING:
     from protocol0.domain.lom.device.Device import Device
 
 
-class DeviceEnum(AbstractEnum):
+class DeviceEnum(Enum):
     ADPTR_METRIC_AB = "ADPTR MetricAB"
     ARPEGGIATOR = "Arpeggiator"
     AUDIO_EFFECT_RACK = "Audio Effect Rack"
@@ -109,14 +107,6 @@ class DeviceEnum(AbstractEnum):
     WAVETABLE = "Wavetable"
     YOULEAN = "Youlean Loudness Meter 2"
 
-    @classmethod
-    def from_value(cls, value: Any) -> "DeviceEnum":  # type: ignore[override]
-        for _, enum in cls.__members__.items():
-            if value == Path(enum.value).stem:  # removes the extension
-                return enum
-
-        raise Protocol0Error("Couldn't find matching enum for value %s" % value)
-
     @property
     def is_device_preset(self) -> bool:
         return self in [
@@ -146,13 +136,11 @@ class DeviceEnum(AbstractEnum):
     @property
     def browser_name(self) -> str:
         try:
-            return self.get_value_from_mapping(
-                {
-                    DeviceEnum.EXTERNAL_AUDIO_EFFECT: "External Audio Effect",
-                    DeviceEnum.EXTERNAL_INSTRUMENT: "External Instrument",
-                }
-            )
-        except Protocol0Error:
+            return {
+                DeviceEnum.EXTERNAL_AUDIO_EFFECT: "External Audio Effect",
+                DeviceEnum.EXTERNAL_INSTRUMENT: "External Instrument",
+            }[self]
+        except KeyError:
             if self.is_device_preset:
                 return "%s.adv" % self.value
             elif self.is_rack_preset:
@@ -163,18 +151,16 @@ class DeviceEnum(AbstractEnum):
     @property
     def class_name(self) -> str:
         try:
-            return self.get_value_from_mapping(
-                {
-                    DeviceEnum.AUDIO_EFFECT_RACK: "AudioEffectGroupDevice",
-                    DeviceEnum.AUTO_FILTER: "AutoFilter",
-                    DeviceEnum.EQ_EIGHT: "Eq8",
-                    DeviceEnum.EXTERNAL_AUDIO_EFFECT: "ProxyAudioEffectDevice",
-                    DeviceEnum.EXTERNAL_INSTRUMENT: "ProxyInstrumentDevice",
-                    DeviceEnum.INSTRUMENT_RACK: "InstrumentGroupDevice",
-                    DeviceEnum.PITCH: "MidiPitcher",
-                }
-            )
-        except Protocol0Error:
+            return {
+                DeviceEnum.AUDIO_EFFECT_RACK: "AudioEffectGroupDevice",
+                DeviceEnum.AUTO_FILTER: "AutoFilter",
+                DeviceEnum.EQ_EIGHT: "Eq8",
+                DeviceEnum.EXTERNAL_AUDIO_EFFECT: "ProxyAudioEffectDevice",
+                DeviceEnum.EXTERNAL_INSTRUMENT: "ProxyInstrumentDevice",
+                DeviceEnum.INSTRUMENT_RACK: "InstrumentGroupDevice",
+                DeviceEnum.PITCH: "MidiPitcher",
+            }[self]
+        except KeyError:
             return self.value
 
     def matches(self, device: "Device") -> bool:
@@ -197,21 +183,19 @@ class DeviceEnum(AbstractEnum):
     def default_parameter(self) -> Optional[DeviceParamEnum]:
         """Represents the main parameter for a specific device. We want to make it easily accessible"""
         try:
-            return self.get_value_from_mapping(
-                {
-                    DeviceEnum.AUTO_FILTER_HIGH_PASS: DeviceParamEnum.AUTO_FILTER_HIGH_PASS_FREQUENCY,
-                    DeviceEnum.AUTO_FILTER_LOW_PASS: DeviceParamEnum.AUTO_FILTER_LOW_PASS_FREQUENCY,
-                    DeviceEnum.AUTO_PAN: DeviceParamEnum.AUTO_PAN_AMOUNT,
-                    DeviceEnum.EQ_EIGHT: DeviceParamEnum.EQ_EIGHT_1_FREQUENCY_A,
-                    DeviceEnum.INSERT_DELAY: DeviceParamEnum.INPUT,
-                    DeviceEnum.INSERT_REVERB: DeviceParamEnum.INPUT,
-                    DeviceEnum.LIMITER: DeviceParamEnum.GAIN,
-                    DeviceEnum.LFO_TOOL: DeviceParamEnum.LFO_TOOL_LFO_DEPTH,
-                    DeviceEnum.SATURATOR: DeviceParamEnum.DRIVE,
-                    DeviceEnum.UTILITY: DeviceParamEnum.GAIN,
-                }
-            )
-        except Protocol0Error:
+            return {
+                DeviceEnum.AUTO_FILTER_HIGH_PASS: DeviceParamEnum.AUTO_FILTER_HIGH_PASS_FREQUENCY,
+                DeviceEnum.AUTO_FILTER_LOW_PASS: DeviceParamEnum.AUTO_FILTER_LOW_PASS_FREQUENCY,
+                DeviceEnum.AUTO_PAN: DeviceParamEnum.AUTO_PAN_AMOUNT,
+                DeviceEnum.EQ_EIGHT: DeviceParamEnum.EQ_EIGHT_1_FREQUENCY_A,
+                DeviceEnum.INSERT_DELAY: DeviceParamEnum.INPUT,
+                DeviceEnum.INSERT_REVERB: DeviceParamEnum.INPUT,
+                DeviceEnum.LIMITER: DeviceParamEnum.GAIN,
+                DeviceEnum.LFO_TOOL: DeviceParamEnum.LFO_TOOL_LFO_DEPTH,
+                DeviceEnum.SATURATOR: DeviceParamEnum.DRIVE,
+                DeviceEnum.UTILITY: DeviceParamEnum.GAIN,
+            }[self]
+        except KeyError:
             return None
 
     @classmethod
@@ -257,66 +241,61 @@ class DeviceEnum(AbstractEnum):
         measured by loading multiple device instances (20) in an empty set and timing multiple times the set load
         very rough approximation of the performance impact of a device on the whole set
         """
-        try:
-            return self.get_value_from_mapping(
-                {
-                    DeviceEnum.AUDIO_EFFECT_RACK: 8,
-                    DeviceEnum.AUTO_FILTER: 7,
-                    DeviceEnum.BEAT_REPEAT: 7,
-                    DeviceEnum.COMPRESSOR: 11,
-                    DeviceEnum.DECAPITATOR: 309,
-                    DeviceEnum.DE_ESSER: 90,
-                    DeviceEnum.DELAY: 10,
-                    DeviceEnum.DRUM_BUSS: 18,
-                    DeviceEnum.DOUBLER2: 43,
-                    DeviceEnum.DOUBLER4: 46,
-                    DeviceEnum.EFFECTRIX: 133,
-                    DeviceEnum.ENIGMA: 0,
-                    DeviceEnum.EQ_EIGHT: 31,
-                    DeviceEnum.EQ_ROOM: 31,
-                    DeviceEnum.EXTERNAL_AUDIO_EFFECT: 5,
-                    DeviceEnum.EXTERNAL_INSTRUMENT: 20,
-                    DeviceEnum.KONTAKT: 1000,
-                    DeviceEnum.GATE: 7,
-                    DeviceEnum.GATEKEEPER: 130,
-                    DeviceEnum.GLUE_COMPRESSOR: 6,
-                    DeviceEnum.H_COMP: 75,
-                    DeviceEnum.INSTRUMENT_RACK: 10,
-                    DeviceEnum.JJP_STRINGS: 280,
-                    DeviceEnum.LFO_TOOL: 180,
-                    DeviceEnum.L1_LIMITER: 64,
-                    DeviceEnum.L1_ULTRAMAXIMIZER: 64,
-                    DeviceEnum.LIMITER: 5,
-                    DeviceEnum.PITCH: 2,
-                    DeviceEnum.PRO_Q_3: 53,
-                    DeviceEnum.PRO_Q_3_VST3: 53,
-                    DeviceEnum.REVERB: 9,
-                    DeviceEnum.REV2_EDITOR: 80,
-                    DeviceEnum.R_VERB: 114,
-                    DeviceEnum.SATURATOR: 8,
-                    DeviceEnum.SATURN_2: 50,
-                    DeviceEnum.SERUM: 147,
-                    DeviceEnum.SIMPLER: 56,
-                    DeviceEnum.SOOTHE2: 206,
-                    DeviceEnum.SOUNDID_REFERENCE_PLUGIN: 0,
-                    DeviceEnum.SPIFF: 270,
-                    DeviceEnum.SSL_COMP: 81,
-                    DeviceEnum.SUPER_TAP_2: 45,
-                    DeviceEnum.SUPER_TAP_6: 45,
-                    DeviceEnum.SURFEREQ: 116,
-                    DeviceEnum.SYLENTH1: 314,
-                    DeviceEnum.TRACK_SPACER: 207,
-                    DeviceEnum.TRUE_VERB: 82,
-                    DeviceEnum.TUNER: 0,
-                    DeviceEnum.USAMO: 78,
-                    DeviceEnum.UTILITY: 4,
-                    DeviceEnum.VALHALLA_VINTAGE_VERB: 71,
-                    DeviceEnum.VCOMP: 52,
-                    DeviceEnum.VEQ: 55,
-                }
-            )
-        except Protocol0Error:
-            return 0
+        return {
+            DeviceEnum.AUDIO_EFFECT_RACK: 8,
+            DeviceEnum.AUTO_FILTER: 7,
+            DeviceEnum.BEAT_REPEAT: 7,
+            DeviceEnum.COMPRESSOR: 11,
+            DeviceEnum.DECAPITATOR: 309,
+            DeviceEnum.DE_ESSER: 90,
+            DeviceEnum.DELAY: 10,
+            DeviceEnum.DRUM_BUSS: 18,
+            DeviceEnum.DOUBLER2: 43,
+            DeviceEnum.DOUBLER4: 46,
+            DeviceEnum.EFFECTRIX: 133,
+            DeviceEnum.ENIGMA: 0,
+            DeviceEnum.EQ_EIGHT: 31,
+            DeviceEnum.EQ_ROOM: 31,
+            DeviceEnum.EXTERNAL_AUDIO_EFFECT: 5,
+            DeviceEnum.EXTERNAL_INSTRUMENT: 20,
+            DeviceEnum.KONTAKT: 1000,
+            DeviceEnum.GATE: 7,
+            DeviceEnum.GATEKEEPER: 130,
+            DeviceEnum.GLUE_COMPRESSOR: 6,
+            DeviceEnum.H_COMP: 75,
+            DeviceEnum.INSTRUMENT_RACK: 10,
+            DeviceEnum.JJP_STRINGS: 280,
+            DeviceEnum.LFO_TOOL: 180,
+            DeviceEnum.L1_LIMITER: 64,
+            DeviceEnum.L1_ULTRAMAXIMIZER: 64,
+            DeviceEnum.LIMITER: 5,
+            DeviceEnum.PITCH: 2,
+            DeviceEnum.PRO_Q_3: 53,
+            DeviceEnum.PRO_Q_3_VST3: 53,
+            DeviceEnum.REVERB: 9,
+            DeviceEnum.REV2_EDITOR: 80,
+            DeviceEnum.R_VERB: 114,
+            DeviceEnum.SATURATOR: 8,
+            DeviceEnum.SATURN_2: 50,
+            DeviceEnum.SERUM: 147,
+            DeviceEnum.SIMPLER: 56,
+            DeviceEnum.SOOTHE2: 206,
+            DeviceEnum.SOUNDID_REFERENCE_PLUGIN: 0,
+            DeviceEnum.SPIFF: 270,
+            DeviceEnum.SSL_COMP: 81,
+            DeviceEnum.SUPER_TAP_2: 45,
+            DeviceEnum.SUPER_TAP_6: 45,
+            DeviceEnum.SURFEREQ: 116,
+            DeviceEnum.SYLENTH1: 314,
+            DeviceEnum.TRACK_SPACER: 207,
+            DeviceEnum.TRUE_VERB: 82,
+            DeviceEnum.TUNER: 0,
+            DeviceEnum.USAMO: 78,
+            DeviceEnum.UTILITY: 4,
+            DeviceEnum.VALHALLA_VINTAGE_VERB: 71,
+            DeviceEnum.VCOMP: 52,
+            DeviceEnum.VEQ: 55,
+        }.get(self, 0)
 
     @property
     def device_group_position(self) -> int:

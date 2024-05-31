@@ -1,7 +1,7 @@
-from protocol0.shared.AbstractEnum import AbstractEnum
+from enum import Enum
 
 
-class EncoderMoveEnum(AbstractEnum):
+class EncoderMoveEnum(Enum):
     PRESS = "PRESS"
     LONG_PRESS = "LONG_PRESS"
     SCROLL = "SCROLL"

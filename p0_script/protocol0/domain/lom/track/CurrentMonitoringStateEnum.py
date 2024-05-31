@@ -1,7 +1,7 @@
-from protocol0.shared.AbstractEnum import AbstractEnum
+from enum import Enum
 
 
-class CurrentMonitoringStateEnum(AbstractEnum):
+class CurrentMonitoringStateEnum(Enum):
     IN = 0
     AUTO = 1
     OFF = 2

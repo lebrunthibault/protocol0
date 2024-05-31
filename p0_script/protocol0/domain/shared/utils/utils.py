@@ -65,14 +65,7 @@ def get_minutes_legend(seconds: float) -> str:
 def volume_to_db(vol: float) -> float:
     rounded_vol = round(vol, 4)
     if rounded_vol not in volume_to_db_data:
-        from protocol0.shared.logging.Logger import Logger
-
         rounded_vol = take_closest(list(reversed(list(volume_to_db_data.keys()))), vol)
-
-        Logger.dev(
-            f"bisecting on {vol} -> {rounded_vol} -> {volume_to_db_data[rounded_vol]} db",
-            debug=False,
-        )
 
     return volume_to_db_data[rounded_vol]
 

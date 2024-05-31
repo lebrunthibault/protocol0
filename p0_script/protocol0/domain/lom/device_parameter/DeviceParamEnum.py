@@ -1,9 +1,8 @@
+from enum import Enum
 from typing import Optional, Any
 
-from protocol0.shared.AbstractEnum import AbstractEnum
 
-
-class DeviceParamEnum(AbstractEnum):
+class DeviceParamEnum(Enum):
     AB_SWITCH = "AB_SWITCH"
     ARP_RATE = "ARP_RATE"
     ARP_GATE = "ARP_GATE"
@@ -43,43 +42,41 @@ class DeviceParamEnum(AbstractEnum):
 
     @property
     def parameter_name(self) -> str:
-        return self.get_value_from_mapping(
-            {
-                DeviceParamEnum.AB_SWITCH: "AB Switch",
-                DeviceParamEnum.ARP_RATE: "Synced Rate",
-                DeviceParamEnum.ARP_GATE: "Gate",
-                DeviceParamEnum.ARP_STYLE: "Style",
-                DeviceParamEnum.AUTO_FILTER_HIGH_PASS_FREQUENCY: "Frequency",
-                DeviceParamEnum.AUTO_FILTER_LOW_PASS_FREQUENCY: "Frequency",
-                DeviceParamEnum.AUTO_PAN_AMOUNT: "Amount",
-                DeviceParamEnum.CHAIN_SELECTOR: "Chain Selector",
-                DeviceParamEnum.DECAY: "Decay",
-                DeviceParamEnum.DEVICE_ON: "Device On",
-                DeviceParamEnum.DRIVE: "Drive",
-                DeviceParamEnum.FB: "FB",
-                DeviceParamEnum.FILTER_PRESET: "Filter Preset",
-                DeviceParamEnum.FILTER_SWITCH: "Filter Switch",
-                DeviceParamEnum.EQ_EIGHT_1_FREQUENCY_A: "1 Frequency A",
-                DeviceParamEnum.EQ_EIGHT_8_FREQUENCY_A: "8 Frequency A",
-                DeviceParamEnum.GAIN: "Gain",
-                DeviceParamEnum.GAIN_4_A: "4 Gain A",
-                DeviceParamEnum.GOD_PARTICLE_CHARACTER: "Character",
-                DeviceParamEnum.INPUT: "Input",
-                DeviceParamEnum.INPUT_GAIN: "Input Gain",
-                DeviceParamEnum.LENGTH: "Time Length",
-                DeviceParamEnum.LFO_TOOL_LFO_DEPTH: "LFO Depth",
-                DeviceParamEnum.MIX: "Mix",
-                DeviceParamEnum.OCTAVA_VEL: "Vel",
-                DeviceParamEnum.OUTPUT: "Output",
-                DeviceParamEnum.OUTPUT_GAIN: "Output Gain",
-                DeviceParamEnum.PATTERN: "Pattern",
-                DeviceParamEnum.STEREO_MODE: "Stereo Mode",
-                DeviceParamEnum.UTILITY_SILENT_GAIN: "Gain",
-                DeviceParamEnum.UTILITY_MID_SIDE: "Mid/Side Balance",
-                DeviceParamEnum.UTILITY_WIDTH: "Stereo Width",
-                DeviceParamEnum.WET: "Wet",
-            }
-        )
+        return {
+            DeviceParamEnum.AB_SWITCH: "AB Switch",
+            DeviceParamEnum.ARP_RATE: "Synced Rate",
+            DeviceParamEnum.ARP_GATE: "Gate",
+            DeviceParamEnum.ARP_STYLE: "Style",
+            DeviceParamEnum.AUTO_FILTER_HIGH_PASS_FREQUENCY: "Frequency",
+            DeviceParamEnum.AUTO_FILTER_LOW_PASS_FREQUENCY: "Frequency",
+            DeviceParamEnum.AUTO_PAN_AMOUNT: "Amount",
+            DeviceParamEnum.CHAIN_SELECTOR: "Chain Selector",
+            DeviceParamEnum.DECAY: "Decay",
+            DeviceParamEnum.DEVICE_ON: "Device On",
+            DeviceParamEnum.DRIVE: "Drive",
+            DeviceParamEnum.FB: "FB",
+            DeviceParamEnum.FILTER_PRESET: "Filter Preset",
+            DeviceParamEnum.FILTER_SWITCH: "Filter Switch",
+            DeviceParamEnum.EQ_EIGHT_1_FREQUENCY_A: "1 Frequency A",
+            DeviceParamEnum.EQ_EIGHT_8_FREQUENCY_A: "8 Frequency A",
+            DeviceParamEnum.GAIN: "Gain",
+            DeviceParamEnum.GAIN_4_A: "4 Gain A",
+            DeviceParamEnum.GOD_PARTICLE_CHARACTER: "Character",
+            DeviceParamEnum.INPUT: "Input",
+            DeviceParamEnum.INPUT_GAIN: "Input Gain",
+            DeviceParamEnum.LENGTH: "Time Length",
+            DeviceParamEnum.LFO_TOOL_LFO_DEPTH: "LFO Depth",
+            DeviceParamEnum.MIX: "Mix",
+            DeviceParamEnum.OCTAVA_VEL: "Vel",
+            DeviceParamEnum.OUTPUT: "Output",
+            DeviceParamEnum.OUTPUT_GAIN: "Output Gain",
+            DeviceParamEnum.PATTERN: "Pattern",
+            DeviceParamEnum.STEREO_MODE: "Stereo Mode",
+            DeviceParamEnum.UTILITY_SILENT_GAIN: "Gain",
+            DeviceParamEnum.UTILITY_MID_SIDE: "Mid/Side Balance",
+            DeviceParamEnum.UTILITY_WIDTH: "Stereo Width",
+            DeviceParamEnum.WET: "Wet",
+        }[self]
 
     @classmethod
     def from_name(cls, device_name: str, name: str) -> Optional["DeviceParamEnum"]:
@@ -91,14 +88,12 @@ class DeviceParamEnum(AbstractEnum):
 
     @property
     def default_value(self) -> Any:
-        return self.get_value_from_mapping(
-            {
-                DeviceParamEnum.AUTO_FILTER_HIGH_PASS_FREQUENCY: 20,
-                DeviceParamEnum.AUTO_FILTER_LOW_PASS_FREQUENCY: 135,
-                DeviceParamEnum.DELAY_INPUT: 0,
-                DeviceParamEnum.EQ_EIGHT_1_FREQUENCY_A: 0,
-                DeviceParamEnum.EQ_EIGHT_8_FREQUENCY_A: 1,
-                DeviceParamEnum.REVERB_INPUT: 0,
-                DeviceParamEnum.UTILITY_SILENT_GAIN: -1,
-            }
-        )
+        return {
+            DeviceParamEnum.AUTO_FILTER_HIGH_PASS_FREQUENCY: 20,
+            DeviceParamEnum.AUTO_FILTER_LOW_PASS_FREQUENCY: 135,
+            DeviceParamEnum.DELAY_INPUT: 0,
+            DeviceParamEnum.EQ_EIGHT_1_FREQUENCY_A: 0,
+            DeviceParamEnum.EQ_EIGHT_8_FREQUENCY_A: 1,
+            DeviceParamEnum.REVERB_INPUT: 0,
+            DeviceParamEnum.UTILITY_SILENT_GAIN: -1,
+        }[self]

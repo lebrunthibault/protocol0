@@ -1,5 +1,6 @@
 import time
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import Optional, Callable, List
 
 from _Framework.ButtonElement import ButtonElement
@@ -12,11 +13,10 @@ from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.error import log_exceptions
 from protocol0.infra.midi.NoteSentEvent import NoteSentEvent
-from protocol0.shared.AbstractEnum import AbstractEnum
 from protocol0.shared.Song import find_track_or_none, find_track, Song
 
 
-class LEDColorVelocities(AbstractEnum):
+class LEDColorVelocities(Enum):
     OFF = 12
     MUTED = 29
     ACTIVE = 62
