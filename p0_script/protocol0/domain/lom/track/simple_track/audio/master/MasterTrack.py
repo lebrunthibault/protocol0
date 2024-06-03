@@ -3,6 +3,7 @@ from typing import Any, Optional
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
+from protocol0.domain.lom.set.MixingService import balance_bus_levels_to_zero, SimpleTrackToDevices
 from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitoringStateEnum
 from protocol0.domain.lom.track.routing.OutputRoutingTypeEnum import OutputRoutingTypeEnum
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
@@ -49,7 +50,7 @@ class MasterTrack(SimpleAudioTrack):
             DeviceEnum.ADPTR_METRIC_AB, all_devices=True, enabled=True
         )
 
-    def balance_levels_to_zero(self) -> None:
+    def balance_levels_to_zero(self) -> SimpleTrackToDevices:
         assert (
             len(list(self.devices)) and list(self.devices)[0].enum == DeviceEnum.UTILITY
         ), "Expected first device to be utility"
@@ -84,7 +85,13 @@ class MasterTrack(SimpleAudioTrack):
             if track.volume + gain_db > 6:
                 raise Protocol0Error(f"{track.name} is too hot")
 
+        bus_compressors: SimpleTrackToDevices = {}
+
         for track in tracks:
             track.volume += gain_db
+            if track.is_foldable:
+                bus_compressors = {**bus_compressors, **balance_bus_levels_to_zero(track)}
 
         gain.value = 0
+
+        return bus_compressors

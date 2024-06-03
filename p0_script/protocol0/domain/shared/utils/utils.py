@@ -71,8 +71,6 @@ def volume_to_db(vol: float) -> float:
 
 
 def db_to_volume(db: float) -> float:
-    assert db <= 6, f"Got track volume overflow: {round(db, 2)} db"
-
     db = round(db, 2)
 
     if db <= -70:
