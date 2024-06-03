@@ -3,7 +3,6 @@ from typing import Callable, Any
 
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
 from protocol0.domain.lom.clip.MidiClip import MidiClip
-from protocol0.domain.lom.device.ClipperService import ClipperService
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
 from protocol0.domain.lom.instrument.XParam import (
@@ -128,14 +127,6 @@ class ActionGroupRack(ActionGroupInterface):
 
         for index, param in enumerate(params):
             add_x_param_encoder(index + 1, param)
-
-        # CLIPper encoder
-        self.add_encoder(
-            identifier=13,
-            name="clipper",
-            on_press=self._container.get(ClipperService).toggle,
-            on_scroll=self._container.get(ClipperService).scroll,
-        )
 
         # VELO encoder
         self.add_encoder(

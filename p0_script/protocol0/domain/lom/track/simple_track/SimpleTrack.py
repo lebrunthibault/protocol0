@@ -313,14 +313,6 @@ class SimpleTrack(AbstractTrack):
         return any(clip_slot.is_triggered for clip_slot in self.clip_slots)
 
     @property
-    def is_bus_track(self) -> bool:
-        return (
-            self.group_track is not None
-            and self.group_track.index == 0
-            and self.current_monitoring_state == CurrentMonitoringStateEnum.IN
-        )
-
-    @property
     def has_midi_note_source_track(self) -> bool:
         from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
 
@@ -337,16 +329,19 @@ class SimpleTrack(AbstractTrack):
 
     @volume.setter
     def volume(self, db_volume: float) -> None:
+        assert db_volume <= 6, f"Got track volume overflow: {round(db_volume, 2)} db: {self}"
+
         volume = db_to_volume(db_volume)
 
         if self._track:
-            Scheduler.defer(
-                partial(
-                    DeviceParameter.set_live_device_parameter,
-                    self._track.mixer_device.volume,
-                    volume,
-                )
-            )
+            DeviceParameter.set_live_device_parameter(self._track.mixer_device.volume, volume)
+            # Scheduler.defer(
+            #     partial(
+            #         DeviceParameter.set_live_device_parameter,
+            #         self._track.mixer_device.volume,
+            #         volume,
+            #     )
+            # )
 
     @property
     def color(self) -> int:

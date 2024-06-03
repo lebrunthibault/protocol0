@@ -1,11 +1,46 @@
+from typing import Dict, List
+
+from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
 from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitoringStateEnum
 from protocol0.domain.lom.track.group_track.NormalGroupTrack import NormalGroupTrack
 from protocol0.domain.lom.track.routing.OutputRoutingTypeEnum import OutputRoutingTypeEnum
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
+from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.shared.Song import Song
+from protocol0.shared.Undo import Undo
 from protocol0.shared.logging.Logger import Logger
+
+SimpleTrackToDevices = Dict[SimpleTrack, List[Device]]
+
+
+def balance_bus_levels_to_zero(track: SimpleTrack) -> SimpleTrackToDevices:
+    assert track.is_foldable, "Expected bus or master track"
+
+    bus_volume = track.volume
+    Undo.begin_undo_step()
+
+    for sub_track in track.sub_tracks:
+        if sub_track.volume + bus_volume > 6:
+            raise Protocol0Error(f"{sub_track.name} is too hot")
+
+    bus_compressors: SimpleTrackToDevices = {}
+    compressors = [device for device in track.devices if device.enum.is_compressor]
+    if compressors:
+        bus_compressors[track] = compressors
+
+    track.volume = 0
+
+    for sub_track in track.sub_tracks:
+        sub_track.volume += bus_volume
+
+        if sub_track.volume > 0 and sub_track.is_foldable:
+            bus_compressors = {**bus_compressors, **balance_bus_levels_to_zero(sub_track)}
+
+    Undo.end_undo_step()
+
+    return bus_compressors
 
 
 class MixingService(object):
