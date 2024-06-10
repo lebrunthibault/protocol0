@@ -9,6 +9,7 @@ from protocol0.shared.Song import Song
 class RemoveMutedNotesCommandHandler(CommandHandlerInterface):
     def handle(self, _: RemoveMutedNotesCommand) -> None:
         clip = Song.selected_clip()
-        assert isinstance(clip, MidiClip)
+        assert clip, "No selected clip"
+        assert isinstance(clip, MidiClip), "Not a midi clip"
 
         clip.clear_muted_notes()

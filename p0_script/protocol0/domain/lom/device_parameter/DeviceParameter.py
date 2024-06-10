@@ -22,7 +22,7 @@ class DeviceParameter(SlotManager, Observable):
         self.device_name = ""
 
         try:
-            if enum is not None:
+            if enum and enum.default_value is not None:
                 self.default_value = enum.default_value
             else:
                 self.default_value = device_parameter.default_value

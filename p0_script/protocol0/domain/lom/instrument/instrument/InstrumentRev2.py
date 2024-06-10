@@ -22,7 +22,6 @@ class InstrumentRev2(InstrumentInterface):
     TRACK_COLOR = InstrumentColorEnum.REV2
     INSTRUMENT_TRACK_NAME = "Synth"
     ACTIVE_INSTANCE: Optional["InstrumentRev2"] = None
-    IS_EXTERNAL_SYNTH = True
 
     def __init__(self, *a: Any, **k: Any) -> None:
         super(InstrumentRev2, self).__init__(*a, **k)
