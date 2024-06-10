@@ -19,4 +19,3 @@ def test_instantiation_external_synth_track():
     add_external_synth_track()
     CommandBus.dispatch(ReloadScriptCommand())
     assert len(list(Song.simple_tracks())) == 4
-    assert len(list(Song.external_synth_tracks())) == 1

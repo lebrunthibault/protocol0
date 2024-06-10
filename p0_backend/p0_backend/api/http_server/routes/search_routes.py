@@ -73,6 +73,10 @@ def search_track() -> None:
         notify(str(e))
         return
 
+    from loguru import logger
+
+    logger.success(track_list)
+
     root = _get_search_window()
 
     def autoclose() -> None:

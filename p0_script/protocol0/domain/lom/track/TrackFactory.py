@@ -7,9 +7,6 @@ from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudCom
 from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitoringStateEnum
 from protocol0.domain.lom.track.group_track.AbstractGroupTrack import AbstractGroupTrack
 from protocol0.domain.lom.track.group_track.NormalGroupTrack import NormalGroupTrack
-from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import (
-    ExternalSynthTrack,
-)
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 from protocol0.domain.lom.track.simple_track.audio.special.ResamplingTrack import ResamplingTrack
@@ -85,12 +82,6 @@ class TrackFactory(object):
 
     def create_abstract_group_track(self, base_group_track: SimpleTrack) -> AbstractGroupTrack:
         previous_abstract_group_track = base_group_track.abstract_group_track
-
-        if ExternalSynthTrack.is_group_track_valid(base_group_track):
-            if isinstance(previous_abstract_group_track, ExternalSynthTrack):
-                return previous_abstract_group_track
-            else:
-                return ExternalSynthTrack(base_group_track=base_group_track)
 
         # handling normal group track
         if isinstance(previous_abstract_group_track, NormalGroupTrack):

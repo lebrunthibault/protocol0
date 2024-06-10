@@ -26,7 +26,7 @@ def balance_bus_levels_to_zero(track: SimpleTrack) -> SimpleTrackToDevices:
             raise Protocol0Error(f"{sub_track.name} is too hot")
 
     bus_compressors: SimpleTrackToDevices = {}
-    compressors = [device for device in track.devices if device.enum.is_compressor]
+    compressors = [device for device in track.devices if device.enum and device.enum.is_compressor]
     if compressors:
         bus_compressors[track] = compressors
 

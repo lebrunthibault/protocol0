@@ -60,7 +60,6 @@ class InstrumentInterface(SlotManager):
     PRESET_CHANGER: Type[PresetChangerInterface] = ProgramChangePresetChanger
     PRESET_INITIALIZER: Type[PresetInitializerInterface] = PresetInitializerDevicePresetName
     INSTRUMENT_TRACK_NAME = ""
-    IS_EXTERNAL_SYNTH = False
     PARAMETER_NAMES: Dict[InstrumentParamEnum, str] = {}
 
     # noinspection PyInitNewSignature

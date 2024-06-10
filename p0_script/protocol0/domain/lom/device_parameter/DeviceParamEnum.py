@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional, Any
+from typing import Optional
 
 
 class DeviceParamEnum(Enum):
@@ -87,7 +87,7 @@ class DeviceParamEnum(Enum):
             return None
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> Optional[int]:
         return {
             DeviceParamEnum.AUTO_FILTER_HIGH_PASS_FREQUENCY: 20,
             DeviceParamEnum.AUTO_FILTER_LOW_PASS_FREQUENCY: 135,
@@ -96,4 +96,4 @@ class DeviceParamEnum(Enum):
             DeviceParamEnum.EQ_EIGHT_8_FREQUENCY_A: 1,
             DeviceParamEnum.REVERB_INPUT: 0,
             DeviceParamEnum.UTILITY_SILENT_GAIN: -1,
-        }[self]
+        }.get(self, None)

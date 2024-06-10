@@ -60,7 +60,10 @@ class Device(SlotManager):
 
     @property
     def enum(self) -> Optional[DeviceEnum]:
-        return DeviceEnum(self.name)
+        try:
+            return DeviceEnum(self.name)
+        except ValueError:
+            return None
 
     @subject_slot("parameters")
     def _parameters_listener(self) -> None:

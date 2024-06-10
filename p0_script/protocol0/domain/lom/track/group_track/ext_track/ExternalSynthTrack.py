@@ -9,11 +9,8 @@ from protocol0.domain.lom.track.group_track.ext_track.SimpleAudioExtTrack import
 from protocol0.domain.lom.track.group_track.ext_track.SimpleBaseExtTrack import SimpleBaseExtTrack
 from protocol0.domain.lom.track.group_track.ext_track.SimpleMidiExtTrack import (
     SimpleMidiExtTrack,
-    get_external_device,
 )
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
-from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
-from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.utils.forward_to import ForwardTo
 
@@ -55,32 +52,6 @@ class ExternalSynthTrack(AbstractGroupTrack):
     def on_tracks_change(self) -> None:
         super(ExternalSynthTrack, self).on_tracks_change()
         self._solo_state.update()
-
-    @classmethod
-    def is_group_track_valid(cls, base_group_track: SimpleTrack) -> bool:
-        if len(base_group_track.sub_tracks) < 2:
-            return False
-
-        if any(track.is_foldable for track in base_group_track.sub_tracks):
-            return False
-
-        midi_track = base_group_track.sub_tracks[0]
-        if not isinstance(midi_track, SimpleMidiTrack):
-            return False  # type: ignore[unreachable]
-        if not isinstance(base_group_track.sub_tracks[1], SimpleAudioTrack):
-            return False
-
-        if not get_external_device(list(midi_track.devices)):
-            return False
-
-        for track in base_group_track.sub_tracks[2:]:
-            if not isinstance(track, SimpleAudioTrack):
-                return False
-
-        if midi_track.instrument and not midi_track.instrument.IS_EXTERNAL_SYNTH:
-            return False
-
-        return True
 
     @property
     def instrument_track(self) -> SimpleTrack:

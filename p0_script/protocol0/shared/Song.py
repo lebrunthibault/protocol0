@@ -174,10 +174,8 @@ class Song(object):
         """we use the live ptr instead of the track to be able to access outdated simple tracks on deletion"""
         track_mapping = cls._INSTANCE._track_mapper_service._live_track_id_to_simple_track
         if live_track._live_ptr not in track_mapping:
-            existing_tracks = [str(track) for track in track_mapping.values()]
             raise Protocol0Error(
-                "Couldn't find live track %s in _live_track_id_to_simple_track mapping : \n "
-                "%s" % (live_track.name, "\n".join(existing_tracks))
+                f"Couldn't find live track {live_track.name} in {len(list(track_mapping.values()))} tracks mapping (last track: {str(list(track_mapping.values())[-1])})"
             )
 
         return track_mapping[live_track._live_ptr]
@@ -211,16 +209,6 @@ class Song(object):
             track
             for track in cls._INSTANCE._track_mapper_service._live_track_id_to_simple_track.values()
         )
-
-    @classmethod
-    def external_synth_tracks(cls) -> Iterator["ExternalSynthTrack"]:
-        from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import (  # noqa
-            ExternalSynthTrack,
-        )
-
-        for track in cls.abstract_tracks():
-            if isinstance(track, ExternalSynthTrack):
-                yield track
 
     @classmethod
     def scrollable_tracks(cls) -> Iterator["AbstractTrack"]:
