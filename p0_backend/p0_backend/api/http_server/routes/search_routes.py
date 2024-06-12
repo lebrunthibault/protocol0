@@ -14,15 +14,19 @@ from p0_backend.lib.keys import send_keys
 from p0_backend.lib.notification import notify
 from p0_backend.lib.window.window import focus_window_by_handle, focus_tkinter_window
 from protocol0.application.command.SelectTrackCommand import SelectTrackCommand
+from protocol0.application.command.ToggleFollowSongCommand import ToggleFollowSongCommand
 
 router = APIRouter()
 thread: Optional[Thread] = None
 track_list_search_history: set[str] = set()
+selected_track: Optional[str] = None
 task_queue = queue.Queue()
 
 
 @router.get("/track")
 async def _search_track(reset: bool = False) -> None:
+    p0_script_client().dispatch(ToggleFollowSongCommand())
+
     _create_thread(reset)
     task_queue.put("show_window")
 
@@ -73,10 +77,6 @@ def search_track() -> None:
         notify(str(e))
         return
 
-    from loguru import logger
-
-    logger.success(track_list)
-
     root = _get_search_window()
 
     def autoclose() -> None:
@@ -99,8 +99,9 @@ def search_track() -> None:
 
     def track_list_from_substring(search: str) -> List[AbletonTrack]:
         if search == "":
-            if AbletonSetManager.active().tracks.selection_history:
-                return AbletonSetManager.active().tracks.selection_history
+            if len(AbletonSetManager.active().tracks.selection_history) > 1:
+                # hide currently selected track
+                return AbletonSetManager.active().tracks.selection_history[1:]
             else:
                 return track_list
 
@@ -143,6 +144,7 @@ def search_track() -> None:
         submit(evt.widget.get(index))
 
     list_box.bind("<Return>", on_select)
+    list_box.bind("<space>", on_select)
     list_box.bind("<Double-1>", on_select)
 
     def on_down(_) -> None:
@@ -151,8 +153,16 @@ def search_track() -> None:
 
     list_box.bind_all("<Down>", on_down)
 
-    def on_tab(_) -> str:
-        send_keys("{DOWN}")
+    def on_tab(event: tk.Event) -> str:
+        if event.state == 9:
+            # send_keys("{UP}")
+            def send_up():
+                send_keys("{UP}")
+
+            Timer(0.2, send_up).start()
+        else:
+            send_keys("{DOWN}")
+
         return "break"
 
     list_box.bind("<Tab>", on_tab)
