@@ -123,8 +123,8 @@ return
 	callBackend("monitoring/toggle_reference_stereo_mode?stereo_mode=stereo")
 return
 ~^+f::
-	callBackend("search/track")
 	Send ^+f  ; cancel Ableton Follow
+	callBackend("search/track")
 return
 ^+!f::
 	callBackend("search/track?reset=true")
