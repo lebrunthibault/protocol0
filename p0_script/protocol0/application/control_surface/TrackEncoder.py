@@ -31,7 +31,7 @@ class ControlledTrack:
     volume_cc: int
     is_top_track: bool
     track_names: List[str] = field(default_factory=lambda: [])
-    select_getter: Optional[Callable] = None
+    skip_group_track: bool = False
 
     @property
     def _main_track(self) -> SimpleTrack:
@@ -71,11 +71,11 @@ class ControlledTrack:
             track.solo_toggle()
 
     def select(self) -> None:
-        if self.select_getter:
-            self.select_getter().select()
-        else:
-            tracks = [self._main_track] + self._main_track.sub_tracks
-            ValueScroller.scroll_values(tracks, Song.selected_track(), True).select()
+        tracks = [] if self.skip_group_track else [self._main_track]
+        tracks += self._main_track.sub_tracks
+
+        track_to_select = ValueScroller.scroll_values(tracks, Song.selected_track(), True)
+        track_to_select.select()
 
     def set_volume(self, value: float) -> None:
         self._main_track.devices.mixer_device.volume.value = value

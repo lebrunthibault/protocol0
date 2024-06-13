@@ -94,17 +94,16 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
                     True, MIDI_CC_TYPE, 1, cc_number
                 )
 
-        def find_kick() -> SimpleTrack:
-            return find_track("Kick", is_foldable=False)
-
         controlled_tracks = (
-            ControlledTrack("Kick", 73, 41, 13, False, select_getter=find_kick),
-            ControlledTrack("Hat", 74, 42, 14, False),
-            ControlledTrack("Perc", 75, 43, 15, False, track_names=["Perc", "FX"]),
+            ControlledTrack("Kick", 73, 41, 13, False, skip_group_track=True),
+            ControlledTrack("Hat", 74, 42, 14, False, skip_group_track=True),
+            ControlledTrack(
+                "Perc", 75, 43, 15, False, track_names=["Perc", "FX"], skip_group_track=True
+            ),
             ControlledTrack("Vocals", 76, 44, 16, True),
             ControlledTrack("Harmony", 89, 57, 17, True),
             ControlledTrack("Lead", 90, 58, 18, True),
-            ControlledTrack("Bass", 91, 59, 19, True),
+            ControlledTrack("Bass", 91, 59, 19, True, skip_group_track=True),
             ControlledTrack("Sub", 92, 60, 20, False),
         )
 
