@@ -39,7 +39,6 @@ class ExternalSynthTrackValidator(AggregateValidator):
         return error_message
 
     def fix(self) -> Sequence:
-        self._track.monitoring_state.monitor_audio()
         seq = Sequence()
         seq.add(super(ExternalSynthTrackValidator, self).fix)
         return seq.done()
