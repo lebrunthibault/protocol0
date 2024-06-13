@@ -88,7 +88,7 @@ class DeviceEnum(Enum):
     SPIFF = "spiff"
     SPECTRE = "Spectre"
     SSL_COMP = "SSLComp Stereo"
-    STANDARD_CLIP = "StandardCLIP.vstpreset"
+    STANDARD_CLIP = "StandardCLIP"
     SUPER_TAP_2 = "SuperTap 2-Taps Stereo"
     SUPER_TAP_6 = "SuperTap 6-Taps Stereo"
     SURFEREQ = "SurferEQ"
@@ -96,6 +96,7 @@ class DeviceEnum(Enum):
     SYLENTH1_RACK = "Sylenth1 Rack.adg"
     SYNTH_MASTER_2 = "SynthMaster 2.vstpreset"
     TDR_KOTELNIKOV = "TDR Kotelnikov"
+    TONAL_BALANCE_CONTROL = "Tonal Balance Control 2"
     TRACK_SPACER = "Trackspacer 2.5"
     TRUE_VERB = "TrueVerb Stereo"
     TUNER = "Tuner"
@@ -128,10 +129,6 @@ class DeviceEnum(Enum):
     @property
     def is_external_device(self) -> bool:
         return self.value in ("Ext. Audio Effect", "Ext. Instrument")
-
-    @property
-    def can_be_saved(self) -> bool:
-        return self not in [DeviceEnum.REV2_EDITOR, DeviceEnum.CTHULHU]
 
     @property
     def browser_name(self) -> str:

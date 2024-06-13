@@ -127,6 +127,18 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
+    def clean_arrangement_loop(
+        self,
+    ):  # noqa: E501
+        # type: () -> None
+        """
+        Clean Arrangement Loop  # noqa: E501
+        """
+
+        payload = {"method": "GET", "path": "/clip/clean_arrangement_loop", "params": {}}
+
+        self._send_dict_as_midi(payload)
+
     def clear_muted_notes(
         self,
     ):  # noqa: E501
@@ -789,18 +801,6 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
-    def remove_arrangement_muted_clips(
-        self,
-    ):  # noqa: E501
-        # type: () -> None
-        """
-        Remove Arrangement Muted Clips  # noqa: E501
-        """
-
-        payload = {"method": "GET", "path": "/clip/remove_arrangement_muted_clips", "params": {}}
-
-        self._send_dict_as_midi(payload)
-
     def restart_ableton_audio(
         self,
     ):  # noqa: E501
@@ -1195,18 +1195,6 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
-    def show_instrument(
-        self,
-    ):  # noqa: E501
-        # type: () -> None
-        """
-        Show Instrument  # noqa: E501
-        """
-
-        payload = {"method": "GET", "path": "/show_instrument", "params": {}}
-
-        self._send_dict_as_midi(payload)
-
     def show_plugins(
         self,
     ):  # noqa: E501
@@ -1322,19 +1310,22 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
-    def toggle_ableton_button(self, x, y, activate):  # noqa: E501
-        # type: (int, int, bool, ) -> None
+    def toggle_ableton_button(
+        self,
+        x,
+        y,
+    ):  # noqa: E501
+        # type: (int, int, ) -> None
         """
         Toggle Ableton Button  # noqa: E501
         """
 
         payload = {
             "method": "GET",
-            "path": "/toggle_ableton_button",
+            "path": "/device/toggle_ableton_button",
             "params": {
                 "x": x,
                 "y": y,
-                "activate": activate,
             },
         }
 

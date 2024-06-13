@@ -110,7 +110,7 @@ class Container(ContainerInterface):
 
         browser = control_surface.application().browser
         browser_service = BrowserService(browser, BrowserLoaderService(browser))
-        device_display_service = DeviceDisplayService(browser_service)
+        DeviceDisplayService()
         device_service = DeviceService(
             track_crud_component, device_component, browser_service, live_song.move_device
         )

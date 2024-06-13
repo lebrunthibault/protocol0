@@ -11,10 +11,7 @@ settings = Settings()
 class PixelColorEnum(Enum):
     """used when doing pixel color detection"""
 
-    BUTTON_ACTIVATED = "FFA608"
     BUTTON_ACTIVATED_YELLOW = "FFB532"
-    BUTTON_NOT_SHOWN = "C3C3C3"
-    BUTTON_DEACTIVATED = "B7B7B7"
 
     ELEMENT_FOCUSED = "FF39D4"
     ELEMENT_SELECTED = "BFE9FF"
