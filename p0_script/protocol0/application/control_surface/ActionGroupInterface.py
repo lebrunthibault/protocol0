@@ -42,18 +42,18 @@ class ActionGroupInterface(object):
         self,
         identifier: int,
         name: str,
-        filter_active_tracks: bool = False,
         on_press: Optional[Callable] = None,
         on_long_press: Optional[Callable] = None,
         on_scroll: Optional[Callable] = None,
+        use_cc: bool = False,
     ) -> MultiEncoder:
         assert self.CHANNEL, "channel not configured for %s" % self
         encoder = MultiEncoder(
             channel=self.CHANNEL - 1,
             identifier=identifier,
             name=name,
-            filter_active_tracks=filter_active_tracks,
             component_guard=self._component_guard,
+            use_cc=use_cc,
         )
         for action in EncoderAction.make_actions(
             name=name, on_press=on_press, on_long_press=on_long_press, on_scroll=on_scroll

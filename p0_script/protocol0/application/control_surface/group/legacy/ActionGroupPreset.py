@@ -13,7 +13,6 @@ class ActionGroupPreset(ActionGroupInterface):
         self.add_encoder(
             identifier=1,
             name="scroll presets",
-            filter_active_tracks=True,
             on_scroll=lambda: partial(
                 self._container.get(InstrumentPresetScrollerService).scroll_presets_or_samples,
                 Song.current_track(),

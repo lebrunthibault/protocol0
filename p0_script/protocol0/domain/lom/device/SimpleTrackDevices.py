@@ -90,14 +90,22 @@ class SimpleTrackDevices(SlotManager, Observable):
         return any(d.is_instrument for d in self)
 
     @property
+    def first(self) -> Optional[Device]:
+        return self._devices[0] if self._devices else None
+
+    @property
+    def last(self) -> Optional[Device]:
+        return self._devices[-1] if self._devices else None
+
+    @property
     def prev(self) -> Optional[Device]:
-        return self._get_sibling(-1)
+        return self._get_sibling(False)
 
     @property
     def next(self) -> Optional[Device]:
-        return self._get_sibling(1)
+        return self._get_sibling(True)
 
-    def _get_sibling(self, offset: int) -> Optional[Device]:
+    def _get_sibling(self, go_next: bool) -> Optional[Device]:
         if not self._devices:
             return None
 
@@ -106,16 +114,16 @@ class SimpleTrackDevices(SlotManager, Observable):
 
         # do not loop over list
         if (
-            offset < 0
-            and self.selected == self._devices[0]
-            or offset > 1
+            go_next
             and self.selected == self._devices[-1]
+            or not go_next
+            and self.selected == self._devices[0]
         ):
             return self.selected
 
         selected_index = self._devices.index(self.selected)
         try:
-            return self._devices[selected_index + offset]
+            return self._devices[selected_index + (1 if go_next else -1)]
         except IndexError:
             return self._devices[0]
 

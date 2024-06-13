@@ -44,11 +44,12 @@ class ErrorService(object):
             error_message = str(exc_value or exc_type).strip()
             if issubclass(exc_type, AssertionError) and not error_message:
                 error_message = "Unknown assertion error"
+            Logger.error(error_message)
             self._show_error(error_message)
         else:
             self._handle_exception(exc_type, exc_value, tb, event.context, event.reset)
 
-    @debounce(duration=50)
+    @debounce(duration=1000)
     def _show_error(self, error_message: str) -> None:
         Backend.client().show_error(error_message)
 

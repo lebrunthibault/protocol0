@@ -137,17 +137,14 @@ class AbletonSetTracks:
     def selection_history(self) -> List[AbletonTrack]:
         return self._selection_history
 
-    def get(self, f: AbletonTrack) -> AbletonTrack:
-        track = next(
+    def get(self, f: AbletonTrack) -> Optional[AbletonTrack]:
+        return next(
             filter(
                 lambda t: f == t,  # noqa
                 self.all,
             ),
             None,  # type: ignore[arg-type]
         )
-
-        assert track, f"Couldn't find {f} in AbletonSetTracks : {self.all}"
-        return track
 
     def update(self, tracks: List[AbletonTrack]):
         self._tracks = tracks
@@ -157,18 +154,26 @@ class AbletonSetTracks:
         if track.name.lower() == "master":
             return None
 
-        track = self.get(track)
+        handled_track = self.get(track)
 
-        if track in self.selection_history:
-            self.selection_history.remove(track)
+        if not handled_track:
+            return None
 
-        self.selection_history.insert(0, track)
+        if handled_track in self.selection_history:
+            self.selection_history.remove(handled_track)
+
+        self.selection_history.insert(0, handled_track)
 
     def clear_selection_history(self) -> None:
         self._selection_history = []
 
     def update_track_color(self, track: AbletonTrack, color: int) -> None:
-        self.get(track).color = color
+        handled_track = self.get(track)
+
+        if not handled_track:
+            return None
+
+        handled_track.color = color
 
 
 class AbletonSet:
