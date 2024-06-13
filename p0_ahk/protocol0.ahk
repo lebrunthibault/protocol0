@@ -72,6 +72,9 @@ return
 ~^l::
 	callBackend("scene/toggle_loop")
 return
+s::
+	callBackend("track/solo")
+return
 ^+*::
     Send {Right}
 return
@@ -134,25 +137,25 @@ return
 return
 
 ; SELECTING TRACKS
-^+k::
+~^+k::
     callBackend("track/select?name=kick")
 return
-^+h::
+~^+h::
     callBackend("track/select?name=hat")
 return
-^+p::
+~^+p::
     callBackend("track/select?name=perc")
 return
-^+v::
+~^+v::
     callBackend("track/select?name=vocals")
 return
-^+::
+~^+::
     callBackend("track/select?name=harmony")
 return
-^+l::
+~^+l::
     callBackend("track/select?name=lead")
 return
-^+b::
+~^+b::
     callBackend("track/select?name=bass")
 return
 
