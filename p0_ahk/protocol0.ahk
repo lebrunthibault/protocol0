@@ -131,6 +131,30 @@ return
 return
 ^NumpadSub::
     callBackend("track/collapse_selected")
+return
+
+; SELECTING TRACKS
+^+k::
+    callBackend("track/select?name=kick")
+return
+^+h::
+    callBackend("track/select?name=hat")
+return
+^+p::
+    callBackend("track/select?name=perc")
+return
+^+v::
+    callBackend("track/select?name=vocals")
+return
+^+::
+    callBackend("track/select?name=harmony")
+return
+^+l::
+    callBackend("track/select?name=lead")
+return
+^+b::
+    callBackend("track/select?name=bass")
+return
 
 #IfWinActive
 

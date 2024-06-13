@@ -6,7 +6,7 @@ from _Framework.InputControlElement import MIDI_NOTE_TYPE, MIDI_CC_TYPE
 from _Framework.SubjectSlot import subject_slot, SlotManager
 
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
-from protocol0.application.control_surface.TrackEncoder import TrackEncoder, ControlledTrack
+from protocol0.application.control_surface.TrackEncoder import TrackEncoder, MidiIdentifiers
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceService import find_parent_rack
 from protocol0.domain.lom.device.RackDevice import RackDevice
@@ -14,13 +14,15 @@ from protocol0.domain.lom.device.SimpleTrackDevices import SimpleTrackDevices
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
 from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
 from protocol0.domain.lom.song.components.TrackComponent import TrackComponent
+from protocol0.domain.lom.track.ControlledTracks import ControlledTracksRegistry
+from protocol0.domain.lom.track.ControlledTracksEnum import ControlledTracksEnum
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.utils.timing import debounce
 from protocol0.domain.shared.utils.utils import map_to_range
-from protocol0.shared.Song import Song, find_track
+from protocol0.shared.Song import Song
 
 
 @handle_errors()
@@ -95,26 +97,37 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
                 )
 
         controlled_tracks = (
-            ControlledTrack("Kick", 73, 41, 13, False, skip_group_track=True),
-            ControlledTrack("Hat", 74, 42, 14, False, skip_group_track=True),
-            ControlledTrack(
-                "Perc", 75, 43, 15, False, track_names=["Perc", "FX"], skip_group_track=True
+            (
+                ControlledTracksRegistry[ControlledTracksEnum.KICK],
+                MidiIdentifiers(73, 41, 13),
             ),
-            ControlledTrack("Vocals", 76, 44, 16, True),
-            ControlledTrack("Harmony", 89, 57, 17, True),
-            ControlledTrack("Lead", 90, 58, 18, True),
-            ControlledTrack("Bass", 91, 59, 19, True, skip_group_track=True),
-            ControlledTrack("Sub", 92, 60, 20, False),
+            (
+                ControlledTracksRegistry[ControlledTracksEnum.HAT],
+                MidiIdentifiers(74, 42, 14),
+            ),
+            (
+                ControlledTracksRegistry[ControlledTracksEnum.PERC],
+                MidiIdentifiers(75, 43, 15),
+            ),
+            (ControlledTracksRegistry[ControlledTracksEnum.VOCALS], MidiIdentifiers(76, 44, 16)),
+            (ControlledTracksRegistry[ControlledTracksEnum.HARMONY], MidiIdentifiers(89, 57, 17)),
+            (ControlledTracksRegistry[ControlledTracksEnum.LEAD], MidiIdentifiers(90, 58, 18)),
+            (
+                ControlledTracksRegistry[ControlledTracksEnum.BASS],
+                MidiIdentifiers(91, 59, 19),
+            ),
+            (ControlledTracksRegistry[ControlledTracksEnum.SUB], MidiIdentifiers(92, 60, 20)),
         )
 
         # noinspection PyAttributeOutsideInit
         self.encoders: List[TrackEncoder] = []
 
-        for controlled_track in controlled_tracks:
+        for controlled_track, midi_identifiers in controlled_tracks:
             self.encoders.append(
                 TrackEncoder(
                     channel=self.CHANNEL,
-                    controlled_track=controlled_track,
+                    controlled_tracks=controlled_track,
+                    midi_identifiers=midi_identifiers,
                     component_guard=self._component_guard,
                 )
             )
