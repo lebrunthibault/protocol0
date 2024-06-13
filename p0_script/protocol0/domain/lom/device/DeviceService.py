@@ -22,7 +22,6 @@ from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.shared.Song import Song
 from protocol0.shared.Undo import Undo
-from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.logging.StatusBar import StatusBar
 from protocol0.shared.sequence.Sequence import Sequence
 
@@ -66,36 +65,6 @@ def _switch_master_cpu_devices() -> bool:
     god_particle.toggle()
 
     return True
-
-
-def _switch_black_box_devices(enable_blackbox: bool) -> None:
-    for track in Song.simple_tracks():
-        black_box = track.devices.get_one_from_enum(DeviceEnum.BLACK_BOX)
-
-        if not black_box:
-            continue
-
-        try:
-            devices = list(track.devices)
-            next_device: Device = devices[devices.index(black_box) + 1]
-        except IndexError:
-            Logger.warning(f"Cannot find device next to blackbox on {track}")
-            continue
-
-        if (
-            not next_device.enum
-            or not next_device.enum.is_saturator
-            or next_device.is_enabled == black_box.is_enabled
-        ):
-            Logger.warning(f"Blackbox next device is not a saturator on {track}")
-            continue
-
-        if enable_blackbox:
-            next_device.is_enabled = False
-            black_box.is_enabled = True
-        else:
-            next_device.is_enabled = True
-            black_box.is_enabled = False
 
 
 class DeviceService(object):
@@ -287,8 +256,9 @@ class DeviceService(object):
             shadow_hills = drums_track.devices.get_one_from_enum(DeviceEnum.SHADOW_HILLS_COMP)
             if shadow_hills:
                 shadow_hills.is_enabled = toggle_cpu_heavy
-
-        _switch_black_box_devices(toggle_cpu_heavy)
+            black_box = drums_track.devices.get_one_from_enum(DeviceEnum.BLACK_BOX)
+            if black_box:
+                black_box.is_enabled = toggle_cpu_heavy
 
         if toggle_cpu_heavy:
             StatusBar.show_message("High CPU enabled")
