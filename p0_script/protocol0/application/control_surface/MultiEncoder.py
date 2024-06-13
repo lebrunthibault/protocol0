@@ -1,28 +1,22 @@
 import json
 import time
+from typing import List, Optional, Callable
 
 from _Framework.ButtonElement import ButtonElement
 from _Framework.InputControlElement import MIDI_NOTE_TYPE, MIDI_CC_TYPE
 from _Framework.SubjectSlot import subject_slot, SlotManager
-from typing import List, Optional, Callable
 
 from protocol0.application.control_surface.EncoderAction import EncoderAction, EncoderMoveEnum
 from protocol0.domain.shared.errors.ErrorRaisedEvent import ErrorRaisedEvent
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
-from protocol0.shared.Song import Song
 
 
 class MultiEncoder(SlotManager):
     LONG_PRESS_THRESHOLD = 0.25  # maximum time in seconds we consider a simple press
 
     def __init__(
-        self,
-        channel: int,
-        identifier: int,
-        name: str,
-        filter_active_tracks: bool,
-        component_guard: Callable,
+        self, channel: int, identifier: int, name: str, component_guard: Callable, use_cc: bool
     ) -> None:
         """
         Actions are triggered at the end of the press not the start. Allows press vs long_press (Note) vs scroll (CC)
@@ -33,11 +27,20 @@ class MultiEncoder(SlotManager):
         self.identifier = identifier
         self.name = name.title()
         self._channel = channel
-        self._filter_active_tracks = filter_active_tracks
 
         with component_guard():
-            self._press_listener.subject = ButtonElement(True, MIDI_NOTE_TYPE, channel, identifier)
-            self._scroll_listener.subject = ButtonElement(True, MIDI_CC_TYPE, channel, identifier)
+            if use_cc:
+                self._press_listener.subject = ButtonElement(
+                    True, MIDI_CC_TYPE, channel, identifier
+                )
+            else:
+                self._press_listener.subject = ButtonElement(
+                    True, MIDI_NOTE_TYPE, channel, identifier
+                )
+                self._scroll_listener.subject = ButtonElement(
+                    True, MIDI_CC_TYPE, channel, identifier
+                )
+
         self._pressed_at: Optional[float] = None
         self._has_long_press = False
 
@@ -93,14 +96,6 @@ class MultiEncoder(SlotManager):
             self._pressed_at = None
             if not action:
                 return None
-
-            selected_track = Song.selected_track()
-            if self._filter_active_tracks and (
-                selected_track is None or not selected_track.IS_ACTIVE
-            ):
-                raise Protocol0Warning(
-                    "action not dispatched for master / return tracks (%s)" % action.name
-                )
 
             params = {}
             if go_next is not None:

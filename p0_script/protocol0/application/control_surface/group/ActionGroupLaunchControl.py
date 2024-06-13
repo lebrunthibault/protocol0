@@ -1,3 +1,4 @@
+from functools import partial
 from typing import List, Optional
 
 from _Framework.ButtonElement import ButtonElement
@@ -9,6 +10,7 @@ from protocol0.application.control_surface.TrackEncoder import TrackEncoder, Con
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceService import find_parent_rack
 from protocol0.domain.lom.device.RackDevice import RackDevice
+from protocol0.domain.lom.device.SimpleTrackDevices import SimpleTrackDevices
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
 from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
 from protocol0.domain.lom.song.components.TrackComponent import TrackComponent
@@ -62,11 +64,28 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
             self._un_solo_listener.subject = ButtonElement(True, MIDI_NOTE_TYPE, 1, 107)
             self._toggle_device_listener.subject = ButtonElement(True, MIDI_NOTE_TYPE, 1, 105)
 
+            self._scroll_loop_length.subject = ButtonElement(True, MIDI_CC_TYPE, 1, 36)
             self._move_loop_left.subject = ButtonElement(True, MIDI_CC_TYPE, 1, 104)
             self._move_loop_right.subject = ButtonElement(True, MIDI_CC_TYPE, 1, 105)
 
-            self._scroll_device_prev.subject = ButtonElement(True, MIDI_CC_TYPE, 1, 106)
-            self._scroll_device_next.subject = ButtonElement(True, MIDI_CC_TYPE, 1, 107)
+            def get_devices() -> SimpleTrackDevices:
+                return Song.selected_track().devices
+
+            self.add_encoder(
+                identifier=106,
+                name="scroll devices prev",
+                on_press=lambda: partial(self._select_track_device, get_devices().prev),
+                on_long_press=lambda: partial(self._select_track_device, get_devices().first),
+                use_cc=True,
+            )
+
+            self.add_encoder(
+                identifier=107,
+                name="scroll devices next",
+                on_press=lambda: partial(self._select_track_device, get_devices().next),
+                on_long_press=lambda: partial(self._select_track_device, get_devices().last),
+                use_cc=True,
+            )
 
             self._toggle_master_view.subject = ButtonElement(True, MIDI_NOTE_TYPE, 1, 108)
 
@@ -74,8 +93,6 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
                 getattr(self, f"_scroll_macro_control_{macro_index}").subject = ButtonElement(
                     True, MIDI_CC_TYPE, 1, cc_number
                 )
-
-            self._scroll_loop_length.subject = ButtonElement(True, MIDI_CC_TYPE, 1, 36)
 
         def find_kick() -> SimpleTrack:
             return find_track("Kick", is_foldable=False)
@@ -127,10 +144,6 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
             Song.set_loop_start(max(0.0, Song.loop_start() - Song.loop_length()))
             Song.set_loop_length(loop_length)
 
-            # self._container.get(PlaybackComponent).restart()
-            # time = (60.0 / Song.tempo()) * Song.loop_start()
-            # Song.set_current_song_time(time)
-
     @subject_slot("value")
     def _move_loop_right(self, value: int) -> None:
         if not value:
@@ -140,23 +153,9 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
 
             self._container.get(PlaybackComponent).restart()
 
-    @subject_slot("value")
-    def _scroll_device_prev(self, value: int) -> None:
-        if not value:
-            next_device = Song.selected_track().devices.prev
-            if next_device:
-                self._container.get(DeviceComponent).select_device(
-                    Song.selected_track(), next_device
-                )
-
-    @subject_slot("value")
-    def _scroll_device_next(self, value: int) -> None:
-        if not value:
-            next_device = Song.selected_track().devices.next
-            if next_device:
-                self._container.get(DeviceComponent).select_device(
-                    Song.selected_track(), next_device
-                )
+    def _select_track_device(self, device: Optional[Device]) -> None:
+        if device:
+            self._container.get(DeviceComponent).select_device(Song.selected_track(), device)
 
     @subject_slot("value")
     def _toggle_master_view(self, value: int) -> None:

@@ -22,7 +22,6 @@ class ActionGroupExt(ActionGroupInterface):
         self.add_encoder(
             identifier=1,
             name="record audio export",
-            filter_active_tracks=True,
             on_press=lambda: partial(record_track, RecordTypeEnum.AUDIO),
             on_long_press=lambda: partial(record_track, RecordTypeEnum.AUDIO_FULL),
         )
@@ -31,7 +30,6 @@ class ActionGroupExt(ActionGroupInterface):
         self.add_encoder(
             identifier=2,
             name="record normal",
-            filter_active_tracks=True,
             on_scroll=self._container.get(RecordService).recording_bar_length_scroller.scroll,
             on_press=lambda: partial(record_track, RecordTypeEnum.MIDI),
             on_long_press=lambda: partial(record_track, RecordTypeEnum.MIDI_UNLIMITED),
@@ -47,6 +45,5 @@ class ActionGroupExt(ActionGroupInterface):
         self.add_encoder(
             identifier=5,
             name="monitor",
-            filter_active_tracks=True,
             on_press=switch_monitoring,
         )
