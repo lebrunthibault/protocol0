@@ -56,7 +56,7 @@ async def arm():
 
 @router.get("/select")
 async def select(name: str):
-    p0_script_client().dispatch(SelectTrackCommand(name.replace("_", " ")))
+    p0_script_client().dispatch(SelectTrackCommand(name.upper()))
 
 
 @router.get("/collapse_selected")
