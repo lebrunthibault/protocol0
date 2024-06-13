@@ -174,15 +174,6 @@ class Clip(SlotManager, Observable):
 
         return False
 
-    def remove_tail(self) -> None:
-        self.loop.end = self.loop.end
-
-    def crop_to_tail(self) -> None:
-        loop_end = self.loop.end
-        self.loop.end = self.loop.end_marker
-        self.loop.start = loop_end
-        self.loop.looping = False
-
     def show_loop(self) -> None:
         self._clip.view.show_loop()
 

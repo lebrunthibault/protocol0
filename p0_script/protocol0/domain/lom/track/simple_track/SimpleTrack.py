@@ -36,12 +36,8 @@ from protocol0.domain.lom.track.simple_track.SimpleTrackDisconnectedEvent import
 from protocol0.domain.lom.track.simple_track.SimpleTrackFlattenedEvent import (
     SimpleTrackFlattenedEvent,
 )
-from protocol0.domain.lom.track.simple_track.SimpleTrackMonitoringState import (
-    SimpleTrackMonitoringState,
-)
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.backend.Backend import Backend
-from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.ui.ColorEnum import ColorEnum
@@ -136,8 +132,6 @@ class SimpleTrack(AbstractTrack):
         self.clip_tail = ClipTail(self._clip_slots)
 
         self.devices.register_observer(self)
-
-        self.monitoring_state = SimpleTrackMonitoringState(self)
 
         self.input_routing = TrackInputRouting(self._track)
         self._previous_output_routing_track: Optional[SimpleTrack] = None
@@ -568,22 +562,6 @@ class SimpleTrack(AbstractTrack):
 
         return seq.done()
 
-    def isolate_clip_tail(self) -> Sequence:
-        clip = Song.selected_clip()
-        assert clip.has_tail, "clip has no tail"
-        assert len(self.clip_slots) > clip.index + 1, "No next clip slot"
-
-        next_cs = self.clip_slots[clip.index + 1]
-        assert next_cs.clip is None, "next clip slot has a clip"
-
-        seq = Sequence()
-        seq.add(partial(self.clip_slots[clip.index].duplicate_clip_to, next_cs))
-        seq.add(clip.remove_tail)
-        seq.add(lambda: next_cs.clip.crop_to_tail())
-        seq.add(lambda: next_cs.clip.crop())
-
-        return seq.done()
-
     @property
     def load_time(self) -> int:
         return self.devices.load_time
@@ -592,26 +570,6 @@ class SimpleTrack(AbstractTrack):
         # there's no selected variation index listener
         if self.instrument_rack_device:
             self.instrument_rack_device.notify_observers()
-
-    def broadcast_selected_clip(self) -> Sequence:
-        selected_cs = Song.selected_clip_slot()
-        clip = selected_cs.clip
-        if clip is None:
-            raise Protocol0Warning("No selected clip")
-
-        matching_clip_slots = [
-            c
-            for c in self.clip_slots
-            if c.clip
-            and c.clip is not clip
-            and c.clip.color != self.color
-            and c.clip.color == clip.color
-        ]
-
-        Backend.client().show_info(f"Copying to {len(matching_clip_slots)} clips")
-        seq = Sequence()
-        seq.add([partial(selected_cs.duplicate_clip_to, cs) for cs in matching_clip_slots])
-        return seq.done()
 
     def to_dict(self) -> Dict:
         return {

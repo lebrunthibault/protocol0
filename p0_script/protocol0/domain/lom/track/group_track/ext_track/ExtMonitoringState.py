@@ -19,22 +19,10 @@ class ExtMonitoringState(Observable):
             else:
                 self.monitor_audio()
 
-    def switch(self) -> None:
-        if self._midi_track.muted:
-            assert self._midi_track.arm_state.is_armed, "Please arm the track first"
-            self.monitor_midi()
-        else:
-            self.monitor_audio()
-
-        self.notify_observers()
-
     def monitor_midi(self) -> None:
         self._midi_track.muted = False
-        # if self._midi_track.instrument is not None:
-        #     self._midi_track.instrument.device.is_enabled = True
 
         self._audio_track.current_monitoring_state = CurrentMonitoringStateEnum.IN
-        self._audio_track._output_meter_level_listener.subject = self._audio_track._track
 
     def monitor_audio(self) -> None:
         self._midi_track.muted = True
@@ -42,4 +30,3 @@ class ExtMonitoringState(Observable):
             self._midi_track.instrument.device.is_enabled = False
 
         self._audio_track.current_monitoring_state = CurrentMonitoringStateEnum.AUTO
-        self._audio_track._output_meter_level_listener.subject = None
