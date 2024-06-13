@@ -3,7 +3,6 @@ from typing import Optional
 
 from protocol0.application.CommandBus import CommandBus
 from protocol0.application.command.ResetPlaybackCommand import ResetPlaybackCommand
-from protocol0.domain.lom.instrument.InstrumentActivatedEvent import InstrumentActivatedEvent
 from protocol0.domain.lom.instrument.preset.PresetProgramSelectedEvent import (
     PresetProgramSelectedEvent,
 )
@@ -39,8 +38,6 @@ class AudioLatencyAnalyzerService(object):
 
         seq = Sequence()
         seq.add(partial(self._track_crud_component.duplicate_track, track))
-        if track.instrument.needs_exclusive_activation:
-            seq.wait_for_event(InstrumentActivatedEvent)
         seq.add(self._set_up_track_for_record)
         seq.add(self._create_audio_test_clip)
         seq.add(self._record_test_clip)

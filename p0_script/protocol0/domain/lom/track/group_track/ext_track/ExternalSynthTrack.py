@@ -53,10 +53,6 @@ class ExternalSynthTrack(AbstractGroupTrack):
         super(ExternalSynthTrack, self).on_tracks_change()
         self._solo_state.update()
 
-    @property
-    def instrument_track(self) -> SimpleTrack:
-        return self.midi_track
-
     def get_view_track(self, scene_index: int) -> Optional[SimpleTrack]:
         if ApplicationView.is_clip_view_visible():
             return self.midi_track

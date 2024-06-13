@@ -15,7 +15,6 @@ from protocol0.domain.lom.device.DeviceDisplayService import DeviceDisplayServic
 from protocol0.domain.lom.device.DeviceService import DeviceService
 from protocol0.domain.lom.device.DrumRackSampleService import DrumRackSampleService
 from protocol0.domain.lom.device.DrumRackService import DrumRackService
-from protocol0.domain.lom.instrument.InstrumentDisplayService import InstrumentDisplayService
 from protocol0.domain.lom.instrument.instrument.InstrumentService import InstrumentService
 from protocol0.domain.lom.instrument.preset.InstrumentPresetScrollerService import (
     InstrumentPresetScrollerService,
@@ -112,7 +111,6 @@ class Container(ContainerInterface):
         browser = control_surface.application().browser
         browser_service = BrowserService(browser, BrowserLoaderService(browser))
         device_display_service = DeviceDisplayService(browser_service)
-        instrument_display_service = InstrumentDisplayService(device_display_service)
         device_service = DeviceService(
             track_crud_component, device_component, browser_service, live_song.move_device
         )
@@ -155,7 +153,7 @@ class Container(ContainerInterface):
             track_recorder_service,
         )
 
-        song_service = SongInitService(playback_component, device_display_service, ableton_set)
+        song_service = SongInitService(playback_component, ableton_set)
         instrument_preset_scroller_service = InstrumentPresetScrollerService()
         mixing_service = MixingService()
 
@@ -193,7 +191,6 @@ class Container(ContainerInterface):
         self._register(scene_playback_service)
 
         self._register(instrument_service)
-        self._register(instrument_display_service)
         self._register(instrument_preset_scroller_service)
 
         self._register(device_service)

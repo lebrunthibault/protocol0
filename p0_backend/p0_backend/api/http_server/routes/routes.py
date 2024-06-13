@@ -26,7 +26,6 @@ from protocol0.application.command.LogSongStatsCommand import LogSongStatsComman
 from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongCommand
 from protocol0.application.command.ReloadScriptCommand import ReloadScriptCommand
 from protocol0.application.command.ScrollPresetsCommand import ScrollPresetsCommand
-from protocol0.application.command.ShowInstrumentCommand import ShowInstrumentCommand
 from .action_routes import router as action_router
 from .audio_routes import router as audio_router
 from .clip_routes import router as clip_router
@@ -192,8 +191,3 @@ async def drum_rack_to_simpler():
 @router.get("/scroll_presets")
 async def scroll_presets(direction: str):
     p0_script_client().dispatch(ScrollPresetsCommand(go_next=direction == "next"))
-
-
-@router.get("/show_instrument")
-async def show_instrument():
-    p0_script_client().dispatch(ShowInstrumentCommand())

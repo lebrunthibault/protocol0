@@ -1,4 +1,3 @@
-from protocol0.domain.lom.device.DeviceDisplayService import DeviceDisplayService
 from protocol0.domain.lom.set.AbletonSet import AbletonSet
 from protocol0.domain.lom.song.SongInitializedEvent import SongInitializedEvent
 from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
@@ -11,11 +10,9 @@ class SongInitService(object):
     def __init__(
         self,
         playback_component: PlaybackComponent,
-        device_display_service: DeviceDisplayService,
         ableton_set: AbletonSet,
     ) -> None:
         self._playback_component = playback_component
-        self._device_display_service = device_display_service
         self._ableton_set = ableton_set
 
     def init_song(self) -> Sequence:

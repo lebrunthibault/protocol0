@@ -12,7 +12,6 @@ class InstrumentSimpler(InstrumentInterface):
     TRACK_COLOR = InstrumentColorEnum.SIMPLER
     PRESETS_PATH = Config.SAMPLE_DIRECTORY
     PRESET_DISPLAY_OPTION = PresetDisplayOptionEnum.CATEGORY
-    CAN_BE_SHOWN = False
 
     def __init__(self, *a: Any, **k: Any) -> None:
         super(InstrumentSimpler, self).__init__(*a, **k)

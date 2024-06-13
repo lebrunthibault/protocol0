@@ -9,7 +9,6 @@ from protocol0.domain.lom.instrument.preset.preset_changer.ClipNotePresetChanger
 class InstrumentDrumRack(InstrumentInterface):
     NAME = "Drum Rack"
     TRACK_COLOR = InstrumentColorEnum.SIMPLER
-    CAN_BE_SHOWN = False
     PRESET_DISPLAY_OPTION = PresetDisplayOptionEnum.NONE
     DEFAULT_NOTE = 36
     PRESET_CHANGER = ClipNotePresetChanger

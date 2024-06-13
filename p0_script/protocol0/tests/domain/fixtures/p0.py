@@ -18,7 +18,6 @@ from protocol0.infra.scheduler.BeatScheduler import BeatScheduler
 from protocol0.shared.Undo import Undo
 from protocol0.shared.logging.Logger import Logger
 from protocol0.tests.domain.fixtures.song import AbletonSong
-from protocol0.domain.lom.instrument.InstrumentDisplayService import InstrumentDisplayService
 from protocol0.tests.infra.scheduler.TickSchedulerTest import TickSchedulerTest
 
 
@@ -49,8 +48,6 @@ def monkey_patch_static():
 
     # remove this until fixtures are thorough
     ActionGroupFactory.create_action_groups = classmethod(nop)
-
-    InstrumentDisplayService._on_simple_track_armed_event = nop
 
     SongInitService.init_song = nop
     RoutingTrackDescriptor.__set__ = nop
