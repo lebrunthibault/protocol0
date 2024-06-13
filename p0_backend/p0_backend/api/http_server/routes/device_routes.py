@@ -3,6 +3,7 @@ import subprocess
 from fastapi import APIRouter
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
+from p0_backend.lib.ableton.interface.toggle_ableton_button import toggle_ableton_button
 from p0_backend.lib.synth.serum import (
     bulk_edit_presets,
     set_preset_description,
@@ -40,6 +41,14 @@ async def toggle_cpu_heavy():
 @router.get("/toggle_rack_chain")
 async def toggle_rack_chain():
     p0_script_client().dispatch(ToggleRackChainCommand())
+
+
+@router.get("/toggle_ableton_button")
+def _toggle_ableton_button(x: int, y: int):
+    from loguru import logger
+
+    logger.success((x, y))
+    toggle_ableton_button((x, y))
 
 
 @router.get("/serum_bulk_edit")

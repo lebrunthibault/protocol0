@@ -10,7 +10,6 @@ from p0_backend.lib.ableton.ableton import (
 from p0_backend.lib.ableton.analyze_clip_jitter import analyze_test_audio_clip_jitter
 from p0_backend.lib.ableton.automation import set_envelope_loop_length
 from p0_backend.lib.ableton.interface.sample import load_sample_in_simpler
-from p0_backend.lib.ableton.interface.toggle_ableton_button import toggle_ableton_button
 from p0_backend.lib.ableton.set_profiling.ableton_set_profiler import AbletonSetProfiler
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.explorer import close_samples_windows, close_explorer_window
@@ -92,11 +91,6 @@ def show_hide_plugins():
 @router.get("/hide_plugins")
 def _hide_plugins():
     hide_plugins()
-
-
-@router.get("/toggle_ableton_button")
-def _toggle_ableton_button(x: int, y: int, activate: bool = False):
-    toggle_ableton_button((x, y), activate=activate)
 
 
 @router.get("/load_sample_in_simpler")
