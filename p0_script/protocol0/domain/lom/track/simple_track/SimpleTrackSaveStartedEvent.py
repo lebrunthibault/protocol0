@@ -1,2 +1,0 @@
-class SimpleTrackSaveStartedEvent(object):
-    pass

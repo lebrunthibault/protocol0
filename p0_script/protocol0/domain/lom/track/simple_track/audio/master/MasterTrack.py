@@ -7,13 +7,8 @@ from protocol0.domain.lom.set.MixingService import balance_bus_levels_to_zero, S
 from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitoringStateEnum
 from protocol0.domain.lom.track.routing.OutputRoutingTypeEnum import OutputRoutingTypeEnum
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
-from protocol0.domain.lom.track.simple_track.SimpleTrackSaveStartedEvent import (
-    SimpleTrackSaveStartedEvent,
-)
 from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
-from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
-from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.shared.Song import Song
 
 
@@ -24,17 +19,6 @@ class MasterTrack(SimpleAudioTrack):
         super(MasterTrack, self).__init__(*a, **k)
 
         self.devices.register_observer(self)
-        DomainEventBus.subscribe(
-            SimpleTrackSaveStartedEvent, self._on_simple_track_save_started_event
-        )
-
-    def _on_simple_track_save_started_event(self, _: SimpleTrackSaveStartedEvent) -> None:
-        """youlean makes saving a track 10s + long"""
-        youlean = self.devices.get_one_from_enum(DeviceEnum.YOULEAN)
-
-        if youlean is not None:
-            self.devices.delete(youlean)
-            Backend.client().show_warning("Youlean removed")
 
     @property
     def muted(self) -> bool:

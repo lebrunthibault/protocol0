@@ -52,7 +52,6 @@ class InstrumentInterface(SlotManager):
     NAME = ""
     DEVICE: Optional[DeviceEnum] = None
     TRACK_COLOR = InstrumentColorEnum.UNKNOWN
-    CAN_BE_SHOWN = True
     PRESETS_PATH = ""
     PRESET_EXTENSION = ""
     PRESET_DISPLAY_OPTION = PresetDisplayOptionEnum.NAME
@@ -111,16 +110,6 @@ class InstrumentInterface(SlotManager):
 
     def on_loaded(self, device_enum: DeviceEnum) -> None:
         return
-
-    @property
-    def needs_exclusive_activation(self) -> bool:
-        return False
-
-    def exclusive_activate(self) -> Optional[Sequence]:
-        pass
-
-    def post_activate(self) -> Optional[Sequence]:
-        pass
 
     @property
     def selected_preset(self) -> Optional[InstrumentPreset]:

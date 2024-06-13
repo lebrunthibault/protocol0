@@ -273,11 +273,6 @@ class SimpleTrack(AbstractTrack):
         self._clip_slots.set_instrument(instrument)
 
     @property
-    def instrument_track(self) -> "SimpleTrack":
-        assert self.instrument, "track has not instrument"
-        return self.base_track
-
-    @property
     def instrument_rack_device(self) -> Optional[RackDevice]:
         if not self.instrument or not self.instrument.device:
             return None
