@@ -10,7 +10,6 @@ from p0_backend.lib.ableton.ableton import focus_ableton
 from p0_backend.lib.ableton.ableton_set.ableton_set import AbletonTrack
 from p0_backend.lib.ableton.ableton_set.ableton_set_manager import AbletonSetManager
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
-from p0_backend.lib.keys import send_keys
 from p0_backend.lib.notification import notify
 from p0_backend.lib.window.window import focus_window_by_handle, focus_tkinter_window
 from protocol0.application.command.SelectTrackByNameCommand import SelectTrackByNameCommand
@@ -46,6 +45,150 @@ def _create_thread(reset: bool) -> None:
     thread.start()
 
 
+def filter_tracks_from_search(tracks: List[AbletonTrack], search: str) -> List[AbletonTrack]:
+    if search == "":
+        if len(AbletonSetManager.active().tracks.selection_history) > 1:
+            # hide currently selected track
+            return AbletonSetManager.active().tracks.selection_history[1:]
+        else:
+            return tracks
+
+    data = []
+
+    for track in tracks:
+        if track.name.lower().startswith(search.lower()):
+            data.append(track)
+
+    return data
+
+
+def get_selected_index(event: tk.Event):
+    return int(event.widget.curselection()[0])
+
+
+class SearchBox:
+    def __init__(self, track_list: List[AbletonTrack]):
+        self.root = _get_search_window()
+
+        self._tracks = track_list
+        self._autoclose_timer = None
+
+        self._entry = tk.Entry(self.root, width=20, font=("Arial", 12))
+
+        self._entry.focus()
+        self._entry.pack()
+        self._entry.bind("<Return>", (lambda event: get_input()))
+        self._entry.bind("<Escape>", (lambda event: self.root.withdraw()))
+
+        self._list_box = tk.Listbox(
+            self.root,
+            selectmode="browse",
+            height=20,
+            font=("Arial", 12),
+            activestyle="dotbox",
+            selectborderwidth=4,
+            borderwidth=0,
+            relief="flat",
+        )
+
+        self._list_box.pack()
+
+        self._entry.bind("<KeyRelease>", self.on_key_press)
+
+        self.update_search_results(track_list)
+
+        self._list_box.bind("<Return>", self.on_select)
+        self._list_box.bind("<space>", self.on_select)
+        self._list_box.bind("<Double-1>", self.on_select)
+
+        self._list_box.bind_all("<Down>", self.on_tab)
+
+        self._entry.bind("<Tab>", self.on_entry_tab)
+        self._list_box.bind("<Tab>", self.on_tab)
+
+        def get_input() -> None:
+            self.submit(self._entry.get())
+
+    def _init_autoclose(self):
+        if self._autoclose_timer:
+            self._autoclose_timer.cancel()
+
+        def autoclose() -> None:
+            # noinspection PyBroadException
+            try:
+                if not self._entry.get():
+                    self.root.withdraw()
+            except Exception:
+                pass
+
+        self._autoclose_timer = Timer(10, autoclose)
+        self._autoclose_timer.start()
+
+    def on_key_press(self, event) -> None:
+        self.update_search_results(filter_tracks_from_search(self._tracks, event.widget.get()))
+        self._init_autoclose()
+
+    def on_entry_tab(self, _: tk.Event) -> None:
+        self._list_box.selection_set(0)
+
+    def on_tab(self, event: tk.Event) -> str:
+        selected_index = get_selected_index(event)
+        self._list_box.selection_clear(0, tk.END)
+
+        if event.state == 9:  # shift tab
+            if selected_index == 0:
+                return ""  # don't block tab key
+            self._list_box.selection_set(selected_index - 1)
+        else:
+            if selected_index < self._list_box.index(tk.END) - 1:
+                selected_index += 1
+
+            self._list_box.selection_set(selected_index)
+
+        self._init_autoclose()
+
+        return "break"
+
+    def on_select(self, evt: tk.Event) -> None:
+        self.submit(evt.widget.get(get_selected_index(evt)))
+
+    def show(self) -> None:
+        self.root.deiconify()
+        self.update_search_results(filter_tracks_from_search(self._tracks, ""))
+        self._entry.delete(0, tk.END)
+        focus_tkinter_window(self.root)
+        self._entry.focus_set()
+
+    def update_search_results(self, tracks: List[AbletonTrack]) -> None:
+        # clear previous data
+        self._list_box.delete(0, "end")
+
+        # put new data
+        for i, track in enumerate(tracks):
+            self._list_box.insert("end", track.name)
+            self._list_box.itemconfig(i, {"bg": track.rgb_color})
+
+    def submit(self, track_name: str) -> None:
+        # if input is partial, select the first track name in the list
+        if track_name not in self._tracks:
+            track_sub_list = filter_tracks_from_search(self._tracks, track_name)
+            if track_sub_list:
+                track_name = track_sub_list[0].name
+
+        track_list_search_history.add(track_name)
+        p0_script_client().dispatch(SelectTrackByNameCommand(track_name))
+
+        if self._autoclose_timer:
+            self._autoclose_timer.cancel()  # type: ignore[unreachable]
+
+        focus_ableton()
+
+        self.root.withdraw()  # Close the window after getting the input
+
+    def destroy(self) -> None:
+        self.root.destroy()
+
+
 def _get_search_window() -> tk.Tk:
     root = tk.Tk()
     w = 160  # width for the Tk root
@@ -77,135 +220,21 @@ def search_track() -> None:
         notify(str(e))
         return
 
-    root = _get_search_window()
-
-    def autoclose() -> None:
-        # noinspection PyBroadException
-        try:
-            if not entry.get():
-                root.withdraw()
-        except Exception:
-            pass
-
-    autoclose_timer = Timer(10, autoclose)
-    autoclose_timer.start()
-
-    entry = tk.Entry(root, width=20, font=("Arial", 12))
-
-    entry.focus()
-    entry.pack()
-    entry.bind("<Return>", (lambda event: get_input()))
-    entry.bind("<Escape>", (lambda event: root.withdraw()))
-
-    def track_list_from_substring(search: str) -> List[AbletonTrack]:
-        if search == "":
-            if len(AbletonSetManager.active().tracks.selection_history) > 1:
-                # hide currently selected track
-                return AbletonSetManager.active().tracks.selection_history[1:]
-            else:
-                return track_list
-
-        data = []
-
-        for item in track_list:
-            if item.name.lower().startswith(search.lower()):
-                data.append(item)
-
-        return data
-
-    def check_key(event) -> None:
-        update_search_results(track_list_from_substring(event.widget.get()))
-
-    entry.bind("<KeyRelease>", check_key)
-
-    def update_search_results(tracks: List[AbletonTrack]) -> None:
-        # clear previous data
-        list_box.delete(0, "end")
-
-        # put new data
-        for i, track in enumerate(tracks):
-            list_box.insert("end", track.name)
-            list_box.itemconfig(i, {"bg": track.rgb_color})
-
-    list_box = tk.Listbox(
-        root,
-        height=20,
-        font=("Arial", 12),
-        activestyle="dotbox",
-        selectborderwidth=4,
-        borderwidth=0,
-        relief="flat",
-    )
-    list_box.pack()
-    update_search_results(track_list)
-
-    def on_select(evt) -> None:
-        index = int(evt.widget.curselection()[0])
-        submit(evt.widget.get(index))
-
-    list_box.bind("<Return>", on_select)
-    list_box.bind("<space>", on_select)
-    list_box.bind("<Double-1>", on_select)
-
-    def on_down(_) -> None:
-        if not list_box.curselection():
-            send_keys("{TAB}")
-
-    list_box.bind_all("<Down>", on_down)
-
-    def on_tab(event: tk.Event) -> str:
-        if event.state == 9:
-            # send_keys("{UP}")
-            def send_up():
-                send_keys("{UP}")
-
-            Timer(0.2, send_up).start()
-        else:
-            send_keys("{DOWN}")
-
-        return "break"
-
-    list_box.bind("<Tab>", on_tab)
-
-    def get_input() -> None:
-        submit(entry.get())
-
-    def submit(track_name: str) -> None:
-        # if input is partial, select the first track name in the list
-        if track_name not in track_list:
-            track_sub_list = track_list_from_substring(track_name)
-            if track_sub_list:
-                track_name = track_sub_list[0].name
-
-        track_list_search_history.add(track_name)
-        p0_script_client().dispatch(SelectTrackByNameCommand(track_name))
-
-        autoclose_timer.cancel()
-
-        focus_ableton()
-
-        root.withdraw()  # Close the window after getting the input
-
-    def show_search_window():
-        root.deiconify()
-        update_search_results(track_list_from_substring(""))
-        entry.delete(0, tk.END)
-        focus_tkinter_window(root)
-        entry.focus_set()
+    search_box = SearchBox(track_list)
 
     def check_queue():
         try:
             task = task_queue.get_nowait()
             if task == "show_window":
-                show_search_window()
+                search_box.show()
             elif task == "stop":
-                root.destroy()
+                search_box.destroy()
                 return
 
         except queue.Empty:
             pass
 
-        root.after(5, check_queue)
+        search_box.root.after(5, check_queue)
 
     check_queue()
     tk.mainloop()
