@@ -13,7 +13,7 @@ from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.keys import send_keys
 from p0_backend.lib.notification import notify
 from p0_backend.lib.window.window import focus_window_by_handle, focus_tkinter_window
-from protocol0.application.command.SelectTrackCommand import SelectTrackCommand
+from protocol0.application.command.SelectTrackByNameCommand import SelectTrackByNameCommand
 from protocol0.application.command.ToggleFollowSongCommand import ToggleFollowSongCommand
 
 router = APIRouter()
@@ -178,7 +178,7 @@ def search_track() -> None:
                 track_name = track_sub_list[0].name
 
         track_list_search_history.add(track_name)
-        p0_script_client().dispatch(SelectTrackCommand(track_name))
+        p0_script_client().dispatch(SelectTrackByNameCommand(track_name))
 
         autoclose_timer.cancel()
 
