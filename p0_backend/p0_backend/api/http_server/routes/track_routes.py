@@ -14,7 +14,7 @@ from p0_backend.lib.ableton.interface.track import (
 from p0_backend.lib.keys import send_keys
 from protocol0.application.command.BusTrackToZeroDBCommand import BusTrackToZeroDBCommand
 from protocol0.application.command.CollapseSelectedTrackCommand import CollapseSelectedTrackCommand
-from protocol0.application.command.SelectTrackCommand import SelectTrackCommand
+from protocol0.application.command.SelectTrackByEnumCommand import SelectTrackByEnumCommand
 from protocol0.application.command.ArmSelectedTrackCommand import ArmSelectedTrackCommand
 from protocol0.application.command.SoloSelectedTrackCommand import SoloSelectedTrackCommand
 
@@ -62,7 +62,7 @@ async def solo():
 
 @router.get("/select")
 async def select(name: str):
-    p0_script_client().dispatch(SelectTrackCommand(name.upper()))
+    p0_script_client().dispatch(SelectTrackByEnumCommand(name.upper()))
 
 
 @router.get("/collapse_selected")
