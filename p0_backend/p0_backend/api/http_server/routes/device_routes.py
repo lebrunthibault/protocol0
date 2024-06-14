@@ -45,9 +45,6 @@ async def toggle_rack_chain():
 
 @router.get("/toggle_ableton_button")
 def _toggle_ableton_button(x: int, y: int):
-    from loguru import logger
-
-    logger.success((x, y))
     toggle_ableton_button((x, y))
 
 
