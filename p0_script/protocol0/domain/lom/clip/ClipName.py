@@ -62,7 +62,9 @@ class ClipName(SlotManager):
         ):
             return
         self.base_name = base_name
-        Scheduler.defer(self.update)
+
+        if not self._live_clip.is_arrangement_clip:
+            Scheduler.defer(self.update)
 
     def _get_base_name(self) -> str:
         # noinspection PyBroadException
