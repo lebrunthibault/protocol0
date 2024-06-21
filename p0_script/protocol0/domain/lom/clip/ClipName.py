@@ -63,7 +63,7 @@ class ClipName(SlotManager):
             return
         self.base_name = base_name
 
-        if not self._live_clip.is_arrangement_clip:
+        if self._live_clip and not self._live_clip.is_arrangement_clip:
             Scheduler.defer(self.update)
 
     def _get_base_name(self) -> str:
