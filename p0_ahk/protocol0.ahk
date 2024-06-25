@@ -137,6 +137,9 @@ return
 return
 
 ; SELECTING TRACKS
+~^+m::
+    callBackend("track/select?name=master")
+return
 ~^+k::
     callBackend("track/select?name=kick")
 return

@@ -1,4 +1,3 @@
-import time
 from dataclasses import dataclass
 from enum import Enum
 from typing import Optional, Callable
@@ -23,14 +22,12 @@ class LEDColorVelocities(Enum):
 
 @dataclass(frozen=True)
 class MidiIdentifiers:
-    solo_mute_note: int
-    track_select_note: int
+    solo_note: int
+    mute_note: int
     volume_cc: int
 
 
 class TrackEncoder(SlotManager):
-    LONG_PRESS_THRESHOLD = 0.25  # maximum time in seconds we consider a simple press
-
     def __init__(
         self,
         channel: int,
@@ -45,11 +42,11 @@ class TrackEncoder(SlotManager):
         self._midi_identifiers = midi_identifiers
 
         with component_guard():
-            self._solo_mute_listener.subject = ButtonElement(
-                True, MIDI_NOTE_TYPE, self.channel, midi_identifiers.solo_mute_note
+            self._mute_listener.subject = ButtonElement(
+                True, MIDI_NOTE_TYPE, self.channel, midi_identifiers.mute_note
             )
-            self._track_select_listener.subject = ButtonElement(
-                True, MIDI_NOTE_TYPE, self.channel, midi_identifiers.track_select_note
+            self._solo_listener.subject = ButtonElement(
+                True, MIDI_NOTE_TYPE, self.channel, midi_identifiers.solo_note
             )
             self._volume_listener.subject = ButtonElement(
                 True, MIDI_CC_TYPE, self.channel, midi_identifiers.volume_cc
@@ -62,58 +59,55 @@ class TrackEncoder(SlotManager):
     def __repr__(self) -> str:
         return f"TrackEncoder('{self._controlled_tracks}')"
 
-    @property
-    def _is_long_pressed(self) -> bool:
-        return bool(
-            self._pressed_at and (time.time() - self._pressed_at) > self.LONG_PRESS_THRESHOLD
-        )
-
-    def _set_led(self, color: LEDColorVelocities, note: Optional[int] = None) -> None:
-        note = note or self._midi_identifiers.solo_mute_note
+    def _set_led(self, color: LEDColorVelocities, note: Optional[int]) -> None:
+        note = note or self._midi_identifiers.solo_note
         DomainEventBus.emit(NoteSentEvent(self.channel, note, color.value))
 
     def init_leds(self) -> None:
-        if not self._controlled_tracks.has_tracks:
-            self._set_led(LEDColorVelocities.OFF)
-            self._set_led(LEDColorVelocities.OFF, self._midi_identifiers.track_select_note)
-            return None
-
-        self._set_led(LEDColorVelocities.MUTED, self._midi_identifiers.track_select_note)
-
-        if self._controlled_tracks.muted:
-            self._set_led(LEDColorVelocities.MUTED)
-        else:
-            self._set_led(LEDColorVelocities.ACTIVE)
+        self._update_mute_led()
+        self._update_solo_led()
 
     @subject_slot("value")
     @log_exceptions
-    def _solo_mute_listener(self, value: int) -> None:
+    def _mute_listener(self, value: int) -> None:
         if value:
-            self._pressed_at = time.time()
             return None
 
-        if not self._controlled_tracks.has_tracks:
-            self._set_led(LEDColorVelocities.OFF)
-
-        if self._is_long_pressed:
-            self._controlled_tracks.solo_toggle()
-        else:
+        if self._controlled_tracks.has_tracks:
             self._controlled_tracks.toggle()
 
-        if self._controlled_tracks.soloed:
-            self._set_led(LEDColorVelocities.SOLO)
-        elif self._controlled_tracks.muted:
-            self._set_led(LEDColorVelocities.MUTED)
+        self._update_mute_led()
+
+    def _update_mute_led(self) -> None:
+        if not self._controlled_tracks.has_tracks:
+            self._set_led(LEDColorVelocities.OFF, self._midi_identifiers.mute_note)
+            return None
+
+        if self._controlled_tracks.muted:
+            self._set_led(LEDColorVelocities.MUTED, self._midi_identifiers.mute_note)
         else:
-            self._set_led(LEDColorVelocities.ACTIVE)
+            self._set_led(LEDColorVelocities.ACTIVE, self._midi_identifiers.mute_note)
 
     @subject_slot("value")
     @log_exceptions
-    def _track_select_listener(self, value: int) -> None:
-        if not value:
-            self._controlled_tracks.select()
-            if self._controlled_tracks.has_tracks:
-                self._set_led(LEDColorVelocities.MUTED, self._midi_identifiers.track_select_note)
+    def _solo_listener(self, value: int) -> None:
+        if value:
+            return None
+
+        if self._controlled_tracks.has_tracks:
+            self._controlled_tracks.solo_toggle()
+
+        self._update_solo_led()
+
+    def _update_solo_led(self) -> None:
+        if not self._controlled_tracks.has_tracks:
+            self._set_led(LEDColorVelocities.OFF, self._midi_identifiers.solo_note)
+            return None
+
+        if self._controlled_tracks.soloed:
+            self._set_led(LEDColorVelocities.SOLO, self._midi_identifiers.solo_note)
+        else:
+            self._set_led(LEDColorVelocities.MUTED, self._midi_identifiers.solo_note)
 
     @subject_slot("value")
     @log_exceptions
