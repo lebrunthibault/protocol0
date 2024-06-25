@@ -368,10 +368,6 @@ class Song(object):
         return cls._live_song().loop_start
 
     @classmethod
-    def set_loop_start(cls, loop_start: float) -> None:
-        cls._live_song().loop_start = loop_start
-
-    @classmethod
     def loop_end(cls) -> float:
         return cls.loop_start() + cls._live_song().loop_length
 
@@ -440,3 +436,11 @@ class Song(object):
         cls._live_song().current_song_time = time
 
         return Sequence().defer().add(cls._live_song().set_or_delete_cue).done()
+
+    @classmethod
+    def jump_to_next_cue(cls) -> None:
+        cls._live_song().jump_to_next_cue()
+
+    @classmethod
+    def jump_to_prev_cue(cls) -> None:
+        cls._live_song().jump_to_prev_cue()
