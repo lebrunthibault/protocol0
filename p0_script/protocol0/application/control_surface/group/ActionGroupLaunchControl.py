@@ -12,7 +12,6 @@ from protocol0.domain.lom.device.DeviceService import find_parent_rack
 from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.device.SimpleTrackDevices import SimpleTrackDevices
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
-from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
 from protocol0.domain.lom.song.components.TrackComponent import TrackComponent
 from protocol0.domain.lom.track.ControlledTracks import ControlledTracksRegistry
 from protocol0.domain.lom.track.ControlledTracksEnum import ControlledTracksEnum
@@ -152,18 +151,12 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
     @subject_slot("value")
     def _move_loop_left(self, value: int) -> None:
         if not value:
-            loop_length = Song.loop_length()
-            Song.set_loop_start(max(0.0, Song.loop_start() - Song.loop_length()))
-            Song.set_loop_length(loop_length)
+            Song.jump_to_prev_cue()
 
     @subject_slot("value")
     def _move_loop_right(self, value: int) -> None:
         if not value:
-            loop_length = Song.loop_length()
-            Song.set_loop_start(Song.loop_start() + Song.loop_length())
-            Song.set_loop_length(loop_length)
-
-            self._container.get(PlaybackComponent).restart()
+            Song.jump_to_next_cue()
 
     def _select_track_device(self, device: Optional[Device]) -> None:
         if device:
