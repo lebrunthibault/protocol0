@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from pydantic_settings import BaseSettings
 
 PROJECT_DIRECTORY = dirname(dirname(__file__))
-SETS_DIRECTORY = "/sets"
+SETS_DIRECTORY = "D:\\ableton projects"
 SETTINGS_FILE = join(PROJECT_DIRECTORY, "settings.json")
 
 
