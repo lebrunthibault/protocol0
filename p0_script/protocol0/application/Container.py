@@ -7,7 +7,6 @@ from protocol0.application.CommandBus import CommandBus
 from protocol0.application.ContainerInterface import ContainerInterface
 from protocol0.application.control_surface.ActionGroupFactory import ActionGroupFactory
 from protocol0.application.error.ErrorService import ErrorService
-from protocol0.domain.audit.AudioLatencyAnalyzerService import AudioLatencyAnalyzerService
 from protocol0.domain.audit.LogService import LogService
 from protocol0.domain.audit.SetFixerService import SetFixerService
 from protocol0.domain.audit.SongStatsService import SongStatsService
@@ -160,9 +159,6 @@ class Container(ContainerInterface):
         song_data_service = SongDataService(live_song.get_data, live_song.set_data, scene_component)
 
         # audit
-        audio_latency_service = AudioLatencyAnalyzerService(
-            track_recorder_service, track_crud_component, tempo_component
-        )
         log_service = LogService(ableton_set, track_mapper_service)
 
         self._register(midi_service)
@@ -202,7 +198,6 @@ class Container(ContainerInterface):
         self._register(validator_service)
 
         # audit
-        self._register(audio_latency_service)
         self._register(log_service)
         self._register(set_fixer_service)
         self._register(song_stats_service)

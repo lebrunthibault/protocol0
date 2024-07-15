@@ -72,9 +72,6 @@ return
 ~^l::
 	callBackend("scene/toggle_loop")
 return
-;s::
-;	callBackend("track/solo")
-;return
 ^+*::
     Send {Right}
 return

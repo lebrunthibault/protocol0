@@ -7,7 +7,6 @@ from p0_backend.lib.ableton.ableton import (
     hide_plugins,
     show_plugins,
 )
-from p0_backend.lib.ableton.analyze_clip_jitter import analyze_test_audio_clip_jitter
 from p0_backend.lib.ableton.automation import set_envelope_loop_length
 from p0_backend.lib.ableton.interface.sample import load_sample_in_simpler
 from p0_backend.lib.ableton.set_profiling.ableton_set_profiler import AbletonSetProfiler
@@ -71,11 +70,6 @@ def ping():
 @router.get("/reload_ableton")
 async def _reload_ableton():
     reload_ableton()
-
-
-@router.get("/analyze_test_audio_clip_jitter")
-def _analyze_test_audio_clip_jitter(clip_path: str):
-    analyze_test_audio_clip_jitter(clip_path=clip_path)
 
 
 @router.get("/show_plugins")

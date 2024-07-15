@@ -155,17 +155,6 @@ class Song(object):
         return cls.selected_track().abstract_track
 
     @classmethod
-    def current_external_synth_track(cls) -> "ExternalSynthTrack":
-        from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import (  # noqa
-            ExternalSynthTrack,
-        )
-
-        if isinstance(Song.current_track(), ExternalSynthTrack):
-            return cast(ExternalSynthTrack, Song.current_track())
-        else:
-            raise Protocol0Warning("current track is not an ExternalSynthTrack")
-
-    @classmethod
     def abstract_tracks(cls) -> Iterator["AbstractTrack"]:
         return cls._INSTANCE._track_component.abstract_tracks
 
