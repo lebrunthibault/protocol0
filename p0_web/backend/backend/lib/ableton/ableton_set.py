@@ -42,8 +42,10 @@ class PathInfo(BaseModel):
 
     @classmethod
     def create(cls, filename: str) -> "PathInfo":
-        assert not isabs(filename), f"Got an absolute filename: {filename}"
-        path = Path(join(SETS_DIRECTORY, filename))
+        # assert not isabs(filename), f"Got an absolute filename: {filename}"
+        path = Path(filename)
+        if not isabs(filename):
+            path = Path(join(SETS_DIRECTORY, filename))
 
         return cls(
             filename=str(path),
