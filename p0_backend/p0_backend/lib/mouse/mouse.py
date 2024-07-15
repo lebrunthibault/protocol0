@@ -41,12 +41,6 @@ def double_click(coords: Coords, interval: float = 0) -> None:
     pyautogui.doubleClick(x, y, interval=interval)
 
 
-def click_vertical_zone(coords: Coords) -> None:
-    x, y = coords
-    for i in range(120, -40, -20):
-        pyautogui.click(x, y + i)
-
-
 def scroll(pixels: int):
     win32api.mouse_event(MOUSEEVENTF_WHEEL, 960, 540, pixels, 0)
 

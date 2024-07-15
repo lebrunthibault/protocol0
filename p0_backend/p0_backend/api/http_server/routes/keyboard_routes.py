@@ -3,7 +3,7 @@ from time import sleep
 from fastapi import APIRouter
 
 from p0_backend.lib.keys import send_keys
-from p0_backend.lib.mouse.mouse import click, click_vertical_zone, move_to, scroll
+from p0_backend.lib.mouse.mouse import click, move_to, scroll
 
 router = APIRouter()
 
@@ -16,11 +16,6 @@ def _move_to(x: int, y: int):
 @router.get("/click")
 def _click(x: int, y: int):
     click((x, y))
-
-
-@router.get("/click_vertical_zone")
-def _click_vertical_zone(x: int, y: int):
-    click_vertical_zone((x, y))
 
 
 @router.get("/scroll")
