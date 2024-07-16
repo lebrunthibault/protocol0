@@ -22,7 +22,15 @@ class AudioExportService(object):
         self._playback_component = playback_component
         self._scene_component = scene_component
 
-    def export(self) -> None:
+    def on_export(self) -> None:
+        Backend.client().post_scene_stats(
+            {
+                "scenes": [],
+                "tempo": Song.tempo(),
+            }
+        )
+
+    def write_session_to_arrangement(self) -> None:
         scene_stats = self._song_stats_service.get_song_structure()
 
         Backend.client().post_scene_stats(
@@ -43,7 +51,6 @@ class AudioExportService(object):
         seq.add(self._create_cue_points)
         seq.wait_ms(50)
         seq.add(self._playback_component.reset)
-        seq.add(Backend.client().export_audio)
         seq.done()
 
     def _bounce_session_to_arrangement(self) -> None:
