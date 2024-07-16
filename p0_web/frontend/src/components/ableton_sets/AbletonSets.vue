@@ -6,8 +6,12 @@
         {{ selectedSet.path_info.name }}
       </h3>
       <div class="btn-group" role="group">
+        <span class="my-auto" v-if="selectedSet.metadata">
+          {{ selectedSet.metadata.tempo }} BPM
+        </span>
         <AbletonSetStars :ableton-set="selectedSet"
-          @update="sortSets"></AbletonSetStars>
+          @update="sortSets"
+        class="m-3"></AbletonSetStars>
         <AbletonSetInfo :ableton-set="selectedSet" @set-moved="hideSet"></AbletonSetInfo>
         <AbletonSetComment :ableton-set="selectedSet" :scene-data="currentScene"></AbletonSetComment>
 
