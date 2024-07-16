@@ -85,10 +85,20 @@ class SceneStat(BaseModel):
     track_names: List[str]
 
 
+class AbletonSetStage(str, Enum):
+    IDEA = "IDEA"
+    TRACK = "TRACK"
+    RELEASE = "RELEASE"
+
+
+# noinspection DuplicatedCode
 class AbletonSetMetadata(BaseModel):
     path_info: Optional[PathInfo] = None
     tempo: float = 0
     scenes: List[SceneStat] = []
+    stars: int = 0
+    comment: str = ""
+    stage: AbletonSetStage = AbletonSetStage.IDEA
 
 
 class AudioInfo(BaseModel):
