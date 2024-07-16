@@ -81,6 +81,11 @@ return
     Send ^s
 return
 ^+!r::
+    msgbox "toto"
+	callBackend("export/write_session_to_arrangement")
+return
+^+r::
+    msgbox "on export"
 	callBackend("export")
 return
 ^!q::

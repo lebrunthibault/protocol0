@@ -108,17 +108,6 @@ def open_set(filename: str, confirm_dialog=True):
             time.sleep(0.5)
 
 
-@limits(calls=1, period=5)
-def export_audio():
-    send_keys("{F10}")
-    # send_keys("%u")  # adjust height
-    # send_keys("%u")
-    time.sleep(0.1)
-    # send_keys("w")  # adjust width
-    time.sleep(0.1)
-    # send_keys("^+r")
-
-
 @keep_mouse_position
 def save_set_as_template():
     if settings.is_ableton_11:

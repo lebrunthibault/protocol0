@@ -249,11 +249,12 @@ def set_scene_stats(tempo: float, scene_stats: List[SceneStat]):
     ableton_set = AbletonSet.create(get_launched_set_path())
 
     ableton_set.metadata.tempo = tempo
-    ableton_set.metadata.scenes = scene_stats
 
-    song_bar_length = round(scene_stats[-1].end / 4)
-    message = f"{song_bar_length} bars"
-    notify(message)
+    if scene_stats:
+        ableton_set.metadata.scenes = scene_stats
+
+        song_bar_length = round(scene_stats[-1].end / 4)
+        notify(f"{song_bar_length} bars")
 
     ableton_set.save()
 
