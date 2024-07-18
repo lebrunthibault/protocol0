@@ -83,7 +83,7 @@ class SceneClips(Observable):
         if any(clip for clip in self.all if self._clip_has_default_recording_name(clip)):
             for clip in self.all:
                 if self._clip_has_default_recording_name(clip):
-                    clip.appearance.color = ClipColorEnum.AUDIO_UN_QUANTIZED.value
+                    clip.appearance._color_text = ClipColorEnum.AUDIO_UN_QUANTIZED.value
                 clip.clip_name.update("")
 
     def _clip_has_default_recording_name(self, clip: Clip) -> bool:
