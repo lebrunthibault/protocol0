@@ -44,7 +44,7 @@ class BeatScheduler(SlotManager, BeatSchedulerInterface):
     def _execute_events(self) -> None:
         for event in self._scheduled_events:
             if event.should_execute:
-                event.execute()
+                event.execute_animation()
                 self._scheduled_events.remove(event)
 
     def _dispatch_timing_events(self) -> None:
@@ -100,7 +100,7 @@ class BeatScheduler(SlotManager, BeatSchedulerInterface):
             callback, BeatTime.make_from_beat_offset(beats_offset), execute_on_song_stop
         )
         if beats_offset == 0:
-            event.execute()
+            event.execute_animation()
         else:
             self._scheduled_events.append(event)
 

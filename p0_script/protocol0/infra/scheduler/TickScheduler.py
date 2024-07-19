@@ -47,7 +47,7 @@ class TickScheduler(TickSchedulerInterface):
             self._beat_scheduler._on_tick()
         for scheduled_event in self._scheduled_events[:]:
             if scheduled_event.should_execute:
-                scheduled_event.execute()
+                scheduled_event.execute_animation()
                 try:
                     self._scheduled_events.remove(scheduled_event)
                 except ValueError:

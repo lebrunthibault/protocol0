@@ -199,7 +199,7 @@ def tail_ableton_log_file(raw=False):
             ),
             op.map(
                 lambda line: LogLine(
-                    line=_get_clean_line(line.line), is_error=line.is_error, color=line._color_text
+                    line=_get_clean_line(line.line), is_error=line.is_error, color=line.color_text
                 )
             ),
         ]
