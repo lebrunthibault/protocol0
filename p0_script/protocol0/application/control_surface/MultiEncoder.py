@@ -101,7 +101,7 @@ class MultiEncoder(SlotManager):
             if go_next is not None:
                 params["go_next"] = go_next
 
-            action.execute(encoder_name=self.name, **params)
+            action.execute_animation(encoder_name=self.name, **params)
         except Exception as e:  # noqa
             DomainEventBus.emit(ErrorRaisedEvent())
 
