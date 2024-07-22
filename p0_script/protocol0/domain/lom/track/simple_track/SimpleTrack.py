@@ -334,11 +334,11 @@ class SimpleTrack(AbstractTrack):
 
     @property
     def color(self) -> int:
-        return self.appearance.color_text
+        return self.appearance.color
 
     @color.setter
     def color(self, color_index: int) -> None:
-        self.appearance.color_text = color_index
+        self.appearance.color = color_index
         self._clip_config.color = color_index
 
         for clip in self.clips:
