@@ -26,4 +26,4 @@ class PostRecordMidi(RecordProcessorInterface):
         assert audio_clip, "No recorded audio clip"
 
         audio_clip.clip_name.update("")
-        audio_clip.appearance.color_text = ClipColorEnum.AUDIO_UN_QUANTIZED.value
+        audio_clip.appearance.color = ClipColorEnum.AUDIO_UN_QUANTIZED.value

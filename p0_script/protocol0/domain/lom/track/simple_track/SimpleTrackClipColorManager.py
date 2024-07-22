@@ -16,7 +16,7 @@ class SimpleTrackClipColorManager(object):
         self._track_color = track_color
 
     def toggle_colors(self) -> None:
-        colors_on = any(c.color_text != self._track_color for c in list(self._clips))
+        colors_on = any(c.color != self._track_color for c in list(self._clips))
 
         if colors_on:
             self._revert_coloring()
