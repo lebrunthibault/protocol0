@@ -56,7 +56,7 @@ def filter_tracks_from_search(tracks: List[AbletonTrack], search: str) -> List[A
     data = []
 
     for track in tracks:
-        if track.name.lower().startswith(search.lower()):
+        if search.lower() in track.name.lower():
             data.append(track)
 
     return data

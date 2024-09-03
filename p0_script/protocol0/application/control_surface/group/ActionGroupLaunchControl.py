@@ -122,9 +122,6 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
         self.encoders: List[TrackEncoder] = []
 
         for controlled_track, midi_identifiers in controlled_tracks:
-            from protocol0.shared.logging.Logger import Logger
-
-            Logger.dev(midi_identifiers)
             self.encoders.append(
                 TrackEncoder(
                     channel=self.CHANNEL,

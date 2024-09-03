@@ -221,10 +221,10 @@ class DeviceEnum(Enum):
                         cls.BLACK_BOX,
                     ],
                 ),
+                DeviceEnumGroup("Delay", [cls.INSERT_ECHO, cls.INSERT_DELAY]),
             ],
             [
                 DeviceEnumGroup("Volume", [cls.LFO_TOOL, cls.DUCK]),
-                DeviceEnumGroup("Delay", [cls.INSERT_ECHO, cls.INSERT_DELAY]),
                 DeviceEnumGroup(
                     "Reverb", [cls.INSERT_REVERB, cls.VALHALLA_VINTAGE_VERB, cls.REVERB]
                 ),
