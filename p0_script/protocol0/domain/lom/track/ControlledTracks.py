@@ -74,6 +74,7 @@ class ControlledTracks:
 
 
 ControlledTracksRegistry: Dict[ControlledTracksEnum, ControlledTracks] = {
+    ControlledTracksEnum.DRUMS: ControlledTracks(ControlledTracksEnum.DRUMS),
     ControlledTracksEnum.KICK: ControlledTracks(
         ControlledTracksEnum.KICK, is_top_track=False, skip_group_track=True
     ),
@@ -84,6 +85,11 @@ ControlledTracksRegistry: Dict[ControlledTracksEnum, ControlledTracks] = {
         ControlledTracksEnum.PERC,
         is_top_track=False,
         track_names=["Perc", "FX"],
+        skip_group_track=True,
+    ),
+    ControlledTracksEnum.FX: ControlledTracks(
+        ControlledTracksEnum.FX,
+        is_top_track=False,
         skip_group_track=True,
     ),
     ControlledTracksEnum.VOCALS: ControlledTracks(ControlledTracksEnum.VOCALS),

@@ -16,6 +16,8 @@ from protocol0.application.command.BusTrackToZeroDBCommand import BusTrackToZero
 from protocol0.application.command.CollapseSelectedTrackCommand import CollapseSelectedTrackCommand
 from protocol0.application.command.SelectTrackByEnumCommand import SelectTrackByEnumCommand
 from protocol0.application.command.ArmSelectedTrackCommand import ArmSelectedTrackCommand
+from protocol0.application.command.MuteTrackCommand import MuteTrackCommand
+from protocol0.application.command.SoloTrackCommand import SoloTrackCommand
 
 router = APIRouter()
 
@@ -52,6 +54,16 @@ def _load_instrument_track(instrument_name: str):
 @router.get("/arm")
 async def arm():
     p0_script_client().dispatch(ArmSelectedTrackCommand())
+
+
+@router.get("/mute")
+async def mute(name: str):
+    p0_script_client().dispatch(MuteTrackCommand(name))
+
+
+@router.get("/solo")
+async def solo(name: str):
+    p0_script_client().dispatch(SoloTrackCommand(name))
 
 
 @router.get("/select")
