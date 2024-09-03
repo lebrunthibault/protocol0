@@ -89,9 +89,6 @@ return
 ^!q::
     Send ^!p  ; left hand shortcut
 return
-^+d::
-	callBackend("scene/duplicate")
-return
 !r::
 	callBackend("monitoring/toggle_reference")
 return

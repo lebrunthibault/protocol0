@@ -97,15 +97,15 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
 
         controlled_tracks = (
             (
-                ControlledTracksRegistry[ControlledTracksEnum.KICK],
+                ControlledTracksRegistry[ControlledTracksEnum.DRUMS],
                 MidiIdentifiers(73, 41, 13),
             ),
             (
-                ControlledTracksRegistry[ControlledTracksEnum.HAT],
+                ControlledTracksRegistry[ControlledTracksEnum.KICK],
                 MidiIdentifiers(74, 42, 14),
             ),
             (
-                ControlledTracksRegistry[ControlledTracksEnum.PERC],
+                ControlledTracksRegistry[ControlledTracksEnum.HAT],
                 MidiIdentifiers(75, 43, 15),
             ),
             (ControlledTracksRegistry[ControlledTracksEnum.VOCALS], MidiIdentifiers(76, 44, 16)),
@@ -122,6 +122,9 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
         self.encoders: List[TrackEncoder] = []
 
         for controlled_track, midi_identifiers in controlled_tracks:
+            from protocol0.shared.logging.Logger import Logger
+
+            Logger.dev(midi_identifiers)
             self.encoders.append(
                 TrackEncoder(
                     channel=self.CHANNEL,

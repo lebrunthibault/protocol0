@@ -208,7 +208,7 @@ class DeviceEnum(Enum):
             [
                 DeviceEnumGroup(
                     "Comp",
-                    [cls.COMPRESSOR, cls.R_COMPRESSOR, cls.SSL_COMP, cls.C4, cls.TDR_KOTELNIKOV],
+                    [cls.R_COMPRESSOR, cls.COMPRESSOR, cls.SSL_COMP, cls.C4, cls.TDR_KOTELNIKOV],
                 ),
                 DeviceEnumGroup(
                     "Sat",
