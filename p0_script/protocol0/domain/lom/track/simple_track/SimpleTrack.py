@@ -450,13 +450,8 @@ class SimpleTrack(AbstractTrack):
 
         # hack : group tracks are not shown, only selected
         if self.is_foldable:
-            if self.index == 0:
-                self.sub_tracks[0].un_collapse()
-            else:
-                previous_track = list(Song.simple_tracks())[self.index - 1]
-                previous_track.un_collapse()
-                previous_track.is_collapsed = True
-                Backend.client().scroll(-35)
+            self.sub_tracks[0].select()
+            Backend.client().scroll(-35)
         else:
             self.un_collapse()
 

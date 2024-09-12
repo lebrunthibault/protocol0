@@ -34,6 +34,7 @@ class AbletonSetManager:
         path_info = PathInfo.create(get_launched_set_path())
 
         ableton_set = cls._ACTIVE_SET
+        previous_tracks = ableton_set.current_state.tracks if ableton_set else []
         if not ableton_set or ableton_set.path_info.filename != path_info.filename:
             try:
                 ableton_set = AbletonSet.create(get_launched_set_path())
@@ -45,6 +46,13 @@ class AbletonSetManager:
                     return
 
         ableton_set.update_current_state(current_state)
+
+        if current_state.tracks and current_state.tracks != previous_tracks:
+            logger.success("pushing tracks")
+            logger.success(current_state.tracks)
+            from p0_backend.lib.search.search_queue import search_queue
+
+            search_queue.put(current_state.tracks)
 
         cls._ACTIVE_SET = ableton_set
 
