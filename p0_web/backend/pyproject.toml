@@ -15,12 +15,11 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
-    "Development Status :: 4 - Beta"
 ]
 keywords = ["remote script", "ableton"]
 
 [tool.poetry.dependencies]
-python = "3.11.4"
+python = "3.11.*"
 python-dotenv = "^1.0.0"
 loguru = "^0.7.0"
 uvicorn = {extras = ["standard"], version = "^0.22.0"}
@@ -30,7 +29,7 @@ fastapi = "^0.104.0"
 ratelimit = "^2.2.1"
 
 [tool.poetry.dev-dependencies]
-win11toast = "^0.34"
+#win11toast = "^0.34"
 flake8 = "*"
 vulture = "*"
 

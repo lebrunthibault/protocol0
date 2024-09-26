@@ -9,11 +9,11 @@ bootstrap: .env
 .PHONY: boostrap
 
 up:
-	@docker compose -f docker-compose-dev.yml up --build
+	@docker compose -f docker-compose.yml up --build
 .PHONY: up
 
 logs:
-	@docker compose -f docker-compose-dev.yml logs -f
+	@docker compose -f docker-compose.yml logs -f
 .PHONY: logs
 
 publish:

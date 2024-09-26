@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: thibaultlebrun/p0_web_backend:development
+          ports:
+            - containerPort: 8001
+          volumeMounts:
+            - mountPath: /sets
+              name: ableton-sets-volume
+      volumes:
+        - name: ableton-sets-volume
+          hostPath: # This mounts a host path from the node into the pod
+            path: /home/thibault/ableton-sets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 8001
+      targetPort: 8001
+  type: NodePort

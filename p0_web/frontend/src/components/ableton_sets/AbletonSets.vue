@@ -47,7 +47,7 @@
     </div>
     <div v-for="(setFolder, i) in ['Idea', 'Track', 'Release']" :key="i" class="col-sm px-5">
       <div class="d-flex justify-content-around">
-        <div></div>
+        <div>toto</div>
         <h2 class="text-center">{{ setFolder }} </h2>
         <small>{{ abletonSetsByStage[setFolder.toUpperCase()] ? abletonSetsByStage[setFolder.toUpperCase()].length: 0 }}</small>
       </div>
