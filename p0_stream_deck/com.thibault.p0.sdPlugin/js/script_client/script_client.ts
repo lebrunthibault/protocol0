@@ -2,8 +2,6 @@ import Config from '../config'
 import EventBus from '../event_bus'
 import FavoriteDeviceNamesUpdatedEvent from '../domain/device/favorite_device_names_updated_event'
 import { injectable } from 'tsyringe'
-import AbletonSetCurrentStateSchema, { AbletonSetCurrentState } from './ableton_set'
-import SelectedSceneUpdated from '../domain/scene/selected_scene_updated_event'
 
 interface WebSocketPayload {
     type: string
@@ -38,27 +36,8 @@ class ScriptClient {
         case 'FAVORITE_DEVICES':
             EventBus.emit(new FavoriteDeviceNamesUpdatedEvent(data.data))
             break
-        case 'ACTIVE_SET':
-            ScriptClient.emitActiveSet(AbletonSetCurrentStateSchema.parse(JSON.parse(data.data)))
-            break
         default:
             console.error(`Got unknown web socket payload type: ${data.type}`)
-        }
-    }
-
-    private static emitActiveSet (setCurrentState: AbletonSetCurrentState) {
-        // deep copy
-        setCurrentState = JSON.parse(JSON.stringify(setCurrentState))
-
-        if (setCurrentState) {
-            EventBus.emit(new SelectedSceneUpdated([
-                setCurrentState.selected_scene.drums,
-                setCurrentState.selected_scene.harmony,
-                setCurrentState.selected_scene.melody,
-                setCurrentState.selected_scene.bass
-            ]))
-        } else {
-            console.warn('No active set')
         }
     }
 }

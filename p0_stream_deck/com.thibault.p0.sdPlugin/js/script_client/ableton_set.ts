@@ -10,20 +10,7 @@ const SceneTrackStateSchema = z.object({
     is_armed: z.boolean()
 })
 
-const AbletonSceneSchema = z.object({
-    drums: z.array(SceneTrackStateSchema),
-    harmony: z.array(SceneTrackStateSchema),
-    melody: z.array(SceneTrackStateSchema),
-    bass: z.array(SceneTrackStateSchema)
-})
-
-const AbletonSetCurrentStateSchema = z.object({
-    selected_scene: AbletonSceneSchema
-})
-
 // extract the inferred type
-type AbletonSetCurrentState = z.infer<typeof AbletonSetCurrentStateSchema>;
 type SceneTrackState = z.infer<typeof SceneTrackStateSchema>;
 
-export type { AbletonSetCurrentState, SceneTrackState }
-export default AbletonSetCurrentStateSchema
+export type { SceneTrackState }

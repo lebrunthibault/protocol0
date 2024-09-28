@@ -29,9 +29,6 @@ class TempoComponent(SlotManager):
         except RuntimeError:
             pass
 
-    def tap(self) -> None:
-        self._song.tap_tempo()
-
     def scroll(self, go_next: bool) -> None:
         increment = 1 if go_next else -1
         self.tempo += increment

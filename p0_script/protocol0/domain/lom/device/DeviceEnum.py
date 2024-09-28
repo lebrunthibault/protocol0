@@ -223,12 +223,12 @@ class DeviceEnum(Enum):
                 ),
                 DeviceEnumGroup("Delay", [cls.INSERT_ECHO, cls.INSERT_DELAY]),
             ],
-            [
-                DeviceEnumGroup("Volume", [cls.LFO_TOOL, cls.DUCK]),
-                DeviceEnumGroup(
-                    "Reverb", [cls.INSERT_REVERB, cls.VALHALLA_VINTAGE_VERB, cls.REVERB]
-                ),
-            ],
+            # [
+            #     DeviceEnumGroup("Volume", [cls.LFO_TOOL, cls.DUCK]),
+            #     DeviceEnumGroup(
+            #         "Reverb", [cls.INSERT_REVERB, cls.VALHALLA_VINTAGE_VERB, cls.REVERB]
+            #     ),
+            # ],
         ]
 
     @property

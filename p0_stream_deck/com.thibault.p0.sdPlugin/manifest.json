@@ -97,20 +97,7 @@
       "UUID": "com.thibault.p0.load-instrument"
     }
   ],
-  "Profiles": [
-    {
-      "Name": "profiles/ClipLoop",
-      "ReadOnly": false,
-      "DeviceType": 2,
-      "DontAutoSwitchWhenInstalled": true
-    },
-    {
-      "Name": "profiles/SelectedScene",
-      "ReadOnly": false,
-      "DeviceType": 2,
-      "DontAutoSwitchWhenInstalled": true
-    }
-  ],
+  "Profiles": [],
   "SDKVersion": 2,
   "Author": "Thibault Lebrun",
   "CodePath": "index.html",

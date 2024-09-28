@@ -1,7 +1,6 @@
 from functools import partial
 
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
-from protocol0.domain.lom.song.components.TempoComponent import TempoComponent
 
 # noinspection SpellCheckingInspection
 from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
@@ -15,21 +14,14 @@ class ActionGroupMain(ActionGroupInterface):
     def configure(self) -> None:
         self.add_encoder(
             identifier=1,
-            name="tap tempo",
-            on_press=self._container.get(TempoComponent).tap,
-            on_scroll=self._container.get(TempoComponent).scroll,
-        )
-
-        self.add_encoder(identifier=4, name="test", on_press=self.action_test)
-
-        self.add_encoder(
-            identifier=5,
             name="Resample",
             on_press=partial(
                 self._container.get(RecordService).resample_selected_track, record_audio=True
             ),
             on_long_press=self._container.get(RecordService).resample_selected_track,
         )
+
+        self.add_encoder(identifier=4, name="test", on_press=self.action_test)
 
         def toggle_splice_track() -> None:
             if Song.splice_track():
