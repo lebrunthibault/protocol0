@@ -47,15 +47,15 @@ FireSceneToPosition:
     barLength:=SubStr(A_ThisHotkey,"^NumPad") - 1
 	callBackend("scene/fire_to_position?bar_length="barLength)
 Return
-^+c::
-    MouseGetPos, xpos, ypos
-    ; Right-click at the current mouse position
-    Click, Right, %xpos%, %ypos%
-    Send crop
-    Sleep 5
-    Send {Enter}
-    callBackend("clip/loop_selected")
-return
+;^+c::
+;    MouseGetPos, xpos, ypos
+;    ; Right-click at the current mouse position
+;    Click, Right, %xpos%, %ypos%
+;    Send crop
+;    Sleep 5
+;    Send {Enter}
+;    callBackend("clip/loop_selected")
+;return
 ~^e::
 	callBackend("clip/toggle_notes")
 return

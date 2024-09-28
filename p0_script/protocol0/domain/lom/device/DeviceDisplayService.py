@@ -2,45 +2,14 @@ from functools import partial
 from typing import Optional, Tuple, List
 
 from protocol0.domain.lom.device.Device import Device
-from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
-from protocol0.domain.lom.track.SelectedTrackChangedEvent import SelectedTrackChangedEvent
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.backend.Backend import Backend
-from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
-from protocol0.shared.Song import Song
 from protocol0.shared.sequence.Sequence import Sequence
 from protocol0.shared.types import Coords
 
 
 class DeviceDisplayService(object):
-    def __init__(self) -> None:
-        DomainEventBus.subscribe(SelectedTrackChangedEvent, self._on_selected_track_changed_event)
-
-    def _on_selected_track_changed_event(self, _: SelectedTrackChangedEvent) -> None:
-        if Song.selected_track() != Song.master_track():
-            return None
-
-        DomainEventBus.un_subscribe(
-            SelectedTrackChangedEvent, self._on_selected_track_changed_event
-        )
-
-        seq = Sequence()
-        seq.defer()
-
-        for enum in (
-            DeviceEnum.STANDARD_CLIP,
-            DeviceEnum.GOD_PARTICLE,
-            DeviceEnum.TONAL_BALANCE_CONTROL,
-            DeviceEnum.YOULEAN,
-        ):
-            device = Song.master_track().devices.get_one_from_enum(enum)
-
-            if device:
-                seq.add(partial(self.toggle_plugin_window, Song.master_track(), device))
-
-        seq.done()
-
     def toggle_plugin_window(self, track: SimpleTrack, device: Device) -> Optional[Sequence]:
         if device.enum is None:
             return None

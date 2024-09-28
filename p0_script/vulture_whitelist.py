@@ -118,3 +118,6 @@ EXT_IN  # unused variable (protocol0\domain\lom\track\routing\InputRoutingTypeEn
 _.crop_scene  # unused method (protocol0\domain\lom\song\components\SceneCrudComponent.py:45)
 _.split_scene  # unused method (protocol0\domain\lom\song\components\SceneCrudComponent.py:34)
 _.on_export  # unused method (protocol0\domain\lom\set\AudioExportService.py:25)
+DUCK  # unused variable (protocol0\domain\lom\device\DeviceEnum.py:34)
+TONAL_BALANCE_CONTROL  # unused variable (protocol0\domain\lom\device\DeviceEnum.py:99)
+_.toggle_plugin_window  # unused method (protocol0\domain\lom\device\DeviceDisplayService.py:13)

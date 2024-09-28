@@ -7,7 +7,6 @@ from loguru import logger
 from pydantic import BaseModel
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.api.http_server.ws import ws_manager
 from p0_backend.lib.ableton.ableton import (
     open_set,
 )
@@ -107,7 +106,6 @@ async def open_set_by_type(name: str):
 @router.get("/close")
 async def close_set(filename: str):
     await AbletonSetManager.remove(filename)
-    await ws_manager.broadcast_active_set()
 
 
 @router.get("/open_in_explorer")
