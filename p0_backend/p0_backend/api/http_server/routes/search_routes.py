@@ -16,7 +16,7 @@ selected_track: Optional[str] = None
 
 @router.get("/track")
 async def _search_track(reset: bool = False) -> None:
-    p0_script_client().dispatch(ToggleFollowSongCommand())
-
     create_thread(reset)
     search_queue.put("show_window")
+
+    p0_script_client().dispatch(ToggleFollowSongCommand())

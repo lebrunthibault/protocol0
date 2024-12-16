@@ -76,9 +76,9 @@ return
     Send {Right}
 return
 ^s::
+    Send ^s
 	callBackend("set/save")
 	Sleep, 200
-    Send ^s
 return
 ^+!r::
 	callBackend("export/write_session_to_arrangement")

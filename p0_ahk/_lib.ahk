@@ -17,6 +17,14 @@ callBackend(command, arg:="") {
 		url = %url%/%arg%
 	}
 	oHttp := ComObjCreate("WinHttp.Winhttprequest.5.1")
-    oHttp.open("GET", url)
-    oHttp.send()
+
+	try {
+        oHttp.open("GET", url)
+        oHttp.send()
+    } catch e {
+;        MsgBox, Error: Could not reach the server. Please check if the server is running.
+        return ""  ; Return an empty string or handle the error as needed
+    }
+
+    return oHttp.responseText  ; Return the response if the request is successful
 }

@@ -1,7 +1,9 @@
 from functools import partial
 
 from protocol0.domain.audit.SongStatsService import SongStatsService
+from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
+from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
 from protocol0.domain.lom.song.components.SceneComponent import SceneComponent
 from protocol0.domain.shared.ApplicationView import ApplicationView
@@ -29,6 +31,9 @@ class AudioExportService(object):
                 "tempo": Song.tempo(),
             }
         )
+        monitoring_rack: Device = list(Song.master_track().devices)[-1]
+        assert monitoring_rack.name.lower() == "monitoring"
+        monitoring_rack.is_enabled = False
 
     def write_session_to_arrangement(self) -> None:
         scene_stats = self._song_stats_service.get_song_structure()

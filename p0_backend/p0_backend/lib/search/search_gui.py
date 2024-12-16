@@ -19,6 +19,10 @@ selected_track: Optional[str] = None
 def create_thread(reset: bool) -> None:
     global thread
 
+    from loguru import logger
+
+    logger.success(thread)
+    logger.success(reset)
     if thread:
         if reset:
             search_queue.put("stop")
@@ -211,6 +215,9 @@ def _get_search_window() -> tk.Tk:
 
 def search_track() -> None:
     search_box = SearchBox()
+    from loguru import logger
+
+    logger.success("hello")
 
     def check_queue():
         try:
