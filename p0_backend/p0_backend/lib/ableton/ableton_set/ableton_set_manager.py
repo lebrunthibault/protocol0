@@ -17,6 +17,8 @@ from p0_backend.lib.ableton.get_set import (
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.window.window import get_focused_window_title
 from p0_backend.settings import Settings
+from p0_backend.api.client.p0_script_api_client import p0_script_client
+from protocol0.application.command.GetSetStateCommand import GetSetStateCommand  # noqa
 
 settings = Settings()
 
@@ -68,6 +70,8 @@ class AbletonSetManager:
     @classmethod
     def active(cls) -> AbletonSet:
         if cls._ACTIVE_SET is None:
+            p0_script_client().dispatch(GetSetStateCommand())
+
             raise Protocol0Error("no active set")
 
         return cls._ACTIVE_SET

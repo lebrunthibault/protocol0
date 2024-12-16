@@ -81,8 +81,6 @@ class InstrumentParam:
             param = instrument.device.get_parameter_by_name(
                 instrument.PARAMETER_NAMES[self.param_name]
             )
-        elif callable(getattr(instrument, f"scroll_{self.param_name.name.lower()}", None)):
-            param = getattr(instrument, f"scroll_{self.param_name.name.lower()}")
 
         if param is None:
             return None
