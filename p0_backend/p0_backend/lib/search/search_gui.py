@@ -19,10 +19,6 @@ selected_track: Optional[str] = None
 def create_thread(reset: bool) -> None:
     global thread
 
-    from loguru import logger
-
-    logger.success(thread)
-    logger.success(reset)
     if thread:
         if reset:
             search_queue.put("stop")
@@ -163,9 +159,6 @@ class SearchBox:
             self._list_box.itemconfig(i, {"bg": track.rgb_color})
 
     def submit(self, track_name: str) -> None:
-        from loguru import logger
-
-        logger.success(self._tracks)
         # if input is partial, select the first track name in the list
         # if track_name.lower() == "kick bus":
         #     track_name = "Kick"
@@ -215,17 +208,10 @@ def _get_search_window() -> tk.Tk:
 
 def search_track() -> None:
     search_box = SearchBox()
-    from loguru import logger
-
-    logger.success("hello")
 
     def check_queue():
         try:
             task = search_queue.get_nowait()
-            from loguru import logger
-
-            logger.success("GOT TASK")
-            logger.success(task)
             if task == "show_window":
                 search_box.show()
             elif task == "stop":

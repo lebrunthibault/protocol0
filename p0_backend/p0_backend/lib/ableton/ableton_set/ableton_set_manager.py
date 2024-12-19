@@ -50,8 +50,6 @@ class AbletonSetManager:
         ableton_set.update_current_state(current_state)
 
         if current_state.tracks and current_state.tracks != previous_tracks:
-            logger.success("pushing tracks")
-            logger.success(current_state.tracks)
             from p0_backend.lib.search.search_queue import search_queue
 
             search_queue.put(current_state.tracks)

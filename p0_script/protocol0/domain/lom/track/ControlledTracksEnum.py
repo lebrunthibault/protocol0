@@ -11,6 +11,6 @@ class ControlledTracksEnum(enum.Enum):
     FX = "FX"
     VOCALS = "VOCALS"
     HARMONY = "HARMONY"
-    LEAD = "LEAD"
+    MELODY = "MELODY"
     BASS = "BASS"
     SUB = "SUB"

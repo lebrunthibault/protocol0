@@ -108,9 +108,9 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
                 ControlledTracksRegistry[ControlledTracksEnum.HAT],
                 MidiIdentifiers(75, 43, 15),
             ),
-            (ControlledTracksRegistry[ControlledTracksEnum.VOCALS], MidiIdentifiers(76, 44, 16)),
+            (ControlledTracksRegistry[ControlledTracksEnum.PERC], MidiIdentifiers(76, 44, 16)),
             (ControlledTracksRegistry[ControlledTracksEnum.HARMONY], MidiIdentifiers(89, 57, 17)),
-            (ControlledTracksRegistry[ControlledTracksEnum.LEAD], MidiIdentifiers(90, 58, 18)),
+            (ControlledTracksRegistry[ControlledTracksEnum.MELODY], MidiIdentifiers(90, 58, 18)),
             (
                 ControlledTracksRegistry[ControlledTracksEnum.BASS],
                 MidiIdentifiers(91, 59, 19),
