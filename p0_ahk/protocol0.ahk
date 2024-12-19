@@ -98,30 +98,6 @@ return
 !Numpad0::
 	callBackend("monitoring/toggle_reference_filters")
 return
-!Numpad1::
-	callBackend("monitoring/toggle_reference_filters?preset=sub")
-return
-!Numpad2::
-	callBackend("monitoring/toggle_reference_filters?preset=bass")
-return
-!Numpad3::
-	callBackend("monitoring/toggle_reference_filters?preset=low_mid")
-return
-!Numpad4::
-	callBackend("monitoring/toggle_reference_filters?preset=mid")
-return
-!Numpad5::
-	callBackend("monitoring/toggle_reference_filters?preset=high")
-return
-!Numpad7::
-	callBackend("monitoring/toggle_reference_stereo_mode?stereo_mode=mono")
-return
-!Numpad8::
-	callBackend("monitoring/toggle_reference_stereo_mode?stereo_mode=sides")
-return
-!Numpad9::
-	callBackend("monitoring/toggle_reference_stereo_mode?stereo_mode=stereo")
-return
 ~^+f::
 	Send ^+f  ; cancel Ableton Follow
 	callBackend("search/track")

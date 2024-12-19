@@ -70,10 +70,6 @@ class SimpleTrackDevices(SlotManager, Observable):
     @property
     def selected(self) -> Optional[Device]:
         if self._track and self._track.view.selected_device:
-            from protocol0.shared.logging.Logger import Logger
-
-            Logger.dev(self._track.view.selected_device)
-            Logger.dev(self.all)
             device: Optional[Device] = find_if(
                 lambda d: d._device == self._track.view.selected_device, self.all
             )

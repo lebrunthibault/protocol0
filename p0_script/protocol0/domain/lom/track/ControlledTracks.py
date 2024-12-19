@@ -94,7 +94,7 @@ ControlledTracksRegistry: Dict[ControlledTracksEnum, ControlledTracks] = {
     ),
     ControlledTracksEnum.VOCALS: ControlledTracks(ControlledTracksEnum.VOCALS),
     ControlledTracksEnum.HARMONY: ControlledTracks(ControlledTracksEnum.HARMONY),
-    ControlledTracksEnum.LEAD: ControlledTracks(ControlledTracksEnum.LEAD),
+    ControlledTracksEnum.MELODY: ControlledTracks(ControlledTracksEnum.MELODY),
     ControlledTracksEnum.BASS: ControlledTracks(ControlledTracksEnum.BASS, skip_group_track=True),
     ControlledTracksEnum.SUB: ControlledTracks(ControlledTracksEnum.SUB, is_top_track=False),
 }

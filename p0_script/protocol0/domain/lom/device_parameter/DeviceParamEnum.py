@@ -14,6 +14,10 @@ class DeviceParamEnum(Enum):
     DECAY = "DECAY"
     DELAY_INPUT = "DELAY_INPUT"
     DEVICE_ON = "DEVICE_ON"
+    DIVA_FILTER_FREQ = "DIVA_FILTER_FREQ"
+    DIVA_FILTER_ENV = "DIVA_FILTER_ENV"
+    DIVA_FILTER_RES = "DIVA_FILTER_RES"
+    DIVA_OUTPUT = "DIVA_OUTPUT"
     DRIVE = "DRIVE"
     DRY_WET = "DRY_WET"
     FB = "FB"
@@ -53,6 +57,10 @@ class DeviceParamEnum(Enum):
             DeviceParamEnum.CHAIN_SELECTOR: "Chain Selector",
             DeviceParamEnum.DECAY: "Decay",
             DeviceParamEnum.DEVICE_ON: "Device On",
+            DeviceParamEnum.DIVA_FILTER_FREQ: "Frequency",
+            DeviceParamEnum.DIVA_FILTER_ENV: "FreqModDepth",
+            DeviceParamEnum.DIVA_FILTER_RES: "Resonance",
+            DeviceParamEnum.DIVA_OUTPUT: "Output",
             DeviceParamEnum.DRIVE: "Drive",
             DeviceParamEnum.FB: "FB",
             DeviceParamEnum.FILTER_PRESET: "Filter Preset",
