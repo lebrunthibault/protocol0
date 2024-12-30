@@ -108,6 +108,9 @@ return
 ^NumpadSub::
     callBackend("track/collapse_selected")
 return
+^Numpad0::
+    callBackend("clip/clear_muted_notes")
+return
 
 ; SELECTING TRACKS
 ~^+m::

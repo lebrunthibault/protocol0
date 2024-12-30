@@ -1,8 +1,7 @@
 from os.path import dirname
 from typing import List
 
-from fastapi import APIRouter, Depends
-from fastapi_limiter.depends import RateLimiter
+from fastapi import APIRouter
 from loguru import logger
 from pydantic import BaseModel
 
@@ -37,7 +36,8 @@ class PostCurrentStatePayload(BaseModel):
     post_current_state_payload: AbletonSetCurrentState
 
 
-@router.post("/current_state", dependencies=[Depends(RateLimiter(times=1, milliseconds=50))])
+# @router.post("/current_state", dependencies=[Depends(RateLimiter(times=1, milliseconds=50))])
+@router.post("/current_state")
 async def post_current_state(payload: PostCurrentStatePayload):
     await AbletonSetManager.create_from_current_state(payload.post_current_state_payload)
 

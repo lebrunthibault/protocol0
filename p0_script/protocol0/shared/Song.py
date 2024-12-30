@@ -145,8 +145,8 @@ class Song(object):
             cls._INSTANCE._track_component.un_focus_all_tracks()
             track.solo = True
 
-        if not track.is_foldable:
-            track.arm_state.arm()
+        # if not track.is_foldable:
+        #     track.arm_state.arm()
 
         return track
 

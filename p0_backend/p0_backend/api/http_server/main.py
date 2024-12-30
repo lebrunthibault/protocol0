@@ -2,13 +2,11 @@
 import traceback
 from contextlib import asynccontextmanager
 
-import redis.asyncio as redis
 import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
-from fastapi_limiter import FastAPILimiter
 from loguru import logger
 from ratelimit import RateLimitException
 from starlette.middleware.cors import CORSMiddleware
@@ -31,14 +29,14 @@ settings = Settings()
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    redis_connection = redis.from_url("redis://localhost:6379", encoding="utf8")
-    await FastAPILimiter.init(redis_connection)
+    # redis_connection = redis.from_url("redis://localhost:6379", encoding="utf8")
+    # await FastAPILimiter.init(redis_connection)
 
     p0_script_client().dispatch(GetSetStateCommand())
 
     yield
 
-    await FastAPILimiter.close()
+    # await FastAPILimiter.close()
 
 
 app = FastAPI(lifespan=lifespan, debug=True, title="p0_backend", version="1.0.0")
