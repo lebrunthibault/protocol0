@@ -16,14 +16,16 @@ from protocol0.domain.lom.track.simple_track.audio.special.SimpleAutomationTrack
 from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
 from protocol0.domain.lom.track.simple_track.midi.special.CthulhuTrack import CthulhuTrack
 from protocol0.domain.lom.track.simple_track.midi.special.NerveTrack import NerveTrack
-from protocol0.domain.lom.track.simple_track.midi.special.UsamoTrack import UsamoTrack
 from protocol0.domain.shared.BrowserServiceInterface import BrowserServiceInterface
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.shared.Song import Song
 
 
 def _get_simple_track_class(track: Live.Track.Track) -> Type[SimpleTrack]:
-    special_tracks = (NerveTrack, ResamplingTrack, UsamoTrack)
+    special_tracks = (
+        NerveTrack,
+        ResamplingTrack,
+    )
 
     cls = None
 

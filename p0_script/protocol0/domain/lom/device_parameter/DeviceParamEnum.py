@@ -14,6 +14,10 @@ class DeviceParamEnum(Enum):
     DECAY = "DECAY"
     DELAY_INPUT = "DELAY_INPUT"
     DEVICE_ON = "DEVICE_ON"
+    DIVA_ENV_ATTACK = "DIVA_ENV_ATTACK"
+    DIVA_ENV_DECAY = "DIVA_ENV_DECAY"
+    DIVA_ENV_SUSTAIN = "DIVA_ENV_SUSTAIN"
+    DIVA_ENV_RELEASE = "DIVA_ENV_RELEASE"
     DIVA_FILTER_FREQ = "DIVA_FILTER_FREQ"
     DIVA_FILTER_ENV = "DIVA_FILTER_ENV"
     DIVA_FILTER_RES = "DIVA_FILTER_RES"
@@ -57,6 +61,10 @@ class DeviceParamEnum(Enum):
             DeviceParamEnum.CHAIN_SELECTOR: "Chain Selector",
             DeviceParamEnum.DECAY: "Decay",
             DeviceParamEnum.DEVICE_ON: "Device On",
+            DeviceParamEnum.DIVA_ENV_ATTACK: "Attack",
+            DeviceParamEnum.DIVA_ENV_DECAY: "Decay",
+            DeviceParamEnum.DIVA_ENV_SUSTAIN: "Sustain",
+            DeviceParamEnum.DIVA_ENV_RELEASE: "Release",
             DeviceParamEnum.DIVA_FILTER_FREQ: "Frequency",
             DeviceParamEnum.DIVA_FILTER_ENV: "FreqModDepth",
             DeviceParamEnum.DIVA_FILTER_RES: "Resonance",
