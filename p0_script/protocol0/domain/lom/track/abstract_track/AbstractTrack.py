@@ -6,7 +6,6 @@ from _Framework.SubjectSlot import SlotManager
 
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
 from protocol0.domain.lom.instrument.InstrumentInterface import InstrumentInterface
-from protocol0.domain.lom.instrument.instrument.InstrumentDrumRack import InstrumentDrumRack
 from protocol0.domain.lom.track.TrackDisconnectedEvent import TrackDisconnectedEvent
 from protocol0.domain.lom.track.abstract_track.AbstrackTrackArmState import AbstractTrackArmState
 from protocol0.domain.lom.track.abstract_track.AbstractTrackAppearance import (
@@ -112,8 +111,8 @@ class AbstractTrack(SlotManager):
     def get_full_name(self, scene_index: int) -> str:
         full_name = " - ".join([t.name for t in self.group_tracks + [self]])
 
-        if self.instrument and not isinstance(self.instrument, InstrumentDrumRack):
-            full_name += f" ({self.instrument.full_name})"  # type: ignore[unreachable]
+        if self.instrument:
+            full_name += f" ({self.instrument.full_name})"
 
         from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 

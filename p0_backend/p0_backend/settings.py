@@ -2,7 +2,6 @@ from os.path import dirname
 
 from pydantic_settings import BaseSettings
 
-RIGHT_BBOX = (960, 0, 1920, 1080)
 DOWN_BBOX = (660, 300, 1920, 1080)
 
 

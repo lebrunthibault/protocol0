@@ -2,7 +2,6 @@ from typing import Optional, List, Type, TYPE_CHECKING
 
 import protocol0.domain.lom.instrument.instrument as instrument_package
 from protocol0.domain.lom.device.Device import Device
-from protocol0.domain.lom.device.DrumRackDevice import DrumRackDevice
 from protocol0.domain.lom.device.PluginDevice import PluginDevice
 from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.device.SimplerDevice import SimplerDevice
@@ -50,14 +49,7 @@ class InstrumentFactory(object):
 
     @classmethod
     def _get_instrument_class(cls, device: Device) -> Optional[Type[InstrumentInterface]]:
-        # checking for grouped devices
-        if isinstance(device, DrumRackDevice):
-            from protocol0.domain.lom.instrument.instrument.InstrumentDrumRack import (
-                InstrumentDrumRack,
-            )
-
-            return InstrumentDrumRack
-        elif isinstance(device, PluginDevice):
+        if isinstance(device, PluginDevice):
             if not device.enum:
                 Logger.warning(f"plugin device not detected : {device}")
                 return None

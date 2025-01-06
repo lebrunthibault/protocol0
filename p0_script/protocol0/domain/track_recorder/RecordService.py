@@ -246,7 +246,6 @@ class RecordService(object):
         if not isinstance(clip, MidiClip):
             return
 
-        clip.fix_notes_left_boundary()
         clip.name = str(clip.bar_length)
         clip.crop()
         clip.quantize()

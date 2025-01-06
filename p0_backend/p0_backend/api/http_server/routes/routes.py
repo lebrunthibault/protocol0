@@ -8,7 +8,6 @@ from p0_backend.lib.ableton.ableton import (
     show_plugins,
 )
 from p0_backend.lib.ableton.automation import set_envelope_loop_length
-from p0_backend.lib.ableton.interface.sample import load_sample_in_simpler
 from p0_backend.lib.ableton.set_profiling.ableton_set_profiler import AbletonSetProfiler
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.explorer import close_samples_windows, close_explorer_window
@@ -18,7 +17,6 @@ from p0_backend.lib.process import execute_powershell_command
 from p0_backend.lib.window.find_window import find_window_handle_by_enum
 from p0_backend.lib.window.window import focus_window
 from p0_backend.settings import Settings
-from protocol0.application.command.DrumRackToSimplerCommand import DrumRackToSimplerCommand
 from protocol0.application.command.LogSelectedCommand import LogSelectedCommand
 from protocol0.application.command.LogSongStatsCommand import LogSongStatsCommand
 from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongCommand
@@ -85,11 +83,6 @@ def show_hide_plugins():
 @router.get("/hide_plugins")
 def _hide_plugins():
     hide_plugins()
-
-
-@router.get("/load_sample_in_simpler")
-def _load_sample_in_simpler(sample_path: str):
-    load_sample_in_simpler(sample_path)
 
 
 @router.get("/set_envelope_loop_length")
@@ -169,11 +162,6 @@ async def _log_selected():
 @router.get("/log_song_stats")
 async def _log_song_stats():
     p0_script_client().dispatch(LogSongStatsCommand())
-
-
-@router.get("/drum_rack_to_simpler")
-async def drum_rack_to_simpler():
-    p0_script_client().dispatch(DrumRackToSimplerCommand())
 
 
 @router.get("/scroll_presets")

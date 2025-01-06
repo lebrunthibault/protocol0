@@ -20,11 +20,6 @@ class MidiClip(Clip):
         super(MidiClip, self).__init__(*a, **k)
         self._muted_listener.subject = self._clip
 
-    @property
-    def is_empty(self) -> bool:
-        notes = self.get_notes()
-        return len(list(filter(lambda n: not n.muted, notes))) == 0
-
     def get_notes(self) -> List[Note]:
         if not self._clip:
             return []
@@ -61,22 +56,7 @@ class MidiClip(Clip):
         return self.set_notes([], replace=True)
 
     def clear_muted_notes(self) -> Optional[Sequence]:
-        notes = self.get_notes()
-        return self.set_notes([n for n in notes if not n.muted], replace=True)
-
-    def on_added(self) -> Optional[Sequence]:
-        if len(self.get_notes()) > 0 or self.is_recording:
-            return None
-
-        self._clip.view.grid_quantization = Live.Clip.GridQuantization.g_eighth
-
-        seq = Sequence()
-        seq.defer()
-        seq.add(partial(setattr, self, "length", Song.selected_scene().length))
-        seq.add(partial(setattr, self._clip, "end_marker", Song.selected_scene().length))
-        seq.add(self.show_loop)
-
-        return seq.done()
+        return self.set_notes([n for n in self.get_notes() if not n.muted], replace=True)
 
     @subject_slot("muted")
     def _muted_listener(self) -> None:
@@ -125,14 +105,3 @@ class MidiClip(Clip):
             self._clip.crop()  # noqa
 
         return None
-
-    def fix_notes_left_boundary(self) -> None:
-        loop_start = self.loop.start
-        self.loop.start = 0
-        notes = self.get_notes()
-        for note in notes:
-            if note.start < loop_start < note.end:
-                note.start = loop_start
-
-        self.set_notes(notes)
-        self.loop.start = loop_start
