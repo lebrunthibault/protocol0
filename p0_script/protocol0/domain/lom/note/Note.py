@@ -11,11 +11,6 @@ class Note(object):
 
     def __init__(self, live_note: Live.Clip.MidiNote) -> None:
         super(Note, self).__init__()
-        # self._pitch = int(pitch)
-        # self._start = start
-        # self._duration = duration
-        # self._velocity: float = int(velocity)
-        # self._muted = muted
         self._live_note = live_note
 
     def __eq__(self, other: object) -> bool:

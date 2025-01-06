@@ -3,7 +3,6 @@ import collections
 from typing import Dict, List
 
 from protocol0.domain.audit.stats.DeviceStats import DevicesStats
-from protocol0.domain.audit.stats.SampleStats import SampleStats
 from protocol0.domain.audit.stats.SceneStats import SceneStats
 from protocol0.domain.audit.stats.Stats import Stats
 from protocol0.domain.audit.stats.TrackStats import TrackStats
@@ -13,7 +12,6 @@ class SongStats(object):
     def __init__(self) -> None:
         self._stats: List[Stats] = [
             # ClipStats(),
-            SampleStats(),
             TrackStats(),
             DevicesStats(),
             SceneStats(),

@@ -19,7 +19,6 @@ _.start_profiling_single_measurement  # unused method (p0_backend\lib\ableton\se
 send_up  # unused function (p0_backend\lib\keys.py:17)
 send_left  # unused function (p0_backend\lib\keys.py:27)
 command_test  # unused function (p0_backend\scripts\cli.py:11)
-load_sample_in_simpler  # unused function (p0_backend\lib\ableton\interface\sample.py:10)
 click_vertical_zone  # unused function (p0_backend\lib\mouse\mouse.py:49)
 validation_exception_handler  # unused function (p0_backend\api\http_server\main.py:50)
 execute_action  # unused function (p0_backend\api\http_server\script_actions\router.py:71)

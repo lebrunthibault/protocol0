@@ -1,17 +1,11 @@
-from protocol0.domain.lom.device.DrumRackService import DrumRackService
-from protocol0.domain.lom.instrument.instrument.InstrumentDrumRack import InstrumentDrumRack
-from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.validation.ValidatorFactory import ValidatorFactory
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.shared.logging.Logger import Logger
 
 
 class ValidatorService(object):
-    def __init__(
-        self, validator_factory: ValidatorFactory, drum_rack_service: DrumRackService
-    ) -> None:
+    def __init__(self, validator_factory: ValidatorFactory) -> None:
         self._validator_factory = validator_factory
-        self._drum_rack_service = drum_rack_service
 
     def validate_object(self, obj: object) -> bool:
         validator = self._validator_factory.create_from_object(obj)
@@ -37,6 +31,3 @@ class ValidatorService(object):
 
         if hasattr(obj, "appearance") and hasattr(obj.appearance, "refresh"):  # type: ignore
             obj.appearance.refresh()  # type: ignore
-
-        if isinstance(obj, SimpleTrack) and isinstance(obj.instrument, InstrumentDrumRack):
-            self._drum_rack_service.clean_racks(obj.instrument)

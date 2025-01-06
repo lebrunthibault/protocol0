@@ -11,4 +11,3 @@ def test_instantiation_simple():
     add_track(track_type=TrackType.AUDIO)
     CommandBus.dispatch(ReloadScriptCommand())
     assert len(list(Song.simple_tracks())) == 3
-

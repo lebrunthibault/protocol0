@@ -12,7 +12,6 @@ from protocol0.domain.audit.SetFixerService import SetFixerService
 from protocol0.domain.audit.SongStatsService import SongStatsService
 from protocol0.domain.lom.device.DeviceDisplayService import DeviceDisplayService
 from protocol0.domain.lom.device.DeviceService import DeviceService
-from protocol0.domain.lom.device.DrumRackService import DrumRackService
 from protocol0.domain.lom.instrument.instrument.InstrumentService import InstrumentService
 from protocol0.domain.lom.instrument.preset.InstrumentPresetScrollerService import (
     InstrumentPresetScrollerService,
@@ -108,8 +107,7 @@ class Container(ContainerInterface):
             track_crud_component, device_component, browser_service, live_song.move_device
         )
         instrument_service = InstrumentService(device_service, device_component)
-        drum_rack_service = DrumRackService(browser_service)
-        track_factory = TrackFactory(track_crud_component, browser_service, drum_rack_service)
+        track_factory = TrackFactory(track_crud_component, browser_service)
         track_automation_service = TrackAutomationService(track_factory)
         track_mapper_service = TrackMapperService(live_song, track_factory)
         track_player_service = ClipPlayerService()
@@ -123,7 +121,7 @@ class Container(ContainerInterface):
             track_crud_component,
             scene_playback_service,
         )
-        validator_service = ValidatorService(ValidatorFactory(browser_service), drum_rack_service)
+        validator_service = ValidatorService(ValidatorFactory(browser_service))
         set_fixer_service = SetFixerService(validator_service)
         song_stats_service = SongStatsService(ableton_set)
         audio_export_service = AudioExportService(
@@ -180,7 +178,6 @@ class Container(ContainerInterface):
         self._register(instrument_preset_scroller_service)
 
         self._register(device_service)
-        self._register(drum_rack_service)
 
         self._register(mixing_service)
         self._register(track_recorder_service)

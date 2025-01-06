@@ -2,7 +2,6 @@ from typing import Optional, Type
 
 import Live
 
-from protocol0.domain.lom.device.DrumRackService import DrumRackService
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
 from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitoringStateEnum
 from protocol0.domain.lom.track.group_track.AbstractGroupTrack import AbstractGroupTrack
@@ -62,11 +61,9 @@ class TrackFactory(object):
         self,
         track_crud_component: TrackCrudComponent,
         browser_service: BrowserServiceInterface,
-        drum_rack_service: DrumRackService,
     ) -> None:
         self._track_crud_component = track_crud_component
         self._browser_service = browser_service
-        self._drum_rack_service = drum_rack_service
 
     def create_simple_track(
         self, track: Live.Track.Track, index: int, cls: Optional[Type[SimpleTrack]] = None
