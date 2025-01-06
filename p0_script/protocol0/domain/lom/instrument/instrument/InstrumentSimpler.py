@@ -1,7 +1,6 @@
 from typing import cast, Any
 
 from protocol0.domain.lom.device.SimplerDevice import SimplerDevice
-from protocol0.domain.lom.instrument.InstrumentColorEnum import InstrumentColorEnum
 from protocol0.domain.lom.instrument.InstrumentInterface import InstrumentInterface
 from protocol0.domain.lom.instrument.preset.PresetDisplayOptionEnum import PresetDisplayOptionEnum
 from protocol0.shared.Config import Config
@@ -9,7 +8,6 @@ from protocol0.shared.Config import Config
 
 class InstrumentSimpler(InstrumentInterface):
     NAME = "Simpler"
-    TRACK_COLOR = InstrumentColorEnum.SIMPLER
     PRESETS_PATH = Config.SAMPLE_DIRECTORY
     PRESET_DISPLAY_OPTION = PresetDisplayOptionEnum.CATEGORY
 

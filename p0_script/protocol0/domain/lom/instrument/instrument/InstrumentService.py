@@ -60,7 +60,6 @@ class InstrumentService(object):
         self,
         x_param: XParam,
         pd: Optional[ParamDevice],
-        select_clip: bool = True,
         auto_enable: bool = True,
     ) -> Union[None, Clip, Sequence]:
         device = self._get_device(x_param, pd, auto_enable)
@@ -74,9 +73,6 @@ class InstrumentService(object):
         if not clip:
             Logger.warning("No selected clip")
             return None
-
-        if select_clip:
-            clip.select()
 
         return clip
 
@@ -144,7 +140,7 @@ class InstrumentService(object):
         param_conf, pd = x_param.get_scrollable(go_next)
         auto_enable = not isinstance(param_conf, DeviceParam) or param_conf.auto_disable is False
 
-        res = self._setup_device_and_clip(x_param, pd, select_clip=False, auto_enable=auto_enable)
+        res = self._setup_device_and_clip(x_param, pd, auto_enable=auto_enable)
         if isinstance(res, Sequence):
             return res
 

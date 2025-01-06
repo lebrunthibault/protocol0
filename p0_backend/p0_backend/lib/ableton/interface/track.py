@@ -1,10 +1,8 @@
-from time import sleep
 from typing import List, Union, Optional
 
 import pyautogui
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.lib.ableton.get_set import get_ableton_window_titles
 from p0_backend.lib.ableton.interface.coords import Coords
 from p0_backend.lib.ableton.interface.pixel import (
     get_pixel_color_at,
@@ -70,45 +68,6 @@ def click_context_menu(track_coords: Coords, y_offsets: Union[int, List[int]]) -
     click(menu_coords)
 
     return menu_coords
-
-
-def freeze_track():
-    track_coords = get_focused_track_coords()
-
-    freeze_coords = click_context_menu(track_coords, [98, 136, 137])
-
-    if freeze_coords is None:
-        return
-
-    sleep(0.2)
-
-    # wait for track freeze
-    while "Freeze..." in get_ableton_window_titles():
-        sleep(0.2)
-
-    sleep(0.3)
-
-    p0_script_client().dispatch(EmitBackendEventCommand("track_freezed"))
-
-    return freeze_coords
-
-
-def flatten_track():
-    track_coords = get_focused_track_coords()
-
-    freeze_coords = freeze_track()
-
-    click(track_coords, button=pyautogui.RIGHT)
-    click((freeze_coords[0], freeze_coords[1] + 20))  # flatten track
-
-    p0_script_client().dispatch(EmitBackendEventCommand("track_flattened"))
-
-
-def add_track_to_selection():
-    track_coords = get_focused_track_coords()
-    click(track_coords)
-
-    p0_script_client().dispatch(EmitBackendEventCommand("track_selected"))
 
 
 def load_instrument_track(instrument_name: str):

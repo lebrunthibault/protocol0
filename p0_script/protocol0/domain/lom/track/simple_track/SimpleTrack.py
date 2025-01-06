@@ -1,5 +1,4 @@
 from functools import partial
-from string import ascii_lowercase
 from typing import cast, List, Optional, Dict, Iterable
 
 import Live
@@ -7,9 +6,6 @@ from _Framework.SubjectSlot import subject_slot
 
 from protocol0.domain.lom.clip.AudioClip import AudioClip
 from protocol0.domain.lom.clip.Clip import Clip
-from protocol0.domain.lom.clip.ClipConfig import ClipConfig
-from protocol0.domain.lom.clip.ClipInfo import ClipInfo
-from protocol0.domain.lom.clip.ClipTail import ClipTail
 from protocol0.domain.lom.clip.MidiClip import MidiClip
 from protocol0.domain.lom.clip_slot.ClipSlot import ClipSlot
 from protocol0.domain.lom.device.RackDevice import RackDevice
@@ -32,9 +28,6 @@ from protocol0.domain.lom.track.simple_track.SimpleTrackCreatedEvent import Simp
 from protocol0.domain.lom.track.simple_track.SimpleTrackDeletedEvent import SimpleTrackDeletedEvent
 from protocol0.domain.lom.track.simple_track.SimpleTrackDisconnectedEvent import (
     SimpleTrackDisconnectedEvent,
-)
-from protocol0.domain.lom.track.simple_track.SimpleTrackFlattenedEvent import (
-    SimpleTrackFlattenedEvent,
 )
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.backend.Backend import Backend
@@ -123,13 +116,9 @@ class SimpleTrack(AbstractTrack):
 
         self.devices = SimpleTrackDevices(live_track)
 
-        self._clip_config = ClipConfig(self.color)
-        self._clip_slots = SimpleTrackClipSlots(
-            live_track, self.CLIP_SLOT_CLASS, self._clip_config, self.devices
-        )
+        self._clip_slots = SimpleTrackClipSlots(live_track, self.CLIP_SLOT_CLASS)
         self._clip_slots.build()
         self._clip_slots.register_observer(self)
-        self.clip_tail = ClipTail(self._clip_slots)
 
         self.devices.register_observer(self)
 
@@ -196,7 +185,7 @@ class SimpleTrack(AbstractTrack):
         clip_class = MidiClip if isinstance(self, SimpleMidiTrack) else AudioClip
 
         try:
-            return (clip_class(clip, 0, ClipConfig()) for clip in self._track.arrangement_clips)
+            return (clip_class(clip, 0) for clip in self._track.arrangement_clips)
         except RuntimeError:
             return []
 
@@ -339,7 +328,6 @@ class SimpleTrack(AbstractTrack):
     @color.setter
     def color(self, color_index: int) -> None:
         self.appearance.color = color_index
-        self._clip_config.color = color_index
 
         for clip in self.clips:
             clip.color = color_index
@@ -479,81 +467,6 @@ class SimpleTrack(AbstractTrack):
 
         # defensive : this will normally be done before
         seq.add(lambda: Scheduler.wait_ms(2000, partial(setattr, self, "color", track_color)))
-
-        return seq.done()
-
-    def add_to_selection(self) -> Sequence:
-        track_color = self.color
-
-        seq = Sequence()
-        self.focus()
-        # seq.add(self.focus)
-        seq.add(Backend.client().add_track_to_selection)
-        seq.wait_for_backend_event("track_selected", timeout=3000)
-        seq.add(partial(setattr, self, "color", track_color))
-
-        return seq.done()
-
-    def freeze(self) -> Sequence:
-        # this is needed to have flattened clip of the right length
-        Song._live_song().stop_playing()
-
-        self.current_monitoring_state = CurrentMonitoringStateEnum.AUTO
-
-        clip_hashes = {}
-        alphabet = iter(ascii_lowercase)
-        for clip in self.clips:
-            if isinstance(clip, MidiClip) and clip.is_empty:
-                clip.delete()
-            clip_hash = clip.get_hash(self.devices.parameters)
-            if clip_hash in clip_hashes:
-                clip.muted = True
-            else:
-                clip_hashes[clip_hash] = next(alphabet).upper()
-
-            clip.name = clip_hashes[clip_hash]
-
-        self.clear_arrangement()
-
-        seq = Sequence()
-
-        recolor_track = partial(setattr, self, "color", self.color)
-        seq.add(self.focus)
-        seq.add(Backend.client().freeze_track)
-        seq.wait_for_backend_event("track_focused")
-        seq.add(recolor_track)
-        seq.wait_for_backend_event("track_freezed")
-        seq.defer()
-
-        return seq.done()
-
-    def flatten(self, flatten_track: bool = True) -> Sequence:
-        # this is needed to have flattened clip of the right length
-        Song._live_song().stop_playing()
-
-        clip_infos = ClipInfo.create_from_clips(self.clips, self.devices.parameters, True)
-
-        for clip in self.clips:
-            clip.loop.end = clip.loop.end_marker  # to have tails
-
-        self.clear_arrangement()
-
-        seq = Sequence()
-
-        if flatten_track:
-            recolor_track = partial(setattr, self, "color", self.color)
-            seq.add(self.focus)
-            seq.add(Backend.client().flatten_track)
-            seq.wait_for_backend_event("track_focused")
-            seq.add(recolor_track)
-            seq.wait_for_backend_event("track_flattened")
-            seq.defer()
-        else:
-            self.select()
-
-        seq.add(partial(ClipInfo.restore_duplicate_clips, clip_infos))
-        seq.add(partial(DomainEventBus.emit, SimpleTrackFlattenedEvent()))
-        seq.defer()
 
         return seq.done()
 

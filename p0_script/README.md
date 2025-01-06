@@ -22,24 +22,12 @@ from python running on my local machine.
 - At the moment I consume the server api points in 3 ways (all the code is present in the monorepo):
   - via ahk shortcuts, so I can create custom shortcuts linked to the script ([p0_ahk](https://github.com/lebrunthibault/protocol0/tree/main/p0_ahk))
   - via my Elgato stream deck ([p0_stream_deck](https://github.com/lebrunthibault/protocol0/tree/main/p0_stream_deck))
-  - via a vue web app running locally ([p0_web](https://github.com/lebrunthibault/protocol0/tree/main/p0_web))
+  - via a vue.js web app running locally ([p0_web](https://github.com/lebrunthibault/protocol0/tree/main/p0_web))
 
 ## Features
 
-I started writing the script specifically because I thought recording my Prophet Rev2 was tedious. 
-Later on I realized I would probably produce better if I was working more in session view
-and experiment longer instead of rushing to arrangement. It's always been a session view tool.
-
-The script does a lot of little things that boost session view productivity including :
-
-- A better workflow when using external synthesizers (now more of a legacy feature as I work mostly with vst synths)
-- Handling of audio clip tails (recording and playing) to have perfect loops when recording hardware
-- A way to "scroll" and launch scenes (bar or even beat by beat)
-- A tool to bounce session to arrangement
-- Tools to split and crop scenes
-- Smart encoder that control different params depending on the device context
-- A bunch of automatic behavior depending on the track, scene or clip context (e.g. scenes named "skip" are skipped ..)
-
+Used to be a session view tool for recording stuff like external synth / audio, scrolling scenes, duplicating clips, freezing / flattening tracks..
+It's not anymore, and I removed a few of the more complex features. 
 <br><br>
 
 ## The backend

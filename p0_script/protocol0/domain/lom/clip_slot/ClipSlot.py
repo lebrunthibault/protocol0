@@ -5,9 +5,7 @@ from _Framework.SubjectSlot import subject_slot, SlotManager
 from typing import Any, Optional, Type
 
 from protocol0.domain.lom.clip.Clip import Clip
-from protocol0.domain.lom.clip.ClipConfig import ClipConfig
 from protocol0.domain.lom.clip.ClipCreatedOrDeletedEvent import ClipCreatedOrDeletedEvent
-from protocol0.domain.lom.clip.ClipSlotSelectedEvent import ClipSlotSelectedEvent
 from protocol0.domain.lom.clip_slot.ClipSlotAppearance import ClipSlotAppearance
 from protocol0.domain.lom.clip_slot.ClipSlotPlayingStatusUpdatedEvent import (
     ClipSlotPlayingStatusUpdatedEvent,
@@ -23,13 +21,10 @@ from protocol0.shared.sequence.Sequence import Sequence
 class ClipSlot(SlotManager, Observable):
     CLIP_CLASS: Type[Clip] = Clip
 
-    def __init__(
-        self, live_clip_slot: Live.ClipSlot.ClipSlot, index: int, clip_config: ClipConfig
-    ) -> None:
+    def __init__(self, live_clip_slot: Live.ClipSlot.ClipSlot, index: int) -> None:
         super(ClipSlot, self).__init__()
         self._clip_slot = live_clip_slot
         self._index = index
-        self._clip_config = clip_config
         self.appearance = ClipSlotAppearance(live_clip_slot)
 
         self._has_clip_listener.subject = self._clip_slot
@@ -61,7 +56,7 @@ class ClipSlot(SlotManager, Observable):
 
     def _map_clip(self, is_new: bool = False) -> None:
         if self.has_clip:
-            self.clip = self.CLIP_CLASS(self._clip_slot.clip, self.index, self._clip_config)
+            self.clip = self.CLIP_CLASS(self._clip_slot.clip, self.index)
 
             if is_new:
                 self.clip.on_added()
@@ -77,8 +72,6 @@ class ClipSlot(SlotManager, Observable):
         if isinstance(observable, Clip):
             if observable.deleted:
                 self.delete_clip()
-            elif observable.selected:
-                self.select()
 
     @property
     def has_clip(self) -> bool:
@@ -104,9 +97,6 @@ class ClipSlot(SlotManager, Observable):
 
     def fire(self) -> None:
         self._clip_slot.fire()
-
-    def select(self) -> None:
-        DomainEventBus.emit(ClipSlotSelectedEvent(self._clip_slot))
 
     def delete_clip(self) -> Sequence:
         seq = Sequence()

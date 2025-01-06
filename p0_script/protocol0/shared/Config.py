@@ -1,8 +1,6 @@
 import os
 from os.path import dirname, realpath
 
-import Live
-
 from protocol0.domain.track_recorder.recording_bar_length.RecordingBarLengthEnum import (
     RecordingBarLengthEnum,
 )
@@ -17,13 +15,8 @@ class Config(object):
 
     # MISC
     DEFAULT_RECORDING_BAR_LENGTH = RecordingBarLengthEnum.ONE
-    # DEFAULT_RECORDING_BAR_LENGTH = RecordingBarLengthEnum.EIGHT
-
-    EXPERIMENTAL_FEATURES = False
 
     LOG_LEVEL = LogLevelEnum.DEV
-
-    DEFAULT_WARP_MODE = Live.Clip.WarpMode.beats
 
     CLIP_MAX_LENGTH = 63072000
 

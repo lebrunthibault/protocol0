@@ -1,7 +1,6 @@
 from typing import cast
 
 from protocol0.domain.lom.clip.Clip import Clip
-from protocol0.domain.lom.clip.ClipConfig import ClipConfig
 from protocol0.domain.lom.scene.SceneClips import SceneClips, SceneClipSlot
 from protocol0.domain.lom.scene.SceneLength import SceneLength
 from protocol0.shared.Song import Song
@@ -26,7 +25,7 @@ def test_scene_length():
     live_clip.length = 4
     clip_slot = AbletonClipSlot()
     clip_slot.has_clip = True
-    clip_slot.clip = Clip(live_clip_slot.clip, 1, ClipConfig(1))
+    clip_slot.clip = Clip(live_clip_slot.clip, 1)
     clips.clip_slot_tracks.append(SceneClipSlot(None, clip_slot))  # noqa
 
     assert scene_length.length == 4

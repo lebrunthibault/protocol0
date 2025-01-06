@@ -7,18 +7,11 @@ from _Framework.SubjectSlot import subject_slot, SlotManager
 
 from protocol0.domain.lom.track.TrackFactory import TrackFactory
 from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
-from protocol0.domain.lom.track.group_track.NormalGroupTrack import NormalGroupTrack
-from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import (
-    ExternalSynthTrack,
-)
 from protocol0.domain.lom.track.simple_track.CurrentMonitoringStateUpdatedEvent import (
     CurrentMonitoringStateUpdatedEvent,
 )
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrackCreatedEvent import SimpleTrackCreatedEvent
-from protocol0.domain.lom.track.simple_track.SimpleTrackFlattenedEvent import (
-    SimpleTrackFlattenedEvent,
-)
 from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_tracks
 from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 from protocol0.domain.lom.track.simple_track.audio.SimpleReturnTrack import SimpleReturnTrack
@@ -27,7 +20,6 @@ from protocol0.domain.lom.track.simple_track.audio.special.SimpleAutomationTrack
     SimpleAutomationTrack,
 )
 from protocol0.domain.lom.track.simple_track.midi.special.CthulhuTrack import CthulhuTrack
-from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.shared.Song import Song
@@ -140,9 +132,6 @@ class TrackMapperService(SlotManager):
 
         seq.add(Song.current_track().arm_state.arm)
 
-        if added_track.index in deleted_track_indexes:
-            seq.add(partial(DomainEventBus.emit, SimpleTrackFlattenedEvent()))
-
         seq.add(Undo.end_undo_step)
         return seq.done()
 
@@ -198,13 +187,6 @@ class TrackMapperService(SlotManager):
 
             previous_abstract_group_track = track.abstract_group_track
             abstract_group_track = self._track_factory.create_abstract_group_track(track)
-
-            if isinstance(previous_abstract_group_track, ExternalSynthTrack) and isinstance(
-                abstract_group_track, NormalGroupTrack
-            ):
-                Backend.client().show_warning(
-                    "%s changed into %s" % (previous_abstract_group_track, abstract_group_track)
-                )
 
             if (
                 previous_abstract_group_track

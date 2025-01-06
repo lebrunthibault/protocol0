@@ -1,33 +1,17 @@
 from functools import partial
+from typing import Any, Optional
 
 import Live
-from typing import Any, Optional, List
 
 from protocol0.domain.lom.clip.Clip import Clip
-from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.backend.Backend import Backend
-from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.ui.ColorEnum import ColorEnum
-from protocol0.shared.Config import Config
 from protocol0.shared.Song import Song
 from protocol0.shared.sequence.Sequence import Sequence
 
 
 class AudioClip(Clip):
-    def __init__(self, *a: Any, **k: Any) -> None:
-        super(AudioClip, self).__init__(*a, **k)
-        Scheduler.defer(self.appearance.refresh)
-
-        # associate the clip with a midi content
-        self.previous_file_path: Optional[str] = None
-
-        # if self.name == Config.DUMMY_CLIP_NAME:
-        #     Scheduler.defer(self.config_dummy_clip)
-
-    def get_hash(self, device_parameters: List[DeviceParameter]) -> int:
-        return hash((self.file_path, self.automation.get_hash(device_parameters)))
-
     @property
     def warping(self) -> bool:
         return self._clip.warping

@@ -6,10 +6,7 @@ from p0_backend.lib.ableton.ableton import (
     show_plugins,
 )
 from p0_backend.lib.ableton.interface.track import (
-    flatten_track,
     load_instrument_track,
-    freeze_track,
-    add_track_to_selection,
 )
 from p0_backend.lib.keys import send_keys
 from protocol0.application.command.BusTrackToZeroDBCommand import BusTrackToZeroDBCommand
@@ -20,21 +17,6 @@ from protocol0.application.command.MuteTrackCommand import MuteTrackCommand
 from protocol0.application.command.SoloTrackCommand import SoloTrackCommand
 
 router = APIRouter()
-
-
-@router.get("/freeze")
-def _freeze_track():
-    freeze_track()
-
-
-@router.get("/flatten")
-def _flatten_track():
-    flatten_track()
-
-
-@router.get("/add_track_to_selection")
-def _add_track_to_selection():
-    add_track_to_selection()
 
 
 @router.get("/un_group")

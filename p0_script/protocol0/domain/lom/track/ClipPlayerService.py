@@ -12,7 +12,6 @@ from protocol0.shared.sequence.Sequence import Sequence
 class ClipPlayerService(object):
     def select_clip(self, track: SimpleTrack) -> None:
         track.is_folded = False
-        track.clip_slots[Song.selected_scene().index].select()
         if track.arm_state.is_armed:
             if Song.selected_track() == track:
                 track.arm_state.unarm()

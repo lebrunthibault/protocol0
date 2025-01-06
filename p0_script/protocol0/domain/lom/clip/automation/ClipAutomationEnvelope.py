@@ -73,14 +73,6 @@ class ClipAutomationEnvelope(object):
             self.insert_step(0, 0, self.start)
             self.insert_step(self._length, 0, 0)
 
-    def copy(self) -> None:
-        self.create_start_and_end_points()
-        Backend.client().select_and_copy()
-
-    def paste(self) -> None:
-        self.create_start_and_end_points()
-        Backend.client().select_and_paste()
-
     @classmethod
     def focus(cls) -> None:
         Backend.client().move_to(1225, 1013)

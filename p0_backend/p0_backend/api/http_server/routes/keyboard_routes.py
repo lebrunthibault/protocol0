@@ -23,18 +23,6 @@ def _scroll(pixels: int = 1):
     scroll(pixels)
 
 
-@router.get("/select_and_copy")
-def select_and_copy():
-    send_keys("^a")
-    send_keys("^c")
-
-
-@router.get("/select_and_paste")
-def select_and_paste():
-    send_keys("^a")
-    send_keys("^v")
-
-
 @router.get("/search")
 def search(text: str):
     send_keys("^f")

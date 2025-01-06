@@ -1,18 +1,13 @@
 from dataclasses import dataclass
 from functools import partial
-from typing import Optional, cast, List, Tuple
+from typing import Optional, List, Tuple
 
 from protocol0.domain.lom.clip.Clip import Clip
-from protocol0.domain.lom.clip.ClipColorEnum import ClipColorEnum
-from protocol0.domain.lom.clip.MidiClip import MidiClip
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
 from protocol0.domain.lom.track.TrackFactory import TrackFactory
-from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import (
-    ExternalSynthTrack,
-)
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.ValueScroller import ValueScroller
@@ -102,44 +97,6 @@ class TrackAutomationService(object):
             )
         )
         self._last_selected_parameter = selected_parameter
-        return seq.done()
-
-    def select_or_sync_automation(self) -> None:
-        """
-        Either we have a midi clip focused and we sync the automation (rev2) layers
-        Or we create a new automation lane for the selected parameter
-        """
-        current_track = Song.current_track()
-        selected_track = Song.selected_track()
-
-        if (
-            isinstance(current_track, ExternalSynthTrack)
-            and selected_track == current_track.midi_track
-        ):
-            Song.selected_clip(MidiClip).synchronize_automation_layers(
-                Song.selected_track().devices.parameters
-            )
-        else:
-            self._create_automation_from_selected_parameter()
-
-    def _create_automation_from_selected_parameter(self) -> Sequence:
-        selected_track = Song.selected_track()
-        selected_clip = selected_track.clip_slots[Song.selected_scene().index].clip
-        selected_parameter = Song.selected_parameter()
-
-        if selected_parameter is None:
-            raise Protocol0Warning("No selected parameter")
-
-        seq = Sequence()
-        if selected_clip is None:
-            raise Protocol0Warning("No selected clip")
-
-        seq.add(
-            lambda: Song.selected_clip().automation.select_or_create_envelope(
-                cast(DeviceParameter, selected_parameter)
-            )
-        )
-
         return seq.done()
 
     def check_automated_parameters(self) -> None:
@@ -267,7 +224,6 @@ class TrackAutomationService(object):
                 f"{boundary_type} on {next_param_env.clip} : {next_param_env.parameter}. {round(boundary_left, 2)} / {round(boundary_right, 2)} = {boundary_ratio} %",
                 debug=False,
             )
-            next_param_env.clip.color = ClipColorEnum.BLINK.value
 
             return False
 

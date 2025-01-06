@@ -63,7 +63,7 @@ class AbstractTrack(SlotManager):
     def abstract_track(self) -> "AbstractTrack":
         """
         For top level SimpleTracks, will return self
-        For AbstractGroupTracks, will return self (NormalGroupTrack and ExternalSynthTrack)
+        For AbstractGroupTracks, will return self (NormalGroupTrack)
         Only for nested SimpleTracks, will return their abstract_group_track
         """
         if self.abstract_group_track:

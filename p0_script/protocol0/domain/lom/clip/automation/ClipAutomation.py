@@ -15,12 +15,6 @@ class ClipAutomation(object):
         self._live_clip = live_clip
         self._loop = loop
 
-    def get_hash(self, device_parameters: List[DeviceParameter]) -> int:
-        automated_parameters = self.get_automated_parameters(device_parameters)
-        envs = [self.get_envelope(param) for param in automated_parameters]
-
-        return hash(tuple([env.hash for env in envs]))
-
     def has_automation(self, device_parameters: List[DeviceParameter]) -> bool:
         return len(self.get_automated_parameters(device_parameters)) != 0
 
@@ -29,9 +23,6 @@ class ClipAutomation(object):
     ) -> List[DeviceParameter]:
         automated_parameters = []
         for parameter in device_parameters:
-            # ignore rev2 b layer (we edit only A)
-            if parameter.name.startswith("B-"):
-                continue
             if self.get_envelope(parameter) is None:
                 continue
 
@@ -53,15 +44,6 @@ class ClipAutomation(object):
                 return ClipAutomationEnvelope(env, self._loop.length)
 
         return None
-
-    def select_or_create_envelope(self, parameter: DeviceParameter) -> None:
-        envelope = self.get_envelope(parameter)
-        if envelope is None:
-            envelope = self.create_envelope(parameter)
-
-        envelope.create_start_and_end_points()
-
-        self.show_parameter_envelope(parameter)
 
     def create_envelope(self, parameter: DeviceParameter) -> ClipAutomationEnvelope:
         try:

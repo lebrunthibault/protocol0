@@ -2,7 +2,6 @@ import collections
 from typing import Dict
 
 from protocol0.domain.lom.track.group_track.NormalGroupTrack import NormalGroupTrack
-from protocol0.domain.lom.track.group_track.ext_track.SimpleMidiExtTrack import SimpleMidiExtTrack
 from protocol0.shared.Song import Song
 
 
@@ -23,7 +22,6 @@ class TrackStats(object):
             track
             for track in Song.simple_tracks()
             if not track.is_foldable
-            and not isinstance(track, (SimpleMidiExtTrack,))
             and (
                 all(clip.muted for clip in track.clips)
                 or track.muted
