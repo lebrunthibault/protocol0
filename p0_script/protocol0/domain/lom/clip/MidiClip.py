@@ -20,7 +20,7 @@ class MidiClip(Clip):
         super(MidiClip, self).__init__(*a, **k)
         self._muted_listener.subject = self._clip
 
-    def get_notes(self) -> List[Note]:
+    def get_notes(self) -> Live.Clip.MidiNoteVector:
         if not self._clip:
             return []
 
@@ -29,34 +29,26 @@ class MidiClip(Clip):
         if len(live_notes) == 0:
             live_notes = self._clip.get_notes_extended(0, 128, self.loop.start, self.length)
 
-        clip_notes = list(map(Note, live_notes))
+        return live_notes
 
-        # noinspection PyArgumentList,PyUnresolvedReferences
-        # clip_notes.sort(key=lambda x: x.start)
-
-        # return clip_notes
-        return clip_notes
-
-    def set_notes(self, notes: List[Note], replace: bool = False) -> Optional[Sequence]:
+    def replace_notes(self, notes: List[Note]) -> Optional[Sequence]:
         if not self._clip:
             return None
 
         seq = Sequence()
 
-        if replace:
-            seq.add(partial(self._clip.remove_notes_extended, 0, 128, 0, self._clip.length))
-
-        # seq.add(partial(self._clip.add_new_notes, [note.to_spec() for note in notes]))
-        seq.add(partial(self._clip.apply_note_modifications, [note._live_note for note in notes]))
+        seq.add(partial(self._clip.remove_notes_extended, 0, 128, 0, self._clip.length))
+        seq.add(partial(self._clip.add_new_notes, [note.to_spec() for note in notes]))
 
         seq.defer()
         return seq.done()
 
     def clear_notes(self) -> Optional[Sequence]:
-        return self.set_notes([], replace=True)
+        return self.replace_notes([])
 
     def clear_muted_notes(self) -> Optional[Sequence]:
-        return self.set_notes([n for n in self.get_notes() if not n.muted], replace=True)
+        notes = map(Note, self.get_notes())
+        return self.replace_notes([n for n in notes if not n.muted])
 
     @subject_slot("muted")
     def _muted_listener(self) -> None:
@@ -86,11 +78,11 @@ class MidiClip(Clip):
             self.quantize()
 
     def scale_velocities(self, go_next: bool, scaling_factor: int = 4) -> None:
-        notes = self.get_notes()
-        if len(notes) == 0:
+        note_vector = self.get_notes()
+        if len(list(note_vector)) == 0:
             return
-        average_velo = sum([note.velocity for note in notes]) / len(notes)
-        for note in notes:
+        average_velo = sum([note.velocity for note in note_vector]) / len(note_vector)
+        for note in note_vector:
             velocity_diff = note.velocity - average_velo
             if go_next:
                 note.velocity += velocity_diff / (scaling_factor - 1)
@@ -98,7 +90,8 @@ class MidiClip(Clip):
                 note.velocity -= velocity_diff / scaling_factor
 
             note.velocity = clamp(note.velocity, 1, 128)
-        self.set_notes(notes)
+
+        self._clip.apply_note_modifications(note_vector)
 
     def crop(self) -> Optional[Sequence]:
         if self._clip:

@@ -1,8 +1,11 @@
 from functools import partial
+from typing import cast
 
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
+import Live
 
 # noinspection SpellCheckingInspection
+from protocol0.domain.lom.clip.MidiClip import MidiClip
 from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
 from protocol0.domain.track_recorder.RecordService import RecordService
 from protocol0.shared.Song import Song
@@ -60,4 +63,10 @@ class ActionGroupMain(ActionGroupInterface):
         self.add_encoder(identifier=16, name="test", on_scroll=scroll_selected_parameter)
 
     def action_test(self) -> None:
-        pass
+        clip = cast(MidiClip, Song.selected_clip())
+        notes = clip.get_notes()
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev(notes)
+        Logger.dev(notes.__dict__)
+        Logger.dev([n for n in notes])

@@ -13,15 +13,6 @@ class Note(object):
         super(Note, self).__init__()
         self._live_note = live_note
 
-    def __eq__(self, other: object) -> bool:
-        return (
-            isinstance(other, Note)
-            and self.pitch == other.pitch
-            and self._is_value_equal(self.start, other.start)
-            and self._is_value_equal(self.duration, other.duration)
-            and self.muted == other.muted
-        )
-
     def __repr__(self, **k: Any) -> str:
         return "{start:%.2f, duration:%.2f, pitch:%s, vel:%s, muted: %s}" % (
             self.start,
@@ -31,8 +22,13 @@ class Note(object):
             self.muted,
         )
 
-    def _is_value_equal(self, val1: float, val2: float, delta: float = 0.00001) -> bool:
-        return abs(val1 - val2) < delta
+    def to_spec(self) -> Live.Clip.MidiNoteSpecification:
+        # noinspection PyUnresolvedReferences
+        from Live.Clip import MidiNoteSpecification as NoteSpec
+
+        return NoteSpec(
+            self.pitch, self.start, self.duration, velocity=self.velocity, mute=self.muted
+        )
 
     @property
     def pitch(self) -> int:
