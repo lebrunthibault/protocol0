@@ -10,7 +10,6 @@ class AbstractGroupTrack(AbstractTrack):
     def __init__(self, base_group_track: SimpleTrack) -> None:
         super(AbstractGroupTrack, self).__init__(base_group_track)
         self.base_track.abstract_group_track = self
-        # filled when link_sub_tracks is called
         self.group_track: Optional[AbstractGroupTrack] = self.group_track
         self.sub_tracks: List[AbstractTrack] = []
         # for now: List[SimpleTrack] but AbstractGroupTracks will register themselves on_tracks_change
@@ -19,10 +18,6 @@ class AbstractGroupTrack(AbstractTrack):
         # 2nd layer linking : here we don't necessarily link the sub tracks to self
         self.sub_tracks[:] = self.base_track.sub_tracks
         self._link_group_track()
-
-    def link_sub_track(self, sub_track: SimpleTrack) -> None:
-        sub_track.group_track = self.base_track
-        sub_track.abstract_group_track = self
 
     def _link_group_track(self) -> None:
         """2nd layer linking : Connect to the enclosing abg group track is any"""

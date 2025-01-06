@@ -2,13 +2,8 @@
 
 Protocol0 is a control surface script project for Ableton Live 11
 
-It is a "selected track control" like
-script focused on working in session view. 
-
-I've been specifically working on making the session recording more powerful and more adapted to my workflow.
-It has a focus on :
-- Recording external synths (both midi and audio) in a smart way
-- Being able to export / import sub tracks so as to always work on flattened audio track with the possibility to recall the base (midi track) at a button push.
+It was originally a "selected track control" like
+script focused on working in session view but became a toolbox to supercharge my ableton process with custom actions. 
 
 ## Requirements
 - [Ableton Live 11+](https://www.ableton.com/fr/live/)

@@ -173,19 +173,9 @@ class ClipLoop(SlotManager, Observable, LoopableInterface):
             self.end_marker -= beats
             self.end -= beats
 
-        # self._clip.view.show_loop()
-
     def match(self, loop: "ClipLoop") -> None:
         self.start = loop.start
         self.end = loop.end
-
-    def matches(self, loop: "ClipLoop") -> bool:
-        return (
-            self.start_marker == loop.start_marker
-            and self.start == loop.start
-            and self.end_marker == loop.end_marker
-            and self.end == loop.end
-        )
 
     def fix(self) -> None:
         self.start = self.start_marker

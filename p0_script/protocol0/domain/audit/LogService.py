@@ -173,10 +173,6 @@ class LogService(object):
             Logger.info()
             Logger.info("song.selected_clip.length: %s" % selected_clip.length)
             Logger.info()
-            if isinstance(selected_clip, AudioClip):
-                Logger.info(
-                    "song.selected_clip.previous_file_path: %s" % selected_clip.previous_file_path
-                )
 
         Logger.info()
         Logger.info("********* ABLETON_SET *************")

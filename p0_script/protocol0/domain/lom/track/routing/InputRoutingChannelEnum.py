@@ -8,5 +8,4 @@ class InputRoutingChannelEnum(Enum):
     POST_MIXER = "Post Mixer"
 
     # MIDI
-    CHANNEL_1 = "Ch. 1"
     CTHULHU = "Cthulhu_x64"

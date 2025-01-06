@@ -1,14 +1,12 @@
-import Live
-from _Framework.SubjectSlot import SlotManager
 from typing import Optional, List, cast
 
-from protocol0.domain.lom.clip.ClipAppearance import ClipAppearance
-from protocol0.domain.lom.clip.ClipConfig import ClipConfig
+import Live
+from _Framework.SubjectSlot import SlotManager
+
 from protocol0.domain.lom.clip.ClipLoop import ClipLoop
 from protocol0.domain.lom.clip.ClipName import ClipName
 from protocol0.domain.lom.clip.ClipPlayingPosition import ClipPlayingPosition
 from protocol0.domain.lom.clip.automation.ClipAutomation import ClipAutomation
-from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
 from protocol0.domain.shared.utils.forward_to import ForwardTo
 from protocol0.domain.shared.utils.utils import previous_power_of_2
 from protocol0.shared.Song import Song
@@ -18,17 +16,14 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class Clip(SlotManager, Observable):
-    def __init__(self, live_clip: Live.Clip.Clip, index: int, config: ClipConfig) -> None:
+    def __init__(self, live_clip: Live.Clip.Clip, index: int) -> None:
         super(Clip, self).__init__()
         self._clip = live_clip
         self.index = index
-        self._config = config
 
         self.deleted = False
-        self.selected = False
 
         self.clip_name: ClipName = ClipName(live_clip)
-        self.appearance = ClipAppearance(live_clip, self.clip_name, config.color)
         self.loop: ClipLoop = ClipLoop(live_clip)
         self.automation: ClipAutomation = ClipAutomation(live_clip, self.loop)
         self.playing_position: ClipPlayingPosition = ClipPlayingPosition(live_clip, self.loop)
@@ -53,14 +48,6 @@ class Clip(SlotManager, Observable):
     looping = cast(bool, ForwardTo("loop", "looping"))
     start_marker = cast(float, ForwardTo("loop", "start_marker"))
     end_marker = cast(float, ForwardTo("loop", "end_marker"))
-
-    def get_hash(self, device_parameters: List[DeviceParameter]) -> int:
-        raise NotImplementedError
-
-    def matches(self, other: "Clip", device_parameters: List[DeviceParameter]) -> bool:
-        return self.get_hash(device_parameters) == other.get_hash(
-            device_parameters
-        ) and self.loop.matches(other.loop)
 
     @property
     def start_time(self) -> float:
@@ -110,9 +97,7 @@ class Clip(SlotManager, Observable):
             self._clip.is_playing = is_playing
 
     def select(self) -> None:
-        self.selected = True
         self.notify_observers()
-        self.selected = False
 
     def stop(self, immediate: bool = False, wait_until_end: bool = False) -> None:
         """
@@ -129,7 +114,6 @@ class Clip(SlotManager, Observable):
         if wait_until_end:
             if self.playing_position.beats_left <= 1:
                 self._clip.stop()
-            # else clip will stop in ClipTail
             return None
 
         if self._clip:

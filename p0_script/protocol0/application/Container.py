@@ -24,7 +24,6 @@ from protocol0.domain.lom.set.AbletonSet import AbletonSet
 from protocol0.domain.lom.set.AudioExportService import AudioExportService
 from protocol0.domain.lom.set.MixingService import MixingService
 from protocol0.domain.lom.song.SongInitService import SongInitService
-from protocol0.domain.lom.song.components.ClipComponent import ClipComponent
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
 from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
 from protocol0.domain.lom.song.components.QuantizationComponent import QuantizationComponent
@@ -38,7 +37,6 @@ from protocol0.domain.lom.track.ClipPlayerService import ClipPlayerService
 from protocol0.domain.lom.track.TrackAutomationService import TrackAutomationService
 from protocol0.domain.lom.track.TrackFactory import TrackFactory
 from protocol0.domain.lom.track.TrackMapperService import TrackMapperService
-from protocol0.domain.lom.track.simple_track.SimpleTrackService import SimpleTrackService
 from protocol0.domain.lom.validation.ValidatorFactory import ValidatorFactory
 from protocol0.domain.lom.validation.ValidatorService import ValidatorService
 from protocol0.domain.shared.ApplicationView import ApplicationView
@@ -66,8 +64,6 @@ class Container(ContainerInterface):
     def __init__(self, control_surface: ControlSurface) -> None:
         self._registry: Dict[Type, Any] = {}
 
-        # DomainEventBus.subscribe(ScriptDisconnectedEvent, lambda _: self._disconnect())
-
         live_song: Live.Song.Song = control_surface.song()
 
         Logger(LoggerService())
@@ -81,7 +77,6 @@ class Container(ContainerInterface):
         Scheduler(tick_scheduler, beat_scheduler)  # setup Scheduler facade
 
         # song components
-        clip_component = ClipComponent(live_song.view)
         device_component = DeviceComponent(live_song.view)
         playback_component = PlaybackComponent(live_song)
         tempo_component = TempoComponent(live_song)
@@ -117,7 +112,6 @@ class Container(ContainerInterface):
         track_factory = TrackFactory(track_crud_component, browser_service, drum_rack_service)
         track_automation_service = TrackAutomationService(track_factory)
         track_mapper_service = TrackMapperService(live_song, track_factory)
-        simple_track_service = SimpleTrackService()
         track_player_service = ClipPlayerService()
         scene_playback_service = ScenePlaybackService(playback_component)
         scene_service = SceneService(live_song, scene_crud_component, scene_playback_service)
@@ -137,7 +131,6 @@ class Container(ContainerInterface):
         )
         Song(
             live_song,
-            clip_component,
             device_component,
             playback_component,
             quantization_component,
@@ -178,7 +171,6 @@ class Container(ContainerInterface):
         self._register(track_factory)
         self._register(track_automation_service)
         self._register(track_mapper_service)
-        self._register(simple_track_service)
         self._register(track_player_service)
 
         self._register(scene_service)

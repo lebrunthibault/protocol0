@@ -13,9 +13,6 @@ from protocol0.domain.lom.song.components.SceneCrudComponent import SceneCrudCom
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
 from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitoringStateEnum
 from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
-from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import (
-    ExternalSynthTrack,
-)
 from protocol0.domain.lom.track.routing.InputRoutingChannelEnum import InputRoutingChannelEnum
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
@@ -37,9 +34,6 @@ from protocol0.domain.track_recorder.event.RecordCancelledEvent import (
 )
 from protocol0.domain.track_recorder.event.RecordEndedEvent import RecordEndedEvent
 from protocol0.domain.track_recorder.event.RecordStartedEvent import RecordStartedEvent
-from protocol0.domain.track_recorder.external_synth.TrackRecorderExternalSynthFactory import (
-    TrackRecorderExternalSynthFactory,
-)
 from protocol0.domain.track_recorder.midi_note_track.RecorderMidiNoteTrackFactory import (
     TrackRecorderMidiNoteTrackFactory,
 )
@@ -61,8 +55,6 @@ def _get_track_recorder_factory(track: AbstractTrack) -> AbstractTrackRecorderFa
             return TrackRecorderMidiNoteTrackFactory()
         else:
             return TrackRecorderSimpleFactory()
-    elif isinstance(track, ExternalSynthTrack):
-        return TrackRecorderExternalSynthFactory()
     else:
         raise Protocol0Warning("This track is not recordable")
 
@@ -246,7 +238,6 @@ class RecordService(object):
 
             if list(last_scene.clips) == [source_clip]:
                 self._scene_crud_component.delete_scene(Song.scenes()[-1])
-            dest_cs.select()
 
         Scheduler.defer(copy_created_clip)
 

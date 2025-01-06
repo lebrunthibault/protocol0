@@ -1,7 +1,6 @@
 from typing import Tuple
 
 from protocol0.domain.lom.scene.SceneClips import SceneClips
-from protocol0.domain.lom.track.group_track.ext_track.SimpleAudioExtTrack import SimpleAudioExtTrack
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.shared.Song import Song
 
@@ -24,10 +23,6 @@ class SceneWindow(object):
         # reversing because we use the midi clip length for audio and audio tail
         for track, clip in reversed(list(zip(clips.tracks, clips.all))):
             clip_length = clip.length
-            if isinstance(track, SimpleAudioExtTrack):
-                clip_length = track.abstract_group_track.midi_track.clip_slots[
-                    clip.index
-                ].clip.length
 
             if clip_length <= self._length:
                 continue

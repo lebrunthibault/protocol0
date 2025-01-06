@@ -9,8 +9,6 @@ class RecordTypeEnum(Enum):
     MIDI_RESAMPLE = "Midi resample"
     MIDI_UNLIMITED = "Midi unlimited"
     AUDIO = "Audio"
-    AUDIO_FULL = "Audio full"
-    AUDIO_MULTI_SCENE = "Audio multi scene"
 
     @property
     def records_midi(self) -> bool:

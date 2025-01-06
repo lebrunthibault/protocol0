@@ -11,7 +11,6 @@ from protocol0.shared.types import T
 
 if TYPE_CHECKING:
     from protocol0.shared.sequence.Sequence import Sequence
-    from protocol0.domain.lom.song.components.ClipComponent import ClipComponent
     from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
     from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
     from protocol0.domain.lom.song.components.RecordingComponent import RecordingComponent
@@ -24,9 +23,6 @@ if TYPE_CHECKING:
     from protocol0.domain.track_recorder.RecordService import RecordService
     from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
     from protocol0.domain.lom.track.group_track.AbstractGroupTrack import AbstractGroupTrack  # noqa
-    from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import (  # noqa
-        ExternalSynthTrack,
-    )
     from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
     from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
     from protocol0.domain.lom.scene.Scene import Scene
@@ -72,7 +68,6 @@ class Song(object):
     def __init__(
         self,
         live_song: Live.Song.Song,
-        clip_component: "ClipComponent",
         device_component: "DeviceComponent",
         playback_component: "PlaybackComponent",
         quantization_component: "QuantizationComponent",
@@ -88,7 +83,6 @@ class Song(object):
 
         self.__live_song = live_song
 
-        self._clip_component = clip_component
         self._device_component = device_component
         self._playback_component = playback_component
         self._quantization_component = quantization_component
@@ -144,9 +138,6 @@ class Song(object):
         elif len(soloed_tracks) > 1:
             cls._INSTANCE._track_component.un_focus_all_tracks()
             track.solo = True
-
-        # if not track.is_foldable:
-        #     track.arm_state.arm()
 
         return track
 
@@ -404,10 +395,6 @@ class Song(object):
     @classmethod
     def set_current_song_time(cls, time: float) -> None:
         cls._live_song().current_song_time = time
-
-    @classmethod
-    def draw_mode(cls, draw_mode: bool) -> None:
-        cls._INSTANCE._clip_component.draw_mode = draw_mode
 
     @classmethod
     def capture_midi(cls) -> None:

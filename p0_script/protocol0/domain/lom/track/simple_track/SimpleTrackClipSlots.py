@@ -1,18 +1,16 @@
+from typing import List, Type, Optional, Iterator
+
 import Live
 from _Framework.CompoundElement import subject_slot_group
 from _Framework.SubjectSlot import SlotManager
-from typing import List, Type, Optional, Iterator
 
 from protocol0.domain.lom.clip.Clip import Clip
-from protocol0.domain.lom.clip.ClipConfig import ClipConfig
 from protocol0.domain.lom.clip_slot.ClipSlot import ClipSlot
 from protocol0.domain.lom.clip_slot.ClipSlotHasClipEvent import ClipSlotHasClipEvent
-from protocol0.domain.lom.device.SimpleTrackDevices import SimpleTrackDevices
 from protocol0.domain.lom.instrument.InstrumentInterface import InstrumentInterface
 from protocol0.domain.lom.track.simple_track.SimpleTrackClips import SimpleTrackClips
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
-from protocol0.domain.shared.utils.list import find_if
 from protocol0.domain.shared.utils.timing import defer
 from protocol0.shared.Song import Song
 from protocol0.shared.observer.Observable import Observable
@@ -24,8 +22,6 @@ class SimpleTrackClipSlots(SlotManager, Observable):
         self,
         live_track: Live.Track.Track,
         clip_slot_class: Type[ClipSlot],
-        clip_config: ClipConfig,
-        track_devices: SimpleTrackDevices,
     ) -> None:
         super(SimpleTrackClipSlots, self).__init__()
         self._live_track = live_track
@@ -33,20 +29,16 @@ class SimpleTrackClipSlots(SlotManager, Observable):
 
         self._clip_slots: List[ClipSlot] = []
 
-        self._clips = SimpleTrackClips(self, track_devices, live_track.color_index)
+        self._clips = SimpleTrackClips(self)
         self._has_clip_listener.replace_subjects(live_track.clip_slots)
 
         self._instrument: Optional[InstrumentInterface] = None
-        self._clip_config = clip_config
 
     def __iter__(self) -> Iterator[ClipSlot]:
         return iter(self._clip_slots)
 
     def set_instrument(self, instrument: Optional[InstrumentInterface]) -> None:
         self._instrument = instrument
-
-        if self._instrument:
-            self._clip_config.default_note = self._instrument.DEFAULT_NOTE
 
     @property
     def clip_slots(self) -> List[ClipSlot]:
@@ -59,11 +51,6 @@ class SimpleTrackClipSlots(SlotManager, Observable):
     @property
     def selected(self) -> ClipSlot:
         return list(self._clip_slots)[Song.selected_scene().index]
-
-    @property
-    def playing_clip(self) -> Optional[Clip]:
-        clip_slot = find_if(lambda cs: cs.is_playing, self._clip_slots)
-        return clip_slot.clip if clip_slot is not None else None
 
     def build(self) -> None:
         """create new ClipSlot objects and keep existing ones"""
@@ -79,7 +66,7 @@ class SimpleTrackClipSlots(SlotManager, Observable):
                     clip_slot.clip.index = index
                 new_clip_slots.append(clip_slot)
             else:
-                clip_slot = self._clip_slot_class(live_clip_slot, index, self._clip_config)
+                clip_slot = self._clip_slot_class(live_clip_slot, index)
                 clip_slot.register_observer(self)
                 new_clip_slots.append(clip_slot)
         self._clip_slots[:] = new_clip_slots
@@ -103,9 +90,6 @@ class SimpleTrackClipSlots(SlotManager, Observable):
                 clip_slot.clip.color_index = self._live_track.color_index
         except Exception:
             pass
-
-    def toggle_colors(self) -> None:
-        self._clips.clip_color_manager.toggle_colors()
 
     def disconnect(self) -> None:
         super(SimpleTrackClipSlots, self).disconnect()

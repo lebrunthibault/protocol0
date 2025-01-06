@@ -1,8 +1,5 @@
 from protocol0.domain.lom.scene.Scene import Scene
 from protocol0.domain.lom.track.group_track.AbstractGroupTrack import AbstractGroupTrack
-from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import (
-    ExternalSynthTrack,
-)
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 from protocol0.domain.lom.validation.ValidatorInterface import ValidatorInterface
@@ -15,9 +12,6 @@ from protocol0.domain.lom.validation.object_validators.SimpleAudioTrackValidator
 )
 from protocol0.domain.lom.validation.object_validators.SimpleTrackValidator import (
     SimpleTrackValidator,
-)
-from protocol0.domain.lom.validation.object_validators.external_synth_track.ExternalSynthTrackValidator import (
-    ExternalSynthTrackValidator,
 )
 from protocol0.domain.shared.BrowserServiceInterface import BrowserServiceInterface
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
@@ -36,8 +30,6 @@ class ValidatorFactory(object):
             return SimpleAudioTrackValidator(obj)
         elif isinstance(obj, SimpleTrack):
             return SimpleTrackValidator(obj)
-        elif isinstance(obj, ExternalSynthTrack):
-            return ExternalSynthTrackValidator(obj, self._browser_service)
         elif isinstance(obj, AbstractGroupTrack):
             return AbstractGroupTrackValidator(obj)
         else:

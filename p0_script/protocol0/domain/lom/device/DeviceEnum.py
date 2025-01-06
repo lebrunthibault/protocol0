@@ -127,10 +127,6 @@ class DeviceEnum(Enum):
         ]
 
     @property
-    def is_external_device(self) -> bool:
-        return self.value in ("Ext. Audio Effect", "Ext. Instrument")
-
-    @property
     def browser_name(self) -> str:
         try:
             return {

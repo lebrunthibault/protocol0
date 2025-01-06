@@ -7,7 +7,6 @@ from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device.PluginDevice import PluginDevice
 from protocol0.domain.lom.device.RackDevice import RackDevice
-from protocol0.domain.lom.instrument.InstrumentColorEnum import InstrumentColorEnum
 from protocol0.domain.lom.instrument.instrument.InstrumentParamEnum import InstrumentParamEnum
 from protocol0.domain.lom.instrument.preset.InstrumentPreset import InstrumentPreset
 from protocol0.domain.lom.instrument.preset.InstrumentPresetList import InstrumentPresetList
@@ -51,11 +50,9 @@ def load_instrument_track(instrument_cls: Type["InstrumentInterface"]) -> Sequen
 class InstrumentInterface(SlotManager):
     NAME = ""
     DEVICE: Optional[DeviceEnum] = None
-    TRACK_COLOR = InstrumentColorEnum.UNKNOWN
     PRESETS_PATH = ""
     PRESET_EXTENSION = ""
     PRESET_DISPLAY_OPTION = PresetDisplayOptionEnum.NAME
-    DEFAULT_NOTE = 60
     PRESET_CHANGER: Type[PresetChangerInterface] = ProgramChangePresetChanger
     PRESET_INITIALIZER: Type[PresetInitializerInterface] = PresetInitializerDevicePresetName
     INSTRUMENT_TRACK_NAME = ""

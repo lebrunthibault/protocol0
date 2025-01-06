@@ -65,7 +65,6 @@ class Scene(SlotManager):
         self.clips.build()
 
     def on_added(self) -> None:
-        self.clips.on_added_scene()
         self.scene_name.update("")
 
     @property

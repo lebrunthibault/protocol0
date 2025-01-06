@@ -1,5 +1,4 @@
-from os.path import basename
-from typing import List, cast, Any, Optional
+from typing import List, cast, Any
 
 import Live
 from _Framework.CompoundElement import subject_slot_group
@@ -14,8 +13,6 @@ from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.shared.Song import Song
-from protocol0.shared.logging.Logger import Logger
-from protocol0.shared.sequence.Sequence import Sequence
 
 
 def resize_clip_to_scene_length(
@@ -44,9 +41,6 @@ class SimpleAudioTrack(SimpleTrack):
 
     def __init__(self, *a: Any, **k: Any) -> None:
         super(SimpleAudioTrack, self).__init__(*a, **k)
-        # don't flatten when the track did not change since last flatten (used to retry on error)
-        self._needs_flattening = True
-
         self._data.restore()
 
         self._has_clip_listener.replace_subjects(self._track.clip_slots)
@@ -62,8 +56,6 @@ class SimpleAudioTrack(SimpleTrack):
 
     @subject_slot_group("has_clip")
     def _has_clip_listener(self, clip_slot: Live.ClipSlot.ClipSlot) -> None:
-        self._needs_flattening = True
-
         clip = self.clip_slots[list(self._track.clip_slots).index(clip_slot)].clip
         if not clip:
             return None
@@ -71,31 +63,6 @@ class SimpleAudioTrack(SimpleTrack):
     @subject_slot("current_monitoring_state")
     def _current_monitoring_state_listener(self) -> None:
         DomainEventBus.emit(CurrentMonitoringStateUpdatedEvent(self._track))
-
-    def flatten(self, flatten_track: bool = True) -> Sequence:
-        return super(SimpleAudioTrack, self).flatten(self._needs_flattening)
-
-    def replace_clip_sample(
-        self, dest_cs: AudioClipSlot, source_cs: AudioClipSlot = None, file_path: str = None
-    ) -> Optional[Sequence]:
-        assert source_cs is not None or file_path is not None, "provide clip_slot or file path"
-
-        Logger.info(
-            "Replacing clip: %s-> %s"
-            % (basename(dest_cs.clip.file_path), basename(file_path or source_cs.clip.file_path))
-        )
-
-        device_params = self.devices.parameters
-        automated_params = dest_cs.clip.automation.get_automated_parameters(device_params)
-
-        # duplicate when no automation else manual action is needed
-        if len(automated_params) == 0 and source_cs is not None:
-            return dest_cs.replace_clip_sample(source_cs)
-        else:
-            if source_cs is not None:
-                file_path = source_cs.clip.file_path
-
-            return dest_cs.replace_clip_sample(None, file_path)
 
     def disconnect(self) -> None:
         self._data.save()

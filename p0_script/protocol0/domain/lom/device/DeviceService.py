@@ -12,7 +12,6 @@ from protocol0.domain.lom.device.DryWetDeviceAddedEvent import DryWetDeviceAdded
 from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
-from protocol0.domain.lom.track.group_track.ext_track.ExternalSynthTrack import ExternalSynthTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
@@ -134,18 +133,8 @@ class DeviceService(object):
         seq.add(Undo.end_undo_step)
         return seq.done()
 
-    def _get_instrument_track(self) -> SimpleTrack:
-        selected_track = Song.selected_track()
-        current_track = Song.current_track()
-
-        # only case when we want to select the midi track of an ext track
-        if isinstance(current_track, ExternalSynthTrack):
-            return current_track.audio_track
-
-        return selected_track
-
     def _select_track_and_device(self, device_enum: DeviceEnum) -> None:
-        track = self._get_instrument_track()
+        track = Song.selected_track()
 
         if device_enum.is_instrument:
             track.select()

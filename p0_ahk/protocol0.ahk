@@ -13,17 +13,6 @@ CoordMode,mouse,screen
 ; Alt: !
 ; Win: #
 
-; loop must be before any return
-Loop, 9 {
-    HotKey ~^NumPad%A_Index%, FireSceneToPosition
-}
-Loop, 9 {
-    HotKey, ^SC%A_Index%, FireSceneToPosition
-}
-^NumPad0::
-    GoSub, FireSceneToPosition
-return
-
 ; global hotkeys
 ^#+n::
 	callBackend("reload_ableton")
@@ -37,25 +26,6 @@ return
 ^+z::
     Send ^y  ; redo
 return
-^space::
-	callBackend("scene/fire_selected")
-return
-+space::
-	callBackend("scene~/fire_to_last_position")
-return
-FireSceneToPosition:
-    barLength:=SubStr(A_ThisHotkey,"^NumPad") - 1
-	callBackend("scene/fire_to_position?bar_length="barLength)
-Return
-;^+c::
-;    MouseGetPos, xpos, ypos
-;    ; Right-click at the current mouse position
-;    Click, Right, %xpos%, %ypos%
-;    Send crop
-;    Sleep 5
-;    Send {Enter}
-;    callBackend("clip/loop_selected")
-;return
 ~^e::
 	callBackend("clip/toggle_notes")
 return
@@ -69,9 +39,6 @@ return
 ;^+e::
 ;	callBackend("clip/edit_automation_value")
 ;return
-~^l::
-	callBackend("scene/toggle_loop")
-return
 ^+*::
     Send {Right}
 return
@@ -79,9 +46,6 @@ return
     Send ^s
 	callBackend("set/save")
 	Sleep, 200
-return
-^+!r::
-	callBackend("export/write_session_to_arrangement")
 return
 ~^+r::
 	callBackend("export")
@@ -120,7 +84,7 @@ return
     callBackend("track/select?name=kick")
 return
 ~^+h::
-    callBackend("track/select?name=hat")
+    callBackend("track/select?name=hats")
 return
 ~^+p::
     callBackend("track/select?name=perc")
@@ -142,9 +106,6 @@ return
 
 ; splice window
 #IfWinActive ahk_exe Splice.exe
-^space::
-	callBackend("scene/fire_selected")
-return
 !r::
 	callBackend("monitoring/toggle_reference")
 return
