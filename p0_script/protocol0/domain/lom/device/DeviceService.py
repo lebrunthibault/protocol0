@@ -3,7 +3,6 @@ from typing import Optional, cast, Callable
 
 import Live
 
-from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceChain import DeviceChain
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
@@ -14,7 +13,6 @@ from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
-from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.BrowserServiceInterface import BrowserServiceInterface
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
@@ -87,7 +85,6 @@ class DeviceService(object):
 
         device_enum = DeviceEnum[enum_name]
         track = Song.selected_track()
-        is_clip_view_visible = ApplicationView.is_clip_view_visible()
 
         self._select_track_and_device(device_enum)
 
@@ -115,17 +112,10 @@ class DeviceService(object):
                 if device_enum.track_color:
                     Song.selected_track().color = device_enum.track_color
 
+        seq.defer()
         seq.add(rename_default_midi_track)
 
         seq.add(partial(self._browser_service.load_device_from_enum, device_enum))
-
-        if (
-            device_enum.default_parameter is not None
-            and Song.selected_clip_slot() is not None
-            and Song.selected_clip(raise_if_none=False) is not None
-            and is_clip_view_visible
-        ):
-            seq.add(partial(self._show_default_automation, Song.selected_clip()))
 
         if device_enum.is_rack_preset:
             seq.add(self.toggle_selected_rack_chain)
@@ -178,14 +168,6 @@ class DeviceService(object):
             return
 
         self.move_device(next_device, dry_wet_device.chains[1], 0)
-
-    def _show_default_automation(self, clip: Clip) -> None:
-        device = Song.selected_track().devices.selected
-        assert device and device.enum.default_parameter, "Loaded device has no default parameter"
-        parameter = device.get_parameter_by_name(device.enum.default_parameter)
-        assert parameter is not None, "parameter not found"
-
-        clip.automation.show_parameter_envelope(parameter)
 
     def _get_device_to_select_for_insertion(
         self, track: SimpleTrack, device_enum: DeviceEnum

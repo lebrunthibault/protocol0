@@ -53,15 +53,12 @@ return
 ^!q::
     Send ^!p  ; left hand shortcut
 return
-!r::
-	callBackend("monitoring/toggle_reference")
-return
-!+r::
-	callBackend("monitoring/toggle_reference_filters")
-return
-!Numpad0::
-	callBackend("monitoring/toggle_reference_filters")
-return
+;!r::
+;	callBackend("monitoring/toggle_reference")
+;return
+;!+r::
+;	callBackend("monitoring/toggle_reference_filters")
+;return
 ~^+f::
 	Send ^+f  ; cancel Ableton Follow
 	callBackend("search/track")

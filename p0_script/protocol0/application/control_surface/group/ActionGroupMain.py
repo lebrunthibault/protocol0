@@ -2,11 +2,12 @@ from functools import partial
 from typing import cast
 
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
-import Live
 
 # noinspection SpellCheckingInspection
 from protocol0.domain.lom.clip.MidiClip import MidiClip
+from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
+from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.track_recorder.RecordService import RecordService
 from protocol0.shared.Song import Song
 
@@ -29,12 +30,13 @@ class ActionGroupMain(ActionGroupInterface):
         def toggle_splice_track() -> None:
             if Song.splice_track():
                 Song.splice_track().toggle()
+            else:
+                Backend.client().load_device(DeviceEnum.SPLICE_BRIDGE.name)
 
-        def solo_splice_track() -> None:
-            if Song.splice_track():
-                Song.splice_track().solo_toggle()
+        def create_splice_track() -> None:
+            Backend.client().load_device(DeviceEnum.SPLICE_BRIDGE.name)
 
-        def scroll_splice_track(go_next: bool) -> None:
+        def scroll_splice_track_volume(go_next: bool) -> None:
             if Song.splice_track():
                 Song.splice_track().devices.mixer_device.volume.scroll(go_next)
 
@@ -42,8 +44,8 @@ class ActionGroupMain(ActionGroupInterface):
             identifier=13,
             name="Splice Bridge",
             on_press=toggle_splice_track,
-            on_long_press=solo_splice_track,
-            on_scroll=scroll_splice_track,
+            on_long_press=create_splice_track,
+            on_scroll=scroll_splice_track_volume,
         )
 
         def scroll_selected_track_volume(go_next: bool) -> None:
