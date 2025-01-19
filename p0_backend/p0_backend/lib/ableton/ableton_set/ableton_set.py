@@ -1,6 +1,5 @@
 import json
 import os.path
-import subprocess
 from enum import Enum
 from json import JSONDecodeError
 from os.path import dirname, isabs
@@ -11,7 +10,6 @@ from loguru import logger
 from pydantic import BaseModel
 
 from p0_backend.lib.ableton.get_set import get_launched_set_path
-from p0_backend.lib.explorer import open_explorer
 from p0_backend.lib.notification import notify
 from p0_backend.settings import Settings
 
@@ -267,21 +265,3 @@ def set_scene_stats(tempo: float, scene_stats: List[SceneStat]):
         notify(f"{song_bar_length} bars")
 
     ableton_set.save()
-
-
-def prepare_for_soundcloud(path: str):
-    path_info = PathInfo.create(path)
-    assert path_info.audio_filename, "Track has not wav file"
-    audio_output = path_info.audio_filename.replace(".wav", "-streaming.wav")
-    subprocess.run(
-        [
-            "ffmpeg",
-            "-y",
-            "-i",
-            path_info.audio_filename,
-            "-af",
-            "adelay=500|500",
-            audio_output,
-        ]
-    )
-    open_explorer(audio_output)

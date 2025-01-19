@@ -17,10 +17,6 @@ class Settings(BaseSettings):
         return self.ableton_version.split(".")[0]
 
     @property
-    def is_ableton_11(self) -> bool:
-        return self.ableton_major_version == "11"
-
-    @property
     def log_file(self) -> str:
         return f"{self.user_home}\\AppData\\Roaming\\Ableton\\Live {self.ableton_version}\\Preferences\\Log.txt"
 

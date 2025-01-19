@@ -6,15 +6,10 @@ import win32gui  # noqa
 from loguru import logger
 from ratelimit import limits
 
-from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.lib.ableton.ableton_set.ableton_set import PathInfo
-from p0_backend.lib.ableton.interface.pixel import get_pixel_color_at
-from p0_backend.lib.ableton.interface.pixel_color_enum import PixelColorEnum
-from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.keys import send_keys
 from p0_backend.lib.keys import send_right
-from p0_backend.lib.mouse.mouse import click, keep_mouse_position
 from p0_backend.lib.notification import notify
 from p0_backend.lib.process import execute_powershell_command, kill_window_by_criteria
 from p0_backend.lib.window.find_window import find_window_handle_by_enum, SearchTypeEnum
@@ -23,7 +18,6 @@ from p0_backend.lib.window.window import (
     get_focused_window_process_name,
 )
 from p0_backend.settings import Settings
-from protocol0.application.command.ResetPlaybackCommand import ResetPlaybackCommand
 
 settings = Settings()
 
@@ -61,11 +55,6 @@ def reload_ableton() -> None:
     """
     Not easy to have this work every time
     """
-    # execute_powershell_command(
-    #     f'& "D:\\SoundBanks and programs\\Ableton 10\\Program\\Ableton Live 10 Suite.exe" "C:\\Users\\thiba\\OneDrive\\Bureau\\default 10 Project\\default 10.als"',
-    #     minimized=True,
-    # )
-    # return
     try:
         focus_ableton()
     except (AssertionError, Protocol0Error):
@@ -106,32 +95,6 @@ def open_set(filename: str, confirm_dialog=True):
             send_right()
             send_keys("{ENTER}")
             time.sleep(0.5)
-
-
-@keep_mouse_position
-def save_set_as_template():
-    if settings.is_ableton_11:
-        notify("Not available in live 11", NotificationEnum.WARNING)
-        return
-
-    p0_script_client().dispatch(ResetPlaybackCommand())
-    send_keys("^,")
-    time.sleep(0.1)
-
-    y_offset = 0
-    if get_pixel_color_at((900, 185)) == PixelColorEnum.WHITE:
-        y_offset = 30
-
-    click((703, 333 + y_offset))  # click on File Folder
-    click((1032, 195 + y_offset))  # click on set as new
-
-    time.sleep(0.05)
-    send_keys("{ENTER}")
-    time.sleep(0.2)
-    send_keys("	{ESC}")
-    time.sleep(0.3)
-
-    reload_ableton()
 
 
 def toggle_fold_set():
