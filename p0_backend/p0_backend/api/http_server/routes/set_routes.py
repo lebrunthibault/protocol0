@@ -9,14 +9,10 @@ from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.lib.ableton.ableton import (
     open_set,
 )
-from p0_backend.lib.ableton.ableton import (
-    save_set_as_template,
-)
 from p0_backend.lib.ableton.ableton_set.ableton_set import (
     set_scene_stats,
     SceneStat,
     AbletonSetCurrentState,
-    prepare_for_soundcloud,
     AbletonTrack,
     PathInfo,
 )
@@ -80,11 +76,6 @@ async def post_scene_stats(payload: PostSceneStatsPayload):
     )
 
 
-@router.get("/save_as_template")
-async def _save_set_as_template():
-    save_set_as_template()
-
-
 @router.get("/save")
 async def save_set():
     p0_script_client().dispatch(SaveSongCommand())
@@ -111,8 +102,3 @@ async def close_set(filename: str):
 @router.get("/open_in_explorer")
 async def open_in_explorer(path: str):
     open_explorer(dirname(PathInfo.create(path).filename))
-
-
-@router.post("/prepare_for_soundcloud")
-async def _prepare_for_soundcloud(path: str):
-    prepare_for_soundcloud(path)

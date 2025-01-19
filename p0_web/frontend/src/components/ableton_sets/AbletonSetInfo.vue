@@ -144,11 +144,6 @@ export default defineComponent({
       this.abletonSet.path_info.name = this.name
       $('#setInfoModal').modal('hide')
     },
-    async prepareForSoundCloud() {
-      await localApi.post(`/set/prepare_for_soundcloud?path=${this.abletonSet?.path_info.relative_name}`)
-      notify("Set exported to mp3")
-      $('#setInfoModal').modal('hide')
-    },
     async createSetFolder() {
       const abletonSet: AbletonSet = await api.post(`/set/create_folder?path=${this.abletonSet?.path_info.relative_name}`)
       this.abletonSet.path_info = abletonSet.path_info

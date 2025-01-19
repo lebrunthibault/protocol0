@@ -16,18 +16,11 @@ class PixelColorEnum(Enum):
     ELEMENT_FOCUSED = "FF39D4"
     ELEMENT_SELECTED = "BFE9FF"
 
-    CONTEXT_MENU_BACKGROUND_10 = "C3C3C3"
-    CONTEXT_MENU_BACKGROUND_11 = "DCDCDC"
+    CONTEXT_MENU_BACKGROUND = "DCDCDC"
 
     @classmethod
     def context_menu_background(cls):
-        return (
-            cls.CONTEXT_MENU_BACKGROUND_11
-            if settings.is_ableton_11
-            else cls.CONTEXT_MENU_BACKGROUND_10
-        )
-
-    WHITE = "FFFFFF"
+        return cls.CONTEXT_MENU_BACKGROUND
 
     EXPLORER_SELECTED_ENTRY = "CCE8FF"
     EXPLORER_SELECTED_ENTRY_LIGHT = "E5F3FF"
