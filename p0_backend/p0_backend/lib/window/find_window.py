@@ -1,5 +1,5 @@
 import enum
-from typing import Optional, List, Dict, Union
+from typing import Optional, Union
 
 import win32api
 import win32con
@@ -43,7 +43,7 @@ def _find_window_handle_by_criteria(
 
     handle = 0
 
-    def winEnumHandler(hwnd: int, _):
+    def win_enum_handler(hwnd: int, _):
         nonlocal handle
         handle_app_name = _get_app_name(hwnd)
         if handle_app_name == "chrome.exe":
@@ -56,41 +56,9 @@ def _find_window_handle_by_criteria(
         ):
             handle = hwnd
 
-    win32gui.EnumWindows(winEnumHandler, None)
+    win32gui.EnumWindows(win_enum_handler, None)
 
     return handle
-
-
-def get_windows_list(_app_name_black_list: List[str] = None) -> List[Dict]:
-    app_name_black_list = (
-        _app_name_black_list
-        if _app_name_black_list
-        else ["explorer.exe", "chrome.exe", "ipoint.exe", "TextInputHost.exe"]
-    )
-    class_name_black_list = ["ThumbnailDeviceHelperWnd", "Shell_TrayWnd", "wxWindowNR"]
-
-    result = []
-
-    def winEnumHandler(handle: int, _):
-        nonlocal result
-        if win32gui.IsWindowVisible(handle):
-            name = _get_window_title(handle)
-            class_name = win32gui.GetClassName(handle)
-            app_name = _get_app_name(handle)
-            if not app_name:
-                return
-            if "too" in app_name_black_list or class_name in class_name_black_list:
-                return
-            line = {"name": name, "class_name": class_name, "app_name": app_name}
-            result.append(line)
-
-    win32gui.EnumWindows(winEnumHandler, None)
-
-    return result
-
-
-def _get_window_title(handle: int) -> str:
-    return win32gui.GetWindowText(handle)
 
 
 def _get_app_name(handle: int) -> Optional[str]:

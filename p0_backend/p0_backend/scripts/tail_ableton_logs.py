@@ -204,7 +204,7 @@ def tail_ableton_log_file(raw=False):
             ),
         ]
 
-    with open(settings.log_file, "r") as file:
+    with open(settings.log_file_path, "r") as file:
         log_obs = get_line_observable_from_file(file)
         log_obs.pipe(*pipes).subscribe(logger.info, rx_error)
         log_obs.pipe(*pipes).subscribe(rx_nop, logger.error)
@@ -244,7 +244,7 @@ def tail_logs(f):
 
 
 if __name__ == "__main__":
-    with open(settings.log_file, "r") as file:
+    with open(settings.log_file_path, "r") as file:
         tail_logs(file)
 
     # tail_ableton_log_file()

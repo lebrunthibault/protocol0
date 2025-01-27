@@ -94,3 +94,4 @@ comment  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py:10
 stage  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py:101)
 _.daemon  # unused attribute (p0_backend\lib\search\search_gui.py:30)
 create_thread  # unused function (p0_backend\lib\search\search_gui.py:19)
+_.from_directory  # unused method (p0_backend\lib\ableton\ableton_set\ableton_set.py:36)

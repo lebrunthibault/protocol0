@@ -22,7 +22,7 @@ return
 return
 
 ; ableton hotkeys
-#IfWinActive, ahk_exe Ableton Live 11 Suite.exe
+#IfWinActive, ahk_exe Ableton Live 12 Suite.exe
 ^+z::
     Send ^y  ; redo
 return
@@ -93,7 +93,7 @@ return
     callBackend("track/select?name=harmony")
 return
 ~^+l::
-    callBackend("track/select?name=lead")
+    callBackend("track/select?name=melody")
 return
 ~^+b::
     callBackend("track/select?name=bass")

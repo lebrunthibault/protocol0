@@ -49,7 +49,7 @@ class PathInfo(BaseModel):
     filename: str
     name: str
     saved_at: Optional[float] = 0
-    place: AbletonSetPlace
+    # place: AbletonSetPlace
 
     @property
     def metadata_filename(self) -> str:
@@ -72,7 +72,7 @@ class PathInfo(BaseModel):
             filename=filename,
             name=path.stem,
             saved_at=path.stat().st_mtime,
-            place=AbletonSetPlace.from_directory(dirname(filename)) or AbletonSetPlace.TRACKS,
+            # place=AbletonSetPlace.from_directory(dirname(filename)) or AbletonSetPlace.TRACKS,
         )
 
 

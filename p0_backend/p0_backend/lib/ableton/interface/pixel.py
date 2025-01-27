@@ -125,7 +125,7 @@ def get_pixel_color_at(coords: Coords) -> Optional[PixelColorEnum]:
 def is_rgb_color_black(rgb_color: RGBColor) -> bool:
     hsv_color = colorsys.rgb_to_hsv(*rgb_color)
 
-    return hsv_color[2] <= 20 or rgb_color == (121, 121, 121)  # for live 11
+    return hsv_color[2] <= 20 or rgb_color == (121, 121, 121)
 
 
 def get_pixel_having_color(

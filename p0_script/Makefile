@@ -1,4 +1,4 @@
-REMOTE_SCRIPTS = "C:\ProgramData\Ableton\Live 11 Suite\Resources\MIDI Remote Scripts"
+REMOTE_SCRIPTS = "C:\ProgramData\Ableton\Live 12 Suite\Resources\MIDI Remote Scripts"
 
 bootstrap:
 	@pyenv local 3.7.3

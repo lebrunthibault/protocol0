@@ -6,7 +6,7 @@ class ControlledTracksEnum(enum.Enum):
 
     DRUMS = "DRUMS"
     KICK = "KICK"
-    HAT = "HAT"
+    HATS = "HATS"
     PERC = "PERC"
     FX = "FX"
     VOCALS = "VOCALS"

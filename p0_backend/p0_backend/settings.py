@@ -17,7 +17,7 @@ class Settings(BaseSettings):
         return self.ableton_version.split(".")[0]
 
     @property
-    def log_file(self) -> str:
+    def log_file_path(self) -> str:
         return f"{self.user_home}\\AppData\\Roaming\\Ableton\\Live {self.ableton_version}\\Preferences\\Log.txt"
 
     project_directory: str = dirname(dirname(__file__))
