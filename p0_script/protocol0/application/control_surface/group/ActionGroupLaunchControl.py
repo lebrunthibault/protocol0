@@ -105,7 +105,7 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
                 MidiIdentifiers(74, 42, 14),
             ),
             (
-                ControlledTracksRegistry[ControlledTracksEnum.HAT],
+                ControlledTracksRegistry[ControlledTracksEnum.HATS],
                 MidiIdentifiers(75, 43, 15),
             ),
             (ControlledTracksRegistry[ControlledTracksEnum.PERC], MidiIdentifiers(76, 44, 16)),

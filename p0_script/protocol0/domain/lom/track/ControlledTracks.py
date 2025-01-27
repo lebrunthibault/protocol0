@@ -78,8 +78,8 @@ ControlledTracksRegistry: Dict[ControlledTracksEnum, ControlledTracks] = {
     ControlledTracksEnum.KICK: ControlledTracks(
         ControlledTracksEnum.KICK, is_top_track=False, skip_group_track=True
     ),
-    ControlledTracksEnum.HAT: ControlledTracks(
-        ControlledTracksEnum.HAT, is_top_track=False, skip_group_track=True
+    ControlledTracksEnum.HATS: ControlledTracks(
+        ControlledTracksEnum.HATS, is_top_track=False, skip_group_track=True
     ),
     ControlledTracksEnum.PERC: ControlledTracks(
         ControlledTracksEnum.PERC,

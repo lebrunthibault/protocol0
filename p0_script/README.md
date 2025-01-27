@@ -1,6 +1,6 @@
 # Protocol0 Control Surface Script for Ableton
 
-Protocol0 is a control surface script for Ableton Live 11
+Protocol0 is a control surface script for Ableton Live 11+
 
 It is focused on working in session view and usually acts on the selected track or scene. 
 
@@ -52,7 +52,7 @@ The backend is exposing its api over midi, and I'm using loopMidi virtual ports 
 
 `make bootstrap`
 
-### Install the script in your remote scripts folder (for Live 11)
+### Install the script in your remote scripts folder
 
 - `make install_script`
 
