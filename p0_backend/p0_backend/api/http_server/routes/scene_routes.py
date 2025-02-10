@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from protocol0.application.command.DuplicateSceneCommand import DuplicateSceneCommand
 from protocol0.application.command.FireSceneToPositionCommand import FireSceneToPositionCommand
 from protocol0.application.command.FireSelectedSceneCommand import FireSelectedSceneCommand
 from protocol0.application.command.ScrollScenePositionCommand import ScrollScenePositionCommand
@@ -52,8 +51,3 @@ async def scroll_scene_position_fine(direction: str):
 @router.get("/scroll_tracks")
 async def scroll_scene_tracks(direction: str):
     p0_script_client().dispatch(ScrollSceneTracksCommand(go_next=direction == "next"))
-
-
-@router.get("/duplicate")
-async def duplicate_scene():
-    p0_script_client().dispatch(DuplicateSceneCommand())

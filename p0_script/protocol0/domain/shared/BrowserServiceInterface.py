@@ -8,6 +8,3 @@ class BrowserServiceInterface(object):
 
     def load_from_user_library(self, name: str) -> Sequence:
         raise NotImplementedError
-
-    def load_sample(self, sample_name: str) -> Sequence:
-        raise NotImplementedError

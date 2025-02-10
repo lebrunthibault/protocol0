@@ -109,11 +109,6 @@ class Device(SlotManager):
         return self._device and self._device.type == Live.Device.DeviceType.midi_effect
 
     @property
-    def preset_name(self) -> Optional[str]:
-        """overridden"""
-        return None
-
-    @property
     def is_enabled(self) -> bool:
         return self.get_parameter_by_name(DeviceParamEnum.DEVICE_ON).value == 1
 

@@ -1,5 +1,6 @@
+from typing import List, Any, cast
+
 import Live
-from typing import List, Any, Optional, cast
 
 from protocol0.domain.lom.device.Device import Device
 
@@ -30,11 +31,6 @@ class PluginDevice(Device):
     @property
     def selected_preset(self) -> str:
         return self.presets[self.selected_preset_index]
-
-    @property
-    def preset_name(self) -> Optional[str]:
-        """overridden"""
-        return self.selected_preset
 
     @property
     def type_name(self) -> str:

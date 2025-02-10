@@ -3,9 +3,7 @@ from functools import partial
 import Live
 
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
-from protocol0.domain.lom.device.DeviceLoadedEvent import DeviceLoadedEvent
 from protocol0.domain.lom.instrument.InstrumentLoadedEvent import InstrumentLoadedEvent
-from protocol0.domain.lom.instrument.preset.SampleSelectedEvent import SampleSelectedEvent
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.BrowserServiceInterface import BrowserServiceInterface
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
@@ -20,7 +18,6 @@ class BrowserService(BrowserServiceInterface):
         super(BrowserService, self).__init__()
         self._browser = browser
         self._browser_loader_service = browser_loader_service
-        DomainEventBus.subscribe(SampleSelectedEvent, self._on_sample_selected_event)
 
     def load_device_from_enum(self, device_enum: DeviceEnum) -> Sequence:
         seq = Sequence()
@@ -37,7 +34,6 @@ class BrowserService(BrowserServiceInterface):
         seq.add(load_func)
         seq.wait(20)
         seq.add(ApplicationView.focus_detail)
-        seq.add(partial(DomainEventBus.emit, DeviceLoadedEvent(device_enum)))
         if device_enum.is_instrument:
             seq.add(partial(DomainEventBus.emit, InstrumentLoadedEvent(device_enum)))
         return seq.done()
@@ -53,10 +49,3 @@ class BrowserService(BrowserServiceInterface):
         seq = Sequence()
         seq.wait(20)
         return seq.done()
-
-    def _on_sample_selected_event(self, event: SampleSelectedEvent) -> None:
-        item = self._browser_loader_service.get_sample(sample_name=event.sample_name)
-
-        if item is not None and item.is_loadable:
-            # noinspection PyArgumentList
-            self._browser.load_item(item)  # or _browser.preview_item

@@ -29,7 +29,6 @@ set_clip_file_path  # unused function (p0_backend\lib\ableton\interface\clip.py:
 load_instrument_track  # unused function (p0_backend\lib\ableton\interface\track.py:101)
 websocket_endpoint  # unused function (p0_backend\api\http_server\ws.py:53)
 _catch_protocol0_errors  # unused function (p0_backend\api\http_server\main.py:57)
-set_envelope_loop_length  # unused function (p0_backend\lib\ableton\automation.py:15)
 flatten_track  # unused function (p0_backend\lib\ableton\interface\track.py:79)
 save_set_as_template  # unused function (p0_backend\lib\ableton\ableton.py:150)
 throttle  # unused class (p0_backend\lib\decorators.py:23)

@@ -1,6 +1,7 @@
-import Live
-from _Framework.SubjectSlot import subject_slot, SlotManager
 from typing import Dict
+
+import Live
+from _Framework.SubjectSlot import SlotManager
 
 from protocol0.domain.lom.loop.LoopableInterface import LoopableInterface
 from protocol0.shared.Config import Config
@@ -16,9 +17,9 @@ class ClipLoop(SlotManager, Observable, LoopableInterface):
         super(ClipLoop, self).__init__()
         self._clip = clip
 
-        self._loop_start_listener.subject = self._clip
-        self._loop_end_listener.subject = self._clip
-        self._looping_listener.subject = self._clip
+        # self._loop_start_listener.subject = self._clip
+        # self._loop_end_listener.subject = self._clip
+        # self._looping_listener.subject = self._clip
 
     def __repr__(self) -> str:
         return "ClipLoop(start=%s, end=%s, length=%s)" % (
@@ -43,17 +44,17 @@ class ClipLoop(SlotManager, Observable, LoopableInterface):
         self.start = loop_data["start"]
         self.end = loop_data["end"]
 
-    @subject_slot("loop_start")
-    def _loop_start_listener(self) -> None:
-        self.notify_observers()
-
-    @subject_slot("loop_end")
-    def _loop_end_listener(self) -> None:
-        self.notify_observers()
-
-    @subject_slot("looping")
-    def _looping_listener(self) -> None:
-        self.notify_observers()
+    # @subject_slot("loop_start")
+    # def _loop_start_listener(self) -> None:
+    #     self.notify_observers()
+    #
+    # @subject_slot("loop_end")
+    # def _loop_end_listener(self) -> None:
+    #     self.notify_observers()
+    #
+    # @subject_slot("looping")
+    # def _looping_listener(self) -> None:
+    #     self.notify_observers()
 
     @property
     def looping(self) -> bool:

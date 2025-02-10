@@ -2,9 +2,6 @@ from typing import Optional, List
 
 from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.scene.SceneClips import SceneClips
-from protocol0.domain.lom.track.simple_track.audio.special.SimpleAutomationTrack import (
-    SimpleAutomationTrack,
-)
 from protocol0.domain.lom.track.simple_track.midi.special.CthulhuTrack import CthulhuTrack
 from protocol0.domain.shared.utils.utils import previous_power_of_2
 from protocol0.shared.Song import Song
@@ -59,12 +56,12 @@ class SceneLength(object):
         clips: List[Clip] = []
 
         for scene_cs in self._clips.clip_slot_tracks:
-            if scene_cs.clip is None or not scene_cs.is_main_clip:
+            if scene_cs.clip is None:
                 continue
 
             clip = scene_cs.clip
 
-            if isinstance(scene_cs.track, (SimpleAutomationTrack, CthulhuTrack)):
+            if isinstance(scene_cs.track, (CthulhuTrack,)):
                 continue
 
             if clip.is_recording and not (float(clip.length).is_integer()):  # type: ignore[unreachable]

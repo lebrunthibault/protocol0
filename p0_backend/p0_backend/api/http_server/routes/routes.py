@@ -7,7 +7,6 @@ from p0_backend.lib.ableton.ableton import (
     hide_plugins,
     show_plugins,
 )
-from p0_backend.lib.ableton.automation import set_envelope_loop_length
 from p0_backend.lib.ableton.set_profiling.ableton_set_profiler import AbletonSetProfiler
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.explorer import close_samples_windows, close_explorer_window
@@ -21,7 +20,6 @@ from protocol0.application.command.LogSelectedCommand import LogSelectedCommand
 from protocol0.application.command.LogSongStatsCommand import LogSongStatsCommand
 from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongCommand
 from protocol0.application.command.ReloadScriptCommand import ReloadScriptCommand
-from protocol0.application.command.ScrollPresetsCommand import ScrollPresetsCommand
 from .action_routes import router as action_router
 from .audio_routes import router as audio_router
 from .clip_routes import router as clip_router
@@ -83,11 +81,6 @@ def show_hide_plugins():
 @router.get("/hide_plugins")
 def _hide_plugins():
     hide_plugins()
-
-
-@router.get("/set_envelope_loop_length")
-def _set_envelope_loop_length(length: int):
-    set_envelope_loop_length(length)
 
 
 @router.get("/start_set_profiling")
@@ -162,8 +155,3 @@ async def _log_selected():
 @router.get("/log_song_stats")
 async def _log_song_stats():
     p0_script_client().dispatch(LogSongStatsCommand())
-
-
-@router.get("/scroll_presets")
-async def scroll_presets(direction: str):
-    p0_script_client().dispatch(ScrollPresetsCommand(go_next=direction == "next"))

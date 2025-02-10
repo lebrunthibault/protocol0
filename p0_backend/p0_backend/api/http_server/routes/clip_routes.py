@@ -7,9 +7,6 @@ from p0_backend.lib.ableton.ableton_set.ableton_set_manager import (
 from p0_backend.lib.ableton.automation import edit_automation_value
 from p0_backend.lib.ableton.interface.clip import crop_clip
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
-from protocol0.application.command.ColorClipWithAutomationCommand import (
-    ColorClipWithAutomationCommand,
-)
 from protocol0.application.command.LoopSelectedClipCommand import LoopSelectedClipCommand
 from protocol0.application.command.MoveClipLoopCommand import MoveClipLoopCommand
 from protocol0.application.command.CleanLoopCommand import (
@@ -20,7 +17,6 @@ from protocol0.application.command.RemoveMutedNotesCommand import (
 )
 from protocol0.application.command.SelectClipCommand import SelectClipCommand
 from protocol0.application.command.SetClipLoopLengthCommand import SetClipLoopLengthCommand
-from protocol0.application.command.ShowAutomationCommand import ShowAutomationCommand
 from protocol0.application.command.ToggleClipCommand import ToggleClipCommand
 from protocol0.application.command.ToggleNotesCommand import ToggleNotesCommand
 
@@ -52,11 +48,6 @@ async def loop_selected():
     p0_script_client().dispatch(LoopSelectedClipCommand())
 
 
-@router.get("/color_with_automation")
-async def _color_clip_with_automation():
-    p0_script_client().dispatch(ColorClipWithAutomationCommand())
-
-
 @router.get("/move_loop")
 async def move_loop(forward: bool = True, bar: bool = False):
     p0_script_client().dispatch(MoveClipLoopCommand(forward=forward, bar=bar))
@@ -65,11 +56,6 @@ async def move_loop(forward: bool = True, bar: bool = False):
 @router.get("/set_loop_length")
 async def set_loop_length(bar_length: int):
     p0_script_client().dispatch(SetClipLoopLengthCommand(bar_length=bar_length))
-
-
-@router.get("/show_automation")
-async def show_automation(direction: str):
-    p0_script_client().dispatch(ShowAutomationCommand(go_next=direction == "next"))
 
 
 @router.get("/edit_automation_value")

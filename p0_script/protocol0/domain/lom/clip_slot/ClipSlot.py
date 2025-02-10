@@ -1,15 +1,12 @@
 from functools import partial
+from typing import Any, Optional, Type
 
 import Live
 from _Framework.SubjectSlot import subject_slot, SlotManager
-from typing import Any, Optional, Type
 
 from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.clip.ClipCreatedOrDeletedEvent import ClipCreatedOrDeletedEvent
 from protocol0.domain.lom.clip_slot.ClipSlotAppearance import ClipSlotAppearance
-from protocol0.domain.lom.clip_slot.ClipSlotPlayingStatusUpdatedEvent import (
-    ClipSlotPlayingStatusUpdatedEvent,
-)
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
@@ -27,8 +24,7 @@ class ClipSlot(SlotManager, Observable):
         self._index = index
         self.appearance = ClipSlotAppearance(live_clip_slot)
 
-        self._has_clip_listener.subject = self._clip_slot
-        self._playing_status_listener.subject = self._clip_slot
+        # self._has_clip_listener.subject = self._clip_slot
         self.clip: Optional[Clip] = None
         self._map_clip()
 
@@ -49,10 +45,6 @@ class ClipSlot(SlotManager, Observable):
         self.notify_observers()
 
         Scheduler.defer(self.appearance.refresh)
-
-    @subject_slot("playing_status")
-    def _playing_status_listener(self) -> None:
-        Scheduler.defer(partial(DomainEventBus.emit, ClipSlotPlayingStatusUpdatedEvent()))
 
     def _map_clip(self, is_new: bool = False) -> None:
         if self.has_clip:

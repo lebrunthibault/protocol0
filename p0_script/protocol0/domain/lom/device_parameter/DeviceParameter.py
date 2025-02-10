@@ -1,7 +1,7 @@
 from typing import Any, Optional, List
-from _Framework.SubjectSlot import subject_slot, SlotManager
 
 import Live
+from _Framework.SubjectSlot import SlotManager
 
 from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
 from protocol0.domain.shared.ValueScroller import ValueScroller
@@ -29,9 +29,6 @@ class DeviceParameter(SlotManager, Observable):
         except (RuntimeError, AttributeError):
             self.default_value = 0
 
-        self._automation_state_listener.subject = device_parameter
-        self._automation_state = device_parameter.automation_state
-
     def __repr__(self, **k: Any) -> str:
         return "%s: %s" % (self.name, round(self.value, 2))
 
@@ -43,12 +40,6 @@ class DeviceParameter(SlotManager, Observable):
         param = cls(device_parameter, enum=enum)
         param.device_name = device_name
         return param
-
-    @subject_slot("value")
-    def _automation_state_listener(self) -> None:
-        if self._device_parameter.automation_state != self._automation_state:
-            self._automation_state = self._device_parameter.automation_state
-            self.notify_observers()
 
     @property
     def name(self) -> str:

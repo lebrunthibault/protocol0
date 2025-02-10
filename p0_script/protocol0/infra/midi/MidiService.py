@@ -2,12 +2,6 @@ from typing import Optional, Tuple, Callable
 
 from protocol0.application.CommandBus import CommandBus
 from protocol0.application.command.SerializableCommand import SerializableCommand
-from protocol0.domain.lom.instrument.preset.PresetProgramScrolledEvent import (
-    PresetProgramScrolledEvent,
-)
-from protocol0.domain.lom.instrument.preset.PresetProgramSelectedEvent import (
-    PresetProgramSelectedEvent,
-)
 from protocol0.domain.lom.song.SongInitializedEvent import SongInitializedEvent
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
@@ -26,16 +20,11 @@ class MidiService(object):
         self._send_midi = send_midi
 
         DomainEventBus.subscribe(MidiBytesReceivedEvent, self._on_midi_bytes_received_event)
-        DomainEventBus.subscribe(PresetProgramSelectedEvent, self._on_preset_program_selected_event)
-        DomainEventBus.subscribe(PresetProgramScrolledEvent, self._on_preset_program_scrolled_event)
         DomainEventBus.subscribe(NoteSentEvent, self._on_note_sent_event)
         DomainEventBus.once(SongInitializedEvent, self._on_song_initialized_event)
 
     def _sysex_to_string(self, sysex: Tuple) -> str:
         return bytearray(sysex[1:-1]).decode()
-
-    def _send_program_change(self, value: int, channel: int = 0) -> None:
-        self._send_formatted_midi_message("pc", channel, value)
 
     def _send_cc(self, value: int, channel: int = 0) -> None:
         self._send_formatted_midi_message("cc", channel, value, 1)
@@ -69,16 +58,10 @@ class MidiService(object):
             Logger.info(f"Midi bytes received error : {e}")
             Logger.info(event.midi_bytes)
 
-    def _on_preset_program_selected_event(self, event: PresetProgramSelectedEvent) -> None:
-        self._send_program_change(event.preset_index)
-
     def _on_note_sent_event(self, event: NoteSentEvent) -> None:
         self._send_formatted_midi_message(
             "note", event.midi_channel, event.note_number, event.velocity
         )
-
-    def _on_preset_program_scrolled_event(self, event: PresetProgramScrolledEvent) -> None:
-        self._send_cc(event.cc_value)
 
     def _on_song_initialized_event(self, _: SongInitializedEvent) -> None:
         Backend.client().ping()

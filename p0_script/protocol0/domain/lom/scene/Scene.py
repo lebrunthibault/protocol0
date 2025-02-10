@@ -44,7 +44,7 @@ class Scene(SlotManager):
 
         # listeners
         self.clips.register_observer(self)
-        self.is_triggered_listener.subject = self._scene
+        # self.is_triggered_listener.subject = self._scene
 
     def __repr__(self) -> str:
         return "Scene(%s (%s))" % (self.name, self.index)

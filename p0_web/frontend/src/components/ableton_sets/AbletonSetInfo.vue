@@ -66,7 +66,6 @@ import {defineComponent, PropType} from "vue";
 import moment from 'moment';
 import {notify} from '@/utils/utils'
 import api from "@/utils/api";
-import localApi from '@/utils/localApi'
 import {AbletonSet, AbletonSetPlace} from '@/components/ableton_sets/ableton_sets';
 
 

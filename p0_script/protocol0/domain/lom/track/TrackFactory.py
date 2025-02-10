@@ -3,15 +3,11 @@ from typing import Optional, Type
 import Live
 
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
-from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitoringStateEnum
 from protocol0.domain.lom.track.group_track.AbstractGroupTrack import AbstractGroupTrack
 from protocol0.domain.lom.track.group_track.NormalGroupTrack import NormalGroupTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 from protocol0.domain.lom.track.simple_track.audio.special.ResamplingTrack import ResamplingTrack
-from protocol0.domain.lom.track.simple_track.audio.special.SimpleAutomationTrack import (
-    SimpleAutomationTrack,
-)
 from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
 from protocol0.domain.lom.track.simple_track.midi.special.CthulhuTrack import CthulhuTrack
 from protocol0.domain.lom.track.simple_track.midi.special.NerveTrack import NerveTrack
@@ -39,16 +35,6 @@ def _get_simple_track_class(track: Live.Track.Track) -> Type[SimpleTrack]:
 
     if CthulhuTrack.is_track_valid(track):
         cls = CthulhuTrack
-
-    try:
-        if (
-            track.has_audio_input
-            and CurrentMonitoringStateEnum(track.current_monitoring_state)
-            == CurrentMonitoringStateEnum.IN
-        ):
-            cls = SimpleAutomationTrack
-    except RuntimeError:
-        pass
 
     if cls is None:
         raise Protocol0Error("Unknown track type")

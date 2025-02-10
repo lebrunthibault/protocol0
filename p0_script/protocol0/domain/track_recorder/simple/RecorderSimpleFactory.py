@@ -31,9 +31,7 @@ class TrackRecorderSimpleFactory(AbstractTrackRecorderFactory):
         return None
 
     def _get_recording_bar_length(self, record_type: RecordTypeEnum, bar_length: int) -> int:
-        if record_type == RecordTypeEnum.MIDI_UNLIMITED:
-            return 0
-        elif record_type == RecordTypeEnum.MIDI:
+        if record_type == RecordTypeEnum.MIDI:
             return bar_length
         elif record_type in (RecordTypeEnum.AUDIO, RecordTypeEnum.MIDI_RESAMPLE):
             return Song.selected_scene().bar_length

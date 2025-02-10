@@ -2,7 +2,7 @@ from functools import partial
 from typing import Optional
 
 import Live
-from _Framework.SubjectSlot import subject_slot, SlotManager
+from _Framework.SubjectSlot import SlotManager
 
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
@@ -18,32 +18,12 @@ class DeviceComponent(SlotManager):
         super(DeviceComponent, self).__init__()
         self._view = song_view
 
-        self._selected_parameter_listener.subject = self._view
-
-        # this parameter is here to work around the fact that view.selected_parameter is not settable
-        # it will make the getter return the parameter we want even though it is not
-        # currently selected in the interface
-        # for most uses it's enough and works as though we did view.selected_parameter = param
-        self._overridden_selected_parameter: Optional[DeviceParameter] = None
-
-    @subject_slot("selected_parameter")
-    def _selected_parameter_listener(self) -> None:
-        """Reset the parameter"""
-        self._overridden_selected_parameter = None
-
     @property
     def selected_parameter(self) -> Optional[DeviceParameter]:
-        if self._overridden_selected_parameter:
-            return self._overridden_selected_parameter
-
         return find_if(
             lambda p: p._device_parameter == self._view.selected_parameter,
             Song.selected_track().devices.parameters,
         )
-
-    @selected_parameter.setter
-    def selected_parameter(self, parameter: Optional[DeviceParameter]) -> None:
-        self._overridden_selected_parameter = parameter
 
     def select_device(self, track: SimpleTrack, device: Device) -> Sequence:
         seq = Sequence()

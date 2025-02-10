@@ -27,7 +27,7 @@ class SceneName(SlotManager):
         self._scene = scene
         self._scene_length = scene_length
         self._scene_playing_state = scene_playing_state
-        self._name_listener.subject = scene
+        # self._name_listener.subject = scene
         self._last_updated_at = time.time()
         self._cached_name: str = self._scene.name
 
