@@ -67,7 +67,7 @@ class PixelBox:
             logger.info(f"rel_width: {rel_width}")
             logger.info(f"rel_height: {rel_height}")
 
-        return ((rel_width) + self.x1, (rel_height) + self.y1)
+        return (rel_width) + self.x1, (rel_height) + self.y1
 
 
 @timeit

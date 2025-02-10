@@ -104,10 +104,6 @@ class BrowserLoaderService(object):
         """Loads items from the user library category"""
         self._do_load_item(self._get_item_for_category("user_library", name), "from User Library")
 
-    def get_sample(self, sample_name: str) -> Live.Browser.BrowserItem:
-        self._cache_category("samples")
-        return self._cached_browser_items["samples"].get(sample_name, None)
-
     def _do_load_item(self, item: Live.Browser.BrowserItem, header: str = "Device") -> None:
         """Handles loading an item and displaying load info in status bar."""
         # NB : activating this will hotswap drum rack pads if a drum rack is selected

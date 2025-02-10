@@ -6,7 +6,6 @@ import Live
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceChain import DeviceChain
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
-from protocol0.domain.lom.device.DeviceLoadedEvent import DeviceLoadedEvent
 from protocol0.domain.lom.device.DryWetDeviceAddedEvent import DryWetDeviceAddedEvent
 from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
@@ -77,7 +76,6 @@ class DeviceService(object):
         self._browser_service = browser_service
         self._move_device = move_device
 
-        DomainEventBus.subscribe(DeviceLoadedEvent, self._on_device_loaded_event)
         DomainEventBus.subscribe(DryWetDeviceAddedEvent, self._on_dry_wet_device_added_event)
 
     def load_device(self, enum_name: str, create_track: bool = False) -> Sequence:
@@ -143,13 +141,6 @@ class DeviceService(object):
             track.device_insert_mode = Live.Track.DeviceInsertMode.selected_right
             if len(list(track.devices)) > 0:
                 self._device_component.select_device(track, list(track.devices)[-1])
-
-    def _on_device_loaded_event(self, _: DeviceLoadedEvent) -> None:
-        """Select the default parameter if it exists"""
-        device = Song.selected_track().devices.selected
-        if device and device.enum and device.enum.default_parameter is not None:
-            parameter = device.get_parameter_by_name(device.enum.default_parameter)
-            self._device_component.selected_parameter = parameter
 
     def move_device(self, device: Device, chain: DeviceChain, position: int) -> Sequence:
         self._move_device(device._device, chain._chain, position)

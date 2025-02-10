@@ -7,7 +7,6 @@ class RecordTypeEnum(Enum):
     MIDI = "Midi"
     MIDI_OVERWRITE = "Midi overwrite"
     MIDI_RESAMPLE = "Midi resample"
-    MIDI_UNLIMITED = "Midi unlimited"
     AUDIO = "Audio"
 
     @property
@@ -16,7 +15,6 @@ class RecordTypeEnum(Enum):
             RecordTypeEnum.MIDI,
             RecordTypeEnum.MIDI_OVERWRITE,
             RecordTypeEnum.MIDI_RESAMPLE,
-            RecordTypeEnum.MIDI_UNLIMITED,
         )
 
     def get_count_in(self) -> CountInInterface:
@@ -46,4 +44,4 @@ class RecordTypeEnum(Enum):
 
     @property
     def should_quantize(self) -> bool:
-        return self in (RecordTypeEnum.MIDI, RecordTypeEnum.MIDI_UNLIMITED)
+        return self == RecordTypeEnum.MIDI

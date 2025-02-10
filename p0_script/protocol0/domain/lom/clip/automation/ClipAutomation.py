@@ -15,9 +15,6 @@ class ClipAutomation(object):
         self._live_clip = live_clip
         self._loop = loop
 
-    def has_automation(self, device_parameters: List[DeviceParameter]) -> bool:
-        return len(self.get_automated_parameters(device_parameters)) != 0
-
     def get_automated_parameters(
         self, device_parameters: List[DeviceParameter]
     ) -> List[DeviceParameter]:

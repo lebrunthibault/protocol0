@@ -1,24 +1,17 @@
 import collections
 from functools import partial
-from typing import Optional, Dict, List
+from typing import Optional, Dict
 
 import Live
 from _Framework.SubjectSlot import subject_slot, SlotManager
 
 from protocol0.domain.lom.track.TrackFactory import TrackFactory
 from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
-from protocol0.domain.lom.track.simple_track.CurrentMonitoringStateUpdatedEvent import (
-    CurrentMonitoringStateUpdatedEvent,
-)
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrackCreatedEvent import SimpleTrackCreatedEvent
 from protocol0.domain.lom.track.simple_track.SimpleTrackService import rename_tracks
-from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 from protocol0.domain.lom.track.simple_track.audio.SimpleReturnTrack import SimpleReturnTrack
 from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
-from protocol0.domain.lom.track.simple_track.audio.special.SimpleAutomationTrack import (
-    SimpleAutomationTrack,
-)
 from protocol0.domain.lom.track.simple_track.midi.special.CthulhuTrack import CthulhuTrack
 from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
@@ -38,14 +31,11 @@ class TrackMapperService(SlotManager):
 
         self.tracks_listener.subject = self._live_song
         DomainEventBus.subscribe(SimpleTrackCreatedEvent, self._on_simple_track_created_event)
-        DomainEventBus.subscribe(
-            CurrentMonitoringStateUpdatedEvent, self._on_current_monitoring_state_updated_event
-        )
 
     @subject_slot("tracks")
     @handle_errors()
     def tracks_listener(self) -> None:
-        deleted_track_indexes = self._clean_tracks()
+        self._clean_tracks()
 
         previous_simple_track_count = len(list(Song.all_simple_tracks()))
         added_track_count = len(list(Song.live_tracks())) - previous_simple_track_count
@@ -58,7 +48,7 @@ class TrackMapperService(SlotManager):
 
         seq = Sequence()
         if previous_simple_track_count and added_track_count > 0 and Song.selected_track():
-            seq.add(partial(self._on_track_added, deleted_track_indexes))
+            seq.add(self._on_track_added)
             try:
                 if added_track_count == 2:
                     tracks = (
@@ -78,21 +68,17 @@ class TrackMapperService(SlotManager):
         seq.add(partial(DomainEventBus.defer_emit, TracksMappedEvent()))
         seq.done()
 
-    def _clean_tracks(self) -> List[int]:
+    def _clean_tracks(self) -> None:
         existing_track_ids = [track._live_ptr for track in list(Song.live_tracks())]
         deleted_ids = []
-        deleted_indexes = []
 
         for track_id, simple_track in self._live_track_id_to_simple_track.items():
             if track_id not in existing_track_ids:
                 simple_track.disconnect()
                 deleted_ids.append(track_id)
-                deleted_indexes.append(simple_track.index)
 
         for track_id in deleted_ids:
             del self._live_track_id_to_simple_track[track_id]
-
-        return deleted_indexes
 
     def _generate_simple_tracks(self) -> None:
         """instantiate SimpleTracks (including return / master, that are marked as inactive)"""
@@ -112,7 +98,7 @@ class TrackMapperService(SlotManager):
         for track in Song.simple_tracks():
             track.on_tracks_change()
 
-    def _on_track_added(self, deleted_track_indexes: List[int]) -> Optional[Sequence]:
+    def _on_track_added(self) -> Optional[Sequence]:
         if not Song.selected_track().IS_ACTIVE:
             return None
 
@@ -134,15 +120,6 @@ class TrackMapperService(SlotManager):
 
         seq.add(Undo.end_undo_step)
         return seq.done()
-
-    def _on_current_monitoring_state_updated_event(
-        self, event: CurrentMonitoringStateUpdatedEvent
-    ) -> None:
-        # handling replacement of a SimpleTrack by another
-        track = Song.optional_simple_track_from_live_track(event.track)
-
-        if isinstance(track, (SimpleAudioTrack, SimpleAutomationTrack)):
-            self._track_factory.create_simple_track(track._track, track.index)
 
     def _on_simple_track_created_event(self, event: SimpleTrackCreatedEvent) -> None:
         """So as to be able to generate simple tracks with the abstract group track aggregate"""

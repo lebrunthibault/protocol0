@@ -1,13 +1,10 @@
-import os
-from os.path import basename
+from typing import Any, cast
 
 import Live
-from typing import Any, Optional, cast
 
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.Sample.Sample import Sample
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
-from protocol0.domain.shared.utils.string import smart_string
 
 
 class SimplerDevice(Device):
@@ -25,20 +22,6 @@ class SimplerDevice(Device):
     @property
     def sample(self) -> Sample:
         return self._sample
-
-    @property
-    def preset_name(self) -> Optional[str]:
-        """overridden"""
-        # noinspection PyBroadException
-        try:
-            sample = self._device.sample
-        except Exception:
-            # can happen while loading a new sample
-            return None
-        if sample:
-            return str(os.path.splitext(basename(smart_string(sample.file_path)))[0])
-        else:
-            return None
 
     def _set_warping(self) -> None:
         if hasattr(self, "sample") and "loop" in self.sample.file_path.lower():

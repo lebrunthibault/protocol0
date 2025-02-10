@@ -1,8 +1,7 @@
 from enum import Enum
-from typing import List, Optional, Union, TYPE_CHECKING
+from typing import List, Union, TYPE_CHECKING
 
 from protocol0.domain.lom.device.DeviceEnumGroup import DeviceEnumGroup
-from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
 from protocol0.domain.shared.ui.ColorEnum import ColorEnum
 
 if TYPE_CHECKING:
@@ -171,25 +170,6 @@ class DeviceEnum(Enum):
                         return True
 
         return device.enum == self
-
-    @property
-    def default_parameter(self) -> Optional[DeviceParamEnum]:
-        """Represents the main parameter for a specific device. We want to make it easily accessible"""
-        try:
-            return {
-                DeviceEnum.AUTO_FILTER_HIGH_PASS: DeviceParamEnum.AUTO_FILTER_HIGH_PASS_FREQUENCY,
-                DeviceEnum.AUTO_FILTER_LOW_PASS: DeviceParamEnum.AUTO_FILTER_LOW_PASS_FREQUENCY,
-                DeviceEnum.AUTO_PAN: DeviceParamEnum.AUTO_PAN_AMOUNT,
-                DeviceEnum.EQ_EIGHT: DeviceParamEnum.EQ_EIGHT_1_FREQUENCY_A,
-                DeviceEnum.INSERT_DELAY: DeviceParamEnum.INPUT,
-                DeviceEnum.INSERT_REVERB: DeviceParamEnum.INPUT,
-                DeviceEnum.LIMITER: DeviceParamEnum.GAIN,
-                DeviceEnum.LFO_TOOL: DeviceParamEnum.LFO_TOOL_LFO_DEPTH,
-                DeviceEnum.SATURATOR: DeviceParamEnum.DRIVE,
-                DeviceEnum.UTILITY: DeviceParamEnum.GAIN,
-            }[self]
-        except KeyError:
-            return None
 
     @classmethod
     def favorites(cls) -> List[List[Union["DeviceEnum", DeviceEnumGroup]]]:

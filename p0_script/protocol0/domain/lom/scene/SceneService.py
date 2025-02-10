@@ -1,5 +1,4 @@
 import collections
-from functools import partial
 from itertools import chain
 from typing import List, Iterator, Dict
 
@@ -19,7 +18,6 @@ from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
-from protocol0.shared.sequence.Sequence import Sequence
 
 
 class SceneService(SlotManager):
@@ -35,7 +33,8 @@ class SceneService(SlotManager):
         self._scene_crud_component = scene_crud_component
         self._scene_playback_service = scene_playback_service
 
-        self.scenes_listener.subject = live_song
+        # unused for now: disabled for performance
+        # self.scenes_listener.subject = live_song
         self._live_scene_id_to_scene: Dict[int, Scene] = collections.OrderedDict()
 
     def get_scene(self, live_scene: Live.Scene.Scene) -> Scene:
@@ -138,12 +137,3 @@ class SceneService(SlotManager):
         for scene in self._live_song.scenes:
             sorted_dict[scene._live_ptr] = self.get_scene(scene)
         self._live_scene_id_to_scene = sorted_dict
-
-    def duplicate_scene(self) -> Sequence:
-        selected_scene_index = Song.selected_scene().index
-        seq = Sequence()
-        seq.add(partial(self._scene_crud_component.duplicate_scene, Song.selected_scene()))
-        seq.add(
-            lambda: self._scene_playback_service.fire_scene(Song.scenes()[selected_scene_index + 1])
-        )
-        return seq.done()

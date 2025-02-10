@@ -38,7 +38,6 @@ from protocol0.domain.shared.utils.forward_to import ForwardTo
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.domain.shared.utils.timing import defer
 from protocol0.domain.shared.utils.utils import volume_to_db, db_to_volume
-from protocol0.infra.persistence.TrackData import TrackData
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.observer.Observable import Observable
@@ -129,11 +128,9 @@ class SimpleTrack(AbstractTrack):
         self.arm_state.register_observer(self)
 
         self._name_listener.subject = live_track
-        self._solo_listener.subject = live_track
+        # self._solo_listener.subject = live_track
 
         self.devices.build()
-        self._data = TrackData(self)
-        self._data.restore()
 
     device_insert_mode = cast(int, ForwardTo("_view", "device_insert_mode"))
 
@@ -194,8 +191,6 @@ class SimpleTrack(AbstractTrack):
             # Refreshing is only really useful from simpler devices that change when a new sample is loaded
             if self.IS_ACTIVE and not self.is_foldable:
                 self.instrument = InstrumentFactory.make_instrument(self)
-        elif isinstance(observable, RackDevice):
-            self._data.save()
         elif isinstance(observable, SimpleTrackArmState) and self.arm_state.is_armed:
             DomainEventBus.emit(SimpleTrackArmedEvent(self._track))
 

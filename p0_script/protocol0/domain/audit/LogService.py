@@ -1,5 +1,4 @@
 from protocol0.domain.audit.utils import tail_logs
-from protocol0.domain.lom.clip.AudioClip import AudioClip
 from protocol0.domain.lom.set.AbletonSet import AbletonSet
 from protocol0.domain.lom.track.TrackMapperService import TrackMapperService
 from protocol0.domain.shared.utils.list import find_if
@@ -29,23 +28,6 @@ class LogService(object):
         Logger.info("current_track.sub_tracks: %s" % current_track.sub_tracks)
         Logger.info()
         Logger.info("current_track.instrument: %s" % current_track.instrument)
-        if current_track.instrument:
-            Logger.info()
-            Logger.info(
-                "current_track.instrument.presets count: %s"
-                % len(current_track.instrument.preset_list.presets)
-            )
-            Logger.info()
-            Logger.info(
-                "current_track.instrument.categories: %s"
-                % current_track.instrument.preset_list.categories
-            )
-            Logger.info()
-            Logger.info(
-                "current_track.instrument.selected_category: %s"
-                % current_track.instrument.preset_list.selected_category
-            )
-
         Logger.info()
         Logger.info("********* SELECTED_TRACK *************")
         Logger.info("selected_track: %s" % Song.selected_track())
@@ -118,11 +100,6 @@ class LogService(object):
             Logger.info(
                 "selected_track.instrument.instrument_rack_device: %s"
                 % Song.selected_track().instrument_rack_device
-            )
-            Logger.info()
-            Logger.info(
-                "current_track.instrument.selected_preset: %s"
-                % current_track.instrument.selected_preset
             )
             Logger.info()
 

@@ -13,9 +13,6 @@ from protocol0.domain.audit.SongStatsService import SongStatsService
 from protocol0.domain.lom.device.DeviceDisplayService import DeviceDisplayService
 from protocol0.domain.lom.device.DeviceService import DeviceService
 from protocol0.domain.lom.instrument.instrument.InstrumentService import InstrumentService
-from protocol0.domain.lom.instrument.preset.InstrumentPresetScrollerService import (
-    InstrumentPresetScrollerService,
-)
 from protocol0.domain.lom.scene.PlayingScene import PlayingScene
 from protocol0.domain.lom.scene.ScenePlaybackService import ScenePlaybackService
 from protocol0.domain.lom.scene.SceneService import SceneService
@@ -33,7 +30,6 @@ from protocol0.domain.lom.song.components.TempoComponent import TempoComponent
 from protocol0.domain.lom.song.components.TrackComponent import TrackComponent
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
 from protocol0.domain.lom.track.ClipPlayerService import ClipPlayerService
-from protocol0.domain.lom.track.TrackAutomationService import TrackAutomationService
 from protocol0.domain.lom.track.TrackFactory import TrackFactory
 from protocol0.domain.lom.track.TrackMapperService import TrackMapperService
 from protocol0.domain.lom.validation.ValidatorFactory import ValidatorFactory
@@ -108,7 +104,6 @@ class Container(ContainerInterface):
         )
         instrument_service = InstrumentService(device_service, device_component)
         track_factory = TrackFactory(track_crud_component, browser_service)
-        track_automation_service = TrackAutomationService(track_factory)
         track_mapper_service = TrackMapperService(live_song, track_factory)
         track_player_service = ClipPlayerService()
         scene_playback_service = ScenePlaybackService(playback_component)
@@ -142,7 +137,6 @@ class Container(ContainerInterface):
         )
 
         song_service = SongInitService(playback_component, ableton_set)
-        instrument_preset_scroller_service = InstrumentPresetScrollerService()
         mixing_service = MixingService()
 
         song_data_service = SongDataService(live_song.get_data, live_song.set_data, scene_component)
@@ -167,7 +161,6 @@ class Container(ContainerInterface):
         self._register(song_data_service)
 
         self._register(track_factory)
-        self._register(track_automation_service)
         self._register(track_mapper_service)
         self._register(track_player_service)
 
@@ -175,8 +168,6 @@ class Container(ContainerInterface):
         self._register(scene_playback_service)
 
         self._register(instrument_service)
-        self._register(instrument_preset_scroller_service)
-
         self._register(device_service)
 
         self._register(mixing_service)
