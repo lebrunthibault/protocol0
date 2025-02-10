@@ -107,7 +107,7 @@ class ErrorService(object):
 
         # Scheduler.restart()
         # noinspection PyArgumentList
-        self._song.stop_playing()  # prevent more errors coming through
+        # self._song.stop_playing()  # prevent more errors coming through
 
     def _log_file(self, name: str) -> bool:
         if not name:
