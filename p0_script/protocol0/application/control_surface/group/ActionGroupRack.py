@@ -132,7 +132,7 @@ class ActionGroupRack(ActionGroupInterface):
         self.add_encoder(
             identifier=15,
             name="smooth selected clip velocities",
-            on_scroll=lambda: Song.selected_clip(MidiClip).scale_velocities,
+            on_scroll=lambda: Song.selected_clip(MidiClip, raise_if_none=True).scale_velocities,
         )
 
         add_x_param_encoder(

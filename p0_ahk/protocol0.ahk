@@ -26,22 +26,6 @@ return
 ^+z::
     Send ^y  ; redo
 return
-~^e::
-	callBackend("clip/toggle_notes")
-return
-;edit grid size
-*^NumpadEnd::
-    Send ^{numpad1}
-return
-*^NumpadDown::
-    Send ^{numpad2}
-return
-;^+e::
-;	callBackend("clip/edit_automation_value")
-;return
-^+*::
-    Send {Right}
-return
 ^s::
     Send ^s
 	callBackend("set/save")
@@ -53,22 +37,13 @@ return
 ^!q::
     Send ^!p  ; left hand shortcut
 return
-;!r::
-;	callBackend("monitoring/toggle_reference")
-;return
-;!+r::
-;	callBackend("monitoring/toggle_reference_filters")
-;return
 ~^+f::
 	Send ^+f  ; cancel Ableton Follow
 	callBackend("search/track")
 return
-^+!f::
-	callBackend("search/track?reset=true")
-return
-^NumpadSub::
-    callBackend("track/collapse_selected")
-return
+;^+!f::
+;	callBackend("search/track?reset=true")
+;return
 ^Numpad0::
     callBackend("clip/clear_muted_notes")
 return
@@ -99,14 +74,4 @@ return
     callBackend("track/select?name=bass")
 return
 
-#IfWinActive
-
-; splice window
-#IfWinActive ahk_exe Splice.exe
-!r::
-	callBackend("monitoring/toggle_reference")
-return
-!+r::
-	callBackend("monitoring/toggle_reference_filters")
-return
 #IfWinActive

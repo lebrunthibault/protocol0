@@ -299,9 +299,17 @@ class Song(object):
         from protocol0.domain.shared.ApplicationView import ApplicationView
 
         if ApplicationView.is_session_visible():
-            return cls._selected_session_clip(clip_cls, raise_if_none)
+            clip = cls._selected_session_clip()
         else:
-            return cls._selected_arrangement_clip()
+            clip = cls._selected_arrangement_clip()
+
+        if clip is None and raise_if_none:
+            raise Protocol0Warning("no selected clip")
+
+        if clip is not None and not isinstance(clip, clip_cls):  # type: ignore[arg-type]
+            raise Protocol0Warning("clip is not a %s" % clip_cls.__name__)
+
+        return clip
 
     @classmethod
     def _selected_arrangement_clip(cls) -> Optional[Union[T, "Clip"]]:
@@ -316,22 +324,10 @@ class Song(object):
         return None
 
     @classmethod
-    def _selected_session_clip(
-        cls, clip_cls: Optional[Type[T]] = None, raise_if_none: bool = True
-    ) -> Optional[Union[T, "Clip"]]:
-        from protocol0.domain.lom.clip.Clip import Clip
-
-        clip_cls = clip_cls or Clip
-
+    def _selected_session_clip(cls) -> Optional[Union[T, "Clip"]]:
         clip = cls.selected_clip_slot() and cls.selected_clip_slot().clip
         if clip is None:
             clip = cls.selected_track().clip_slots[Song.selected_scene().index].clip
-
-        if clip is None and raise_if_none:
-            raise Protocol0Warning("no selected clip")
-
-        if clip is not None and not isinstance(clip, clip_cls):
-            raise Protocol0Warning("clip is not a %s" % clip_cls.__name__)
 
         return clip
 
