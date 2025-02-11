@@ -1,7 +1,7 @@
 from functools import partial
 
 from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
-from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
+from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.scheduler.Last32thPassedEvent import Last32thPassedEvent
 from protocol0.domain.track_recorder.count_in.CountInInterface import CountInInterface
 from protocol0.shared.Song import Song
@@ -12,7 +12,7 @@ class CountInOneBar(CountInInterface):
     def launch(
         self,
         playback_component: PlaybackComponent,
-        track: AbstractTrack,
+        track: SimpleTrack,
         solo_count_in: bool = True,
     ) -> Sequence:
         playback_component.stop()
@@ -36,7 +36,7 @@ class CountInOneBar(CountInInterface):
         # this leaves 1 bar (because of quantization)
         return Sequence().defer().done()
 
-    def _stop_count_in(self, playback_component: PlaybackComponent, track: AbstractTrack) -> None:
+    def _stop_count_in(self, playback_component: PlaybackComponent, track: SimpleTrack) -> None:
         if (
             len([clip for clip in Song.selected_scene().clips if not clip.muted]) >= 1
             and not track.solo

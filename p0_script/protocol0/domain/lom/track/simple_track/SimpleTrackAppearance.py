@@ -4,11 +4,11 @@ import Live
 from _Framework.SubjectSlot import subject_slot, SlotManager
 
 from protocol0.domain.lom.instrument.InstrumentInterface import InstrumentInterface
-from protocol0.domain.lom.track.abstract_track.AbstractTrackColorUpdatedEvent import (
-    AbstractTrackColorUpdatedEvent,
+from protocol0.domain.lom.track.simple_track.SimpleTrackColorUpdatedEvent import (
+    SimpleTrackColorUpdatedEvent,
 )
-from protocol0.domain.lom.track.abstract_track.AbstractTrackNameUpdatedEvent import (
-    AbstractTrackNameUpdatedEvent,
+from protocol0.domain.lom.track.simple_track.SimpleTrackNameUpdatedEvent import (
+    SimpleTrackNameUpdatedEvent,
 )
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.ui.ColorEnum import ColorEnum
@@ -17,11 +17,14 @@ from protocol0.domain.shared.utils.timing import defer
 from protocol0.shared.observer.Observable import Observable
 
 
-class AbstractTrackAppearance(SlotManager, Observable):
+class SimpleTrackAppearance(SlotManager, Observable):
     def __init__(self, live_track: Live.Track.Track) -> None:
-        super(AbstractTrackAppearance, self).__init__()
+        super(SimpleTrackAppearance, self).__init__()
         self._live_track = live_track
         self._instrument: Optional[InstrumentInterface] = None
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev((live_track.name, live_track))
         self._name_listener.subject = live_track
         self._cached_name = self.name
         self._cached_color = self.color
@@ -33,7 +36,7 @@ class AbstractTrackAppearance(SlotManager, Observable):
 
     @subject_slot("color")
     def _color_listener(self) -> None:
-        DomainEventBus.emit(AbstractTrackColorUpdatedEvent(self._cached_color))
+        DomainEventBus.emit(SimpleTrackColorUpdatedEvent(self._cached_color))
         self._cached_color = self.color
 
     @subject_slot("name")
@@ -53,7 +56,7 @@ class AbstractTrackAppearance(SlotManager, Observable):
         if self._live_track and name:
             previous_name = self._live_track.name
             self._live_track.name = str(name).strip()
-            DomainEventBus.emit(AbstractTrackNameUpdatedEvent(previous_name=previous_name))
+            DomainEventBus.emit(SimpleTrackNameUpdatedEvent(previous_name=previous_name))
 
     @property
     def lower_name(self) -> str:

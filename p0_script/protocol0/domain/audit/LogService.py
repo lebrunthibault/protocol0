@@ -75,11 +75,6 @@ class LogService(object):
             Logger.info()
             Logger.info("selected_track.instrument: %s" % Song.selected_track().instrument)
             Logger.info()
-            Logger.info(
-                "selected_track.instrument.instrument_rack_device: %s"
-                % Song.selected_track().instrument_rack_device
-            )
-            Logger.info()
 
     @tail_logs
     def log_set(self) -> None:

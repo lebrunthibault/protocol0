@@ -15,7 +15,7 @@ from protocol0.shared.observer.Observable import Observable
 from protocol0.shared.sequence.Sequence import Sequence
 
 
-class ClipSlot(SlotManager, Observable):
+class ClipSlot(SlotManager):
     CLIP_CLASS: Type[Clip] = Clip
 
     def __init__(self, live_clip_slot: Live.ClipSlot.ClipSlot, index: int) -> None:
@@ -42,7 +42,6 @@ class ClipSlot(SlotManager, Observable):
         self._map_clip()
 
         DomainEventBus.emit(ClipCreatedOrDeletedEvent(self._clip_slot))
-        self.notify_observers()
 
         Scheduler.defer(self.appearance.refresh)
 

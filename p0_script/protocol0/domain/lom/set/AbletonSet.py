@@ -1,14 +1,12 @@
 from dataclasses import dataclass, asdict
-from functools import partial
 from typing import Optional, List
 
-from protocol0.domain.lom.track.SelectedTrackChangedEvent import SelectedTrackChangedEvent
 from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
-from protocol0.domain.lom.track.abstract_track.AbstractTrackColorUpdatedEvent import (
-    AbstractTrackColorUpdatedEvent,
+from protocol0.domain.lom.track.simple_track.SimpleTrackColorUpdatedEvent import (
+    SimpleTrackColorUpdatedEvent,
 )
-from protocol0.domain.lom.track.abstract_track.AbstractTrackNameUpdatedEvent import (
-    AbstractTrackNameUpdatedEvent,
+from protocol0.domain.lom.track.simple_track.SimpleTrackNameUpdatedEvent import (
+    SimpleTrackNameUpdatedEvent,
 )
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
@@ -33,27 +31,15 @@ class AbletonSet(object):
         self._model_cached: Optional[AbletonSetCurrentState] = None
 
         listened_events = [
-            AbstractTrackNameUpdatedEvent,
+            SimpleTrackNameUpdatedEvent,
             TracksMappedEvent,
         ]
 
         for event in listened_events:
             DomainEventBus.subscribe(event, lambda _: self.notify())
 
-        # fixes multiple notification on startup
-        for event in (SelectedTrackChangedEvent,):
-            # deferring so that it happens *after* the tracks are mapped
-            Scheduler.wait(
-                2,
-                partial(
-                    DomainEventBus.subscribe,
-                    event,
-                    lambda _: Scheduler.defer(partial(self.notify, full=False)),
-                ),
-            )
-
         DomainEventBus.subscribe(
-            AbstractTrackColorUpdatedEvent, self._on_abstract_track_color_updated_event
+            SimpleTrackColorUpdatedEvent, self._on_simple_track_color_updated_event
         )
 
         Backend.client().clear_state()
@@ -62,7 +48,7 @@ class AbletonSet(object):
     def __repr__(self) -> str:
         return "AbletonSet"
 
-    def _on_abstract_track_color_updated_event(self, event: AbstractTrackColorUpdatedEvent) -> None:
+    def _on_simple_track_color_updated_event(self, event: SimpleTrackColorUpdatedEvent) -> None:
         Backend.client().update_track_color(
             {
                 "track": asdict(
