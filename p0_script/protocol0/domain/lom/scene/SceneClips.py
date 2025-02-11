@@ -3,7 +3,6 @@ from typing import List, Iterator, Optional
 from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.clip_slot.ClipSlot import ClipSlot
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
-from protocol0.domain.lom.track.simple_track.audio.special.ResamplingTrack import ResamplingTrack
 from protocol0.domain.shared.utils.timing import debounce
 from protocol0.shared.Song import Song
 from protocol0.shared.observer.Observable import Observable
@@ -19,7 +18,7 @@ class SceneClipSlot(object):
 
     @property
     def clip(self) -> Optional[Clip]:
-        if self.clip_slot.has_clip and not isinstance(self.track, ResamplingTrack):
+        if self.clip_slot.has_clip:
             return self.clip_slot.clip
         else:
             return None

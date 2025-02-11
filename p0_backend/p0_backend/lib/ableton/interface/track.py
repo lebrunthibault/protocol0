@@ -2,37 +2,19 @@ from typing import List, Union, Optional
 
 import pyautogui
 
-from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.lib.ableton.interface.coords import Coords
 from p0_backend.lib.ableton.interface.pixel import (
     get_pixel_color_at,
-    get_coords_for_color,
     get_pixel_having_color,
 )
 from p0_backend.lib.ableton.interface.pixel_color_enum import PixelColorEnum
 from p0_backend.lib.decorators import timeit
 from p0_backend.lib.enum.notification_enum import NotificationEnum
-from p0_backend.lib.explorer import drag_file_to
 from p0_backend.lib.mouse.mouse import click
 from p0_backend.lib.notification import notify
-from p0_backend.settings import Settings, DOWN_BBOX
-from protocol0.application.command.EmitBackendEventCommand import (
-    EmitBackendEventCommand,
-)
+from p0_backend.settings import Settings
 
 settings = Settings()
-
-
-def get_focused_track_coords(box_boundary="left") -> Coords:
-    x, y = get_coords_for_color(
-        [PixelColorEnum.ELEMENT_FOCUSED, PixelColorEnum.ELEMENT_SELECTED],
-        # bbox=(40, 45, 1870, 110), # session view
-        bbox=(1502, 108, 1800, 720),
-        from_right=box_boundary == "right",
-    )
-    p0_script_client().dispatch(EmitBackendEventCommand("track_focused"))
-
-    return x + 30, y + 5  # drag works better here
 
 
 @timeit
@@ -68,17 +50,3 @@ def click_context_menu(track_coords: Coords, y_offsets: Union[int, List[int]]) -
     click(menu_coords)
 
     return menu_coords
-
-
-def load_instrument_track(instrument_name: str):
-    track_path = f"{settings.ableton_set_directory}\\{settings.instrument_tracks_folder}\\{instrument_name}.als"
-
-    drag_file_to(
-        track_path,
-        get_focused_track_coords(box_boundary="right"),
-        bbox=DOWN_BBOX,
-        drag_duration=0.2,
-        close_window=False,
-    )
-
-    p0_script_client().dispatch(EmitBackendEventCommand("instrument_loaded"))

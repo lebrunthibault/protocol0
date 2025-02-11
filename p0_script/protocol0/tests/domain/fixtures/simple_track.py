@@ -73,12 +73,6 @@ class AbletonTrack(Subject):
         if track_type == TrackType.AUDIO:
             self.has_audio_input = True
 
-    def get_data(self, _: Any, __: Any) -> None:
-        pass
-
-    def set_data(self, _: Any, __: Any) -> None:
-        pass
-
     def __repr__(self) -> str:
         return "%s - %s" % (self.track_type, self.name)
 

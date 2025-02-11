@@ -12,16 +12,12 @@ class PixelColorEnum(Enum):
     """used when doing pixel color detection"""
 
     ELEMENT_FOCUSED = "FF39D4"
-    ELEMENT_SELECTED = "BFE9FF"
 
     CONTEXT_MENU_BACKGROUND = "DCDCDC"
 
     @classmethod
     def context_menu_background(cls):
         return cls.CONTEXT_MENU_BACKGROUND
-
-    EXPLORER_SELECTED_ENTRY = "CCE8FF"
-    EXPLORER_SELECTED_ENTRY_LIGHT = "E5F3FF"
 
     # needed for closest color detection
     SEPARATOR = "4B4B4B"

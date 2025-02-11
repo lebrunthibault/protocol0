@@ -32,14 +32,6 @@ def locate(name: str) -> Any:
     return mod
 
 
-def compare_values(value: Any, expected_value: Any) -> bool:
-    if isinstance(value, float):
-        value = round(value, 3)
-        expected_value = round(expected_value, 3)
-
-    return value == expected_value
-
-
 def get_length_legend(beat_length: float, signature_numerator: int) -> str:
     if int(beat_length) % signature_numerator != 0:
         return "%d beat%s" % (beat_length, "s" if beat_length > 1 else "")

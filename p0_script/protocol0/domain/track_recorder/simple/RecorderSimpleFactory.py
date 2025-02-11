@@ -2,9 +2,6 @@ from typing import Optional
 
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
-from protocol0.domain.track_recorder.AbstractRecorderFactory import (
-    AbstractTrackRecorderFactory,
-)
 from protocol0.domain.track_recorder.RecordTypeEnum import RecordTypeEnum
 from protocol0.domain.track_recorder.config.RecordConfig import RecordConfig
 from protocol0.domain.track_recorder.config.RecordProcessors import RecordProcessors
@@ -12,7 +9,7 @@ from protocol0.domain.track_recorder.simple.PostRecordSimple import PostRecordSi
 from protocol0.shared.Song import Song
 
 
-class TrackRecorderSimpleFactory(AbstractTrackRecorderFactory):
+class TrackRecorderSimpleFactory(object):
     def get_record_config(
         self, track: SimpleTrack, record_type: RecordTypeEnum, recording_bar_length: int
     ) -> RecordConfig:

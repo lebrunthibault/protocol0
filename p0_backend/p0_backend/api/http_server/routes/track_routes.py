@@ -5,9 +5,6 @@ from p0_backend.lib.ableton.ableton import (
     hide_plugins,
     show_plugins,
 )
-from p0_backend.lib.ableton.interface.track import (
-    load_instrument_track,
-)
 from p0_backend.lib.keys import send_keys
 from protocol0.application.command.BusTrackToZeroDBCommand import BusTrackToZeroDBCommand
 from protocol0.application.command.CollapseSelectedTrackCommand import CollapseSelectedTrackCommand
@@ -26,11 +23,6 @@ async def un_group():
     send_keys("+{TAB}")
     send_keys("^+g")
     show_plugins()
-
-
-@router.get("/load_instrument_track")
-def _load_instrument_track(instrument_name: str):
-    load_instrument_track(instrument_name)
 
 
 @router.get("/arm")

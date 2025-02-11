@@ -19,32 +19,12 @@ class LogService(object):
     def log_current(self) -> None:
         Logger.clear()
 
-        current_track = Song.current_track()
-        Logger.info("********* CURRENT_TRACK *************")
-        Logger.info("current_track: %s" % current_track)
-        Logger.info()
-        Logger.info("current_track.abstract_group_track: %s" % current_track.abstract_group_track)
-        Logger.info()
-        Logger.info("current_track.sub_tracks: %s" % current_track.sub_tracks)
-        Logger.info()
-        Logger.info("current_track.instrument: %s" % current_track.instrument)
-        Logger.info()
         Logger.info("********* SELECTED_TRACK *************")
         Logger.info("selected_track: %s" % Song.selected_track())
         Logger.info()
         Logger.info("selected_track.color: %s" % Song.selected_track().color)
         Logger.info()
         Logger.info("selected_track.group_track: %s" % Song.selected_track().group_track)
-        Logger.info()
-        if Song.selected_track().group_track:
-            Logger.info(
-                "selected_track.group_track.abstract_group_track: %s"
-                % Song.selected_track().group_track.abstract_group_track
-            )
-            Logger.info()
-        Logger.info(
-            "selected_track.abstract_group_track: %s" % Song.selected_track().abstract_group_track
-        )
         Logger.info()
         Logger.info("selected_track.sub_tracks: %s" % Song.selected_track().sub_tracks)
         Logger.info()
@@ -63,8 +43,6 @@ class LogService(object):
         Logger.info()
         Logger.info("selected_scene: %s" % Song.selected_scene())
         Logger.info()
-        # Logger.info("selected_scene.abstract_tracks: %s" % Song.selected_scene().abstract_tracks)
-        # Logger.info()
         Logger.info("selected_scene.clips.all: %s" % Song.selected_scene().clips.all)
         Logger.info()
         Logger.info("selected_scene.clips.tracks: %s" % Song.selected_scene().clips.tracks)
@@ -92,10 +70,10 @@ class LogService(object):
                 )
         Logger.info()
 
-        if current_track.instrument:
+        if Song.selected_track().instrument:
             Logger.info("********* INSTRUMENT *************")
             Logger.info()
-            Logger.info("current_track.instrument: %s" % current_track.instrument)
+            Logger.info("selected_track.instrument: %s" % Song.selected_track().instrument)
             Logger.info()
             Logger.info(
                 "selected_track.instrument.instrument_rack_device: %s"
@@ -120,12 +98,8 @@ class LogService(object):
         Logger.info()
         Logger.info("simple_tracks : %s" % list(Song.simple_tracks()))
         Logger.info()
-        Logger.info("abstract_tracks : %s" % list(Song.abstract_tracks()))
-        Logger.info()
         Logger.info("********* SONG SCENES *************")
         Logger.info("scenes : %s" % list(Song.scenes()))
-        Logger.info()
-        Logger.info("selected_scene.abstract_tracks : %s" % Song.selected_scene().abstract_tracks)
         Logger.info()
         Logger.info("selected_scene.clips : %s" % list(Song.selected_scene().clips))
         Logger.info()

@@ -15,9 +15,7 @@ from protocol0.application.command.CleanLoopCommand import (
 from protocol0.application.command.RemoveMutedNotesCommand import (
     RemoveMutedNotesCommand,
 )
-from protocol0.application.command.SelectClipCommand import SelectClipCommand
 from protocol0.application.command.SetClipLoopLengthCommand import SetClipLoopLengthCommand
-from protocol0.application.command.ToggleClipCommand import ToggleClipCommand
 from protocol0.application.command.ToggleNotesCommand import ToggleNotesCommand
 
 router = APIRouter()
@@ -26,16 +24,6 @@ router = APIRouter()
 @router.get("/crop")
 def _crop_clip():
     crop_clip()
-
-
-@router.get("/select")
-async def select_clip(track_name: str):
-    p0_script_client().dispatch(SelectClipCommand(track_name))
-
-
-@router.get("/toggle")
-async def toggle_clip(track_name: str):
-    p0_script_client().dispatch(ToggleClipCommand(track_name))
 
 
 @router.get("/toggle_notes")

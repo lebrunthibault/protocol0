@@ -99,7 +99,6 @@ class DeviceEnum(Enum):
     TRACK_SPACER = "Trackspacer 2.5"
     TRUE_VERB = "TrueVerb Stereo"
     TUNER = "Tuner"
-    USAMO = "usamo_x64"
     UTILITY = "Utility"
     VALHALLA_VINTAGE_VERB = "ValhallaVintageVerb"
     VCOMP = "VComp Stereo"
@@ -263,7 +262,6 @@ class DeviceEnum(Enum):
             DeviceEnum.TRACK_SPACER: 207,
             DeviceEnum.TRUE_VERB: 82,
             DeviceEnum.TUNER: 0,
-            DeviceEnum.USAMO: 78,
             DeviceEnum.UTILITY: 4,
             DeviceEnum.VALHALLA_VINTAGE_VERB: 71,
             DeviceEnum.VCOMP: 52,

@@ -173,10 +173,6 @@ class Clip(SlotManager, Observable):
 
         self._notes_shown = not self._notes_shown
 
-    def on_added(self) -> Optional[Sequence]:
-        """overridden"""
-        pass
-
     def crop(self) -> Optional[Sequence]:
         """implemented in MidiClip and AudioClip"""
         raise NotImplementedError

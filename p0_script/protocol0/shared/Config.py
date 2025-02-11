@@ -1,8 +1,5 @@
 from os.path import dirname, realpath
 
-from protocol0.domain.track_recorder.recording_bar_length.RecordingBarLengthEnum import (
-    RecordingBarLengthEnum,
-)
 from protocol0.shared.logging.LogLevelEnum import LogLevelEnum
 
 
@@ -12,8 +9,6 @@ class Config(object):
     REMOTE_SCRIPTS_ROOT = dirname(PROJECT_ROOT)
 
     # MISC
-    DEFAULT_RECORDING_BAR_LENGTH = RecordingBarLengthEnum.ONE
-
     LOG_LEVEL = LogLevelEnum.DEV
 
     CLIP_MAX_LENGTH = 63072000

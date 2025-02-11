@@ -8,18 +8,15 @@ from protocol0.application.ContainerInterface import ContainerInterface
 from protocol0.application.control_surface.ActionGroupFactory import ActionGroupFactory
 from protocol0.application.error.ErrorService import ErrorService
 from protocol0.domain.audit.LogService import LogService
-from protocol0.domain.audit.SetFixerService import SetFixerService
 from protocol0.domain.audit.SongStatsService import SongStatsService
 from protocol0.domain.lom.device.DeviceDisplayService import DeviceDisplayService
 from protocol0.domain.lom.device.DeviceService import DeviceService
 from protocol0.domain.lom.instrument.instrument.InstrumentService import InstrumentService
 from protocol0.domain.lom.scene.PlayingScene import PlayingScene
-from protocol0.domain.lom.scene.ScenePlaybackService import ScenePlaybackService
 from protocol0.domain.lom.scene.SceneService import SceneService
 from protocol0.domain.lom.set.AbletonSet import AbletonSet
 from protocol0.domain.lom.set.AudioExportService import AudioExportService
 from protocol0.domain.lom.set.MixingService import MixingService
-from protocol0.domain.lom.song.SongInitService import SongInitService
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
 from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
 from protocol0.domain.lom.song.components.QuantizationComponent import QuantizationComponent
@@ -29,11 +26,8 @@ from protocol0.domain.lom.song.components.SceneCrudComponent import SceneCrudCom
 from protocol0.domain.lom.song.components.TempoComponent import TempoComponent
 from protocol0.domain.lom.song.components.TrackComponent import TrackComponent
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
-from protocol0.domain.lom.track.ClipPlayerService import ClipPlayerService
 from protocol0.domain.lom.track.TrackFactory import TrackFactory
 from protocol0.domain.lom.track.TrackMapperService import TrackMapperService
-from protocol0.domain.lom.validation.ValidatorFactory import ValidatorFactory
-from protocol0.domain.lom.validation.ValidatorService import ValidatorService
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
@@ -43,7 +37,6 @@ from protocol0.infra.interface.BrowserLoaderService import BrowserLoaderService
 from protocol0.infra.interface.BrowserService import BrowserService
 from protocol0.infra.logging.LoggerService import LoggerService
 from protocol0.infra.midi.MidiService import MidiService
-from protocol0.infra.persistence.SongDataService import SongDataService
 from protocol0.infra.scheduler.BeatScheduler import BeatScheduler
 from protocol0.infra.scheduler.TickScheduler import TickScheduler
 from protocol0.shared.Song import Song
@@ -105,19 +98,14 @@ class Container(ContainerInterface):
         instrument_service = InstrumentService(device_service, device_component)
         track_factory = TrackFactory(track_crud_component, browser_service)
         track_mapper_service = TrackMapperService(live_song, track_factory)
-        track_player_service = ClipPlayerService()
-        scene_playback_service = ScenePlaybackService(playback_component)
-        scene_service = SceneService(live_song, scene_crud_component, scene_playback_service)
+        scene_service = SceneService(live_song, scene_crud_component)
         PlayingScene(scene_component)
         track_recorder_service = RecordService(
             playback_component,
             scene_crud_component,
             quantization_component,
             track_crud_component,
-            scene_playback_service,
         )
-        validator_service = ValidatorService(ValidatorFactory(browser_service))
-        set_fixer_service = SetFixerService(validator_service)
         song_stats_service = SongStatsService(ableton_set)
         audio_export_service = AudioExportService(
             song_stats_service, playback_component, scene_component
@@ -130,16 +118,11 @@ class Container(ContainerInterface):
             recording_component,
             scene_component,
             tempo_component,
-            track_component,
             scene_service,
             track_mapper_service,
-            track_recorder_service,
         )
 
-        song_service = SongInitService(playback_component, ableton_set)
         mixing_service = MixingService()
-
-        song_data_service = SongDataService(live_song.get_data, live_song.set_data, scene_component)
 
         # audit
         log_service = LogService(ableton_set, track_mapper_service)
@@ -157,26 +140,18 @@ class Container(ContainerInterface):
         self._register(track_crud_component)
         self._register(tempo_component)
 
-        self._register(song_service)
-        self._register(song_data_service)
-
         self._register(track_factory)
         self._register(track_mapper_service)
-        self._register(track_player_service)
 
         self._register(scene_service)
-        self._register(scene_playback_service)
-
         self._register(instrument_service)
         self._register(device_service)
 
         self._register(mixing_service)
         self._register(track_recorder_service)
-        self._register(validator_service)
 
         # audit
         self._register(log_service)
-        self._register(set_fixer_service)
         self._register(song_stats_service)
 
         self._register(audio_export_service)

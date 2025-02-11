@@ -1,5 +1,6 @@
+from typing import Optional, cast
+
 import Live
-from typing import Optional, List, cast
 
 from protocol0.domain.lom.clip.ClipEnvelopeShowedEvent import ClipEnvelopeShowedEvent
 from protocol0.domain.lom.clip.ClipLoop import ClipLoop
@@ -14,18 +15,6 @@ class ClipAutomation(object):
     def __init__(self, live_clip: Live.Clip.Clip, loop: ClipLoop) -> None:
         self._live_clip = live_clip
         self._loop = loop
-
-    def get_automated_parameters(
-        self, device_parameters: List[DeviceParameter]
-    ) -> List[DeviceParameter]:
-        automated_parameters = []
-        for parameter in device_parameters:
-            if self.get_envelope(parameter) is None:
-                continue
-
-            automated_parameters.append(parameter)
-
-        return automated_parameters
 
     def show_parameter_envelope(self, parameter: DeviceParameter) -> None:
         ApplicationView.show_clip()

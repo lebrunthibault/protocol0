@@ -3,7 +3,7 @@ from typing import cast
 
 from protocol0.domain.lom.song.SongStartedEvent import SongStartedEvent
 from protocol0.domain.lom.song.SongStoppedEvent import SongStoppedEvent
-from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
+from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.scheduler.BarChangedEvent import BarChangedEvent
 from protocol0.domain.track_recorder.config.RecordConfig import RecordConfig
 from protocol0.shared.Song import Song
@@ -34,13 +34,13 @@ def record_from_config(config: RecordConfig) -> Sequence:
 class BaseRecorder(object):
     """Common recording operations"""
 
-    def __init__(self, track: AbstractTrack, record_config: RecordConfig) -> None:
+    def __init__(self, track: SimpleTrack, record_config: RecordConfig) -> None:
         self._track = track
         self.config = record_config
 
     def pre_record(self, clear_clips: bool) -> Sequence:
         seq = Sequence()
-        seq.add(self._arm_track)
+        seq.add(lambda: Song.selected_track().arm_state.arm())
         seq.add(partial(self._prepare_clip_slots_for_record, clear_clips=clear_clips))
         return seq.done()
 
@@ -53,15 +53,6 @@ class BaseRecorder(object):
                 for clip_slot in self.config.clip_slots
             ]
         )
-        return seq.done()
-
-    def _arm_track(self) -> Sequence:
-        seq = Sequence()
-        if not Song.current_track().arm_state.is_armed and len(list(Song.armed_tracks())) != 0:
-            seq.add(lambda: self._track.arm_state.arm())
-        else:
-            seq.add(self._track.arm_state.arm)
-
         return seq.done()
 
     def cancel_record(self) -> None:

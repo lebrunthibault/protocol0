@@ -1,6 +1,5 @@
 import ctypes
 import tkinter
-from time import sleep
 from typing import Union
 
 import psutil
@@ -11,7 +10,6 @@ import win32process
 from loguru import logger
 from psutil import NoSuchProcess
 
-from p0_backend.lib.ableton.interface.coords import RectCoords, Coords
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.window.find_window import SearchTypeEnum, find_window_handle_by_enum
 
@@ -68,18 +66,6 @@ def focus_tkinter_window(root: tkinter.Tk):
     keyboard_event(alt_key, 0, extended_key | key_up, 0)
 
 
-def move_window(handle, rect_coords: RectCoords):
-    # see https://stackoverflow.com/questions/51694887/win32gui-movewindow-not-aligned-with-left-edge-of-screen
-    window_rect_coords = win32gui.GetWindowRect(handle)
-    if window_rect_coords == rect_coords:
-        return
-
-    x, y, x2, y2 = rect_coords
-
-    win32gui.MoveWindow(handle, x - 7, y, x2 - x, y2 - y, True)
-    sleep(0.05)
-
-
 def get_focused_window_process_name():
     res = win32process.GetWindowThreadProcessId(win32gui.GetForegroundWindow())
     pid = res[-1]
@@ -95,10 +81,3 @@ def get_focused_window_process_name():
 
 def get_focused_window_title() -> str:
     return win32gui.GetWindowText(win32gui.GetForegroundWindow())
-
-
-def window_contains_coords(bbox: RectCoords, coords: Coords) -> bool:
-    x, y, x2, y2 = bbox
-    x_point, y_point = coords
-
-    return x <= x_point <= x2 and y <= y_point <= y2

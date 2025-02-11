@@ -22,7 +22,6 @@ from protocol0.domain.lom.track.abstract_track.AbstractTrackSelectedEvent import
 from protocol0.domain.lom.track.routing.OutputRoutingTypeEnum import OutputRoutingTypeEnum
 from protocol0.domain.lom.track.routing.TrackInputRouting import TrackInputRouting
 from protocol0.domain.lom.track.simple_track.SimpleTrackArmState import SimpleTrackArmState
-from protocol0.domain.lom.track.simple_track.SimpleTrackArmedEvent import SimpleTrackArmedEvent
 from protocol0.domain.lom.track.simple_track.SimpleTrackClipSlots import SimpleTrackClipSlots
 from protocol0.domain.lom.track.simple_track.SimpleTrackCreatedEvent import SimpleTrackCreatedEvent
 from protocol0.domain.lom.track.simple_track.SimpleTrackDeletedEvent import SimpleTrackDeletedEvent
@@ -36,7 +35,6 @@ from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.ui.ColorEnum import ColorEnum
 from protocol0.domain.shared.utils.forward_to import ForwardTo
 from protocol0.domain.shared.utils.list import find_if
-from protocol0.domain.shared.utils.timing import defer
 from protocol0.domain.shared.utils.utils import volume_to_db, db_to_volume
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
@@ -103,9 +101,6 @@ class SimpleTrack(AbstractTrack):
 
         self.live_id: int = live_track._live_ptr
         DomainEventBus.emit(SimpleTrackCreatedEvent(self))
-        # Note : SimpleTracks represent the first layer of abstraction and know nothing about
-        # AbstractGroupTracks except with self.abstract_group_track which links both layers
-        # and is handled by the abg
         self.group_track: Optional[SimpleTrack] = self.group_track
 
         self.sub_tracks: List[SimpleTrack] = []
@@ -128,19 +123,10 @@ class SimpleTrack(AbstractTrack):
         self.arm_state.register_observer(self)
 
         self._name_listener.subject = live_track
-        # self._solo_listener.subject = live_track
 
         self.devices.build()
 
     device_insert_mode = cast(int, ForwardTo("_view", "device_insert_mode"))
-
-    def on_added(self) -> Optional[Sequence]:
-        super(SimpleTrack, self).on_added()
-
-        if self.lower_name == "audio":
-            return None
-
-        return None
 
     def on_tracks_change(self) -> None:
         self._link_to_group_track()
@@ -148,14 +134,8 @@ class SimpleTrack(AbstractTrack):
         if self.is_foldable:
             self.sub_tracks[:] = []
 
-    def on_scenes_change(self) -> None:
-        self._clip_slots.build()
-
     def _link_to_group_track(self) -> None:
-        """
-        1st layer linking
-        Connect to the enclosing simple group track is any
-        """
+        """Connect to the enclosing simple group track is any"""
         if self._track.group_track is None:
             self.group_track = None
             return None
@@ -191,8 +171,6 @@ class SimpleTrack(AbstractTrack):
             # Refreshing is only really useful from simpler devices that change when a new sample is loaded
             if self.IS_ACTIVE and not self.is_foldable:
                 self.instrument = InstrumentFactory.make_instrument(self)
-        elif isinstance(observable, SimpleTrackArmState) and self.arm_state.is_armed:
-            DomainEventBus.emit(SimpleTrackArmedEvent(self._track))
 
         return None
 
@@ -202,18 +180,6 @@ class SimpleTrack(AbstractTrack):
 
         tracks = self.group_track.sub_tracks if self.group_track else Song.top_tracks()
         Scheduler.defer(partial(rename_tracks, tracks))
-
-    @subject_slot("solo")
-    @defer
-    def _solo_listener(self) -> None:
-        """Handle Cthulhu tracks"""
-        if not self.solo:
-            return
-
-        if self.has_midi_note_source_track:
-            self.input_routing.track.solo = True
-            if Song.notes_track():
-                Song.notes_track().solo = True
 
     @property
     def current_monitoring_state(self) -> CurrentMonitoringStateEnum:
@@ -267,9 +233,6 @@ class SimpleTrack(AbstractTrack):
 
     @is_folded.setter
     def is_folded(self, is_folded: bool) -> None:
-        if not is_folded:
-            for group_track in self.group_tracks:
-                group_track.base_track.is_folded = False
         if self._track and self.is_foldable:
             self._track.fold_state = int(is_folded)
 
@@ -286,16 +249,6 @@ class SimpleTrack(AbstractTrack):
         return any(clip_slot.is_triggered for clip_slot in self.clip_slots)
 
     @property
-    def has_midi_note_source_track(self) -> bool:
-        from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
-
-        return (
-            self.input_routing.track is not None
-            and isinstance(self.input_routing.track, SimpleMidiTrack)
-            and self.current_monitoring_state == CurrentMonitoringStateEnum.IN
-        )
-
-    @property
     def volume(self) -> float:
         volume = self.devices.mixer_device.volume.value if self._track else 0
         return volume_to_db(volume)
@@ -308,13 +261,6 @@ class SimpleTrack(AbstractTrack):
 
         if self._track:
             DeviceParameter.set_live_device_parameter(self._track.mixer_device.volume, volume)
-            # Scheduler.defer(
-            #     partial(
-            #         DeviceParameter.set_live_device_parameter,
-            #         self._track.mixer_device.volume,
-            #         volume,
-            #     )
-            # )
 
     @property
     def color(self) -> int:
@@ -370,19 +316,6 @@ class SimpleTrack(AbstractTrack):
 
     def delete_clip(self, clip: Clip) -> None:
         self._track.delete_clip(clip._clip)
-
-    def get_automated_parameters(self, scene_index: int) -> Dict[DeviceParameter, "SimpleTrack"]:
-        if len(self.clip_slots) < scene_index + 1:
-            return {}
-
-        clip = self.clip_slots[scene_index].clip
-        if clip is None:
-            return {}
-
-        return {
-            param: self
-            for param in clip.automation.get_automated_parameters(self.devices.parameters)
-        }
 
     def scroll_volume(self, go_next: bool) -> None:
         """Editing directly the mixer device volume"""
@@ -492,5 +425,3 @@ class SimpleTrack(AbstractTrack):
         self._clip_slots.disconnect()
         if self.instrument:
             self.instrument.disconnect()
-        if self.abstract_group_track and self.abstract_group_track.base_track == self:
-            self.abstract_group_track.disconnect()
