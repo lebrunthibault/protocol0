@@ -17,7 +17,6 @@ class AbletonSong(Subject):
         "midi_recording_quantization",
         "re_enable_automation_enabled",
         "tracks",
-        "visible_tracks",
         "scenes",
         "current_song_time",
     )
@@ -30,7 +29,6 @@ class AbletonSong(Subject):
         first_track = AbletonTrack()
         first_track.name = "First"
         self.tracks = [first_track]
-        self.visible_tracks = self.tracks
         self.return_tracks: List[AbletonTrack] = []
         self.master_track = AbletonTrack(track_type=TrackType.AUDIO)
         self.master_track.name = "Master"
@@ -53,12 +51,6 @@ class AbletonSong(Subject):
     def get_current_beats_song_time(self) -> namedtuple:
         beats_song_time = namedtuple("beats_song_time", ["bars", "beats", "sub_division", "ticks"])
         return beats_song_time(1, 1, 1, 1)
-
-    def get_data(self, _, default) -> Any:
-        return default
-
-    def set_data(self, _: str, __: Any) -> None:
-        pass
 
     def begin_undo_step(self) -> None:
         pass

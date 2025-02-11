@@ -38,25 +38,6 @@ class ClipAutomationEnvelope(object):
     def end(self) -> float:
         return self.value_at_time(self._length)
 
-    @property
-    def is_linear(self) -> bool:
-        start = self.start
-        end = self.end
-        values = []
-        for i in range(self._FOOTPRINT_MEASURES + 1):
-            val = start + (i * (end - start) / self._FOOTPRINT_MEASURES)
-            values.append(round(val, 4))
-
-        return hash(tuple(values)) == self.hash
-
-    def equals(self, value: float) -> bool:
-        """Checks the automation equals a single value"""
-        return (
-            self.is_linear
-            and self.value_at_time(0) == value
-            and self.value_at_time(self._length) == value
-        )
-
     def value_at_time(self, beat_length: float) -> float:
         return self._envelope.value_at_time(beat_length)
 

@@ -73,7 +73,6 @@ exclude = [
     'command_handler/',
     'RecordingBarLengthEnum.py',
     'protocol0/domain/shared/backend/p0_backend_client',
-    'TrackCategoryEnum',
 ]
 ignore_names = [
     "subject",

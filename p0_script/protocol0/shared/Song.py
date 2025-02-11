@@ -17,12 +17,9 @@ if TYPE_CHECKING:
     from protocol0.domain.lom.song.components.SceneComponent import SceneComponent
     from protocol0.domain.lom.song.components.TempoComponent import TempoComponent
     from protocol0.domain.lom.song.components.QuantizationComponent import QuantizationComponent
-    from protocol0.domain.lom.song.components.TrackComponent import TrackComponent
     from protocol0.domain.lom.scene.SceneService import SceneService
     from protocol0.domain.lom.track.TrackMapperService import TrackMapperService
     from protocol0.domain.track_recorder.RecordService import RecordService
-    from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
-    from protocol0.domain.lom.track.group_track.AbstractGroupTrack import AbstractGroupTrack  # noqa
     from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
     from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
     from protocol0.domain.lom.scene.Scene import Scene
@@ -74,10 +71,8 @@ class Song(object):
         recording_component: "RecordingComponent",
         scene_component: "SceneComponent",
         tempo_component: "TempoComponent",
-        track_component: "TrackComponent",
         scene_service: "SceneService",
         track_mapper_service: "TrackMapperService",
-        track_recorder_service: "RecordService",
     ) -> None:
         Song._INSTANCE = self
 
@@ -89,11 +84,9 @@ class Song(object):
         self._recording_component = recording_component
         self._scene_component = scene_component
         self._tempo_component = tempo_component
-        self._track_component = track_component
 
         self._track_mapper_service = track_mapper_service
         self._scene_service = scene_service
-        self._track_recorder_service = track_recorder_service
 
     @classmethod
     def _live_song(cls) -> Live.Song.Song:
@@ -135,19 +128,8 @@ class Song(object):
         if len(soloed_tracks) == 1:
             track = soloed_tracks[0]
             track.select()
-        elif len(soloed_tracks) > 1:
-            cls._INSTANCE._track_component.un_focus_all_tracks()
-            track.solo = True
 
         return track
-
-    @classmethod
-    def current_track(cls) -> "AbstractTrack":
-        return cls.selected_track().abstract_track
-
-    @classmethod
-    def abstract_tracks(cls) -> Iterator["AbstractTrack"]:
-        return cls._INSTANCE._track_component.abstract_tracks
 
     @classmethod
     def live_track_to_simple_track(cls, live_track: Live.Track.Track) -> "SimpleTrack":
@@ -191,20 +173,8 @@ class Song(object):
         )
 
     @classmethod
-    def scrollable_tracks(cls) -> Iterator["AbstractTrack"]:
-        return cls._INSTANCE._track_component.scrollable_tracks
-
-    @classmethod
     def top_tracks(cls) -> List["SimpleTrack"]:
         return list(filter(lambda t: not t.group_track, cls.simple_tracks()))
-
-    @classmethod
-    def visible_tracks(cls) -> Iterator["AbstractTrack"]:
-        return (t for t in cls.simple_tracks() if t.is_visible)
-
-    @classmethod
-    def armed_tracks(cls) -> Iterator["AbstractTrack"]:
-        return (track for track in cls.abstract_tracks() if track.arm_state.is_armed)
 
     @classmethod
     def master_track(cls) -> "MasterTrack":
@@ -223,10 +193,6 @@ class Song(object):
             and t.instrument.device.enum == DeviceEnum.SPLICE_BRIDGE,
             cls.simple_tracks(),
         )
-
-    @classmethod
-    def notes_track(cls) -> Optional["SimpleTrack"]:
-        return find_track_or_none("notes")
 
     @classmethod
     def return_tracks(cls) -> List[Live.Track.Track]:
@@ -368,10 +334,6 @@ class Song(object):
         cls._live_song().record_mode = True
 
     @classmethod
-    def is_track_recording(cls) -> bool:
-        return cls._INSTANCE._track_recorder_service.is_recording
-
-    @classmethod
     def midi_recording_quantization(cls) -> int:
         return cls._INSTANCE._quantization_component.midi_recording_quantization
 
@@ -391,10 +353,6 @@ class Song(object):
     @classmethod
     def set_current_song_time(cls, time: float) -> None:
         cls._live_song().current_song_time = time
-
-    @classmethod
-    def capture_midi(cls) -> None:
-        cls._live_song().capture_midi()
 
     @classmethod
     def set_or_delete_cue(cls, time: float) -> Optional["Sequence"]:

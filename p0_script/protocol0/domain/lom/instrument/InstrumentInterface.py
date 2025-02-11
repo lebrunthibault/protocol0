@@ -1,5 +1,4 @@
-from functools import partial
-from typing import Optional, Type, Dict
+from typing import Optional, Dict
 
 from _Framework.SubjectSlot import SlotManager
 
@@ -8,31 +7,11 @@ from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device.PluginDevice import PluginDevice
 from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.instrument.instrument.InstrumentParamEnum import InstrumentParamEnum
-from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
-from protocol0.domain.shared.backend.Backend import Backend
-from protocol0.shared.Song import Song
-from protocol0.shared.sequence.Sequence import Sequence
-
-
-def load_instrument_track(instrument_cls: Type["InstrumentInterface"]) -> Sequence:
-    insert_track = Song.current_track().base_track
-    track_color = insert_track.color
-
-    seq = Sequence()
-    seq.add(insert_track.focus)
-    seq.add(partial(Backend.client().load_instrument_track, instrument_cls.INSTRUMENT_TRACK_NAME))
-    seq.wait_for_backend_event("instrument_loaded")
-    seq.add(partial(setattr, insert_track, "color", track_color))
-    seq.defer()
-    seq.wait_for_event(TracksMappedEvent)
-    seq.add(partial(Backend.client().close_explorer_window, "default"))
-    return seq.done()
 
 
 class InstrumentInterface(SlotManager):
     NAME = ""
     DEVICE: Optional[DeviceEnum] = None
-    INSTRUMENT_TRACK_NAME = ""
     PARAMETER_NAMES: Dict[InstrumentParamEnum, str] = {}
 
     # noinspection PyInitNewSignature

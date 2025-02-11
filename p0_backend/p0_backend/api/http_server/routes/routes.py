@@ -9,7 +9,6 @@ from p0_backend.lib.ableton.ableton import (
 )
 from p0_backend.lib.ableton.set_profiling.ableton_set_profiler import AbletonSetProfiler
 from p0_backend.lib.enum.notification_enum import NotificationEnum
-from p0_backend.lib.explorer import close_samples_windows, close_explorer_window
 from p0_backend.lib.keys import send_keys
 from p0_backend.lib.notification import notify
 from p0_backend.lib.process import execute_powershell_command
@@ -28,7 +27,6 @@ from .export_routes import router as export_router
 from .keyboard_routes import router as keyboard_router
 from .monitoring_routes import router as monitoring_router
 from .process_routes import router as process_router
-from .record_routes import router as record_router
 from .scene_routes import router as scene_router
 from .search_routes import router as search_router
 from .set_routes import router as set_router
@@ -46,7 +44,6 @@ router.include_router(export_router, prefix="/export")
 router.include_router(keyboard_router, prefix="/keyboard")
 router.include_router(monitoring_router, prefix="/monitoring")
 router.include_router(process_router, prefix="/process")
-router.include_router(record_router, prefix="/record")
 router.include_router(search_router, prefix="/search")
 router.include_router(scene_router, prefix="/scene")
 router.include_router(set_router, prefix="/set")
@@ -91,16 +88,6 @@ def start_set_profiling():
 @router.get("/start_profiling_single_measurement")
 def start_profiling_single_measurement():
     AbletonSetProfiler.start_profiling_single_measurement()
-
-
-@router.get("/close_samples_windows")
-def _close_samples_windows():
-    close_samples_windows()
-
-
-@router.get("/close_explorer_window")
-def _close_explorer_window(title: str):
-    close_explorer_window(title)
 
 
 @router.get("/show_info")

@@ -1,7 +1,6 @@
 import Live
 from _Framework.SubjectSlot import subject_slot, SlotManager
 
-from protocol0.domain.lom.scene.ScenePositionScrolledEvent import ScenePositionScrolledEvent
 from protocol0.domain.lom.song.SongStartedEvent import SongStartedEvent
 from protocol0.domain.lom.song.SongStoppedEvent import SongStoppedEvent
 from protocol0.domain.shared.ApplicationView import ApplicationView
@@ -12,7 +11,6 @@ from protocol0.domain.track_recorder.event.RecordCancelledEvent import (
 )
 from protocol0.domain.track_recorder.event.RecordEndedEvent import RecordEndedEvent
 from protocol0.shared.Song import Song
-from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
 
 
@@ -28,7 +26,6 @@ class PlaybackComponent(SlotManager):
         # self._is_playing_listener.subject = self._live_song
         DomainEventBus.subscribe(RecordEndedEvent, self._on_record_ended_event)
         DomainEventBus.subscribe(RecordCancelledEvent, self._on_record_cancelled_event)
-        DomainEventBus.subscribe(ScenePositionScrolledEvent, self._on_scene_position_scrolled_event)
         DomainEventBus.subscribe(SongStoppedEvent, self._on_song_stopped_event)
 
     @subject_slot("is_playing")
@@ -46,25 +43,6 @@ class PlaybackComponent(SlotManager):
                 self.re_enable_automation()
 
             DomainEventBus.defer_emit(SongStartedEvent())
-
-    def _on_scene_position_scrolled_event(self, _: ScenePositionScrolledEvent) -> None:
-        scene = Song.selected_scene()
-        if scene.position_scroller.current_value == 0:
-            beat_offset = 0.0
-        else:
-            beat_offset = (
-                scene.position_scroller.current_value * Song.signature_numerator()
-            ) - scene.playing_state.position
-            # to catch the first beat transient
-            beat_offset -= 0.5
-
-        if self._DEBUG:
-            Logger.info(
-                "scene.position_scroller.current_value: %s" % scene.position_scroller.current_value
-            )
-            Logger.info("beat offset: %s" % beat_offset)
-
-        self._live_song.scrub_by(beat_offset)
 
     def _on_record_ended_event(self, _: RecordEndedEvent) -> None:
         self.metronome = False

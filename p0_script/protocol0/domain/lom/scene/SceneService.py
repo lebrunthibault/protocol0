@@ -1,20 +1,16 @@
 import collections
-from itertools import chain
-from typing import List, Iterator, Dict
+from typing import List, Dict
 
 import Live
 from _Framework.SubjectSlot import subject_slot, SlotManager
 
 from protocol0.domain.lom.scene.PlayingScene import PlayingScene
 from protocol0.domain.lom.scene.Scene import Scene
-from protocol0.domain.lom.scene.ScenePlaybackService import ScenePlaybackService
 from protocol0.domain.lom.scene.ScenesMappedEvent import ScenesMappedEvent
 from protocol0.domain.lom.song.components.SceneCrudComponent import SceneCrudComponent
-from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
-from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
@@ -26,12 +22,10 @@ class SceneService(SlotManager):
         self,
         live_song: Live.Song.Song,
         scene_crud_component: SceneCrudComponent,
-        scene_playback_service: ScenePlaybackService,
     ) -> None:
         super(SceneService, self).__init__()
         self._live_song = live_song
         self._scene_crud_component = scene_crud_component
-        self._scene_playback_service = scene_playback_service
 
         # unused for now: disabled for performance
         # self.scenes_listener.subject = live_song
@@ -69,13 +63,7 @@ class SceneService(SlotManager):
     @subject_slot("scenes")
     @handle_errors()
     def scenes_listener(self) -> None:
-        previous_live_scenes_ids = self._live_scene_id_to_scene.keys()
-
         self._generate_scenes()
-        for scene in Song.scenes():
-            if len(previous_live_scenes_ids) and scene.live_id not in previous_live_scenes_ids:
-                Scheduler.defer(scene.on_added)
-
         DomainEventBus.defer_emit(ScenesMappedEvent())
 
         Logger.info("mapped scenes")
@@ -84,11 +72,6 @@ class SceneService(SlotManager):
         # save playing scene
         playing_live_scene = Song.playing_scene()._scene if Song.playing_scene() else None
         self._clean_deleted_scenes()
-
-        # mapping cs should be done before generating the scenes
-        tracks: Iterator[AbstractTrack] = chain(Song.simple_tracks(), Song.abstract_tracks())
-        for track in collections.OrderedDict.fromkeys(tracks):
-            track.on_scenes_change()
 
         live_scenes = self._live_song.scenes
 

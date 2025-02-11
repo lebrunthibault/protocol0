@@ -1,7 +1,7 @@
 from typing import Callable
 
 from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
-from protocol0.domain.lom.track.abstract_track.AbstractTrack import AbstractTrack
+from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrackDeletedEvent import SimpleTrackDeletedEvent
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.shared.sequence.Sequence import Sequence
@@ -39,7 +39,7 @@ class TrackCrudComponent(object):
         seq.defer()
         return seq.done()
 
-    def duplicate_track(self, track: AbstractTrack) -> Sequence:
+    def duplicate_track(self, track: SimpleTrack) -> Sequence:
         seq = Sequence()
         self._duplicate_track(track.index)
         seq.wait_for_event(TracksMappedEvent)

@@ -30,7 +30,6 @@ class DeviceStats(object):
 
 class DevicesStats(object):
     _EXCLUDED_DEVICE_NAMES = [
-        DeviceEnum.USAMO.value,
         DeviceEnum.EXTERNAL_AUDIO_EFFECT.value,
         DeviceEnum.SOUNDID_REFERENCE_PLUGIN.value,
         "Instrument Rack",

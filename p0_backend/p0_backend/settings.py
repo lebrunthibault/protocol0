@@ -2,8 +2,6 @@ from os.path import dirname
 
 from pydantic_settings import BaseSettings
 
-DOWN_BBOX = (660, 300, 1920, 1080)
-
 
 class Settings(BaseSettings):
     class Config:
@@ -48,7 +46,6 @@ class Settings(BaseSettings):
 
     http_api_url: str = "http://127.0.0.1:8000"
 
-    instrument_tracks_folder: str = "other\\instruments\\default"
     log_window_title: str = "Protocol0 logs"
 
     # Midi port names are relative to the Protocol0 script and not this midi backend

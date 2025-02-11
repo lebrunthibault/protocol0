@@ -4,9 +4,6 @@ from typing import Optional, Callable, Any
 import Live
 
 from protocol0.domain.lom.song.components.RecordingComponent import RecordingComponent
-from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
-from protocol0.shared.Song import Song
-from protocol0.shared.logging.Logger import Logger
 
 
 def only_in_session_view(func: Callable) -> Callable:
@@ -58,25 +55,6 @@ class ApplicationView(object):
     @classmethod
     def focus_detail(cls) -> None:
         cls._focus_view("Detail")
-
-    @classmethod
-    def focus_session(cls) -> None:
-        cls._focus_view("Session")
-
-    @classmethod
-    def focus_current_track(cls) -> None:
-        """Moves the focus to the detail view."""
-        try:
-            selected_track = Song.selected_track()
-        except Protocol0Error as e:
-            Logger.error(str(e), show_notification=False)
-            return
-
-        if Song.selected_track().group_track:
-            Song.selected_track().group_track.is_folded = False
-            # NB : unfolding parent classes will select them
-            if Song.selected_track() != selected_track:
-                selected_track.select()
 
     @classmethod
     def _focus_view(cls, view: str) -> None:

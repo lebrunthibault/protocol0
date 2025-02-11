@@ -43,9 +43,6 @@ class MidiClip(Clip):
         seq.defer()
         return seq.done()
 
-    def clear_notes(self) -> Optional[Sequence]:
-        return self.replace_notes([])
-
     def clear_muted_notes(self) -> Optional[Sequence]:
         notes = map(Note, self.get_notes())
         return self.replace_notes([n for n in notes if not n.muted])
