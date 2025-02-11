@@ -5,7 +5,7 @@ from typing import Optional, Dict
 import Live
 from _Framework.SubjectSlot import subject_slot, SlotManager
 
-from protocol0.domain.lom.track.TrackFactory import TrackFactory
+from protocol0.domain.lom.track.TrackFactory import create_simple_track
 from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrackCreatedEvent import SimpleTrackCreatedEvent
@@ -18,10 +18,9 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 
 class TrackMapperService(SlotManager):
-    def __init__(self, live_song: Live.Song.Song, track_factory: TrackFactory) -> None:
+    def __init__(self, live_song: Live.Song.Song) -> None:
         super(TrackMapperService, self).__init__()
         self._live_song = live_song
-        self._track_factory = track_factory
 
         self._live_track_id_to_simple_track: Dict[int, SimpleTrack] = collections.OrderedDict()
         self._master_track: Optional[MasterTrack] = None
@@ -55,14 +54,12 @@ class TrackMapperService(SlotManager):
         """instantiate SimpleTracks (including return / master, that are marked as inactive)"""
         # instantiate set tracks
         for index, track in enumerate(list(self._live_song.tracks)):
-            self._track_factory.create_simple_track(track, index)
+            create_simple_track(track, index)
 
         for index, track in enumerate(list(self._live_song.return_tracks)):
-            self._track_factory.create_simple_track(track=track, index=index, cls=SimpleReturnTrack)
+            create_simple_track(track=track, index=index, cls=SimpleReturnTrack)
 
-        self._master_track = self._track_factory.create_simple_track(
-            self._live_song.master_track, 0, cls=MasterTrack
-        )
+        self._master_track = create_simple_track(self._live_song.master_track, 0, cls=MasterTrack)
 
         self._sort_simple_tracks()
 

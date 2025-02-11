@@ -26,7 +26,6 @@ from protocol0.domain.lom.song.components.SceneCrudComponent import SceneCrudCom
 from protocol0.domain.lom.song.components.TempoComponent import TempoComponent
 from protocol0.domain.lom.song.components.TrackComponent import TrackComponent
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
-from protocol0.domain.lom.track.TrackFactory import TrackFactory
 from protocol0.domain.lom.track.TrackMapperService import TrackMapperService
 from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.backend.Backend import Backend
@@ -96,8 +95,7 @@ class Container(ContainerInterface):
             track_crud_component, device_component, browser_service, live_song.move_device
         )
         instrument_service = InstrumentService(device_service, device_component)
-        track_factory = TrackFactory(track_crud_component, browser_service)
-        track_mapper_service = TrackMapperService(live_song, track_factory)
+        track_mapper_service = TrackMapperService(live_song)
         scene_service = SceneService(live_song, scene_crud_component)
         PlayingScene(scene_component)
         track_recorder_service = RecordService(
@@ -140,7 +138,6 @@ class Container(ContainerInterface):
         self._register(track_crud_component)
         self._register(tempo_component)
 
-        self._register(track_factory)
         self._register(track_mapper_service)
 
         self._register(scene_service)
