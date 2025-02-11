@@ -5,7 +5,6 @@ from fastapi import APIRouter
 from loguru import logger
 from pydantic import BaseModel
 
-from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.lib.ableton.ableton import (
     open_set,
 )
@@ -21,7 +20,6 @@ from p0_backend.lib.ableton.ableton_set.ableton_set_manager import (
 )
 from p0_backend.lib.explorer import open_explorer
 from p0_backend.settings import Settings
-from protocol0.application.command.SaveSongCommand import SaveSongCommand
 
 router = APIRouter()
 
@@ -74,11 +72,6 @@ async def post_scene_stats(payload: PostSceneStatsPayload):
         payload.post_scene_stats_payload.tempo,
         payload.post_scene_stats_payload.scenes,
     )
-
-
-@router.get("/save")
-async def save_set():
-    p0_script_client().dispatch(SaveSongCommand())
 
 
 @router.get("/open")

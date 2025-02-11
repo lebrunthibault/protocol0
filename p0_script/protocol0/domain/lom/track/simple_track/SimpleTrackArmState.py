@@ -1,11 +1,8 @@
 import Live
 
-from protocol0.domain.lom.track.abstract_track.AbstrackTrackArmState import AbstractTrackArmState
 
-
-class SimpleTrackArmState(AbstractTrackArmState):
+class SimpleTrackArmState(object):
     def __init__(self, live_track: Live.Track.Track) -> None:
-        super(SimpleTrackArmState, self).__init__(live_track)
         self._live_track = live_track
 
     @property
@@ -25,5 +22,3 @@ class SimpleTrackArmState(AbstractTrackArmState):
         else:
             self._live_track.mute = False
             self.is_armed = True
-
-        self.notify_observers()

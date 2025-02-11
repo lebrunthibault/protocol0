@@ -40,7 +40,7 @@ class BaseRecorder(object):
 
     def pre_record(self, clear_clips: bool) -> Sequence:
         seq = Sequence()
-        seq.add(lambda: Song.selected_track().arm_state.arm())
+        seq.add(lambda: Song.selected_track().arm_state.arm_track())
         seq.add(partial(self._prepare_clip_slots_for_record, clear_clips=clear_clips))
         return seq.done()
 
@@ -60,4 +60,4 @@ class BaseRecorder(object):
         if self.config.record_type.delete_clips:
             for clip_slot in self.config.clip_slots:
                 clip_slot.delete_clip()
-        self._track.stop(immediate=True)
+        self._track._track.stop_all_clips(False)

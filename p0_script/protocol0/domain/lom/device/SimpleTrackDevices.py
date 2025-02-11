@@ -19,7 +19,7 @@ from protocol0.shared.observer.Observable import Observable
 DeviceWithChainMapping = Dict[Device, Optional[DeviceChain]]
 
 
-class SimpleTrackDevices(SlotManager, Observable):
+class SimpleTrackDevices(SlotManager):
     def __init__(self, live_track: Live.Track.Track) -> None:
         super(SimpleTrackDevices, self).__init__()
         self._track = live_track
@@ -53,11 +53,11 @@ class SimpleTrackDevices(SlotManager, Observable):
         self._devices = cast(List[Device], self._devices_mapping.all)
         self._all_devices = self._find_all_devices(self._devices)
 
-        for device in self.all:
-            if isinstance(device, RackDevice):
-                device.register_observer(self)
+        # for device in self.all:
+        #     if isinstance(device, RackDevice):
+        #         device.register_observer(self)
 
-        self.notify_observers()
+        # self.notify_observers()
 
     @property
     def all(self) -> List[Device]:

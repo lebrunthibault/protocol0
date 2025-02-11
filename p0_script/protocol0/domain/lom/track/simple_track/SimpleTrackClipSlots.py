@@ -13,10 +13,9 @@ from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.timing import defer
 from protocol0.shared.Song import Song
-from protocol0.shared.observer.Observable import Observable
 
 
-class SimpleTrackClipSlots(SlotManager, Observable):
+class SimpleTrackClipSlots(SlotManager):
     # noinspection PyInitNewSignature
     def __init__(
         self,
@@ -67,7 +66,6 @@ class SimpleTrackClipSlots(SlotManager, Observable):
                 new_clip_slots.append(clip_slot)
             else:
                 clip_slot = self._clip_slot_class(live_clip_slot, index)
-                clip_slot.register_observer(self)
                 new_clip_slots.append(clip_slot)
         self._clip_slots[:] = new_clip_slots
 
@@ -75,10 +73,6 @@ class SimpleTrackClipSlots(SlotManager, Observable):
             Scheduler.defer(cs.appearance.refresh)
 
         self._has_clip_listener.replace_subjects(self._live_track.clip_slots)
-
-    def update(self, observable: Observable) -> None:
-        if isinstance(observable, ClipSlot):
-            self.notify_observers()
 
     @subject_slot_group("has_clip")
     @defer

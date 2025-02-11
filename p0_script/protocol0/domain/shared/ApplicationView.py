@@ -49,10 +49,6 @@ class ApplicationView(object):
         cls._INSTANCE._recording_component.back_to_arranger = False
 
     @classmethod
-    def show_browser(cls) -> None:
-        cls._INSTANCE._application_view.show_view("Browser")
-
-    @classmethod
     def focus_detail(cls) -> None:
         cls._focus_view("Detail")
 
@@ -73,15 +69,10 @@ class ApplicationView(object):
     @classmethod
     def is_session_visible(cls) -> bool:
         return cls._INSTANCE._application_view.is_view_visible("Session")
-        # return cls._INSTANCE._application_view.focused_document_view == "Session"
 
     @classmethod
     def is_clip_view_visible(cls) -> bool:
         return cls._INSTANCE._application_view.is_view_visible("Detail/Clip")
-
-    @classmethod
-    def is_browser_visible(cls) -> bool:
-        return cls._INSTANCE._application_view.is_view_visible("Browser")
 
     @classmethod
     def toggle_browse(cls) -> bool:

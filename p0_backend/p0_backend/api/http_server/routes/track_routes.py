@@ -9,7 +9,6 @@ from p0_backend.lib.keys import send_keys
 from protocol0.application.command.BusTrackToZeroDBCommand import BusTrackToZeroDBCommand
 from protocol0.application.command.CollapseSelectedTrackCommand import CollapseSelectedTrackCommand
 from protocol0.application.command.SelectTrackByEnumCommand import SelectTrackByEnumCommand
-from protocol0.application.command.ArmSelectedTrackCommand import ArmSelectedTrackCommand
 from protocol0.application.command.MuteTrackCommand import MuteTrackCommand
 from protocol0.application.command.SoloTrackCommand import SoloTrackCommand
 
@@ -23,11 +22,6 @@ async def un_group():
     send_keys("+{TAB}")
     send_keys("^+g")
     show_plugins()
-
-
-@router.get("/arm")
-async def arm():
-    p0_script_client().dispatch(ArmSelectedTrackCommand())
 
 
 @router.get("/mute")

@@ -26,11 +26,6 @@ return
 ^+z::
     Send ^y  ; redo
 return
-^s::
-    Send ^s
-	callBackend("set/save")
-	Sleep, 200
-return
 ~^+r::
 	callBackend("export")
 return

@@ -1,20 +1,29 @@
 import collections
-from functools import partial
-from typing import Optional, Dict
+from typing import Optional, Dict, Type
 
 import Live
 from _Framework.SubjectSlot import subject_slot, SlotManager
 
-from protocol0.domain.lom.track.TrackFactory import create_simple_track
 from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.SimpleTrackCreatedEvent import SimpleTrackCreatedEvent
+from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 from protocol0.domain.lom.track.simple_track.audio.SimpleReturnTrack import SimpleReturnTrack
 from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
+from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
+from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.shared.Song import Song
-from protocol0.shared.sequence.Sequence import Sequence
+
+
+def get_simple_track_class(track: Live.Track.Track) -> Type[SimpleTrack]:
+    if track.has_midi_input:
+        return SimpleMidiTrack
+    elif track.has_audio_input:
+        return SimpleAudioTrack
+
+    raise Protocol0Error("Unknown track type")
 
 
 class TrackMapperService(SlotManager):
@@ -34,9 +43,7 @@ class TrackMapperService(SlotManager):
         self._clean_tracks()
         self._generate_simple_tracks()
 
-        seq = Sequence()
-        seq.add(partial(DomainEventBus.defer_emit, TracksMappedEvent()))
-        seq.done()
+        DomainEventBus.defer_emit(TracksMappedEvent())
 
     def _clean_tracks(self) -> None:
         existing_track_ids = [track._live_ptr for track in list(Song.live_tracks())]
@@ -54,17 +61,38 @@ class TrackMapperService(SlotManager):
         """instantiate SimpleTracks (including return / master, that are marked as inactive)"""
         # instantiate set tracks
         for index, track in enumerate(list(self._live_song.tracks)):
-            create_simple_track(track, index)
+            self._create_simple_track(track, index)
 
         for index, track in enumerate(list(self._live_song.return_tracks)):
-            create_simple_track(track=track, index=index, cls=SimpleReturnTrack)
+            self._create_simple_track(live_track=track, index=index, cls=SimpleReturnTrack)
 
-        self._master_track = create_simple_track(self._live_song.master_track, 0, cls=MasterTrack)
+        self._master_track = self._create_simple_track(
+            self._live_song.master_track, 0, cls=MasterTrack
+        )
 
         self._sort_simple_tracks()
 
         for track in Song.simple_tracks():
-            track.on_tracks_change()
+            if track._track.group_track:
+                track.group_track = Song.live_track_to_simple_track(track._track.group_track)
+                track.group_track.sub_tracks.append(track)
+
+    def _create_simple_track(
+        self, live_track: Live.Track.Track, index: int, cls: Optional[Type[SimpleTrack]] = None
+    ) -> SimpleTrack:
+        # checking first on existing tracks
+        track_cls = cls or get_simple_track_class(live_track)
+        existing_simple_track = Song.optional_simple_track_from_live_track(live_track)
+
+        if existing_simple_track and type(existing_simple_track) == track_cls:
+            # reindexing tracks
+            existing_simple_track._index = index
+            track = existing_simple_track
+        else:
+            track = track_cls(live_track, index)
+        self._live_track_id_to_simple_track[track.live_id] = track
+
+        return track
 
     def _on_simple_track_created_event(self, event: SimpleTrackCreatedEvent) -> None:
         # handling replacement of a SimpleTrack by another

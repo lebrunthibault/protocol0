@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Optional
 
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
@@ -14,11 +14,6 @@ from protocol0.shared.Song import Song
 
 class MasterTrack(SimpleAudioTrack):
     IS_ACTIVE = False
-
-    def __init__(self, *a: Any, **k: Any) -> None:
-        super(MasterTrack, self).__init__(*a, **k)
-
-        self.devices.register_observer(self)
 
     @property
     def muted(self) -> bool:

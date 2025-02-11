@@ -217,7 +217,7 @@ class RecordService(object):
             track.input_routing.channel = InputRoutingChannelEnum.POST_FX
             track.current_monitoring_state = CurrentMonitoringStateEnum.OFF
             track.devices.mixer_device.update_from_dict(source_track.devices.mixer_device.to_dict())
-            track.arm_state.arm()
+            track.arm_state.arm_track()
 
         seq.add(set_routing)
 
