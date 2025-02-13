@@ -22,9 +22,6 @@ class SimpleTrackAppearance(SlotManager, Observable):
         super(SimpleTrackAppearance, self).__init__()
         self._live_track = live_track
         self._instrument: Optional[InstrumentInterface] = None
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev((live_track.name, live_track))
         self._name_listener.subject = live_track
         self._cached_name = self.name
         self._cached_color = self.color
