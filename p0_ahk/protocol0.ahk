@@ -26,21 +26,24 @@ return
 ^+z::
     Send ^y  ; redo
 return
-~^+r::
-	callBackend("export")
-return
 ^!q::
     Send ^!p  ; left hand shortcut
+return
+~^+r::
+	callBackend("export")
 return
 ~^+f::
 	Send ^+f  ; cancel Ableton Follow
 	callBackend("search/track")
 return
-;^+!f::
-;	callBackend("search/track?reset=true")
-;return
 ^Numpad0::
     callBackend("clip/clear_muted_notes")
+return
+^!u::
+    callBackend("device/load?name=UTILITY")
+return
+^!e::
+    callBackend("device/load?name=EQ_EIGHT")
 return
 
 ; SELECTING TRACKS
@@ -59,9 +62,9 @@ return
 ~^+v::
     callBackend("track/select?name=vocals")
 return
-~^+::
-    callBackend("track/select?name=harmony")
-return
+;~^+::
+;    callBackend("track/select?name=harmony")
+;return
 ~^+l::
     callBackend("track/select?name=melody")
 return
