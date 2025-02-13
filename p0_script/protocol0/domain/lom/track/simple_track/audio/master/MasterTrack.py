@@ -9,6 +9,7 @@ from protocol0.domain.lom.track.routing.OutputRoutingTypeEnum import OutputRouti
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.audio.SimpleAudioTrack import SimpleAudioTrack
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
+from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.shared.Song import Song
 
 
@@ -28,6 +29,29 @@ class MasterTrack(SimpleAudioTrack):
         return self.devices.get_one_from_enum(
             DeviceEnum.ADPTR_METRIC_AB, all_devices=True, enabled=True
         )
+
+    def activate_adptr_filter(self, filter_type: str) -> None:
+        if not self.adptr:
+            raise Protocol0Warning("ADPTR not found")
+
+        filter_switch = self.adptr.get_parameter_by_name(DeviceParamEnum.FILTER_SWITCH)
+
+        if not filter_switch:
+            raise Protocol0Warning("Filter Switch not mapped on ADPTR")
+
+        filter_preset = self.adptr.get_parameter_by_name(DeviceParamEnum.FILTER_PRESET)
+        if not filter_preset:
+            raise Protocol0Warning("Filter Preset not mapped on ADPTR")
+
+        filter_preset_to_value = {
+            "sub": 0.6,
+            "bass": 0.8,
+            "low_mid": 0,
+            "mid": 0.2,
+            "high": 0.4,
+        }
+
+        filter_preset.value = filter_preset_to_value[filter_type]
 
     def balance_levels_to_zero(self) -> SimpleTrackToDevices:
         assert (

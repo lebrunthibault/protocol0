@@ -1,10 +1,8 @@
 from functools import partial
-from typing import cast
 
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
 
 # noinspection SpellCheckingInspection
-from protocol0.domain.lom.clip.MidiClip import MidiClip
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
 from protocol0.domain.shared.backend.Backend import Backend
@@ -26,6 +24,22 @@ class ActionGroupMain(ActionGroupInterface):
         )
 
         self.add_encoder(identifier=4, name="test", on_press=self.action_test)
+
+        def activate_adptr_filter(filter_type: str) -> None:
+            Song.master_track().activate_adptr_filter(filter_type)
+
+        self.add_encoder(
+            identifier=9, name="ref bass", on_press=partial(activate_adptr_filter, "bass")
+        )
+        self.add_encoder(
+            identifier=10, name="ref low_mid", on_press=partial(activate_adptr_filter, "low_mid")
+        )
+        self.add_encoder(
+            identifier=11, name="ref mid", on_press=partial(activate_adptr_filter, "mid")
+        )
+        self.add_encoder(
+            identifier=12, name="ref high", on_press=partial(activate_adptr_filter, "high")
+        )
 
         def toggle_splice_track() -> None:
             if Song.splice_track():
@@ -65,10 +79,4 @@ class ActionGroupMain(ActionGroupInterface):
         self.add_encoder(identifier=16, name="test", on_scroll=scroll_selected_parameter)
 
     def action_test(self) -> None:
-        clip = cast(MidiClip, Song.selected_clip())
-        notes = clip.get_notes()
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(notes)
-        Logger.dev(notes.__dict__)
-        Logger.dev([n for n in notes])
+        pass
