@@ -19,7 +19,7 @@ class WebSocketPayloadType(Enum):
 
 
 class WebSocketManager:
-    def __init__(self):
+    def __init__(self) -> None:
         self._active_connections: List[WebSocket] = []
 
     def __repr__(self) -> str:

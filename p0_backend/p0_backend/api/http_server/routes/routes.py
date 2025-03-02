@@ -7,7 +7,6 @@ from p0_backend.lib.ableton.ableton import (
     hide_plugins,
     show_plugins,
 )
-from p0_backend.lib.ableton.set_profiling.ableton_set_profiler import AbletonSetProfiler
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.keys import send_keys
 from p0_backend.lib.notification import notify
@@ -55,11 +54,6 @@ def home() -> str:
     return "ok"
 
 
-@router.get("/ping")
-def ping():
-    AbletonSetProfiler.end_measurement()
-
-
 @router.get("/reload_ableton")
 async def _reload_ableton():
     reload_ableton()
@@ -78,16 +72,6 @@ def show_hide_plugins():
 @router.get("/hide_plugins")
 def _hide_plugins():
     hide_plugins()
-
-
-@router.get("/start_set_profiling")
-def start_set_profiling():
-    AbletonSetProfiler.start_set_profiling()
-
-
-@router.get("/start_profiling_single_measurement")
-def start_profiling_single_measurement():
-    AbletonSetProfiler.start_profiling_single_measurement()
 
 
 @router.get("/show_info")

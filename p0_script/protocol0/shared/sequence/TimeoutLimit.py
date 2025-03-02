@@ -27,7 +27,7 @@ class TimeoutLimit(object):
 
     def __repr__(self, **k: Any) -> str:
         output = "%s" % get_callable_repr(self.func)
-        if self.awaited_listener:
+        if self.awaited_listener is not None:
             output += " (waiting for listener call %s)" % get_callable_repr(self.awaited_listener)
         return output
 
@@ -47,8 +47,6 @@ class TimeoutLimit(object):
             return
 
         self.timed_out = True
-        if self.on_timeout:
+        if self.on_timeout is not None:
             self.on_timeout()
             return
-        else:
-            Logger.error("Timeout reached for %s" % self)

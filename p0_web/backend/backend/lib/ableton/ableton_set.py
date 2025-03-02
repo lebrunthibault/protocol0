@@ -145,7 +145,7 @@ class AbletonSet(BaseModel):
         )
 
     @classmethod
-    def create(cls, set_filename: str, set_place: AbletonSetPlace = None) -> "AbletonSet":
+    def create(cls, set_filename: str, set_place: Optional[AbletonSetPlace] = None) -> "AbletonSet":
         ableton_set = AbletonSet(
             place=set_place or AbletonSetPlace.from_directory(dirname(set_filename)),
             path_info=PathInfo.create(set_filename),

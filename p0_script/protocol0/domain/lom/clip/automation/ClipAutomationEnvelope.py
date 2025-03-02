@@ -51,7 +51,7 @@ class ClipAutomationEnvelope(object):
         if value is not None:
             self.insert_step(0, self._length, value)
         else:
-            self.insert_step(0, 0, self.start)
+            self.insert_step(0, 0, self.start)  # type: ignore[unreachable]
             self.insert_step(self._length, 0, 0)
 
     @classmethod

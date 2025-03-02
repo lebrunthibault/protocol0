@@ -129,7 +129,7 @@ class DeviceParameter(SlotManager, Observable):
 
     @accelerate
     def scroll(
-        self, go_next: bool, value_items: List = None, factor: int = 1, steps: int = 1000
+        self, go_next: bool, value_items: Optional[List] = None, factor: int = 1, steps: int = 1000
     ) -> None:
         if self.is_quantized and value_items is None:
             value_items = list(self.value_items)

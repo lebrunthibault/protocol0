@@ -49,7 +49,7 @@ class SimpleTrackDevices(SlotManager):
 
         self._devices_mapping.build(self._track.devices)
         for added_device in self._devices_mapping.added:
-            Scheduler.defer(added_device.on_added)  # type: ignore[attr-defined]
+            Scheduler.defer(added_device.on_added)
         self._devices = cast(List[Device], self._devices_mapping.all)
         self._all_devices = self._find_all_devices(self._devices)
 

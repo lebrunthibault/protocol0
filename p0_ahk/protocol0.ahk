@@ -17,12 +17,12 @@ CoordMode,mouse,screen
 ^#+n::
 	callBackend("reload_ableton")
 return
-#e::
-    Run, explorer.exe "D:\ableton projects\tracks"
-return
+;#e::
+;    Run, explorer.exe "D:\ableton projects\tracks"
+;return
 
 ; ableton hotkeys
-#IfWinActive, ahk_exe Ableton Live 12 Suite.exe
+#IfWinActive, ahk_exe Ableton Live 12 Beta.exe
 ^+z::
     Send ^y  ; redo
 return

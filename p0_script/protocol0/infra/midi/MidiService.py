@@ -2,8 +2,6 @@ from typing import Optional, Tuple, Callable
 
 from protocol0.application.CommandBus import CommandBus
 from protocol0.application.command.SerializableCommand import SerializableCommand
-from protocol0.domain.lom.song.SongInitializedEvent import SongInitializedEvent
-from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.infra.midi.MidiBytesReceivedEvent import MidiBytesReceivedEvent
@@ -21,7 +19,6 @@ class MidiService(object):
 
         DomainEventBus.subscribe(MidiBytesReceivedEvent, self._on_midi_bytes_received_event)
         DomainEventBus.subscribe(NoteSentEvent, self._on_note_sent_event)
-        DomainEventBus.once(SongInitializedEvent, self._on_song_initialized_event)
 
     def _sysex_to_string(self, sysex: Tuple) -> str:
         return bytearray(sysex[1:-1]).decode()
@@ -62,6 +59,3 @@ class MidiService(object):
         self._send_formatted_midi_message(
             "note", event.midi_channel, event.note_number, event.velocity
         )
-
-    def _on_song_initialized_event(self, _: SongInitializedEvent) -> None:
-        Backend.client().ping()

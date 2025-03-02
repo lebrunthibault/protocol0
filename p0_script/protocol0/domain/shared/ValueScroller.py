@@ -26,7 +26,7 @@ class ValueScroller(Generic[T]):
             # find the neighbor
             if current_value is not None and hasattr(current_value, "index"):
                 values.append(current_value)
-                values.sort(key=lambda x: x.index)  # type: ignore[attr-defined]
+                values.sort(key=lambda x: x.index)
             else:
                 return values[0]
 

@@ -9,7 +9,7 @@ bootstrap: .env
 .PHONY: boostrap
 
 midi_server:
-	@poetry run watchmedo auto-restart --directory=. --pattern="p0_backend/api/midi_server/*.py;p0_backend/api/midi_server/**/*.py;p0_backend/api/client/*.py;p0_backend/lib/*.py;p0_backend/lib/**/*.py;p0_backend/lib/**/**/*.py" --recursive --ignore-directories -- poetry run midi-server
+	@poetry run midi-server
 .PHONY: midi_server
 
 http_server:
@@ -17,7 +17,7 @@ http_server:
 .PHONY: http_server
 
 logs:
-	powershell -c "Get-Content -Path 'C:\Users\thiba\AppData\Roaming\Ableton\Live 12.1.5\Preferences\Log.txt' -Wait -Tail 50"
+	powershell -c "Get-Content -Path 'C:\Users\Thibault\AppData\Roaming\Ableton\Live $(abletonVersion)\Preferences\Log.txt' -Wait -Tail 50"
 .PHONY: logs
 
 test:
