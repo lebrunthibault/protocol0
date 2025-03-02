@@ -102,7 +102,7 @@ class RecordService(object):
         config: RecordConfig,
     ) -> Optional[Sequence]:
         # this will stop the previous playing scene on playback stop
-        PlayingScene.set(config.recording_scene)
+        # PlayingScene.set(config.recording_scene)
         DomainEventBus.once(ErrorRaisedEvent, self._on_error_raised_event)
 
         seq = Sequence()
@@ -197,10 +197,6 @@ class RecordService(object):
         track_creator = self._track_crud_component.create_audio_track
 
         seq = Sequence()
-
-        if isinstance(source_track, SimpleMidiTrack) and not record_audio:
-            record_type = RecordTypeEnum.MIDI_RESAMPLE
-            track_creator = self._track_crud_component.create_midi_track
 
         resampling_track = get_existing_resampling_track()
         if resampling_track:

@@ -6,7 +6,6 @@ from protocol0.domain.track_recorder.count_in.CountInInterface import CountInInt
 class RecordTypeEnum(Enum):
     MIDI = "Midi"
     MIDI_OVERWRITE = "Midi overwrite"
-    MIDI_RESAMPLE = "Midi resample"
     AUDIO = "Audio"
 
     @property
@@ -14,7 +13,6 @@ class RecordTypeEnum(Enum):
         return self in (
             RecordTypeEnum.MIDI,
             RecordTypeEnum.MIDI_OVERWRITE,
-            RecordTypeEnum.MIDI_RESAMPLE,
         )
 
     def get_count_in(self) -> CountInInterface:
@@ -38,7 +36,6 @@ class RecordTypeEnum(Enum):
     def delete_clips(self) -> bool:
         return self not in (
             RecordTypeEnum.MIDI_OVERWRITE,
-            RecordTypeEnum.MIDI_RESAMPLE,
             RecordTypeEnum.AUDIO,
         )
 

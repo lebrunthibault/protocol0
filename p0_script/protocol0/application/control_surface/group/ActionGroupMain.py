@@ -7,6 +7,7 @@ from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.track_recorder.RecordService import RecordService
+from protocol0.domain.track_recorder.RecordTypeEnum import RecordTypeEnum
 from protocol0.shared.Song import Song
 
 
@@ -76,9 +77,17 @@ class ActionGroupMain(ActionGroupInterface):
             assert Song.selected_parameter(), "No selected parameter"
             Song.selected_parameter().scroll(go_next)
 
-        self.add_encoder(identifier=16, name="test", on_scroll=scroll_selected_parameter)
+        self.add_encoder(
+            identifier=16, name="scroll_selected_parameter", on_scroll=scroll_selected_parameter
+        )
 
     def action_test(self) -> None:
+        first_armed_track = next(iter(Song.armed_tracks()), None)
+        assert first_armed_track, "No track armed"
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev(first_armed_track.clips)
+        self._container.get(RecordService).record_track(first_armed_track, RecordTypeEnum.MIDI)
         from protocol0.shared.logging.Logger import Logger
 
         Logger.dev("toto")

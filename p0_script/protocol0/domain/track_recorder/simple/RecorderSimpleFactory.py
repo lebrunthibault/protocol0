@@ -21,8 +21,8 @@ class TrackRecorderSimpleFactory(object):
         )
 
     def _get_recording_scene_index(self, track: SimpleTrack) -> Optional[int]:
-        for i in range(Song.selected_scene().index, len(Song.scenes())):
-            if not track.clip_slots[i].clip:
+        for i, clip_slot in enumerate(track.clip_slots):
+            if not clip_slot.clip:
                 return i
 
         return None
@@ -30,8 +30,8 @@ class TrackRecorderSimpleFactory(object):
     def _get_recording_bar_length(self, record_type: RecordTypeEnum, bar_length: int) -> int:
         if record_type == RecordTypeEnum.MIDI:
             return bar_length
-        elif record_type in (RecordTypeEnum.AUDIO, RecordTypeEnum.MIDI_RESAMPLE):
-            return Song.selected_scene().bar_length
+        elif record_type == RecordTypeEnum.AUDIO:
+            return 1000
         else:
             raise Protocol0Warning("Invalid record type")
 

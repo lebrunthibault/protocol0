@@ -50,6 +50,5 @@ class Settings(BaseSettings):
 
     # Midi port names are relative to the Protocol0 script and not this midi backend
     p0_output_port_name: str = "P0_OUT"
-    p0_input_port_name: str = "P0_IN_MIDI"
-    p0_input_from_http_port_name: str = "P0_IN_HTTP"
-    p0_backend_loopback_name: str = "P0_BACKEND_LOOPBACK"
+    p0_input_port_name: str = "P0_IN_HTTP"
+    # p0_backend_loopback_name: str = "P0_BACKEND_LOOPBACK"
