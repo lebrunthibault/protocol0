@@ -46,18 +46,6 @@ class throttle(object):
         return wrapper
 
 
-def timeit(f):
-    @wraps(f)
-    def wrap(*a, **k):
-        start_at = time.time()
-        res = f(*a, **k)
-        end_at = time.time()
-        logger.info(f"func: {f.__name__} took: {end_at - start_at:.3f} sec")
-        return res
-
-    return wrap
-
-
 def retry(count: int, duration: float):
     def decorator(func):
         @wraps(func)

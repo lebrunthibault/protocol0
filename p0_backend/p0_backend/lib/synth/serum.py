@@ -48,7 +48,7 @@ def _rename_macro_1(x: int, y: int, name: str):
 def bulk_edit_presets(preset_edit_func: Callable[[int, int], None], test: bool = False):
     handle = find_window_handle_by_enum(name="Serum_x64/Midi")
     assert handle, "Serum window not found"
-    x, y, x2, y2 = win32gui.GetWindowRect(handle)
+    x, y, _, __ = win32gui.GetWindowRect(handle)
 
     while win32gui.IsWindowVisible(handle):
         # make macro 1 bidirectional

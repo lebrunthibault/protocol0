@@ -62,14 +62,15 @@ return
 ~^+v::
     callBackend("track/select?name=vocals")
 return
-;~^+::
-;    callBackend("track/select?name=harmony")
-;return
 ~^+l::
     callBackend("track/select?name=melody")
 return
 ~^+b::
     callBackend("track/select?name=bass")
 return
+
+; test
+^!+t::
+    callBackend("actions/4/16")
 
 #IfWinActive
