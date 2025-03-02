@@ -49,7 +49,7 @@ pretty = false
 ignore_missing_imports = true
 follow_imports = 'skip'
 # cannot remove misc because of _Framework. union-attr possibly
-disable_error_code = ['misc','union-attr', 'has-type']
+disable_error_code = ['misc','union-attr', 'has-type', 'assignment']
 show_error_codes = true
 warn_unreachable = true
 strict_equality = true

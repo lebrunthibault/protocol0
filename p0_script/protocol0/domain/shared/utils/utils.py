@@ -71,7 +71,7 @@ def db_to_volume(db: float) -> float:
         return db_to_volume_data[db]
 
 
-def take_closest(sorted_list: [List[float]], value: float) -> float:
+def take_closest(sorted_list: List[float], value: float) -> float:
     """
     Assumes myList is sorted. Returns closest value to myNumber.
 

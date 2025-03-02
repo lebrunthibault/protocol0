@@ -60,7 +60,7 @@ class SimpleTrack(SlotManager):
         self.devices = SimpleTrackDevices(live_track)
 
         self._clip_slots = SimpleTrackClipSlots(live_track, self.CLIP_SLOT_CLASS)
-        self._clip_slots.build()
+        # self._clip_slots.build()
 
         # self.devices.register_observer(self)
 

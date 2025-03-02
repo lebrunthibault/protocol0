@@ -1,5 +1,4 @@
 import json
-import subprocess
 from json import JSONDecodeError
 from typing import Optional, Dict
 
@@ -7,10 +6,6 @@ import mido
 from loguru import logger
 from protocol0.application.command.SerializableCommand import SerializableCommand
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
-
-
-def copy_to_clipboard(data: str):
-    subprocess.run("clip", universal_newlines=True, input=data)
 
 
 def log_string(string) -> str:

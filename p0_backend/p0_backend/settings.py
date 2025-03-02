@@ -1,6 +1,7 @@
 from os.path import dirname
 
 from pydantic_settings import BaseSettings
+from pydantic import Field
 
 
 class Settings(BaseSettings):
@@ -8,7 +9,7 @@ class Settings(BaseSettings):
         env_file = ".env"
 
     user_home: str
-    ableton_version: str
+    ableton_version: str = Field(alias="abletonVersion")
 
     @property
     def ableton_major_version(self) -> str:

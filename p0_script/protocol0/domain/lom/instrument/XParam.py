@@ -97,7 +97,7 @@ class XParam:
     name: str
     param_configs: List[ParamConf] = field(default_factory=lambda: [])
     value_items: Optional[List[int]] = None
-    track: SimpleTrack = None  # type: ignore[assignment]
+    track: SimpleTrack = None
 
     def get_device_to_load(self, automatable: bool = False) -> Optional[DeviceEnum]:
         for param_conf in self.param_configs:

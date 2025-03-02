@@ -15,6 +15,7 @@ class ClipSlotAppearance(object):
             self._live_clip_slot.has_stop_button = has_stop_button
 
     def refresh(self) -> None:
+        pass
         # we never use clip slot stop buttons
-        if self.has_stop_button:
-            self.has_stop_button = False
+        # if self.has_stop_button:
+        #     self.has_stop_button = False
