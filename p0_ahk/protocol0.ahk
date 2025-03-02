@@ -71,6 +71,6 @@ return
 
 ; test
 ^!+t::
-    callBackend("actions/4/16")
+    callBackend("actions/4/4")
 
 #IfWinActive

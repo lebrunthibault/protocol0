@@ -177,6 +177,10 @@ class Song(object):
         return list(filter(lambda t: not t.group_track, cls.simple_tracks()))
 
     @classmethod
+    def armed_tracks(cls) -> List["SimpleTrack"]:
+        return list(filter(lambda t: t.arm_state.is_armed, cls.simple_tracks()))
+
+    @classmethod
     def master_track(cls) -> "MasterTrack":
         from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
 
@@ -201,6 +205,10 @@ class Song(object):
     @classmethod
     def scenes(cls) -> List["Scene"]:
         return cls._INSTANCE._scene_service.scenes
+
+    @classmethod
+    def scene_count(cls) -> int:
+        return len(cls._INSTANCE.__live_song.scenes)
 
     @classmethod
     def active_scenes(cls) -> List["Scene"]:
