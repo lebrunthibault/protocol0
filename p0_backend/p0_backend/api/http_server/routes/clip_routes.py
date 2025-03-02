@@ -1,29 +1,18 @@
 from fastapi import APIRouter
-
-from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.lib.ableton.ableton_set.ableton_set_manager import (
-    AbletonSetManager,
-)
-from p0_backend.lib.ableton.automation import edit_automation_value
-from p0_backend.lib.ableton.interface.clip import crop_clip
-from p0_backend.lib.errors.Protocol0Error import Protocol0Error
-from protocol0.application.command.LoopSelectedClipCommand import LoopSelectedClipCommand
-from protocol0.application.command.MoveClipLoopCommand import MoveClipLoopCommand
 from protocol0.application.command.CleanLoopCommand import (
     CleanLoopCommand,
 )
+from protocol0.application.command.LoopSelectedClipCommand import LoopSelectedClipCommand
+from protocol0.application.command.MoveClipLoopCommand import MoveClipLoopCommand
 from protocol0.application.command.RemoveMutedNotesCommand import (
     RemoveMutedNotesCommand,
 )
 from protocol0.application.command.SetClipLoopLengthCommand import SetClipLoopLengthCommand
 from protocol0.application.command.ToggleNotesCommand import ToggleNotesCommand
 
+from p0_backend.api.client.p0_script_api_client import p0_script_client
+
 router = APIRouter()
-
-
-@router.get("/crop")
-def _crop_clip():
-    crop_clip()
 
 
 @router.get("/toggle_notes")
@@ -44,22 +33,6 @@ async def move_loop(forward: bool = True, bar: bool = False):
 @router.get("/set_loop_length")
 async def set_loop_length(bar_length: int):
     p0_script_client().dispatch(SetClipLoopLengthCommand(bar_length=bar_length))
-
-
-@router.get("/edit_automation_value")
-async def _edit_automation_value():
-    try:
-        active_set = AbletonSetManager.active()
-    except Protocol0Error:
-        active_set = None
-
-    if active_set is not None:
-        assert active_set.current_state.selected_track.type in (
-            "SimpleAudioTrack",
-            "SimpleMidiTrack",
-        ), "cannot edit automation"
-
-    edit_automation_value()
 
 
 @router.get("/clean_arrangement_loop")

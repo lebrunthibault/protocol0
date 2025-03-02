@@ -68,8 +68,11 @@ async def actions() -> List[ActionGroup]:
     )
 
 
-@router.get("/{group_id}/{action_id}")
-async def execute_action(group_id: int, action_id: int):
-    p0_script_client().dispatch(MidiNoteCommand(group_id, action_id))
+@router.get("/{group_midi_channel}/{action_note_id}")
+async def execute_action(group_midi_channel: int, action_note_id: int):
+    from loguru import logger
+
+    logger.success((group_midi_channel, action_note_id))
+    p0_script_client().dispatch(MidiNoteCommand(group_midi_channel, action_note_id))
 
     return "ok"

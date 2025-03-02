@@ -79,4 +79,6 @@ class ActionGroupMain(ActionGroupInterface):
         self.add_encoder(identifier=16, name="test", on_scroll=scroll_selected_parameter)
 
     def action_test(self) -> None:
-        pass
+        from protocol0.shared.logging.Logger import Logger
+
+        Logger.dev("toto")
