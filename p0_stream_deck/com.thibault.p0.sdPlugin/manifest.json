@@ -1,0 +1,123 @@
+{
+  "Actions": [
+    {
+      "Icon": "icon/p0_action/action",
+      "Name": "Back to previous profile",
+      "States": [
+        {
+          "Title": "",
+          "Image": "icon/p0_action/state"
+        }
+      ],
+      "Tooltip": "A dynamic back button",
+      "UUID": "com.thibault.p0.back-to-previous-profile"
+    },
+    {
+      "Icon": "icon/p0_action/action",
+      "Name": "Capture Midi",
+      "States": [
+        {
+          "Title": "",
+          "Image": "icon/p0_action/state"
+        }
+      ],
+      "Tooltip": "Capture midi",
+      "UUID": "com.thibault.p0.capture-midi"
+    },
+    {
+      "Icon": "icon/p0_action/action",
+      "Name": "Capture Midi Validate",
+      "States": [
+        {
+          "Title": "",
+          "Image": "icon/p0_action/state"
+        }
+      ],
+      "Tooltip": "Validate the midi capture",
+      "UUID": "com.thibault.p0.capture-midi-validate"
+    },
+    {
+      "Icon": "icon/p0_action/action",
+      "Name": "Clip slot control",
+      "States": [
+        {
+          "Title": "",
+          "Image": "icon/p0_action/state"
+        }
+      ],
+      "Tooltip": "Control a scene clip slot",
+      "UUID": "com.thibault.p0.clip-slot-control"
+    },
+    {
+      "Icon": "icon/p0_action/action",
+      "Name": "Drum Rack to Simpler",
+      "States": [
+        {
+          "Title": "To\nSimpler",
+          "Image": "icon/to_simpler/state"
+        }
+      ],
+      "Tooltip": "Bounce Drum Rack to Simpler",
+      "UUID": "com.thibault.p0.drum-rack-to-simpler"
+    },
+    {
+      "Icon": "icon/p0_action/action",
+      "Name": "Load device",
+      "States": [
+        {
+          "Title": "",
+          "Image": "icon/p0_action/state"
+        }
+      ],
+      "Tooltip": "Add a chosen device on the selected track",
+      "UUID": "com.thibault.p0.load-device"
+    },
+    {
+      "Icon": "icon/p0_action/action",
+      "Name": "Load grouped device",
+      "States": [
+        {
+          "Title": "",
+          "Image": "icon/p0_action/state"
+        }
+      ],
+      "Tooltip": "Load a grouped device",
+      "UUID": "com.thibault.p0.load-grouped-device"
+    },
+    {
+      "Icon": "icon/p0_action/action",
+      "Name": "Load instrument",
+      "States": [
+        {
+          "Title": "",
+          "Image": "icon/p0_action/state"
+        }
+      ],
+      "Tooltip": "Load instrument device",
+      "UUID": "com.thibault.p0.load-instrument"
+    }
+  ],
+  "Profiles": [],
+  "SDKVersion": 2,
+  "Author": "Thibault Lebrun",
+  "CodePath": "index.html",
+  "PropertyInspectorPath": "propertyinspector/index.html",
+  "Description": "Protocol0 Stream Deck Plugin",
+  "Name": "P0",
+  "Icon": "icon/p0_action/action",
+  "URL": "https://github.com/lebrunthibault/Protocol-0-Surface-Script",
+  "Version": "0.1",
+  "OS": [
+    {
+      "Platform": "mac",
+      "MinimumVersion": "10.11"
+    },
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "Software": {
+    "MinimumVersion": "4.1"
+  }
+}

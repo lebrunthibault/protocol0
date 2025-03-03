@@ -1,0 +1,102 @@
+[build-system]
+requires = ["poetry-core>=1.6.1"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "p0-backend"
+version = "1.0.0"
+description = "Protocol0 ableton remote script backend"
+readme = "README.md"
+authors = ["Thibault Lebrun <thibaultlebrun@live.fr>"]
+license = "MIT"
+repository = "https://github.com/lebrunthibault/protocol0"
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Development Status :: 4 - Beta"
+]
+keywords = ["remote script", "ableton"]
+
+[tool.poetry.dependencies]
+python = "3.11.3"
+asyncclick=" ^8.1.3.2"
+click=" ^8.1.3"
+keyboard=" ^0.13.5"
+Pillow=" ^9.5.0"
+psutil=" ^5.9.1"
+PyAutoGUI=" ^0.9.53"
+pydantic=" ^2.4.2"
+pywin32=" ^304"
+six=" ^1.16.0"
+uvicorn = {extras = ["standard"], version = "^0.22.0"}
+protocol0 = {path = "../p0_script", develop = true}
+loguru = "^0.7.0"
+mido = "^1.2.10"
+pygame = "^2.4.0"
+fastapi = "^0.104.0"
+python-dotenv = "^1.0.0"
+rx = "^3.2.0"
+requests = "^2.31.0"
+tzdata = "^2023.3"
+win10toast = "^0.9"
+winotify = "^1.1.0"
+win11toast = "^0.34"
+pydantic-settings = "^2.0.3"
+dacite = "^1.8.1"
+ratelimit = "^2.2.1"
+numpy = "^1.26.3"
+librosa = "^0.10.1"
+asyncer = "^0.0.2"
+fastapi-limiter = "^0.1.6"
+ahk = "^1.7.1"
+
+[tool.poetry.dev-dependencies]
+flake8 = "*"
+vulture = "*"
+pytest = "*"
+watchdog = {extras = ["watchmedo"], version = "^3.0.0"}
+
+[tool.poetry.scripts]
+http-server = "p0_backend.api.http_server.main:start"
+midi-server = "p0_backend.api.midi_server.main:start"
+kill = "p0_backend.scripts.kill_old_processes:kill_old_processes"
+logs = "p0_backend.scripts.tail_ableton_logs:tail_ableton_log_file"
+logs-raw = "p0_backend.scripts.tail_ableton_logs:tail_ableton_log_file_raw"
+analyze-kicks = "p0_backend.scripts.analyze_kicks:main"
+
+[tool.poetry.group.dev.dependencies]
+types-requests = "^2.32.0.20241016"
+
+[tool.mypy]
+python_version = "3.11"
+exclude = ['vulture_whitelist.py']
+pretty = false
+ignore_missing_imports = true
+follow_imports = 'skip'
+# cannot remove misc because of _Framework. union-attr possibly
+disable_error_code = ['misc','union-attr', 'override', 'var-annotated']
+show_error_codes = true
+warn_unreachable = true
+strict_equality = true
+disallow_any_explicit = true
+disallow_untyped_calls = false
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+disallow_untyped_decorators = false
+incremental = true
+
+[tool.black]
+line-length = 100
+
+[tool.vulture]
+min_confidence = 60
+make_whitelist = true
+sort_by_size = true
+verbose = false
+exclude = [
+    'p0_backend/api/http_server/routes',
+    'p0_backend\lib\scene_stats.py',
+    'protocol0_stub'
+]

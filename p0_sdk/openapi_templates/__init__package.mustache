@@ -1,0 +1,20 @@
+# coding: utf-8
+
+# flake8: noqa
+
+{{>partial_header}}
+
+from __future__ import absolute_import
+
+__version__ = "{{packageVersion}}"
+
+# import apis into sdk package
+{{#apiInfo}}{{#apis}}from {{apiPackage}}.{{classVarName}} import {{custom_classname}}
+{{/apis}}{{/apiInfo}}
+# import models into sdk package
+{{#models}}{{#model}}from {{modelPackage}}.{{classFilename}} import {{custom_classname}}
+{{/model}}{{/models}}
+{{#recursionLimit}}
+
+    __import__('sys').setrecursionlimit({{{.}}})
+{{/recursionLimit}}

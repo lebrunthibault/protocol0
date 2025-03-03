@@ -1,0 +1,27 @@
+{
+  "name": "p0",
+  "private": true,
+  "workspaces": [
+    "p0_backend",
+    "p0_script",
+    "p0_sdk",
+    "p0_stream_deck",
+    "p0_web/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "",
+    "format": ""
+  },
+  "devDependencies": {
+    "@turbo/gen": "^1.9.7",
+    "eslint": "^7.32.0",
+    "prettier": "^2.5.1",
+    "turbo": "^1.9.7"
+  },
+  "packageManager": "npm@8.11.0",
+  "dependencies": {
+    "@openapitools/openapi-generator-cli": "^2.6.0"
+  }
+}
