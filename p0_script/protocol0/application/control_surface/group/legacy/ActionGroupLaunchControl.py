@@ -61,7 +61,7 @@ class ActionGroupLaunchControl(ActionGroupInterface, SlotManager):
     _PREVIOUS_SELECTED_TRACK_CLIP_VIEW = False
 
     def configure(self) -> None:
-        with self._component_guard():  # type: ignore[unreachable]
+        with self._component_guard():
             self._un_solo_listener.subject = ButtonElement(True, MIDI_NOTE_TYPE, 1, 107)
             self._toggle_device_listener.subject = ButtonElement(True, MIDI_NOTE_TYPE, 1, 105)
 

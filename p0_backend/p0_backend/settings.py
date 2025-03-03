@@ -9,11 +9,8 @@ class Settings(BaseSettings):
         env_file = ".env"
 
     user_home: str
+    ableton_name: str = Field(alias="abletonName")
     ableton_version: str = Field(alias="abletonVersion")
-
-    @property
-    def ableton_major_version(self) -> str:
-        return self.ableton_version.split(".")[0]
 
     @property
     def log_file_path(self) -> str:
@@ -23,13 +20,15 @@ class Settings(BaseSettings):
 
     @property
     def ableton_exe(self) -> str:
-        return f"C:\\ProgramData\\Ableton\\Live {self.ableton_major_version} Suite\\Program\\Ableton Live {self.ableton_major_version} Suite.exe"
+        return f"C:\\ProgramData\\Ableton\\{self.ableton_name}\\Program\\Ableton {self.ableton_name}.exe"
 
     @property
     def ableton_process_name(self) -> str:
-        return f"Ableton Live {self.ableton_major_version} Suite.exe"
+        return f"Ableton Live {self.ableton_name} Suite.exe"
 
-    splice_executable: str = "C:\\Users\\thiba\\AppData\\Local\\splice\\Splice.exe"
+    @property
+    def splice_executable(self) -> str:
+        return f"{self.user_home}\\AppData\\Local\\splice\\Splice.exe"
 
     @property
     def preferences_directory(self) -> str:
@@ -43,7 +42,9 @@ class Settings(BaseSettings):
     def ableton_test_set_path(self) -> str:
         return f"{self.ableton_set_directory}\\test.als"
 
-    icons_directory: str = "C:\\Users\\thiba\\OneDrive\\Images\\icons"
+    @property
+    def icons_directory(self) -> str:
+        return f"{self.user_home}\\OneDrive\\Images\\icons"
 
     http_api_url: str = "http://127.0.0.1:8000"
 

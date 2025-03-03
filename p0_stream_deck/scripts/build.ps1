@@ -2,7 +2,7 @@ Clear-Host
 
 Get-Process StreamDeck -ErrorAction SilentlyContinue | Stop-Process
 
-$pluginPath = "C:\Users\thiba\AppData\Roaming\Elgato\StreamDeck\Plugins\com.thibault.p0.sdPlugin"
+$pluginPath = "${USERPROFILE}\AppData\Roaming\Elgato\StreamDeck\Plugins\com.thibault.p0.sdPlugin"
 
 ## remove previous plugin
 if (Test-Path $pluginPath) {

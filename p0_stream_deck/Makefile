@@ -6,7 +6,7 @@ bootstrap:
 .PHONY: bootstrap
 
 log:
-	@tail -f C:\Users\thiba\AppData\Roaming\Elgato\StreamDeck\logs\StreamDeck0.log
+	@tail -f ${USERPROFILE}\AppData\Roaming\Elgato\StreamDeck\logs\StreamDeck0.log
 .PHONY: logs
 
 dev:

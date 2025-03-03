@@ -17,7 +17,7 @@ http_server:
 .PHONY: http_server
 
 logs:
-	powershell -c "Get-Content -Path 'C:\Users\Thibault\AppData\Roaming\Ableton\Live $(abletonVersion)\Preferences\Log.txt' -Wait -Tail 50"
+	powershell -c "Get-Content -Path '${USERPROFILE}\AppData\Roaming\Ableton\Live $(abletonVersion)\Preferences\Log.txt' -Wait -Tail 50"
 .PHONY: logs
 
 test:
