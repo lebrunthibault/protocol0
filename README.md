@@ -23,4 +23,4 @@ I've split the project into different modules :
 - [A stream deck plugin](https://github.com/lebrunthibault/protocol0/tree/main/p0_stream_deck): an integration with elgato stream deck
 - [An ahk script](https://github.com/lebrunthibault/protocol0/tree/main/p0_ahk): custom keyboard shortcuts for controlling the script
 
-test
+test2
