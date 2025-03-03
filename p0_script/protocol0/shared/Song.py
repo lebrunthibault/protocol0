@@ -19,7 +19,6 @@ if TYPE_CHECKING:
     from protocol0.domain.lom.song.components.QuantizationComponent import QuantizationComponent
     from protocol0.domain.lom.scene.SceneService import SceneService
     from protocol0.domain.lom.track.TrackMapperService import TrackMapperService
-    from protocol0.domain.track_recorder.RecordService import RecordService
     from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
     from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
     from protocol0.domain.lom.scene.Scene import Scene
@@ -348,10 +347,6 @@ class Song(object):
     @classmethod
     def tempo(cls) -> float:
         return cls._INSTANCE._tempo_component.tempo
-
-    @classmethod
-    def set_tempo(cls, tempo: float) -> None:
-        cls._INSTANCE._tempo_component.tempo = tempo
 
     @classmethod
     def current_beats_song_time(cls) -> Live.Song.BeatTime:

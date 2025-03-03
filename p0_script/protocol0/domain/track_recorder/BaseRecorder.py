@@ -1,11 +1,11 @@
 from functools import partial
-from typing import cast
+from typing import cast, List
 
 from protocol0.domain.lom.song.SongStartedEvent import SongStartedEvent
 from protocol0.domain.lom.song.SongStoppedEvent import SongStoppedEvent
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.scheduler.BarChangedEvent import BarChangedEvent
-from protocol0.domain.track_recorder.config.RecordConfig import RecordConfig
+from protocol0.domain.track_recorder.RecordConfig import RecordConfig
 from protocol0.shared.Song import Song
 from protocol0.shared.sequence.Sequence import Sequence
 
@@ -26,7 +26,6 @@ def record_from_config(config: RecordConfig) -> Sequence:
         seq.wait_for_event(BarChangedEvent)
     else:
         seq.wait_for_event(SongStoppedEvent)
-        seq.add(lambda: Song.selected_scene().scene_name.update(""))
 
     return seq.done()
 
@@ -34,8 +33,8 @@ def record_from_config(config: RecordConfig) -> Sequence:
 class BaseRecorder(object):
     """Common recording operations"""
 
-    def __init__(self, track: SimpleTrack, record_config: RecordConfig) -> None:
-        self._track = track
+    def __init__(self, tracks: List[SimpleTrack], record_config: RecordConfig) -> None:
+        self._tracks = tracks
         self.config = record_config
 
     def pre_record(self, clear_clips: bool) -> Sequence:
@@ -56,8 +55,5 @@ class BaseRecorder(object):
         return seq.done()
 
     def cancel_record(self) -> None:
-        Song.set_tempo(self.config.original_tempo)
-        if self.config.record_type.delete_clips:
-            for clip_slot in self.config.clip_slots:
-                clip_slot.delete_clip()
-        self._track._track.stop_all_clips(False)
+        for track in self._tracks:
+            track._track.stop_all_clips(False)

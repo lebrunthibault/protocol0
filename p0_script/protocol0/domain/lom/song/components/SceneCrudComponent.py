@@ -20,8 +20,8 @@ class SceneCrudComponent(object):
         seq = Sequence()
         scenes_count = len(Song.scenes())
         seq.add(partial(self._create_scene, scene_index or scenes_count))
-        seq.wait_for_event(ScenesMappedEvent)
         seq.defer()
+        seq.wait_for_event(ScenesMappedEvent)
         return seq.done()
 
     def duplicate_scene(self, scene: Scene) -> Sequence:

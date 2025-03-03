@@ -48,5 +48,5 @@ class Protocol0(ControlSurface):
 
         for track in Song.all_simple_tracks():
             track.disconnect()
-        for scene in Song.scenes():
-            scene.disconnect()
+        # for scene in Song.scenes():
+        #     scene.disconnect()

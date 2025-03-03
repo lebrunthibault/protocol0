@@ -18,10 +18,7 @@ class ActionGroupMain(ActionGroupInterface):
         self.add_encoder(
             identifier=1,
             name="Resample",
-            on_press=partial(
-                self._container.get(RecordService).resample_selected_track, record_audio=True
-            ),
-            on_long_press=self._container.get(RecordService).resample_selected_track,
+            on_press=self._container.get(RecordService).resample_selected_track,
         )
 
         self.add_encoder(identifier=4, name="test", on_press=self.action_test)
@@ -84,10 +81,7 @@ class ActionGroupMain(ActionGroupInterface):
     def action_test(self) -> None:
         first_armed_track = next(iter(Song.armed_tracks()), None)
         assert first_armed_track, "No track armed"
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev(first_armed_track.clips)
-        self._container.get(RecordService).record_track(first_armed_track, RecordTypeEnum.MIDI)
+        self._container.get(RecordService).record_tracks(Song.armed_tracks(), RecordTypeEnum.MIDI)
         from protocol0.shared.logging.Logger import Logger
 
         Logger.dev("toto")

@@ -5,8 +5,6 @@ from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.utils.timing import defer
 from protocol0.domain.track_recorder.event.RecordEndedEvent import RecordEndedEvent
 from protocol0.domain.track_recorder.event.RecordStartedEvent import RecordStartedEvent
-from protocol0.shared.Song import Song
-from protocol0.shared.sequence.Sequence import Sequence
 
 
 class RecordingComponent(object):
@@ -17,21 +15,9 @@ class RecordingComponent(object):
         DomainEventBus.subscribe(RecordEndedEvent, self._on_record_ended_event)
 
     @defer
-    def _on_record_started_event(self, event: RecordStartedEvent) -> None:
-        recording_scene = Song.scenes()[event.scene_index]
-
-        # if not Song.is_playing():
-        recording_scene.fire()
-
-        seq = Sequence()
-        if event.has_count_in:
-            seq.defer()
-        seq.add(self._start_session_record)
-        seq.done()
-
-    def _start_session_record(self) -> None:
+    def _on_record_started_event(self, _: RecordStartedEvent) -> None:
         self.session_automation_record = True
-        self.session_record = True
+        # self.session_record = True
 
     def _on_record_ended_event(self, _: RecordEndedEvent) -> None:
         self.session_automation_record = False

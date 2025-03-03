@@ -1,29 +1,34 @@
-from typing import Optional
+from typing import Optional, List
 
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.track_recorder.RecordTypeEnum import RecordTypeEnum
-from protocol0.domain.track_recorder.config.RecordConfig import RecordConfig
-from protocol0.domain.track_recorder.config.RecordProcessors import RecordProcessors
-from protocol0.domain.track_recorder.simple.PostRecordSimple import PostRecordSimple
+from protocol0.domain.track_recorder.RecordConfig import RecordConfig
 from protocol0.shared.Song import Song
 
 
-class TrackRecorderSimpleFactory(object):
+class TrackRecorderFactory(object):
     def get_record_config(
-        self, track: SimpleTrack, record_type: RecordTypeEnum, recording_bar_length: int
+        self, tracks: List[SimpleTrack], record_type: RecordTypeEnum, recording_bar_length: int
     ) -> RecordConfig:
         return RecordConfig(
             record_type=record_type,
-            tracks=[track],
-            scene_index=self._get_recording_scene_index(track),
+            tracks=tracks,
+            scene_index=self._get_recording_scene_index(tracks),
             bar_length=self._get_recording_bar_length(record_type, recording_bar_length),
         )
 
-    def _get_recording_scene_index(self, track: SimpleTrack) -> Optional[int]:
-        for i, clip_slot in enumerate(track.clip_slots):
-            if not clip_slot.clip:
+    def _get_recording_scene_index(self, tracks: List[SimpleTrack]) -> Optional[int]:
+        for i in range(Song.scene_count()):
+            # don't use the first slot, reserved for live
+            if i == 0:
+                continue
+            if all(track.clip_slots[i].clip is None for track in tracks):
                 return i
+
+        # overwriting the penultimate clip
+        if Song.scene_count() >= 2:
+            return Song.scene_count() - 2
 
         return None
 
@@ -34,6 +39,3 @@ class TrackRecorderSimpleFactory(object):
             return 1000
         else:
             raise Protocol0Warning("Invalid record type")
-
-    def get_processors(self, record_type: RecordTypeEnum) -> RecordProcessors:
-        return RecordProcessors(post_record=PostRecordSimple())
