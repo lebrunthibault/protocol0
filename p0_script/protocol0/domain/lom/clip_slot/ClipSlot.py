@@ -24,7 +24,7 @@ class ClipSlot(SlotManager):
         self._index = index
         self.appearance = ClipSlotAppearance(live_clip_slot)
 
-        # self._has_clip_listener.subject = self._clip_slot
+        self._has_clip_listener.subject = self._clip_slot
         self.clip: Optional[Clip] = None
         self._map_clip()
 

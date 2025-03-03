@@ -33,12 +33,5 @@ class RecordTypeEnum(Enum):
         return self != RecordTypeEnum.MIDI_OVERWRITE
 
     @property
-    def delete_clips(self) -> bool:
-        return self not in (
-            RecordTypeEnum.MIDI_OVERWRITE,
-            RecordTypeEnum.AUDIO,
-        )
-
-    @property
     def should_quantize(self) -> bool:
         return self == RecordTypeEnum.MIDI

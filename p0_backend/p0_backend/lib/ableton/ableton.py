@@ -60,6 +60,7 @@ def reload_ableton() -> None:
     except (AssertionError, Protocol0Error):
         pass
 
+    logger.success(settings.ableton_process_name)
     kill_window_by_criteria(settings.ableton_process_name, search_type=SearchTypeEnum.PROGRAM_NAME)
     time.sleep(0.2)
     try:

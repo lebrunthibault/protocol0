@@ -20,8 +20,6 @@ class RecordConfig(object):
         self._scene_index = scene_index
         self.bar_length = bar_length
 
-        self.original_tempo = Song.tempo()
-
     @property
     def scene_index(self) -> int:
         assert self._scene_index is not None, "No recording scene index"
@@ -32,12 +30,8 @@ class RecordConfig(object):
         self._scene_index = scene_index
 
     @property
-    def recording_scene(self) -> Scene:
-        return Song.scenes()[self.scene_index]
-
-    @property
     def clip_slots(self) -> List[ClipSlot]:
         return [track.clip_slots[self.scene_index] for track in self.tracks]
 
     def __repr__(self) -> str:
-        return f"RecordConfig(\nrecord_type={self.record_type},\nscene={self.recording_scene},\nbar_length={self.bar_length}\n"
+        return f"RecordConfig(\nrecord_type={self.record_type},\nscene_index={self.scene_index},\nbar_length={self.bar_length}\n"

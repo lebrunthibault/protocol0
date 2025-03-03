@@ -24,7 +24,7 @@ class Settings(BaseSettings):
 
     @property
     def ableton_process_name(self) -> str:
-        return f"Ableton Live {self.ableton_name} Suite.exe"
+        return f"Ableton {self.ableton_name}.exe"
 
     @property
     def splice_executable(self) -> str:

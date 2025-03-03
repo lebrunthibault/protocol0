@@ -4,10 +4,8 @@ from typing import Any, Optional
 import Live
 
 from protocol0.domain.lom.clip.Clip import Clip
-from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.ui.ColorEnum import ColorEnum
-from protocol0.shared.Song import Song
 from protocol0.shared.sequence.Sequence import Sequence
 
 
@@ -48,18 +46,3 @@ class AudioClip(Clip):
         seq.wait_for_backend_event("clip_cropped")
         seq.add(partial(setattr, self, "color", clip_color))
         return seq.done()
-
-    def config_dummy_clip(self) -> None:
-        if not self._clip:
-            return
-
-        self._clip.warping = True
-
-        self.looping = True
-        scene = Song.scenes()[self.index]
-        self.bar_length = scene.bar_length
-
-        self.clip_name.update("")
-
-        ApplicationView.show_clip()
-        self.show_loop()
