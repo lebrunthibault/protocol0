@@ -45,11 +45,12 @@ class PlaybackComponent(SlotManager):
             DomainEventBus.defer_emit(SongStartedEvent())
 
     def _on_record_ended_event(self, _: RecordEndedEvent) -> None:
-        self.metronome = False
-        self.stop_playing()
-        # this is delayed in the case an encoder is touched after the recording is finished by mistake
-        for tick in [1, 10, 50, 100]:
-            Scheduler.wait(tick, self.re_enable_automation)
+        pass
+        # self.metronome = False
+        # self.stop_playing()
+        # # this is delayed in the case an encoder is touched after the recording is finished by mistake
+        # for tick in [1, 10, 50, 100]:
+        #     Scheduler.wait(tick, self.re_enable_automation)
 
     def _on_record_cancelled_event(self, _: RecordCancelledEvent) -> None:
         self.metronome = False
