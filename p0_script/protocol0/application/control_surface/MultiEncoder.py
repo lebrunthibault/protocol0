@@ -16,17 +16,23 @@ class MultiEncoder(SlotManager):
     LONG_PRESS_THRESHOLD = 0.25  # maximum time in seconds we consider a simple press
 
     def __init__(
-        self, channel: int, identifier: int, name: str, component_guard: Callable, use_cc: bool
+        self,
+        channel: int,
+        identifier: int,
+        name: str,
+        component_guard: Callable,
+        use_cc: bool,
+        use_note_off: bool,
     ) -> None:
         """
-        Actions are triggered at the end of the press not the start. Allows press vs long_press (Note) vs scroll (CC)
-        NB : for press actions the action is triggered on button release (allowing long_press)
+        Actions are triggered at the start of the press except when a long_press is declared.
         """
         super(MultiEncoder, self).__init__()
         self._actions: List[EncoderAction] = []
         self.identifier = identifier
         self.name = name.title()
         self._channel = channel
+        self._use_note_off = use_note_off
 
         with component_guard():
             if use_cc:
@@ -63,18 +69,21 @@ class MultiEncoder(SlotManager):
 
     @subject_slot("value")
     def _press_listener(self, value: int) -> None:
-        if value:
+        """On long press, or using use_note_off, act on release, else act on press"""
+        if value:  # press (Note on)
             if self._has_long_press:
                 self._pressed_at = time.time()
-            else:
+            elif not self._use_note_off:
                 self._find_and_execute_action(move_type=EncoderMoveEnum.PRESS)
-        else:
+        else:  # release (Note off)
             if self._has_long_press:
                 # action executed on press and not release when only press defined
                 move_type = (
                     EncoderMoveEnum.LONG_PRESS if self._is_long_pressed else EncoderMoveEnum.PRESS
                 )
                 self._find_and_execute_action(move_type=move_type)
+            elif self._use_note_off:
+                self._find_and_execute_action(move_type=EncoderMoveEnum.PRESS)
 
     @subject_slot("value")
     def _scroll_listener(self, value: int) -> None:

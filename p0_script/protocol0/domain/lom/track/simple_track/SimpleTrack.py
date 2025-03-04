@@ -71,6 +71,9 @@ class SimpleTrack(SlotManager):
 
         self.devices.build()
 
+    def __repr__(self) -> str:
+        return f"SimpleTrack({self.name})"
+
     device_insert_mode = cast(int, ForwardTo("_view", "device_insert_mode"))
 
     # def update(self, observable: Observable) -> None:
