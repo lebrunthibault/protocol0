@@ -107,3 +107,4 @@ _.launch  # unused method (protocol0\domain\track_recorder\count_in\CountInInter
 _.launch  # unused method (protocol0\domain\track_recorder\count_in\CountInShort.py:8)
 _.get_count_in  # unused method (protocol0\domain\track_recorder\RecordTypeEnum.py:18)
 _.launch  # unused method (protocol0\domain\track_recorder\count_in\CountInOneBar.py:12)
+ActionGroupMC6Pro  # unused class (protocol0\application\control_surface\group\ActionGroupMC6Pro.py:13)

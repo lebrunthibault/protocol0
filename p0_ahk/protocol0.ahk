@@ -22,7 +22,7 @@ return
 ;return
 
 ; ableton hotkeys
-#IfWinActive, ahk_exe Ableton Live 12 Beta.exe
+#IfWinActive, ahk_exe Ableton Live 12 Suite.exe
 ^+z::
     Send ^y  ; redo
 return

@@ -46,6 +46,7 @@ class ActionGroupInterface(object):
         on_long_press: Optional[Callable] = None,
         on_scroll: Optional[Callable] = None,
         use_cc: bool = False,
+        use_note_off: bool = False,
     ) -> MultiEncoder:
         assert self.CHANNEL, "channel not configured for %s" % self
         encoder = MultiEncoder(
@@ -54,6 +55,7 @@ class ActionGroupInterface(object):
             name=name,
             component_guard=self._component_guard,
             use_cc=use_cc,
+            use_note_off=use_note_off,
         )
         for action in EncoderAction.make_actions(
             name=name, on_press=on_press, on_long_press=on_long_press, on_scroll=on_scroll

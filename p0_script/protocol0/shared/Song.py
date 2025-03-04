@@ -120,6 +120,14 @@ class Song(object):
         return track
 
     @classmethod
+    def selected_active_track(cls, track_cls: Optional[Type[T]] = None) -> Union[T, "SimpleTrack"]:
+        selected_track = cls.selected_track(track_cls)
+        if not selected_track.IS_ACTIVE:
+            raise Protocol0Warning(f"{selected_track} is not an active track")
+
+        return selected_track
+
+    @classmethod
     def selected_or_soloed_track(cls) -> Union[T, "SimpleTrack"]:
         soloed_tracks = [t for t in Song.simple_tracks() if t.solo]
         track = Song.selected_track()

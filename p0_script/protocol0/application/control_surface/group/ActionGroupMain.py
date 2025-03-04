@@ -79,9 +79,4 @@ class ActionGroupMain(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        first_armed_track = next(iter(Song.armed_tracks()), None)
-        assert first_armed_track, "No track armed"
-        self._container.get(RecordService).record_tracks(Song.armed_tracks(), RecordTypeEnum.MIDI)
-        from protocol0.shared.logging.Logger import Logger
-
-        Logger.dev("toto")
+        pass
