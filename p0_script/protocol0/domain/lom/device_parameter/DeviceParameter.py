@@ -6,7 +6,7 @@ from _Framework.SubjectSlot import SlotManager
 from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
 from protocol0.domain.shared.ValueScroller import ValueScroller
 from protocol0.domain.shared.utils.timing import accelerate, slow_down
-from protocol0.domain.shared.utils.utils import clamp, scale
+from protocol0.domain.shared.utils.utils import clamp
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.observer.Observable import Observable
 
@@ -120,8 +120,8 @@ class DeviceParameter(SlotManager, Observable):
         # noinspection PyPropertyAccess
         param.value = value
 
-    def set_value(self, value: float, x_min: float, x_max: float) -> None:
-        self.value = scale(value, x_min, x_max, self.min, self.max)
+    # def set_value(self, value: float, x_min: float, x_max: float) -> None:
+    #     self.value = scale(value, x_min, x_max, self.min, self.max)
 
     @slow_down(factor=3)
     def scroll_slowed(self, go_next: bool, value_items: List = None) -> None:

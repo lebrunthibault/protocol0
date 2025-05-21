@@ -333,10 +333,6 @@ class Song(object):
         return cls._live_song().loop_length
 
     @classmethod
-    def set_loop_length(cls, loop_length: float) -> None:
-        cls._live_song().loop_length = loop_length
-
-    @classmethod
     def is_playing(cls) -> bool:
         return cls._INSTANCE._playback_component.is_playing
 

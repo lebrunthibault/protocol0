@@ -50,6 +50,9 @@ class ControlledTracks:
     def soloed(self) -> bool:
         return any(t.solo for t in self._tracks)
 
+    def get(self) -> SimpleTrack:
+        return self._main_track
+
     def toggle(self) -> None:
         for track in self._tracks:
             track.toggle()

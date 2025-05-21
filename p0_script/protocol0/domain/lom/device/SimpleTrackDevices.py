@@ -89,43 +89,27 @@ class SimpleTrackDevices(SlotManager):
     def has_instrument(self) -> bool:
         return any(d.is_instrument for d in self)
 
-    @property
-    def first(self) -> Optional[Device]:
-        return self._devices[0] if self._devices else None
-
-    @property
-    def last(self) -> Optional[Device]:
-        return self._devices[-1] if self._devices else None
-
-    @property
-    def prev(self) -> Optional[Device]:
-        return self._get_sibling(False)
-
-    @property
-    def next(self) -> Optional[Device]:
-        return self._get_sibling(True)
-
-    def _get_sibling(self, go_next: bool) -> Optional[Device]:
-        if not self._devices:
-            return None
-
-        if not self.selected:
-            return self._devices[0]
-
-        # do not loop over list
-        if (
-            go_next
-            and self.selected == self._devices[-1]
-            or not go_next
-            and self.selected == self._devices[0]
-        ):
-            return self.selected
-
-        selected_index = self._devices.index(self.selected)
-        try:
-            return self._devices[selected_index + (1 if go_next else -1)]
-        except IndexError:
-            return self._devices[0]
+    # def _get_sibling(self, go_next: bool) -> Optional[Device]:
+    #     if not self._devices:
+    #         return None
+    #
+    #     if not self.selected:
+    #         return self._devices[0]
+    #
+    #     # do not loop over list
+    #     if (
+    #         go_next
+    #         and self.selected == self._devices[-1]
+    #         or not go_next
+    #         and self.selected == self._devices[0]
+    #     ):
+    #         return self.selected
+    #
+    #     selected_index = self._devices.index(self.selected)
+    #     try:
+    #         return self._devices[selected_index + (1 if go_next else -1)]
+    #     except IndexError:
+    #         return self._devices[0]
 
     def get_one_from_enum(
         self, device_enum: DeviceEnum, all_devices: bool = False, enabled: bool = False
