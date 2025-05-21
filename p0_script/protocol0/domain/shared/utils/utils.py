@@ -102,24 +102,8 @@ def previous_power_of_2(x: int) -> int:
         return int(res / 2)
 
 
-def scale(x: float, x_min: float, x_max: float, y_min: float, y_max: float) -> float:
-    return (((x - x_min) / (x_max - x_min)) * (y_max - y_min)) + y_min
-
-
-def map_to_range(
-    value: int, input_min: int, input_max: int, output_min: int, output_max: int
-) -> int:
-    # Calculate the interval size for each segment
-    interval_size = (input_max - input_min + 1) // (output_max - output_min + 1)
-
-    # Map the input value to the target range
-    mapped_value = (value - input_min) // interval_size
-
-    # Ensure the mapped value is within the target range
-    if mapped_value > output_max:
-        mapped_value = output_max
-
-    return mapped_value
+# def scale(x: float, x_min: float, x_max: float, y_min: float, y_max: float) -> float:
+#     return (((x - x_min) / (x_max - x_min)) * (y_max - y_min)) + y_min
 
 
 def timeit(func: Callable) -> Callable:

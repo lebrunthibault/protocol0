@@ -108,3 +108,5 @@ _.launch  # unused method (protocol0\domain\track_recorder\count_in\CountInShort
 _.get_count_in  # unused method (protocol0\domain\track_recorder\RecordTypeEnum.py:18)
 _.launch  # unused method (protocol0\domain\track_recorder\count_in\CountInOneBar.py:12)
 ActionGroupMC6Pro  # unused class (protocol0\application\control_surface\group\ActionGroupMC6Pro.py:13)
+_.un_solo_all_tracks  # unused method (protocol0\domain\lom\song\components\TrackComponent.py:17)
+_.is_clip_view_visible  # unused method (protocol0\domain\shared\ApplicationView.py:73)
