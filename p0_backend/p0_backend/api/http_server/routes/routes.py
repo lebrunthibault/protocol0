@@ -17,7 +17,6 @@ from p0_backend.settings import Settings
 from protocol0.application.command.LogSelectedCommand import LogSelectedCommand
 from protocol0.application.command.LogSongStatsCommand import LogSongStatsCommand
 from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongCommand
-from protocol0.application.command.ReloadScriptCommand import ReloadScriptCommand
 from .action_routes import router as action_router
 from .audio_routes import router as audio_router
 from .clip_routes import router as clip_router
@@ -92,11 +91,6 @@ def show_warning(message: str):
 @router.get("/show_error")
 async def show_error(message: str):
     await toast_async(message)
-
-
-@router.get("/reload_script")
-async def _reload_script():
-    p0_script_client().dispatch(ReloadScriptCommand())
 
 
 @router.get("/tail_logs")

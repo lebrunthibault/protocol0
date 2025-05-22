@@ -1,10 +1,9 @@
 from protocol0.domain.lom.SessionRing import get_session_ring_scene_offset
-from protocol0.domain.lom.track.ControlledTracks import ControlledTracksRegistry
-from protocol0.domain.lom.track.ControlledTracksEnum import ControlledTracksEnum
+from protocol0.domain.lom.set.LiveSet import LiveTrack
 
 
 def launch_kick() -> None:
-    track = ControlledTracksRegistry[ControlledTracksEnum.KICK].get()
+    track = LiveTrack.KICK.get()
     cs_index = get_session_ring_scene_offset() % 8
     from protocol0.shared.logging.Logger import Logger
 
@@ -13,7 +12,7 @@ def launch_kick() -> None:
 
 
 def launch_fx() -> None:
-    track = ControlledTracksRegistry[ControlledTracksEnum.FX].get()
+    track = LiveTrack.FX.get()
     cs_index = get_session_ring_scene_offset() % 8
     from protocol0.shared.logging.Logger import Logger
 

@@ -1,11 +1,10 @@
 from collections import namedtuple
+from typing import List
 
 import Live
 from _Framework.SubjectSlot import Subject
-from typing import cast, List, Any
 
 from protocol0.domain.lom.track.routing.OutputRoutingTypeEnum import OutputRoutingTypeEnum
-from protocol0.shared.Song import Song
 from protocol0.tests.domain.fixtures.clip_slot import AbletonClipSlot
 from protocol0.tests.domain.fixtures.device import AbletonDevice
 from protocol0.tests.domain.fixtures.device_parameter import AbletonDeviceParameter
@@ -74,9 +73,3 @@ class AbletonTrack(Subject):
 
     def __repr__(self) -> str:
         return "%s - %s" % (self.track_type, self.name)
-
-
-def add_track(track_type: str) -> AbletonTrack:
-    live_track = AbletonTrack(track_type=track_type)
-    Song._live_song().tracks.append(cast(Live.Track.Track, live_track))
-    return live_track
