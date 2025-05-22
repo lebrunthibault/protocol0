@@ -381,3 +381,9 @@ class Song(object):
     @classmethod
     def jump_to_prev_cue(cls) -> None:
         cls._live_song().jump_to_prev_cue()
+
+    @classmethod
+    def is_live_set(cls) -> bool:
+        return (
+            "Live Set.als" in cls._live_song().file_path or "test.als" in cls._live_song().file_path
+        )

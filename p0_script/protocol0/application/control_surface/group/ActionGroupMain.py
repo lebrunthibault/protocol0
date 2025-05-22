@@ -1,5 +1,6 @@
 from functools import partial
 
+import Live
 from _Framework.ControlSurface import ControlSurface, get_control_surfaces
 from _Framework.Util import find_if
 
@@ -83,4 +84,11 @@ class ActionGroupMain(ActionGroupInterface):
         )
 
     def action_test(self) -> None:
-        launch_drop()
+        # Logger.dev(Live.Application.Application.get_document())
+        from protocol0.shared.logging.Logger import Logger
+
+        live_set = Live.Application.get_application().get_document()
+        Logger.dev(live_set)
+        Logger.dev(live_set.file_path)
+        Logger.dev(dir(live_set))
+        # launch_drop()

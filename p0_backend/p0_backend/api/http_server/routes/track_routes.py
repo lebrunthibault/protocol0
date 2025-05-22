@@ -8,9 +8,6 @@ from p0_backend.lib.ableton.ableton import (
 from p0_backend.lib.keys import send_keys
 from protocol0.application.command.BusTrackToZeroDBCommand import BusTrackToZeroDBCommand
 from protocol0.application.command.CollapseSelectedTrackCommand import CollapseSelectedTrackCommand
-from protocol0.application.command.SelectTrackByEnumCommand import SelectTrackByEnumCommand
-from protocol0.application.command.MuteTrackCommand import MuteTrackCommand
-from protocol0.application.command.SoloTrackCommand import SoloTrackCommand
 
 router = APIRouter()
 
@@ -22,21 +19,6 @@ async def un_group():
     send_keys("+{TAB}")
     send_keys("^+g")
     show_plugins()
-
-
-@router.get("/mute")
-async def mute(name: str):
-    p0_script_client().dispatch(MuteTrackCommand(name))
-
-
-@router.get("/solo")
-async def solo(name: str):
-    p0_script_client().dispatch(SoloTrackCommand(name))
-
-
-@router.get("/select")
-async def select(name: str):
-    p0_script_client().dispatch(SelectTrackByEnumCommand(name.upper()))
 
 
 @router.get("/collapse_selected")
