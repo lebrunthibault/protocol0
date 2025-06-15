@@ -19,7 +19,7 @@ class LiveTrack(enum.Enum):
     # VOCALS = "VOCALS"
     BASS = "BASS"
     SYNTH = "SYNTH"
-    # PIANO = "PIANO"
+    PIANO = "PIANO"
 
     def get(self) -> SimpleTrack:
         return find_track(self.value.title(), exact=False)
@@ -35,17 +35,25 @@ class LiveSet(SlotManager):
         self._bass_track_pitch = self._bass_track.devices.get_one_from_enum(DeviceEnum.PITCH)
         self._synth_track = LiveTrack.SYNTH.get()
         self._synth_track_pitch = self._synth_track.devices.get_one_from_enum(DeviceEnum.PITCH)
+        self._piano_track = LiveTrack.PIANO.get()
 
         self._bass_and_synth_tracks_arm_listener.replace_subjects(
-            [self._bass_track._track, self._synth_track._track]
+            [self._bass_track._track, self._synth_track._track, self._piano_track._track]
         )
 
     @subject_slot_group("arm")
     def _bass_and_synth_tracks_arm_listener(self, _: Live.Track.Track) -> None:
-        activate_pitch = False
+        activate_bass_pitch = False
+        activate_synth_pitch = False
 
-        if self._bass_track.arm_state.is_armed and self._synth_track.arm_state.is_armed:
-            activate_pitch = True
+        if self._bass_track.arm_state.is_armed:
+            if self._synth_track.arm_state.is_armed:
+                activate_bass_pitch = True
+                activate_synth_pitch = True
+            elif self._piano_track.arm_state.is_armed:
+                activate_bass_pitch = True
 
-        Scheduler.defer(partial(setattr, self._bass_track_pitch, "is_enabled", activate_pitch))
-        Scheduler.defer(partial(setattr, self._synth_track_pitch, "is_enabled", activate_pitch))
+        Scheduler.defer(partial(setattr, self._bass_track_pitch, "is_enabled", activate_bass_pitch))
+        Scheduler.defer(
+            partial(setattr, self._synth_track_pitch, "is_enabled", activate_synth_pitch)
+        )

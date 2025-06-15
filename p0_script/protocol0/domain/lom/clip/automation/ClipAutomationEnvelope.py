@@ -9,7 +9,7 @@ from protocol0.domain.shared.utils.utils import float_seq
 class ClipAutomationEnvelope(object):
     _FOOTPRINT_MEASURES = 100
 
-    def __init__(self, envelope: Live.Clip.AutomationEnvelope, length: float) -> None:
+    def __init__(self, envelope, length: float) -> None:  # type: ignore[no-untyped-def]
         self._envelope = envelope
         self._length = length
 

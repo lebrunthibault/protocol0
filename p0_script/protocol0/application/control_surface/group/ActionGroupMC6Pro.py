@@ -12,7 +12,7 @@ from protocol0.shared.Song import Song
 
 
 class ActionGroupMC6Pro(ActionGroupInterface, SlotManager):
-    CHANNEL = 2
+    CHANNEL = 12
 
     def configure(self) -> None:
         self.add_encoder(
