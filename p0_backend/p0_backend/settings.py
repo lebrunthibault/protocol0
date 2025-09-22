@@ -40,7 +40,7 @@ class Settings(BaseSettings):
 
     @property
     def ableton_test_set_path(self) -> str:
-        return f"{self.ableton_set_directory}\\test.als"
+        return f"{self.ableton_set_directory}\\other\\test.als"
 
     @property
     def icons_directory(self) -> str:
