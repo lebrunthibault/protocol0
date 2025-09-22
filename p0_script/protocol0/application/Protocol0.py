@@ -2,6 +2,7 @@ from typing import Any
 
 from _Framework.ControlSurface import ControlSurface
 
+from protocol0.domain.lom.scene.SceneService import SceneService
 from protocol0.application.Container import Container
 from protocol0.application.ScriptDisconnectedEvent import ScriptDisconnectedEvent
 from protocol0.application.ScriptResetActivatedEvent import ScriptResetActivatedEvent
@@ -34,6 +35,7 @@ class Protocol0(ControlSurface):
 
         DomainEventBus.subscribe(ScriptResetActivatedEvent, lambda _: self._initialize(reset=True))
         container.get(TrackMapperService).tracks_listener()
+        container.get(SceneService).scenes_listener()
 
         if Song.is_live_set():
             LiveSet()
@@ -51,5 +53,5 @@ class Protocol0(ControlSurface):
 
         for track in Song.all_simple_tracks():
             track.disconnect()
-        # for scene in Song.scenes():
-        #     scene.disconnect()
+        for scene in Song.scenes():
+            scene.disconnect()

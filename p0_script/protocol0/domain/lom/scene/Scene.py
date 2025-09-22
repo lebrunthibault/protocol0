@@ -80,6 +80,27 @@ class Scene(SlotManager):
     length = cast(float, ForwardTo("_scene_length", "length"))
     bar_length = cast(int, ForwardTo("_scene_length", "bar_length"))
 
+    # @subject_slot("is_triggered")
+    # def is_triggered_listener(self) -> None:
+    #     """
+    #     This is called on scene trigger:
+    #     - on click
+    #     - and when the song stars playing
+    #
+    #     We activate this only in the first case by checking PlayingScene
+    #     This doesn't execute (duplicated) when the scene was fired from a command
+    #
+    #     It is there to handle manual launches (direct click on scene)
+    #     It could almost be removed as this case happens very rarely
+    #     (I fire scenes almost always from keyboard shortcuts / commands)
+    #     """
+    #     if Song.is_playing() is False or not self.playing_state.is_playing:
+    #         return
+    #     if Song.playing_scene() == self:
+    #         return
+    #
+    #     DomainEventBus.emit(SceneFiredEvent(self.index))
+
     @property
     def skipped(self) -> bool:
         return self.lower_name.startswith("skip")
@@ -90,6 +111,22 @@ class Scene(SlotManager):
 
         if self._scene:
             self._scene.fire()
+
+    # def stop(self, next_scene: Optional["Scene"] = None, immediate: bool = False) -> None:
+    #     """Used to manually stopping previous scene
+    #     because we don't display clip slot stop buttons
+    #     """
+    #     next_scene_index = next_scene.index if next_scene is not None else None
+    #
+    #     for track in Song.simple_tracks():
+    #         track.stop(
+    #             scene_index=self.index, immediate=immediate, next_scene_index=next_scene_index
+    #         )
+    #
+    #     seq = Sequence()
+    #     seq.wait_for_event(BarChangedEvent, continue_on_song_stop=True)
+    #     seq.add(self.scene_name.update)
+    #     seq.done()
 
     def disconnect(self) -> None:
         super(Scene, self).disconnect()

@@ -28,6 +28,7 @@ from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.forward_to import ForwardTo
+from protocol0.domain.shared.utils.list import find_if
 from protocol0.domain.shared.utils.utils import volume_to_db, db_to_volume
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
@@ -116,6 +117,10 @@ class SimpleTrack(SlotManager):
             for clip_slot in self.clip_slots
             if clip_slot.has_clip and clip_slot.clip is not None
         ]
+
+    @property
+    def playing_clip(self) -> Optional[Clip]:
+        return find_if(lambda c: c.is_playing, self.clips)
 
     @property
     def arrangement_clips(self) -> Iterable[Clip]:

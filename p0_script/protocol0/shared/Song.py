@@ -7,6 +7,7 @@ from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.utils.list import find_if
+from protocol0.shared.logging.StatusBar import StatusBar
 from protocol0.shared.types import T
 
 if TYPE_CHECKING:
@@ -287,7 +288,7 @@ class Song(object):
         if clip is None and raise_if_none:
             raise Protocol0Warning("no selected clip")
 
-        if clip is not None and not isinstance(clip, clip_cls):  # type: ignore[arg-type]
+        if clip_cls and clip is not None and not isinstance(clip, clip_cls):
             raise Protocol0Warning("clip is not a %s" % clip_cls.__name__)
 
         return clip
@@ -363,8 +364,6 @@ class Song(object):
 
     @classmethod
     def set_or_delete_cue(cls, time: float) -> Optional["Sequence"]:
-        from protocol0.shared.sequence.Sequence import Sequence
-
         cue_points = cls._live_song().cue_points
 
         if find_if(lambda c: c.time == time, cue_points):
@@ -381,6 +380,26 @@ class Song(object):
     @classmethod
     def jump_to_prev_cue(cls) -> None:
         cls._live_song().jump_to_prev_cue()
+
+    @classmethod
+    def can_capture_midi(cls) -> bool:
+        return cls._live_song().can_capture_midi
+
+    @classmethod
+    def capture_midi(cls) -> Optional["Sequence"]:
+        from protocol0.shared.sequence.Sequence import Sequence
+        from protocol0.domain.lom.clip.ClipCreatedOrDeletedEvent import ClipCreatedOrDeletedEvent
+
+        if not cls._live_song().can_capture_midi:
+            StatusBar.show_message("No midi to capture")
+
+            return None
+
+        seq = Sequence()
+        seq.add(cls._live_song().capture_midi)
+        seq.wait_for_event(ClipCreatedOrDeletedEvent)
+        seq.wait_ms(1000)
+        return seq.done()
 
     @classmethod
     def is_live_set(cls) -> bool:
