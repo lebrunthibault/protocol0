@@ -45,6 +45,11 @@ class MidiService(object):
         DomainEventBus.emit(MidiBytesSentEvent(midi_message))
 
     def _on_midi_bytes_received_event(self, event: MidiBytesReceivedEvent) -> None:
+        # Check if this is an EC4 SysEx message
+        if len(event.midi_bytes) > 4 and event.midi_bytes[:4] == (0xF0, 0x00, 0x00, 0x00):
+            return
+
+        # Try to parse as serialized command
         message = self._sysex_to_string(sysex=event.midi_bytes)
         if self._DEBUG:
             Logger.info("message: %s" % message)
@@ -54,6 +59,33 @@ class MidiService(object):
         except Exception as e:
             Logger.info(f"Midi bytes received error : {e}")
             Logger.info(event.midi_bytes)
+
+    def send_ec4_select_group(self, group_number: int) -> None:
+        """Send SysEx command to EC4 to select group (1-16)"""
+        if not (1 <= group_number <= 16):
+            raise ValueError("Group number must be between 1 and 16")
+
+        # Convert to 0-based index for SysEx
+        group_index = group_number - 1
+
+        # EC4 select group SysEx
+        sysex_message = (
+            0xF0,
+            0x00,
+            0x00,
+            0x00,
+            0x4E,
+            0x2C,
+            0x1B,
+            0x4E,
+            0x24,
+            0x10 | group_index,
+            0xF7,
+        )
+
+        Logger.info(f"MidiService sending EC4 group select: group {group_number})")
+        self._send_midi(sysex_message)
+        DomainEventBus.emit(MidiBytesSentEvent(sysex_message))
 
     def _on_note_sent_event(self, event: NoteSentEvent) -> None:
         self._send_formatted_midi_message(

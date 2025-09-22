@@ -27,8 +27,7 @@ class SceneService(SlotManager):
         self._live_song = live_song
         self._scene_crud_component = scene_crud_component
 
-        # unused for now: disabled for performance
-        # self.scenes_listener.subject = live_song
+        self.scenes_listener.subject = live_song
         self._live_scene_id_to_scene: Dict[int, Scene] = collections.OrderedDict()
 
     def get_scene(self, live_scene: Live.Scene.Scene) -> Scene:
@@ -63,6 +62,9 @@ class SceneService(SlotManager):
     @subject_slot("scenes")
     @handle_errors()
     def scenes_listener(self) -> None:
+        import logging
+
+        logging.getLogger(__name__).info("REGNERATING SCENES")
         self._generate_scenes()
         DomainEventBus.defer_emit(ScenesMappedEvent())
 

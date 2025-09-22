@@ -5,7 +5,6 @@ from _Framework.ControlSurface import ControlSurface, get_control_surfaces
 from _Framework.Util import find_if
 
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
-from protocol0.domain.live_set.live_set import launch_drop
 
 # noinspection SpellCheckingInspection
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
@@ -13,6 +12,7 @@ from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import Mas
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.domain.track_recorder.RecordService import RecordService
+from protocol0.infra.midi.MidiService import MidiService
 from protocol0.shared.Song import Song
 
 
@@ -20,29 +20,38 @@ class ActionGroupMain(ActionGroupInterface):
     CHANNEL = 4
 
     def configure(self) -> None:
-        self.add_encoder(
-            identifier=1,
-            name="Resample",
-            on_press=self._container.get(RecordService).resample_selected_track,
-        )
+        def change_clip_loop(bar_length: int) -> None:
+            for clip in Song.selected_scene().clips.all:
+                clip.loop.bar_length = bar_length
 
         self.add_encoder(identifier=4, name="test", on_press=self.action_test)
+        self.add_encoder(identifier=5, name="clip loop 1", on_press=partial(change_clip_loop, 1))
+        self.add_encoder(identifier=6, name="clip loop 2", on_press=partial(change_clip_loop, 2))
+        self.add_encoder(identifier=7, name="clip loop 4", on_press=partial(change_clip_loop, 4))
+        self.add_encoder(identifier=8, name="clip loop 8", on_press=partial(change_clip_loop, 8))
 
-        def activate_adptr_filter(filter_type: str) -> None:
-            Song.master_track().activate_adptr_filter(filter_type)
+        # self.add_encoder(
+        #     identifier=1,
+        #     name="Resample",
+        #     on_press=self._container.get(RecordService).resample_selected_track,
+        # )
 
-        self.add_encoder(
-            identifier=9, name="ref bass", on_press=partial(activate_adptr_filter, "bass")
-        )
-        self.add_encoder(
-            identifier=10, name="ref low_mid", on_press=partial(activate_adptr_filter, "low_mid")
-        )
-        self.add_encoder(
-            identifier=11, name="ref mid", on_press=partial(activate_adptr_filter, "mid")
-        )
-        self.add_encoder(
-            identifier=12, name="ref high", on_press=partial(activate_adptr_filter, "high")
-        )
+        #
+        # def activate_adptr_filter(filter_type: str) -> None:
+        #     Song.master_track().activate_adptr_filter(filter_type)
+        #
+        # self.add_encoder(
+        #     identifier=9, name="ref bass", on_press=partial(activate_adptr_filter, "bass")
+        # )
+        # self.add_encoder(
+        #     identifier=10, name="ref low_mid", on_press=partial(activate_adptr_filter, "low_mid")
+        # )
+        # self.add_encoder(
+        #     identifier=11, name="ref mid", on_press=partial(activate_adptr_filter, "mid")
+        # )
+        # self.add_encoder(
+        #     identifier=12, name="ref high", on_press=partial(activate_adptr_filter, "high")
+        # )
 
         def toggle_splice_track() -> None:
             if Song.splice_track():
@@ -57,38 +66,32 @@ class ActionGroupMain(ActionGroupInterface):
             if Song.splice_track():
                 Song.splice_track().devices.mixer_device.volume.scroll(go_next)
 
-        self.add_encoder(
-            identifier=13,
-            name="Splice Bridge",
-            on_press=toggle_splice_track,
-            on_long_press=create_splice_track,
-            on_scroll=scroll_splice_track_volume,
-        )
+        # self.add_encoder(
+        #     identifier=13,
+        #     name="Splice Bridge",
+        #     on_press=toggle_splice_track,
+        #     on_long_press=create_splice_track,
+        #     on_scroll=scroll_splice_track_volume,
+        # )
 
         def scroll_selected_track_volume(go_next: bool) -> None:
             assert not isinstance(Song.selected_track(), MasterTrack), "Cannot scroll master volume"
             Song.selected_track().scroll_volume(go_next)
 
-        self.add_encoder(
-            identifier=15,
-            name="track volume",
-            on_scroll=scroll_selected_track_volume,
-        )
+        # self.add_encoder(
+        #     identifier=15,
+        #     name="track volume",
+        #     on_scroll=scroll_selected_track_volume,
+        # )
 
         def scroll_selected_parameter(go_next: bool) -> None:
             assert Song.selected_parameter(), "No selected parameter"
             Song.selected_parameter().scroll(go_next)
 
-        self.add_encoder(
-            identifier=16, name="scroll_selected_parameter", on_scroll=scroll_selected_parameter
-        )
+        #
+        # self.add_encoder(
+        #     identifier=16, name="scroll_selected_parameter", on_scroll=scroll_selected_parameter
+        # )
 
     def action_test(self) -> None:
-        # Logger.dev(Live.Application.Application.get_document())
-        from protocol0.shared.logging.Logger import Logger
-
-        live_set = Live.Application.get_application().get_document()
-        Logger.dev(live_set)
-        Logger.dev(live_set.file_path)
-        Logger.dev(dir(live_set))
-        # launch_drop()
+        self._container.get(MidiService).send_ec4_select_group(9)
