@@ -104,16 +104,24 @@ class LiveSet(SlotManager):
         # Sort notes by start time for legato processing
         bass_notes.sort(key=lambda n: n.start)
 
-        # Make notes legato (connect them with no gaps) and pitch down one octave
-        for i, note in enumerate(bass_notes):
-            # Pitch down one octave (subtract 12 semitones)
-            # note.pitch = max(0, note.pitch - 12)
+        # Make notes legato (connect them with no gaps) and clamp to C1-C2 range
+            for i, note in enumerate(bass_notes):
+            # Map pitch to C1-C2 range (36-48) preserving note name
+            # Get note within octave (0-11), then map to C1-C2 range
+            note_in_octave = note.pitch % 12
+            note.pitch = 36 + note_in_octave  # C1 is 36, so add the note offset
 
             # Make legato: extend duration to next note's start time
             if i < len(bass_notes) - 1:
                 next_note_start = bass_notes[i + 1].start
                 if next_note_start > note.start:
                     note.duration = next_note_start - note.start
+            else:
+                # Last note: extend to end of clip
+                import logging
+
+                logging.getLogger(__name__).info(note)
+                note.end = clip_slot.clip.end_marker
 
         logging.getLogger(__name__).info(bass_notes)
 
