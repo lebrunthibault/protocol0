@@ -1,0 +1,81 @@
+[build-system]
+requires = ["poetry-core>=1.6.1"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "protocol0"
+version = "1.0.15"
+description = "Protocol0 ableton remote script"
+readme = "README.md"
+authors = ["Thibault Lebrun <thibaultlebrun@live.fr>"]
+license = "MIT"
+repository = "https://github.com/lebrunthibault/protocol0"
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Development Status :: 4 - Beta"
+]
+keywords = ["remote script", "ableton"]
+
+
+[tool.poetry.dependencies]
+python = ">=3.7.3"
+qualname = "^0.1.0"
+loguru = "^0.7.0"
+typing-extensions = "^4.6.3"
+dacite = "^1.8.1"
+
+[tool.poetry.dev-dependencies]
+flake8 = "*"
+vulture = "*"
+pytest = "*"
+build = "^0.10.0"
+
+[tool.poetry.group.dev.dependencies]
+
+[tool.black]
+line-length = 100
+
+[tool.mypy]
+python_version = "3.7"
+exclude = [
+    'tests',
+    'vulture_whitelist.py',
+    'protocol0/domain/shared/backend/p0_backend_client'
+]
+pretty = false
+ignore_missing_imports = true
+follow_imports = 'skip'
+# cannot remove misc because of _Framework. union-attr possibly
+disable_error_code = ['misc','union-attr', 'has-type', 'assignment']
+show_error_codes = true
+warn_unreachable = true
+strict_equality = true
+disallow_any_explicit = false
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+warn_redundant_casts=true
+warn_unused_ignores=true
+
+[tool.vulture]
+make_whitelist = true
+min_confidence = 60
+sort_by_size = true
+verbose = false
+exclude = [
+    'venv/',
+    'build/',
+    'command/',
+    'command_handler/',
+    'RecordingBarLengthEnum.py',
+    'protocol0/domain/shared/backend/p0_backend_client',
+]
+ignore_names = [
+    "subject",
+]
+
+

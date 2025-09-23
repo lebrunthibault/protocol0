@@ -1,0 +1,46 @@
+{
+  "name": "@p0/p0_stream_deck",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Stream Deck Plugin for [Ableton Protocol0 Surface Script](https://github.com/lebrunthibault/Protocol-0-Surface-Script)",
+  "main": "test.js",
+  "type": "module",
+  "dependencies": {
+    "lodash-es": "^4.17.21",
+    "reflect-metadata": "^0.1.13",
+    "tsyringe": "^4.6.0",
+    "zod": "^3.14.3"
+  },
+  "devDependencies": {
+    "@jest/reporters": "^27.5.1",
+    "@types/jest": "^27.4.1",
+    "@types/lodash-es": "^4.17.6",
+    "@typescript-eslint/eslint-plugin": "^5.18.0",
+    "@typescript-eslint/parser": "^5.18.0",
+    "chalk": "^5.0.1",
+    "eslint": "^7.32.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.2.0",
+    "jest": "^27.5.1",
+    "ts-jest": "^27.1.4",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.3",
+    "vite": "^2.9.1"
+  },
+  "scripts": {
+    "watch": "vite build --watch",
+    "lint": "eslint .\\com.thibault.p0.sdPlugin\\ --ext .ts",
+    "lint-fix": "eslint .\\com.thibault.p0.sdPlugin\\ --ext .ts --fix",
+    "test": "jest"
+  },
+  "repository": "git+https://github.com/lebrunthibault/p0_stream_deck_plugin.git",
+  "keywords": [],
+  "author": "Thibault <thibaultlebrun@live.fr>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lebrunthibault/p0_stream_deck_plugin/issues"
+  },
+  "homepage": "https://github.com/lebrunthibault/p0_stream_deck_plugin#readme"
+}

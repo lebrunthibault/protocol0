@@ -1,0 +1,26 @@
+{
+  "name": "p0_sdk",
+  "version": "1.0.0",
+  "description": "python sdk generator for protocol0",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lebrunthibault/protocol0.git"
+  },
+  "keywords": [
+    "ableton",
+    "remote",
+    "script",
+    "sdk"
+  ],
+  "author": "Thibault Lebrun <thibaultlebrun@live.fr>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lebrunthibault/protocol0/issues"
+  },
+  "homepage": "https://github.com/lebrunthibault/protocol0#readme",
+  "dependencies": {
+    "@openapitools/openapi-generator-cli": "^2.6.0"
+  }
+}
