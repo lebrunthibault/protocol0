@@ -37,7 +37,7 @@ class MidiClip(Clip):
 
         seq = Sequence()
 
-        seq.add(partial(self._clip.remove_notes_extended, 0, 128, 0, self._clip.length))
+        seq.add(partial(self._clip.remove_notes_extended, 0, 128, 0, self.end_marker))
         seq.add(partial(self._clip.add_new_notes, [note.to_spec() for note in notes]))
 
         seq.defer()

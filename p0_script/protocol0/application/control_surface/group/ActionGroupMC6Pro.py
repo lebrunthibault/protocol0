@@ -5,6 +5,7 @@ from _Framework.InputControlElement import MIDI_NOTE_TYPE, MIDI_CC_TYPE
 from _Framework.SubjectSlot import subject_slot, SlotManager
 
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
+from protocol0.domain.lom.clip.ClipLoop import ClipLoop
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.BarChangedEvent import BarChangedEvent
 from protocol0.domain.track_recorder.RecordService import RecordService
@@ -30,7 +31,9 @@ class ActionGroupMC6Pro(ActionGroupInterface, SlotManager):
         def set_clips_loop() -> None:
             for track in Song.armed_tracks():
                 if track.playing_clip and track.playing_clip.bar_length:
-                    track.playing_clip.loop.bar_length = 4
+                    loop: ClipLoop = track.playing_clip.loop
+                    if loop.total_bar_length >= 4:
+                        track.playing_clip.loop.bar_length = 4
 
         seq.add(set_clips_loop)
         seq.done()

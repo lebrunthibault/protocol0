@@ -131,3 +131,5 @@ toggle_splice_track  # unused function (protocol0\application\control_surface\gr
 _.launch_drop  # unused method (protocol0\application\control_surface\group\ActionGroupMC6Pro.py:38)
 _.activate_adptr_filter  # unused method (protocol0\domain\lom\track\simple_track\audio\master\MasterTrack.py:33)
 _.resample_selected_track  # unused method (protocol0\domain\track_recorder\RecordService.py:155)
+ActionGroupLive3  # unused class (protocol0\application\control_surface\group\ActionGroupLive3.py:19)
+ActionGroupLive4  # unused class (protocol0\application\control_surface\group\ActionGroupLive4.py:19)

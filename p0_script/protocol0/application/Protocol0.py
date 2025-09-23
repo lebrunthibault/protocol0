@@ -38,7 +38,7 @@ class Protocol0(ControlSurface):
         container.get(SceneService).scenes_listener()
 
         if Song.is_live_set():
-            LiveSet()
+            container._register(LiveSet())
 
         Logger.info("P0 script loaded")
 

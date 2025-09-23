@@ -403,4 +403,6 @@ class Song(object):
 
     @classmethod
     def is_live_set(cls) -> bool:
-        return "Live Set.als" in cls._live_song().file_path
+        return (
+            "Live Set.als" in cls._live_song().file_path or "test.als" in cls._live_song().file_path
+        )
