@@ -164,6 +164,10 @@ class ClipLoop(SlotManager, Observable, LoopableInterface):
         except Exception as e:
             Logger.warning("clip loop length error: %s" % e)
 
+    @property
+    def total_bar_length(self) -> float:
+        return self.end_marker / Song.signature_numerator()
+
     def move(self, forward: bool, bar: bool) -> None:
         beats = Song.signature_numerator() if bar else 1
         if forward:

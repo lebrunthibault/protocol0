@@ -11,6 +11,7 @@ from protocol0.domain.lom.track.simple_track.SimpleTrackNameUpdatedEvent import 
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
+from protocol0.domain.shared.utils.timing import debounce
 from protocol0.shared.Song import Song
 
 
@@ -43,7 +44,7 @@ class AbletonSet(object):
         )
 
         Backend.client().clear_state()
-        Scheduler.defer(self.notify)
+        # Scheduler.defer(self.notify)
 
     def __repr__(self) -> str:
         return "AbletonSet"
@@ -69,7 +70,7 @@ class AbletonSet(object):
             tracks=tracks,
         )
 
-    # @debounce(duration=20)
+    @debounce(duration=20)
     def notify(self, full: bool = True, force: bool = False) -> None:
         model = self.to_model(full)
 

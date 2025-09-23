@@ -62,9 +62,6 @@ class SceneService(SlotManager):
     @subject_slot("scenes")
     @handle_errors()
     def scenes_listener(self) -> None:
-        import logging
-
-        logging.getLogger(__name__).info("REGNERATING SCENES")
         self._generate_scenes()
         DomainEventBus.defer_emit(ScenesMappedEvent())
 

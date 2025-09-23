@@ -16,7 +16,7 @@ from protocol0.infra.midi.MidiService import MidiService
 from protocol0.shared.Song import Song
 
 
-class ActionGroupMain(ActionGroupInterface):
+class ActionGroupLive4(ActionGroupInterface):
     CHANNEL = 4
 
     def configure(self) -> None:
