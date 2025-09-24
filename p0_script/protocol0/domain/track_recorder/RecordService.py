@@ -78,7 +78,7 @@ class RecordService(object):
         seq = Sequence()
         # assert there is a scene we can record on
         if config._scene_index is None:
-            config.scene_index = Song.scene_count()
+            config.scene_index = Song.scenes().length
             seq.add(partial(self._scene_crud_component.create_scene, config.scene_index))
 
         if self._DEBUG:

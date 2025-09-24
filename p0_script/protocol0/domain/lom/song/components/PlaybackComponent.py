@@ -41,7 +41,7 @@ class PlaybackComponent(SlotManager):
         logging.getLogger(__name__).info(self.is_playing)
         if not self.is_playing:
             DomainEventBus.defer_emit(SongStoppedEvent())
-            self.stop()
+            # self.stop()
         else:
             if ApplicationView.is_session_visible():
                 self.re_enable_automation()

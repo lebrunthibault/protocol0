@@ -19,7 +19,7 @@ class TrackRecorderFactory(object):
         )
 
     def _get_recording_scene_index(self, tracks: List[SimpleTrack]) -> Optional[int]:
-        for i in range(Song.scene_count()):
+        for i in range(Song.scenes().length):
             # don't use the first slot, reserved for live
             if i == 0:
                 continue
@@ -27,8 +27,8 @@ class TrackRecorderFactory(object):
                 return i
 
         # overwriting the penultimate clip
-        if Song.scene_count() >= 2:
-            return Song.scene_count() - 2
+        if Song.scenes().length >= 2:
+            return Song.scenes().length - 2
 
         return None
 

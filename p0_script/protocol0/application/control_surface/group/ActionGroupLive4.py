@@ -1,28 +1,33 @@
 from functools import partial
 
-import Live
-from _Framework.ControlSurface import ControlSurface, get_control_surfaces
 from _Framework.Util import find_if
-
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
 
 # noinspection SpellCheckingInspection
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
 from protocol0.domain.shared.backend.Backend import Backend
-from protocol0.domain.shared.utils.list import find_if
-from protocol0.domain.track_recorder.RecordService import RecordService
+from protocol0.domain.shared.scheduler.BarEndingEvent import BarEndingEvent
 from protocol0.infra.midi.MidiService import MidiService
 from protocol0.shared.Song import Song
+from protocol0.shared.sequence.Sequence import Sequence
 
 
 class ActionGroupLive4(ActionGroupInterface):
     CHANNEL = 4
 
     def configure(self) -> None:
-        def change_clip_loop(bar_length: int) -> None:
-            for clip in Song.selected_scene().clips.all:
-                clip.loop.bar_length = bar_length
+        def change_clip_loop(bar_length: int) -> Sequence:
+            seq = Sequence()
+            seq.wait_for_event(BarEndingEvent)
+
+            def set_clip_loops() -> None:
+                for clip in Song.selected_scene().clips.all:
+                    clip.loop.bar_length = bar_length
+                    clip.fire()
+
+            seq.add(set_clip_loops)
+            return seq.done()
 
         self.add_encoder(identifier=4, name="test", on_press=self.action_test)
         self.add_encoder(identifier=5, name="clip loop 1", on_press=partial(change_clip_loop, 1))
@@ -94,4 +99,6 @@ class ActionGroupLive4(ActionGroupInterface):
         # )
 
     def action_test(self) -> None:
-        self._container.get(MidiService).send_ec4_select_group(9)
+        self._container.get(MidiService)._send_cc(123)
+        self._container.get(MidiService)._send_cc(123)
+        self._container.get(MidiService)._send_cc(64)

@@ -10,6 +10,7 @@ from protocol0.domain.lom.set.LiveSet import LiveSet
 from protocol0.domain.lom.track.TrackMapperService import TrackMapperService
 from protocol0.domain.shared.errors.ErrorRaisedEvent import ErrorRaisedEvent
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
+from protocol0.infra.midi.MidiService import MidiService
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
@@ -38,7 +39,7 @@ class Protocol0(ControlSurface):
         container.get(SceneService).scenes_listener()
 
         if Song.is_live_set():
-            container._register(LiveSet())
+            container._register(LiveSet(midi_service=container.get(MidiService)))
 
         Logger.info("P0 script loaded")
 
