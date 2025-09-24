@@ -23,13 +23,8 @@ class MidiService(object):
     def _sysex_to_string(self, sysex: Tuple) -> str:
         return bytearray(sysex[1:-1]).decode()
 
-    def _send_cc(self, value: int, channel: int = 0) -> None:
-        self._send_formatted_midi_message("cc", channel, value, 1)
-
-        def send_127() -> None:
-            self._send_formatted_midi_message("cc", channel, value, 127)
-
-        Scheduler.defer(send_127)
+    def _send_cc(self, cc: int, channel: int = 0, value: int = 0) -> None:
+        self._send_formatted_midi_message("cc", channel, cc, value)
 
     def _send_formatted_midi_message(
         self, message_type: str, channel: int, value: int, value2: Optional[int] = None

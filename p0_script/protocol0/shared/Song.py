@@ -215,10 +215,6 @@ class Song(object):
         return cls._INSTANCE._scene_service.scenes
 
     @classmethod
-    def scene_count(cls) -> int:
-        return len(cls._INSTANCE.__live_song.scenes)
-
-    @classmethod
     def active_scenes(cls) -> List["Scene"]:
         return cls._INSTANCE._scene_service.active_scenes
 
@@ -395,11 +391,7 @@ class Song(object):
 
             return None
 
-        seq = Sequence()
-        seq.add(cls._live_song().capture_midi)
-        seq.wait_for_event(ClipCreatedOrDeletedEvent)
-        seq.wait_ms(1000)
-        return seq.done()
+        return cls._live_song().capture_midi()
 
     @classmethod
     def is_live_set(cls) -> bool:
