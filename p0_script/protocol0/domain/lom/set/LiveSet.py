@@ -41,7 +41,7 @@ class LiveTrack(enum.Enum):
 class LiveSet(SlotManager):
     def __init__(self, midi_service: MidiService) -> None:
         super().__init__()
-        self.midi_service = midi_service
+        self._midi_service = midi_service
 
         self._bass_track = LiveTrack.BASS.get()
         self._bass_track_pitch = self._bass_track.devices.get_one_from_enum(DeviceEnum.PITCH)
@@ -74,6 +74,9 @@ class LiveSet(SlotManager):
     def _on_clip_created(self, event: ClipCreatedOrDeletedEvent) -> None:
         clip = MidiClip(event.live_clip_slot.clip, 0)
         loop: ClipLoop = clip.loop
+        import logging
+
+        logging.getLogger(__name__).info(clip.loop.to_dict())
         if loop.total_bar_length >= 4:
             loop.bar_length = 4
         elif loop.total_bar_length >= 2:
@@ -94,13 +97,12 @@ class LiveSet(SlotManager):
         seq = Sequence()
         seq.add(Song.capture_midi)
         seq.wait_for_event(ClipCreatedOrDeletedEvent)
+        seq.add(partial(self._midi_service.send_ec4_select_group, 9))
         seq.defer()
+        seq.add(fix_bass_clip)
         seq.add(
             partial(DomainEventBus.un_subscribe, ClipCreatedOrDeletedEvent, self._on_clip_created)
         )
-        seq.add(partial(self._container.get(MidiService).send_ec4_select_group, 9))
-        seq.defer()
-        seq.add(fix_bass_clip)
         seq.wait_for_event(BarChangedEvent)
 
         seq.done()

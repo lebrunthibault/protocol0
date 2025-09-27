@@ -58,8 +58,8 @@ class SceneClips(Observable):
         self.clip_slot_tracks = []
 
         for track in Song.simple_tracks():
-            # if self.index not in track.clip_slots:
-            #     continue
+            if self.index not in track.clip_slots:
+                continue
             clip_slot = track.clip_slots[self.index]
             clip_slot.register_observer(self)
             self.clip_slot_tracks.append(SceneClipSlot(track, clip_slot))

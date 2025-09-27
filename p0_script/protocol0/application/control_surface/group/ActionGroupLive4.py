@@ -5,6 +5,7 @@ from protocol0.application.control_surface.ActionGroupInterface import ActionGro
 
 # noinspection SpellCheckingInspection
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
+from protocol0.domain.lom.set.LiveSet import LiveTrack
 from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.scheduler.BarEndingEvent import BarEndingEvent
@@ -22,7 +23,7 @@ class ActionGroupLive4(ActionGroupInterface):
             seq.wait_for_event(BarEndingEvent)
 
             def set_clip_loops() -> None:
-                for clip in Song.selected_scene().clips.all:
+                for clip in (LiveTrack.BASS.get().playing_clip, LiveTrack.PIANO.get().playing_clip):
                     clip.loop.bar_length = bar_length
                     clip.fire()
 
