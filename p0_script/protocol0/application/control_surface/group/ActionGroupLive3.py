@@ -11,7 +11,7 @@ class ActionGroupLive3(ActionGroupInterface):
 
     def configure(self) -> None:
         self.add_encoder(
-            identifier=16 + 5,
+            identifier=8,
             name="copy piano to bass",
             on_press=lambda: self._container.get(LiveSet).copy_piano_to_bass,
         )
