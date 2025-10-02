@@ -1,5 +1,5 @@
 from protocol0.domain.lom.SessionRing import get_session_ring_scene_offset
-from protocol0.domain.lom.set.LiveSet import LiveTrack
+from protocol0.domain.live_set.LiveSet import LiveTrack
 
 
 def launch_kick() -> None:

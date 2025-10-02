@@ -133,3 +133,4 @@ _.activate_adptr_filter  # unused method (protocol0\domain\lom\track\simple_trac
 _.resample_selected_track  # unused method (protocol0\domain\track_recorder\RecordService.py:155)
 ActionGroupLive3  # unused class (protocol0\application\control_surface\group\ActionGroupLive3.py:19)
 ActionGroupLive4  # unused class (protocol0\application\control_surface\group\ActionGroupLive4.py:19)
+_._bass_and_synth_tracks_arm_listener  # unused method (protocol0\domain\live_set\LiveSet.py:56)

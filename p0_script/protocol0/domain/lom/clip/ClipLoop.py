@@ -32,8 +32,8 @@ class ClipLoop(SlotManager, Observable, LoopableInterface):
         return {
             "looping": self.looping,
             "start_marker": self.start_marker,
-            "end_marker": self.end_marker,
             "start": self.start,
+            "end_marker": self.end_marker,
             "end": self.end,
         }
 
@@ -180,6 +180,14 @@ class ClipLoop(SlotManager, Observable, LoopableInterface):
             self.start -= beats
             self.end_marker -= beats
             self.end -= beats
+
+    def sync_markers(self) -> None:
+        if self.start_marker < self.start:
+            self.end_marker = self.end
+            self.start_marker = self.start
+        else:
+            self.start_marker = self.start
+            self.end_marker = self.end
 
     def match(self, loop: "ClipLoop") -> None:
         self.start = loop.start
