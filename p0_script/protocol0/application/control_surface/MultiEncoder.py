@@ -41,7 +41,7 @@ class MultiEncoder(SlotManager):
                 )
             else:
                 self._press_listener.subject = ButtonElement(
-                    True, MIDI_NOTE_TYPE, channel, identifier
+                    True, MIDI_NOTE_TYPE, channel, identifier - 1
                 )
                 self._scroll_listener.subject = ButtonElement(
                     True, MIDI_CC_TYPE, channel, identifier

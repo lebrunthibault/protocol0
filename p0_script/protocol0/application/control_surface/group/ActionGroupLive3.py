@@ -3,7 +3,7 @@ from _Framework.Util import find_if
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
 
 # noinspection SpellCheckingInspection
-from protocol0.domain.lom.set.LiveSet import LiveSet
+from protocol0.domain.live_set.LiveSet import LiveSet
 
 
 class ActionGroupLive3(ActionGroupInterface):

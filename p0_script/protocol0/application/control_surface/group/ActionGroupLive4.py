@@ -1,36 +1,28 @@
 from functools import partial
 
 from _Framework.Util import find_if
+
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
+from protocol0.domain.live_set.LiveSetInstruments import (
+    move_clip_loop,
+    change_clip_loop,
+    sync_markers,
+)
 
 # noinspection SpellCheckingInspection
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
-from protocol0.domain.lom.set.LiveSet import LiveTrack
 from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
 from protocol0.domain.shared.backend.Backend import Backend
-from protocol0.domain.shared.scheduler.BarEndingEvent import BarEndingEvent
-from protocol0.infra.midi.MidiService import MidiService
 from protocol0.shared.Song import Song
-from protocol0.shared.sequence.Sequence import Sequence
 
 
 class ActionGroupLive4(ActionGroupInterface):
     CHANNEL = 4
 
     def configure(self) -> None:
-        def change_clip_loop(bar_length: int) -> Sequence:
-            seq = Sequence()
-            seq.wait_for_event(BarEndingEvent)
-
-            def set_clip_loops() -> None:
-                for clip in (LiveTrack.BASS.get().playing_clip, LiveTrack.PIANO.get().playing_clip):
-                    clip.loop.bar_length = bar_length
-                    clip.fire()
-
-            seq.add(set_clip_loops)
-            return seq.done()
-
-        self.add_encoder(identifier=4, name="test", on_press=self.action_test)
+        self.add_encoder(
+            identifier=4, name="move clip loop", on_scroll=move_clip_loop, on_press=sync_markers
+        )
         self.add_encoder(identifier=5, name="clip loop 1", on_press=partial(change_clip_loop, 1))
         self.add_encoder(identifier=6, name="clip loop 2", on_press=partial(change_clip_loop, 2))
         self.add_encoder(identifier=7, name="clip loop 4", on_press=partial(change_clip_loop, 4))
@@ -40,23 +32,6 @@ class ActionGroupLive4(ActionGroupInterface):
         #     identifier=1,
         #     name="Resample",
         #     on_press=self._container.get(RecordService).resample_selected_track,
-        # )
-
-        #
-        # def activate_adptr_filter(filter_type: str) -> None:
-        #     Song.master_track().activate_adptr_filter(filter_type)
-        #
-        # self.add_encoder(
-        #     identifier=9, name="ref bass", on_press=partial(activate_adptr_filter, "bass")
-        # )
-        # self.add_encoder(
-        #     identifier=10, name="ref low_mid", on_press=partial(activate_adptr_filter, "low_mid")
-        # )
-        # self.add_encoder(
-        #     identifier=11, name="ref mid", on_press=partial(activate_adptr_filter, "mid")
-        # )
-        # self.add_encoder(
-        #     identifier=12, name="ref high", on_press=partial(activate_adptr_filter, "high")
         # )
 
         def toggle_splice_track() -> None:
@@ -98,8 +73,3 @@ class ActionGroupLive4(ActionGroupInterface):
         # self.add_encoder(
         #     identifier=16, name="scroll_selected_parameter", on_scroll=scroll_selected_parameter
         # )
-
-    def action_test(self) -> None:
-        self._container.get(MidiService)._send_cc(123)
-        self._container.get(MidiService)._send_cc(123)
-        self._container.get(MidiService)._send_cc(64)

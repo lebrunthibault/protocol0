@@ -51,7 +51,7 @@ class ActionGroupInterface(object):
         assert self.CHANNEL, "channel not configured for %s" % self
         encoder = MultiEncoder(
             channel=self.CHANNEL - 1,
-            identifier=identifier - 1,
+            identifier=identifier,
             name=name,
             component_guard=self._component_guard,
             use_cc=use_cc,

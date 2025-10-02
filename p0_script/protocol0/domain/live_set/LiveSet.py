@@ -49,12 +49,13 @@ class LiveSet(SlotManager):
         self._synth_track_pitch = self._synth_track.devices.get_one_from_enum(DeviceEnum.PITCH)
         self._piano_track = LiveTrack.PIANO.get()
 
-        self._bass_and_synth_tracks_arm_listener.replace_subjects(
-            [self._bass_track._track, self._synth_track._track, self._piano_track._track]
-        )
+        # self._bass_and_synth_tracks_arm_listener.replace_subjects(
+        #     [self._bass_track._track, self._synth_track._track, self._piano_track._track]
+        # )
 
     @subject_slot_group("arm")
     def _bass_and_synth_tracks_arm_listener(self, _: Live.Track.Track) -> None:
+        """Useful only if I want to play high bass notes when solo arming bass."""
         activate_bass_pitch = False
         activate_synth_pitch = False
 
@@ -128,6 +129,12 @@ class LiveSet(SlotManager):
 
     def make_bass_clip_monophonic(self, clip_slot: MidiClipSlot) -> None:
         clip_slot.clip.quantize()
+        loop = clip_slot.clip.loop
+
+        # do this on the whole clip
+        loop_start = loop.start
+        loop.start = 0
+
         live_notes = clip_slot.clip.get_notes()
         if not live_notes:
             return
@@ -161,3 +168,5 @@ class LiveSet(SlotManager):
 
         # Replace the notes in the clip
         clip_slot.clip.replace_notes(bass_notes)
+
+        loop.start = loop_start

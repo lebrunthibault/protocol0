@@ -1,7 +1,7 @@
 from _Framework.SubjectSlot import SlotManager
 
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
-from protocol0.domain.lom.set.LiveSet import LiveSet
+from protocol0.domain.live_set.LiveSet import LiveSet
 
 
 class ActionGroupMC6Pro(ActionGroupInterface, SlotManager):
