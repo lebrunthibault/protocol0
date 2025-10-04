@@ -160,7 +160,7 @@ class ClipLoop(SlotManager, Observable, LoopableInterface):
     def bar_length(self, bar_length: float) -> None:
         start = self.end - bar_length * Song.signature_numerator()
         try:
-            self.start_marker = self.start = start
+            self.start_marker = self.start = max(start, 0)
         except Exception as e:
             Logger.warning("clip loop length error: %s" % e)
 

@@ -130,6 +130,7 @@ class Container(ContainerInterface):
 
         # song components
         self._register(playback_component)
+        self._register(recording_component)
         self._register(scene_component)
         self._register(scene_crud_component)
         self._register(device_component)

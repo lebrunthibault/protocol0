@@ -9,9 +9,15 @@ from protocol0.domain.shared.utils.utils import clamp
 class Note(object):
     MIN_DURATION = 1 / 128
 
-    def __init__(self, live_note: Live.Clip.MidiNote) -> None:
+    def __init__(
+        self, pitch: int, start: float, duration: float, velocity: int, mute: bool = False
+    ) -> None:
         super(Note, self).__init__()
-        self._live_note = live_note
+        self._pitch = pitch
+        self._start = start
+        self._duration = duration
+        self._velocity = velocity
+        self._muted = mute
 
     def __repr__(self, **k: Any) -> str:
         return "{start:%.2f, duration:%.2f, pitch:%s, vel:%s, muted: %s}" % (
@@ -20,6 +26,16 @@ class Note(object):
             self.pitch,
             self.velocity,
             self.muted,
+        )
+
+    @classmethod
+    def from_live_note(cls, live_note: Live.Clip.MidiNote) -> "Note":
+        return Note(
+            pitch=live_note.pitch,
+            start=live_note.start_time,
+            duration=live_note.duration,
+            velocity=live_note.velocity,
+            mute=live_note.mute,
         )
 
     def to_spec(self) -> Live.Clip.MidiNoteSpecification:
@@ -32,19 +48,19 @@ class Note(object):
 
     @property
     def pitch(self) -> int:
-        return int(clamp(self._live_note.pitch, 0, 127))
+        return int(clamp(self._pitch, 0, 127))
 
     @pitch.setter
     def pitch(self, pitch: int) -> None:
-        self._live_note.pitch = int(clamp(pitch, 0, 127))
+        self._pitch = int(clamp(pitch, 0, 127))
 
     @property
     def start(self) -> float:
-        return 0 if self._live_note.start_time < 0 else self._live_note.start_time
+        return 0 if self._start < 0 else self._start
 
     @start.setter
     def start(self, start: float) -> None:
-        self._live_note.start_time = max(float(0), start)
+        self._start = max(float(0), start)
 
     @property
     def end(self) -> float:
@@ -56,33 +72,32 @@ class Note(object):
 
     @property
     def duration(self) -> float:
-        if self._live_note.duration <= Note.MIN_DURATION:
+        if self._duration <= Note.MIN_DURATION:
             return Note.MIN_DURATION
-        return self._live_note.duration
+        return self._duration
 
     @duration.setter
     def duration(self, duration: int) -> None:
-        self._live_note.duration = max(0, duration)
-        if self._live_note.duration == 0:
+        self._duration = max(0, duration)
+        if self._duration == 0:
             raise Protocol0Error("A Note with a duration of 0 is not accepted")
 
     @property
-    def velocity(self) -> float:
-        # using float to make scaling precise
-        if self._live_note.velocity < 0:
+    def velocity(self) -> int:
+        if self._velocity < 0:
             return 0
-        if self._live_note.velocity > 127:
+        if self._velocity > 127:
             return 127
-        return self._live_note.velocity
+        return self._velocity
 
     @velocity.setter
-    def velocity(self, velocity: float) -> None:
-        self._live_note.velocity = clamp(velocity, 0, 127)
+    def velocity(self, velocity: int) -> None:
+        self._velocity = clamp(velocity, 0, 127)
 
     @property
     def muted(self) -> bool:
-        return self._live_note.mute
+        return self._muted
 
     @muted.setter
     def muted(self, muted: bool) -> None:
-        self._live_note.mute = muted
+        self._muted = muted

@@ -2,11 +2,12 @@ from typing import Any
 
 from _Framework.ControlSurface import ControlSurface
 
-from protocol0.domain.lom.scene.SceneService import SceneService
 from protocol0.application.Container import Container
 from protocol0.application.ScriptDisconnectedEvent import ScriptDisconnectedEvent
 from protocol0.application.ScriptResetActivatedEvent import ScriptResetActivatedEvent
 from protocol0.domain.live_set.LiveSet import LiveSet
+from protocol0.domain.lom.scene.SceneService import SceneService
+from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
 from protocol0.domain.lom.track.TrackMapperService import TrackMapperService
 from protocol0.domain.shared.errors.ErrorRaisedEvent import ErrorRaisedEvent
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
@@ -39,7 +40,7 @@ class Protocol0(ControlSurface):
         container.get(SceneService).scenes_listener()
 
         if Song.is_live_set():
-            container._register(LiveSet(midi_service=container.get(MidiService)))
+            container._register(LiveSet(container.get(MidiService)))
 
         Logger.info("P0 script loaded")
 

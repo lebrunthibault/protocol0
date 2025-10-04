@@ -3,7 +3,6 @@ from typing import List, Iterator, Optional
 from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.clip_slot.ClipSlot import ClipSlot
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
-from protocol0.domain.shared.utils.timing import debounce
 from protocol0.shared.Song import Song
 from protocol0.shared.observer.Observable import Observable
 
@@ -48,7 +47,7 @@ class SceneClips(Observable):
     def tracks(self) -> List[SimpleTrack]:
         return [scene_cs.track for scene_cs in self.clip_slot_tracks if scene_cs.clip is not None]
 
-    @debounce(duration=50)
+    # @debounce(duration=50)
     def update(self, observable: Observable) -> None:
         if isinstance(observable, ClipSlot) or isinstance(observable, Clip):
             self.build()

@@ -27,6 +27,9 @@ class ActionGroupLive4(ActionGroupInterface):
         self.add_encoder(identifier=6, name="clip loop 2", on_press=partial(change_clip_loop, 2))
         self.add_encoder(identifier=7, name="clip loop 4", on_press=partial(change_clip_loop, 4))
         self.add_encoder(identifier=8, name="clip loop 8", on_press=partial(change_clip_loop, 8))
+        self.add_encoder(identifier=9, name="clip loop 16", on_press=partial(change_clip_loop, 16))
+
+        self.add_encoder(identifier=16, name="test", on_press=self.action_test)
 
         # self.add_encoder(
         #     identifier=1,
@@ -73,3 +76,9 @@ class ActionGroupLive4(ActionGroupInterface):
         # self.add_encoder(
         #     identifier=16, name="scroll_selected_parameter", on_scroll=scroll_selected_parameter
         # )
+
+    def action_test(self) -> None:
+        import logging
+
+        logging.getLogger(__name__).info(Song.scenes())
+        logging.getLogger(__name__).info(Song.selected_scene())
