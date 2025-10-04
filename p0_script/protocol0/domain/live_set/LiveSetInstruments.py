@@ -1,32 +1,45 @@
-from typing import Iterable
+from typing import Iterable, List
 
 from protocol0.domain.live_set.LiveSet import LiveTrack
 from protocol0.domain.lom.clip.MidiClip import MidiClip
+from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
 from protocol0.domain.shared.scheduler.BarEndingEvent import BarEndingEvent
 from protocol0.shared.Song import Song
+from protocol0.shared.logging.StatusBar import StatusBar
 from protocol0.shared.sequence.Sequence import Sequence
 
 
-def _get_instrument_clips_from_scene_index(scene_index: int) -> Iterable[MidiClip]:
-    return (
-        LiveTrack.BASS.get().clip_slots[scene_index].clip,
-        LiveTrack.PIANO.get().clip_slots[scene_index].clip,
-    )
+def _get_tracks(include_vocals: bool) -> Iterable[SimpleMidiTrack]:
+    tracks = [
+        LiveTrack.BASS.get(),
+        LiveTrack.SYNTH.get(),
+        LiveTrack.PIANO.get(),
+    ]
+
+    if include_vocals:
+        tracks.append(LiveTrack.VOCALS.get())
+
+    return tracks
 
 
-def _get_instrument_clips() -> Iterable[MidiClip]:
-    clips: Iterable[MidiClip] = (
-        LiveTrack.BASS.get().playing_clip,
-        LiveTrack.PIANO.get().playing_clip,
-    )
+#
+# def _get_instrument_clips_from_scene_index(scene_index: int) -> Iterable[MidiClip]:
+#     return (track.clip_slots[scene_index].clip for track in _get_tracks())
 
-    if all(clip is not None for clip in clips):
-        return clips
-    elif all(clip is None for clip in clips):
-        return _get_instrument_clips_from_scene_index(Song.selected_scene().index)
-    else:
-        clip: MidiClip = next(filter(None, clips))
-        return _get_instrument_clips_from_scene_index(clip.index)
+
+def _get_instrument_clips(include_vocals: bool = False) -> List[MidiClip]:
+    return list(filter(None, (track.playing_clip for track in _get_tracks(include_vocals))))
+    # clips: Iterable[MidiClip] = list(track.playing_clip for track in _get_tracks())
+    # import logging
+    # logging.getLogger(__name__).info(clips)
+    #
+    # if all(clip is not None for clip in clips):
+    #     return clips
+    # elif all(clip is None for clip in clips):
+    #     return _get_instrument_clips_from_scene_index(Song.selected_scene().index)
+    # else:
+    #     clip: MidiClip = next(filter(None, clips))
+    #     return _get_instrument_clips_from_scene_index(clip.index)
 
 
 def move_clip_loop(go_next: bool) -> Sequence:
@@ -38,13 +51,19 @@ def move_clip_loop(go_next: bool) -> Sequence:
         else:
             if all(clip.loop.start >= Song.signature_numerator() for clip in clips):
                 increment = -1
+            else:
+                StatusBar.show_message("Reached 1.1 on at least one clip")
 
         increment *= Song.signature_numerator()
 
-        for clip in clips:
+        for clip in list(clips):
             start_marker = clip.loop.start_marker
-            clip.loop.start += increment
-            clip.loop.end += increment
+            if increment > 0:
+                clip.loop.end += increment
+                clip.loop.start += increment
+            else:
+                clip.loop.start += increment
+                clip.loop.end += increment
 
             clip.loop.start_marker = start_marker  # maintain playback state
 
