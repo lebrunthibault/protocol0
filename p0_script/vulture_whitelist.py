@@ -134,3 +134,5 @@ _.resample_selected_track  # unused method (protocol0\domain\track_recorder\Reco
 ActionGroupLive3  # unused class (protocol0\application\control_surface\group\ActionGroupLive3.py:19)
 ActionGroupLive4  # unused class (protocol0\application\control_surface\group\ActionGroupLive4.py:19)
 _._bass_and_synth_tracks_arm_listener  # unused method (protocol0\domain\live_set\LiveSet.py:56)
+ActionGroupLaunchPadPro  # unused class (protocol0\application\control_surface\group\ActionGroupLaunchPadPro.py:9)
+change_track_sound  # unused function (protocol0\domain\live_set\LiveSetSounds.py:6)

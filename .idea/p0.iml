@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="PYTHON_MODULE" version="4">
   <component name="NewModuleRootManager">
-    <content url="file://$MODULE_DIR$/../../../ableton/AbletonLive-API-Stub-master" />
+    <content url="file://$MODULE_DIR$/../../../ableton/AbletonLive-API-Stub-master">
+      <excludeFolder url="file://$MODULE_DIR$/../../../ableton/AbletonLive-API-Stub-master" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../../ableton/AbletonLive-API-Stub-master/Live" />
     <content url="file://$MODULE_DIR$/../../../ableton/MIDI Remote Scripts" />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/p0_script" isTestSource="false" />

@@ -45,14 +45,15 @@ def _get_instrument_clips(include_vocals: bool = False) -> List[MidiClip]:
 def move_clip_loop(go_next: bool) -> Sequence:
     def move_clip_loops() -> None:
         clips = _get_instrument_clips()
-        increment = 0
+
         if go_next:
             increment = 1  # no limit to scrolling right unless we check for notes
         else:
-            if all(clip.loop.start >= Song.signature_numerator() for clip in clips):
-                increment = -1
-            else:
-                StatusBar.show_message("Reached 1.1 on at least one clip")
+            increment = -1
+
+            if all(clip.loop.start < Song.signature_numerator() for clip in clips):
+                StatusBar.show_message("Reached 1.1.1 on all clips")
+                return None
 
         increment *= Song.signature_numerator()
 
@@ -61,7 +62,7 @@ def move_clip_loop(go_next: bool) -> Sequence:
             if increment > 0:
                 clip.loop.end += increment
                 clip.loop.start += increment
-            else:
+            elif clip.loop.start >= Song.signature_numerator():
                 clip.loop.start += increment
                 clip.loop.end += increment
 
@@ -92,3 +93,10 @@ def change_clip_loop(bar_length: int) -> Sequence:
 
     seq.add(set_clip_loops)
     return seq.done()
+
+
+def scrub_clips(bar_number: int) -> None:
+    for clip in _get_instrument_clips():
+        scrub_position = ((bar_number - 1) * Song.signature_numerator()) + clip.loop.start
+        if scrub_position < clip.loop.length:
+            clip.scrub(scrub_position)

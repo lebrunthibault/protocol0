@@ -11,8 +11,7 @@ from protocol0.domain.lom.clip.ClipCreatedOrDeletedEvent import ClipCreatedOrDel
 from protocol0.domain.lom.clip.ClipLoop import ClipLoop
 from protocol0.domain.lom.clip.MidiClip import MidiClip
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
-from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
-from protocol0.domain.lom.song.components.RecordingComponent import RecordingComponent
+from protocol0.domain.lom.song.SongStoppedEvent import SongStoppedEvent
 from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
@@ -28,8 +27,8 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 class LiveTrack(enum.Enum):
     KICK = "KICK"
-    # HATS = "HATS"
-    # PERC = "PERC"
+    HAT = "HAT"
+    PERC = "PERC"
     FX = "FX"
     VOCALS = "VOCALS"
     BASS = "BASS"
@@ -38,6 +37,9 @@ class LiveTrack(enum.Enum):
 
     def get(self) -> SimpleMidiTrack:
         return cast(SimpleMidiTrack, find_track(self.value.title(), exact=False))
+
+    def uses_simpler(self) -> bool:
+        return self in (LiveTrack.HAT, LiveTrack.PERC, LiveTrack.VOCALS)
 
 
 class LiveSet(SlotManager):
@@ -50,6 +52,11 @@ class LiveSet(SlotManager):
         self._synth_track = LiveTrack.SYNTH.get()
         self._synth_track_pitch = self._synth_track.devices.get_one_from_enum(DeviceEnum.PITCH)
         self._piano_track = LiveTrack.PIANO.get()
+
+        def unsubscribe_on_clip_created() -> None:
+            DomainEventBus.un_subscribe(ClipCreatedOrDeletedEvent, self._on_clip_created)
+
+        DomainEventBus.subscribe(SongStoppedEvent, unsubscribe_on_clip_created)
 
         # self._bass_and_synth_tracks_arm_listener.replace_subjects(
         #     [self._bass_track._track, self._synth_track._track, self._piano_track._track]
@@ -77,6 +84,9 @@ class LiveSet(SlotManager):
     def _on_clip_created(self, event: ClipCreatedOrDeletedEvent) -> None:
         clip = MidiClip(event.live_clip_slot.clip, 0)
         loop: ClipLoop = clip.loop
+
+        if loop.total_bar_length >= 8:
+            loop.bar_length = 8
         if loop.total_bar_length >= 4:
             loop.bar_length = 4
         elif loop.total_bar_length >= 2:

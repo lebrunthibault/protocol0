@@ -1,7 +1,7 @@
 from __future__ import division
 
 from functools import partial
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Iterable
 
 import Live
 from _Framework.SubjectSlot import subject_slot
@@ -88,7 +88,10 @@ class MidiClip(Clip):
 
             note.velocity = clamp(note.velocity, 1, 128)
 
-        self._clip.apply_note_modifications(note_vector)
+        self.apply_note_modifications(note_vector)
+
+    def apply_note_modifications(self, notes: Live.Clip.MidiNoteVector) -> None:
+        self._clip.apply_note_modifications(notes)
 
     def crop(self) -> Optional[Sequence]:
         if self._clip:

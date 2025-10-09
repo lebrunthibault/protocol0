@@ -3,7 +3,11 @@ from protocol0.domain.shared.utils.list import find_if
 
 
 def get_session_ring_scene_offset() -> int:
-    from Launchpad import Launchpad
+    import logging
 
-    launchpad = find_if(lambda s: type(s) == Launchpad, get_control_surfaces())
-    return launchpad._highlighting_session_component._scene_offset
+    logging.getLogger(__name__).info(get_control_surfaces())
+
+    from Launchpad_Pro_MK3_mod.launchpad_pro_mk3_mod import Launchpad_Pro_MK3_Mod
+
+    launchpad = find_if(lambda s: type(s) == Launchpad_Pro_MK3_Mod, get_control_surfaces())
+    return launchpad._session_ring.scene_offset
