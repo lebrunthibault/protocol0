@@ -10,7 +10,6 @@ from p0_backend.lib.synth.serum import (
 )
 from p0_backend.settings import Settings
 from protocol0.application.command.LoadDeviceCommand import LoadDeviceCommand
-from protocol0.application.command.ReloadGodParticleCommand import ReloadGodParticleCommand
 from protocol0.application.command.ToggleCpuHeavyDevicesCommand import ToggleCpuHeavyDevicesCommand
 from protocol0.application.command.ToggleRackChainCommand import ToggleRackChainCommand
 
@@ -26,11 +25,6 @@ async def load_device(name: str):
     if name == "SPLICE_BRIDGE":
         # will focus if it's hidden or in sys tray
         subprocess.run(settings.splice_executable)
-
-
-@router.get("/reload_god_particle")
-async def reload_god_particle():
-    p0_script_client().dispatch(ReloadGodParticleCommand())
 
 
 @router.get("/toggle_cpu_heavy")

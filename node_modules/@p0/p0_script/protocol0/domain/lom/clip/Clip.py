@@ -124,6 +124,10 @@ class Clip(SlotManager, Observable):
             self._clip.fire()
         return None
 
+    def scrub(self, scrub_position: float) -> None:
+        if self._clip:
+            self._clip.scrub(scrub_position)
+
     def delete(self) -> Sequence:
         self.deleted = True
         self.notify_observers()
