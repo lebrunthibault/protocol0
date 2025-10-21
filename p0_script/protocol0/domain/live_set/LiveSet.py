@@ -2,11 +2,14 @@ import enum
 from functools import partial
 from typing import Optional, cast
 
-from _Framework.CompoundElement import subject_slot_group
-from _Framework.SubjectSlot import SlotManager
+from _Framework.SubjectSlot import subject_slot, SlotManager
 
 import Live
-from protocol0.domain.live_set.LiveSetNotes import make_clip_monophonic
+from protocol0.domain.live_set.LiveSetNotes import (
+    make_clip_monophonic,
+    quantize_bar_notes,
+    split_bar_notes,
+)
 from protocol0.domain.lom.clip.ClipCreatedOrDeletedEvent import ClipCreatedOrDeletedEvent
 from protocol0.domain.lom.clip.ClipLoop import ClipLoop
 from protocol0.domain.lom.clip.MidiClip import MidiClip
@@ -48,37 +51,24 @@ class LiveSet(SlotManager):
         self._midi_service = midi_service
 
         self._bass_track = LiveTrack.BASS.get()
-        self._bass_track_pitch = self._bass_track.devices.get_one_from_enum(DeviceEnum.PITCH)
         self._synth_track = LiveTrack.SYNTH.get()
         self._synth_track_pitch = self._synth_track.devices.get_one_from_enum(DeviceEnum.PITCH)
         self._piano_track = LiveTrack.PIANO.get()
+        self._piano_track_pitch = self._piano_track.devices.get_one_from_enum(DeviceEnum.PITCH)
 
         def unsubscribe_on_clip_created() -> None:
             DomainEventBus.un_subscribe(ClipCreatedOrDeletedEvent, self._on_clip_created)
 
         DomainEventBus.subscribe(SongStoppedEvent, unsubscribe_on_clip_created)
 
-        # self._bass_and_synth_tracks_arm_listener.replace_subjects(
-        #     [self._bass_track._track, self._synth_track._track, self._piano_track._track]
-        # )
+        self._bass_track_arm_listener.subject = self._bass_track._track
 
-    @subject_slot_group("arm")
-    def _bass_and_synth_tracks_arm_listener(self, _: Live.Track.Track) -> None:
-        """Useful only if I want to play high bass notes when solo arming bass."""
-        activate_bass_pitch = False
-        activate_synth_pitch = False
+    @subject_slot("arm")
+    def _bass_track_arm_listener(self) -> None:
+        activate_pitch = self._bass_track.arm_state.is_armed
 
-        if self._bass_track.arm_state.is_armed:
-            if self._synth_track.arm_state.is_armed:
-                activate_bass_pitch = True
-                activate_synth_pitch = True
-            elif self._piano_track.arm_state.is_armed:
-                activate_bass_pitch = True
-
-        Scheduler.defer(partial(setattr, self._bass_track_pitch, "is_enabled", activate_bass_pitch))
-        Scheduler.defer(
-            partial(setattr, self._synth_track_pitch, "is_enabled", activate_synth_pitch)
-        )
+        Scheduler.defer(partial(setattr, self._synth_track_pitch, "is_enabled", activate_pitch))
+        Scheduler.defer(partial(setattr, self._piano_track_pitch, "is_enabled", activate_pitch))
 
     @defer
     def _on_clip_created(self, event: ClipCreatedOrDeletedEvent) -> None:
@@ -87,10 +77,12 @@ class LiveSet(SlotManager):
 
         if loop.total_bar_length >= 8:
             loop.bar_length = 8
-        if loop.total_bar_length >= 4:
+        elif loop.total_bar_length >= 4:
             loop.bar_length = 4
         elif loop.total_bar_length >= 2:
             loop.bar_length = 2
+
+        clip.quantize(0.5)
 
         # clip.stop(True)
         clip.fire()
@@ -101,10 +93,17 @@ class LiveSet(SlotManager):
         DomainEventBus.subscribe(ClipCreatedOrDeletedEvent, self._on_clip_created)
 
         def fix_bass_clip() -> None:
-            bass_track = LiveTrack.BASS.get()
-            if bass_track.arm_state.is_armed:
-                clip_slot = bass_track.clip_slots[Song.selected_scene().index]
+            if self._bass_track.arm_state.is_armed:
+                clip_slot = self._bass_track.clip_slots[Song.selected_scene().index]
                 make_clip_monophonic(clip_slot)
+
+        def fix_piano_and_synth_clips() -> None:
+            if self._piano_track.arm_state.is_armed:
+                clip_slot = self._piano_track.clip_slots[Song.selected_scene().index]
+                quantize_bar_notes(clip_slot)
+            if self._synth_track.arm_state.is_armed:
+                clip_slot = self._synth_track.clip_slots[Song.selected_scene().index]
+                split_bar_notes(clip_slot)
 
         seq = Sequence()
         if Song.tempo() < 120:
@@ -115,6 +114,7 @@ class LiveSet(SlotManager):
         seq.wait_for_event(ClipCreatedOrDeletedEvent)
         seq.defer()
         seq.add(fix_bass_clip)
+        seq.add(fix_piano_and_synth_clips)
         seq.add(
             partial(DomainEventBus.un_subscribe, ClipCreatedOrDeletedEvent, self._on_clip_created)
         )

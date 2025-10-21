@@ -5,6 +5,43 @@ from protocol0.domain.lom.note.Note import Note
 from protocol0.shared.Song import Song
 
 
+def split_bar_notes(clip_slot: MidiClipSlot) -> None:
+    loop = clip_slot.clip.loop
+
+    # do this on the whole clip
+    loop_start = loop.start
+    loop.start = 0
+    live_notes = clip_slot.clip.get_notes()
+
+    if not live_notes:
+        return
+
+    notes = [Note.from_live_note(live_note) for live_note in live_notes]
+    split_notes = split_notes_to_beats(notes)
+
+    clip_slot.clip.replace_notes(split_notes)
+    loop.start = loop_start
+
+
+def quantize_bar_notes(clip_slot: MidiClipSlot) -> None:
+    loop = clip_slot.clip.loop
+
+    # do this on the whole clip
+    loop_start = loop.start
+    loop.start = 0
+    live_notes = clip_slot.clip.get_notes()
+
+    if not live_notes:
+        return
+
+    for live_note in live_notes:
+        if 3.75 < live_note.start_time % 4:
+            live_note.start_time = round(live_note.start_time)
+
+    clip_slot.clip.apply_note_modifications(live_notes)
+    loop.start = loop_start
+
+
 def make_clip_monophonic(clip_slot: MidiClipSlot) -> None:
     clip_slot.clip.quantize()
     loop = clip_slot.clip.loop

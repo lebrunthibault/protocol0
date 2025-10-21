@@ -22,24 +22,8 @@ def _get_tracks(include_vocals: bool) -> Iterable[SimpleMidiTrack]:
     return tracks
 
 
-#
-# def _get_instrument_clips_from_scene_index(scene_index: int) -> Iterable[MidiClip]:
-#     return (track.clip_slots[scene_index].clip for track in _get_tracks())
-
-
 def _get_instrument_clips(include_vocals: bool = False) -> List[MidiClip]:
     return list(filter(None, (track.playing_clip for track in _get_tracks(include_vocals))))
-    # clips: Iterable[MidiClip] = list(track.playing_clip for track in _get_tracks())
-    # import logging
-    # logging.getLogger(__name__).info(clips)
-    #
-    # if all(clip is not None for clip in clips):
-    #     return clips
-    # elif all(clip is None for clip in clips):
-    #     return _get_instrument_clips_from_scene_index(Song.selected_scene().index)
-    # else:
-    #     clip: MidiClip = next(filter(None, clips))
-    #     return _get_instrument_clips_from_scene_index(clip.index)
 
 
 def move_clip_loop(go_next: bool) -> Sequence:
@@ -98,5 +82,5 @@ def change_clip_loop(bar_length: int) -> Sequence:
 def scrub_clips(bar_number: int) -> None:
     for clip in _get_instrument_clips():
         scrub_position = ((bar_number - 1) * Song.signature_numerator()) + clip.loop.start
-        if scrub_position < clip.loop.length:
+        if scrub_position < clip.loop.end:
             clip.scrub(scrub_position)
