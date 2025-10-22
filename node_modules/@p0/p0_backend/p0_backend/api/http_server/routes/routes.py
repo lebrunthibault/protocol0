@@ -14,6 +14,8 @@ from p0_backend.lib.process import execute_powershell_command
 from p0_backend.lib.window.find_window import find_window_handle_by_enum
 from p0_backend.lib.window.window import focus_window
 from p0_backend.settings import Settings
+
+from protocol0.application.command.BackendPongCommand import BackendPongCommand
 from protocol0.application.command.LogSelectedCommand import LogSelectedCommand
 from protocol0.application.command.LogSongStatsCommand import LogSongStatsCommand
 from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongCommand
@@ -47,6 +49,11 @@ router.include_router(track_router, prefix="/track")
 @router.get("/")
 def home() -> str:
     return "ok"
+
+
+@router.get("/ping")
+def ping() -> None:
+    p0_script_client().dispatch(BackendPongCommand())
 
 
 @router.get("/reload_ableton")

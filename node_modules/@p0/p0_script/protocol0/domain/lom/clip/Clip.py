@@ -1,12 +1,14 @@
 from typing import Optional, List, cast
 
 import Live
-from _Framework.SubjectSlot import SlotManager
+from _Framework.SubjectSlot import subject_slot, SlotManager
 
 from protocol0.domain.lom.clip.ClipLoop import ClipLoop
 from protocol0.domain.lom.clip.ClipName import ClipName
 from protocol0.domain.lom.clip.ClipPlayingPosition import ClipPlayingPosition
+from protocol0.domain.lom.clip.ClipRecordedEvent import ClipRecordedEvent
 from protocol0.domain.lom.clip.automation.ClipAutomation import ClipAutomation
+from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.utils.forward_to import ForwardTo
 from protocol0.domain.shared.utils.utils import previous_power_of_2
 from protocol0.shared.Song import Song
@@ -31,6 +33,8 @@ class Clip(SlotManager, Observable):
         self.loop.register_observer(self)
         self._notes_shown = True
 
+        self._is_recording_listener.subject = live_clip
+
     def __eq__(self, clip: object) -> bool:
         return isinstance(clip, Clip) and self._clip == clip._clip
 
@@ -40,6 +44,11 @@ class Clip(SlotManager, Observable):
     def update(self, observable: Observable) -> None:
         if isinstance(observable, ClipLoop):
             self.notify_observers()
+
+    @subject_slot("is_recording")
+    def _is_recording_listener(self) -> None:
+        if not self.is_recording:
+            DomainEventBus.emit(ClipRecordedEvent(self))
 
     name = cast(str, ForwardTo("clip_name", "name"))
     color = cast(int, ForwardTo("appearance", "color"))
