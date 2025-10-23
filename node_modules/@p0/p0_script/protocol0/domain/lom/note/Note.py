@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, Union
 
 import Live
 
@@ -45,6 +45,9 @@ class Note(object):
         return NoteSpec(
             self.pitch, self.start, self.duration, velocity=self.velocity, mute=self.muted
         )
+
+    def to_dict(self) -> Dict[str, Union[float, int]]:
+        return {"pitch": self.pitch, "start": self.start, "end": self.start + self.duration}
 
     @property
     def pitch(self) -> int:

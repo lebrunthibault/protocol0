@@ -40,6 +40,7 @@ class DeviceParamEnum(Enum):
     OUTPUT = "OUTPUT"
     OUTPUT_GAIN = "OUTPUT_GAIN"
     PATTERN = "PATTERN"
+    PITCH = "PITCH"
     REVERB_INPUT = "REVERB_INPUT"
     STEREO_MODE = "STEREO_MODE"
     UTILITY_SILENT_GAIN = "UTILITY_SILENT_GAIN"
@@ -85,6 +86,7 @@ class DeviceParamEnum(Enum):
             DeviceParamEnum.OUTPUT: "Output",
             DeviceParamEnum.OUTPUT_GAIN: "Output Gain",
             DeviceParamEnum.PATTERN: "Pattern",
+            DeviceParamEnum.PITCH: "Pitch",
             DeviceParamEnum.STEREO_MODE: "Stereo Mode",
             DeviceParamEnum.UTILITY_SILENT_GAIN: "Gain",
             DeviceParamEnum.UTILITY_MID_SIDE: "Mid/Side Balance",

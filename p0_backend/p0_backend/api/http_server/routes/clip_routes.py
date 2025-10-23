@@ -1,4 +1,10 @@
+from typing import List
+
 from fastapi import APIRouter
+from pydantic import BaseModel
+
+from p0_backend.lib.midi.analyze_key import analyze_key, NoteModel
+
 from protocol0.application.command.CleanLoopCommand import (
     CleanLoopCommand,
 )
@@ -13,6 +19,10 @@ from protocol0.application.command.ToggleNotesCommand import ToggleNotesCommand
 from p0_backend.api.client.p0_script_api_client import p0_script_client
 
 router = APIRouter()
+
+
+class NotesModel(BaseModel):
+    notes: List[NoteModel]
 
 
 @router.get("/toggle_notes")
@@ -43,3 +53,8 @@ async def clean_arrangement_loop():
 @router.get("/clear_muted_notes")
 async def clear_muted_notes():
     p0_script_client().dispatch(RemoveMutedNotesCommand())
+
+
+@router.post("/analyze_key")
+async def _analyze_key(notes: NotesModel):
+    analyze_key(notes.notes)

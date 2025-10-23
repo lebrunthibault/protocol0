@@ -8,9 +8,11 @@ from protocol0.domain.live_set.LiveSetInstruments import (
     change_clip_loop,
     sync_markers,
 )
+from protocol0.domain.lom.clip.MidiClip import MidiClip
 
 # noinspection SpellCheckingInspection
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
+from protocol0.domain.lom.note.Note import Note
 from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.shared.Song import Song
@@ -58,27 +60,8 @@ class ActionGroupLive4(ActionGroupInterface):
         #     on_scroll=scroll_splice_track_volume,
         # )
 
-        def scroll_selected_track_volume(go_next: bool) -> None:
-            assert not isinstance(Song.selected_track(), MasterTrack), "Cannot scroll master volume"
-            Song.selected_track().scroll_volume(go_next)
-
-        # self.add_encoder(
-        #     identifier=15,
-        #     name="track volume",
-        #     on_scroll=scroll_selected_track_volume,
-        # )
-
-        def scroll_selected_parameter(go_next: bool) -> None:
-            assert Song.selected_parameter(), "No selected parameter"
-            Song.selected_parameter().scroll(go_next)
-
-        #
-        # self.add_encoder(
-        #     identifier=16, name="scroll_selected_parameter", on_scroll=scroll_selected_parameter
-        # )
-
     def action_test(self) -> None:
-        import logging
-
-        logging.getLogger(__name__).info(Song.scenes())
-        logging.getLogger(__name__).info(Song.selected_scene())
+        clip = Song.selected_clip(MidiClip)
+        notes = [Note.from_live_note(live_note) for live_note in clip.get_notes()]
+        notes_dict = [note.to_dict() for note in notes]
+        Backend.client().post_analyze_key(notes_dict)

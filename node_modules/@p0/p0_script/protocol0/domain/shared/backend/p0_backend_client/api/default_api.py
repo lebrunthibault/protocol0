@@ -656,6 +656,25 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
+    def post_analyze_key(
+        self,
+        notes,
+    ):  # noqa: E501
+        # type: (any, ) -> None
+        """
+        Analyze key of notes  # noqa: E501
+        """
+
+        payload = {
+            "method": "POST",
+            "path": "/clip/analyze_key",
+            "params": {
+                "notes": notes,
+            },
+        }
+
+        self._send_dict_as_midi(payload)
+
     def post_current_state(
         self,
         post_current_state_payload,

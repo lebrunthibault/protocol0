@@ -136,3 +136,5 @@ ActionGroupLive4  # unused class (protocol0\application\control_surface\group\Ac
 _._bass_track_arm_listener  # unused method (protocol0\domain\live_set\LiveSet.py:56)
 ActionGroupLaunchPadPro  # unused class (protocol0\application\control_surface\group\ActionGroupLaunchPadPro.py:9)
 change_track_sound  # unused function (protocol0\domain\live_set\LiveSetSounds.py:6)
+_.scroll_volume  # unused method (protocol0\domain\lom\track\simple_track\SimpleTrack.py:245)
+_.on_key_detected  # unused method (protocol0\domain\live_set\LiveSet.py:117)
