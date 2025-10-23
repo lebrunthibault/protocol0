@@ -15,6 +15,7 @@ from protocol0.domain.lom.clip.ClipLoop import ClipLoop
 from protocol0.domain.lom.clip.ClipRecordedEvent import ClipRecordedEvent
 from protocol0.domain.lom.clip.MidiClip import MidiClip
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
+from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
 from protocol0.domain.lom.song.SongStoppedEvent import SongStoppedEvent
 from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
@@ -27,6 +28,7 @@ from protocol0.domain.shared.utils.list import find_if
 from protocol0.domain.shared.utils.timing import defer
 from protocol0.infra.midi.MidiService import MidiService
 from protocol0.shared.Song import Song, find_track
+from protocol0.shared.logging.StatusBar import StatusBar
 from protocol0.shared.sequence.Sequence import Sequence
 
 
@@ -57,6 +59,14 @@ class LiveSet(SlotManager):
         self._synth_track_pitch = self._synth_track.devices.get_one_from_enum(DeviceEnum.PITCH)
         self._piano_track = LiveTrack.PIANO.get()
         self._piano_track_pitch = self._piano_track.devices.get_one_from_enum(DeviceEnum.PITCH)
+        self._vocal_track = LiveTrack.VOCALS.get()
+        self._vocal_track_pitch = self._vocal_track.devices.get_one_from_enum(
+            DeviceEnum.DRUM_RACK
+        ).get_parameter_by_name(DeviceParamEnum.PITCH)
+
+        import logging
+
+        logging.getLogger(__name__).info((self._vocal_track, self._vocal_track_pitch))
 
         def unsubscribe_on_clip_captured() -> None:
             DomainEventBus.un_subscribe(ClipCreatedOrDeletedEvent, self._on_clip_captured)
@@ -103,6 +113,12 @@ class LiveSet(SlotManager):
             quantize_bar_notes(self._piano_track.clip_slots[event.clip.index])
         if event.clip in self._synth_track.clips:
             split_bar_notes(self._synth_track.clip_slots[event.clip.index])
+
+    def on_key_detected(self, pitch: int) -> None:
+        keys = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"]
+
+        StatusBar.show_message(f"Detected major key: {keys[pitch]} -> pitch + {pitch * 127. / 12}")
+        self._vocal_track_pitch.value = pitch * 127.0 / 11
 
     def capture_midi(self) -> None:
         seq = Sequence()
