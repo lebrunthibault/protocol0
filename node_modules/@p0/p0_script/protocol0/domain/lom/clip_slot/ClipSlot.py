@@ -41,7 +41,7 @@ class ClipSlot(SlotManager, Observable):
     def _has_clip_listener(self) -> None:
         self._map_clip()
 
-        DomainEventBus.emit(ClipCreatedOrDeletedEvent(self._clip_slot))
+        DomainEventBus.emit(ClipCreatedOrDeletedEvent(self))
 
         Scheduler.defer(self.appearance.refresh)
 
@@ -83,8 +83,8 @@ class ClipSlot(SlotManager, Observable):
     def is_playing(self) -> bool:
         return self._clip_slot and self._clip_slot.is_playing
 
-    def fire(self) -> None:
-        self._clip_slot.fire()
+    def fire(self, force_legato: bool = False) -> None:
+        self._clip_slot.fire(force_legato)
 
     def delete_clip(self) -> Sequence:
         seq = Sequence()
@@ -125,7 +125,7 @@ class ClipSlot(SlotManager, Observable):
         seq = Sequence()
         if self._clip_slot:
             seq.add(partial(self._clip_slot.duplicate_clip_to, clip_slot._clip_slot))
-            seq.wait_for_event(ClipCreatedOrDeletedEvent, clip_slot._clip_slot)
+            seq.wait_for_event(ClipCreatedOrDeletedEvent, clip_slot)
             seq.defer()
         return seq.done()
 

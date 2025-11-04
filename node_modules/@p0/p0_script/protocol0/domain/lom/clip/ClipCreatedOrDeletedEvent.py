@@ -1,9 +1,12 @@
-import Live
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from protocol0.domain.lom.clip_slot.ClipSlot import ClipSlot
 
 
 class ClipCreatedOrDeletedEvent(object):
-    def __init__(self, live_clip_slot: Live.ClipSlot.ClipSlot) -> None:
-        self.live_clip_slot = live_clip_slot
+    def __init__(self, clip_slot: "ClipSlot") -> None:
+        self.clip_slot = clip_slot
 
     def target(self) -> object:
-        return self.live_clip_slot
+        return self.clip_slot

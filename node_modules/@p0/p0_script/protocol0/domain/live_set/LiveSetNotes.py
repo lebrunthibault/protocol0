@@ -24,6 +24,9 @@ def split_bar_notes(clip_slot: MidiClipSlot) -> None:
 
 
 def quantize_bar_notes(clip_slot: MidiClipSlot) -> None:
+    import logging
+
+    logging.getLogger(__name__).info("quantizing bar notes")
     loop = clip_slot.clip.loop
 
     # do this on the whole clip
@@ -43,6 +46,9 @@ def quantize_bar_notes(clip_slot: MidiClipSlot) -> None:
 
 
 def make_clip_monophonic(clip_slot: MidiClipSlot) -> None:
+    import logging
+
+    logging.getLogger(__name__).info(clip_slot)
     clip_slot.clip.quantize()
     loop = clip_slot.clip.loop
 
@@ -55,6 +61,9 @@ def make_clip_monophonic(clip_slot: MidiClipSlot) -> None:
         return
 
     notes = [Note.from_live_note(live_note) for live_note in live_notes]
+    import logging
+
+    logging.getLogger(__name__).info(notes)
 
     # Filter notes: keep only those with pitch <= C2 (MIDI note 36)
     bass_notes = [note for note in notes if note.pitch <= 48]
@@ -68,9 +77,11 @@ def make_clip_monophonic(clip_slot: MidiClipSlot) -> None:
     # # Make notes legato (connect them with no gaps) and clamp to C1-C2 range
     for i, note in enumerate(bass_notes):
         # Map pitch to C1-C2 range (36-48) preserving note name
-        # Get note within octave (0-11), then map to C1-C2 range
-        note_in_octave = note.pitch % 12
-        note.pitch = 36 + note_in_octave  # C1 is 36, so add the note offset
+
+        if note.pitch != 48:
+            # Get note within octave (0-11), then map to C1-C2 range
+            note_in_octave = note.pitch % 12
+            note.pitch = 36 + note_in_octave  # C1 is 36, so add the note offset
 
         # Make legato: extend duration to next note's start time
         if i < len(bass_notes) - 1:
@@ -81,7 +92,7 @@ def make_clip_monophonic(clip_slot: MidiClipSlot) -> None:
             # Last note: extend to end of clip
             note.end = clip_slot.clip.end_marker
 
-    split_notes = split_notes_to_beats(notes)
+    split_notes = split_notes_to_beats(bass_notes)
     clip_slot.clip.replace_notes(split_notes)
 
     loop.start = loop_start

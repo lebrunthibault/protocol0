@@ -187,11 +187,10 @@ class Sequence(Observable):
         Will continue the sequence after an event of type event_class is fired
 
         expected_emitter : passing an object here will check that the event was
-        emitter from the right emitter before continuing the Sequence
+        emittes from the right emitter before continuing the Sequence
 
         continue_on_song_stop: for events relying on a playing song, setting
-        continue_on_song_stop to
-        True
+        continue_on_song_stop to True
         will continue the sequence on a SongStoppedEvent
         """
         if expected_emitter is not None:
