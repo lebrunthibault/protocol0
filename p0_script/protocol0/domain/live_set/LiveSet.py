@@ -1,6 +1,6 @@
 import enum
 from functools import partial
-from typing import Optional, cast
+from typing import Optional, cast, List
 
 from _Framework.SubjectSlot import subject_slot, SlotManager
 
@@ -10,14 +10,17 @@ from protocol0.domain.live_set.LiveSetNotes import (
     quantize_bar_notes,
     split_bar_notes,
 )
+from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.clip.ClipCreatedOrDeletedEvent import ClipCreatedOrDeletedEvent
 from protocol0.domain.lom.clip.ClipLoop import ClipLoop
 from protocol0.domain.lom.clip.ClipRecordedEvent import ClipRecordedEvent
 from protocol0.domain.lom.clip.MidiClip import MidiClip
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
+from protocol0.domain.lom.note.Note import Note
 from protocol0.domain.lom.song.SongStoppedEvent import SongStoppedEvent
 from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
+from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.BarChangedEvent import BarChangedEvent
@@ -69,13 +72,21 @@ class LiveSet(SlotManager):
         logging.getLogger(__name__).info((self._vocal_track, self._vocal_track_pitch))
 
         def unsubscribe_on_clip_captured() -> None:
-            DomainEventBus.un_subscribe(ClipCreatedOrDeletedEvent, self._on_clip_captured)
+            DomainEventBus.un_subscribe(ClipCreatedOrDeletedEvent, self._on_clip_captured_event)
 
         DomainEventBus.subscribe(SongStoppedEvent, unsubscribe_on_clip_captured)
 
-        DomainEventBus.subscribe(ClipRecordedEvent, self._on_clip_recorded)
+        DomainEventBus.subscribe(ClipRecordedEvent, self._on_clip_recorded_event)
 
         self._bass_track_arm_listener.subject = self._bass_track._track
+
+    @property
+    def instrument_tracks(self) -> List[SimpleMidiTrack]:
+        return [
+            self._bass_track,
+            self._synth_track,
+            self._piano_track,
+        ]
 
     @subject_slot("arm")
     def _bass_track_arm_listener(self) -> None:
@@ -87,9 +98,14 @@ class LiveSet(SlotManager):
             Scheduler.defer(partial(setattr, self._piano_track_pitch, "is_enabled", activate_pitch))
 
     @defer
-    def _on_clip_captured(self, event: ClipCreatedOrDeletedEvent) -> None:
-        clip = MidiClip(event.live_clip_slot.clip, 0)
+    def _on_clip_captured_event(self, event: ClipCreatedOrDeletedEvent) -> None:
+        clip = event.clip_slot.clip
         loop: ClipLoop = clip.loop
+        self._on_clip_recorded(clip)
+
+        import logging
+
+        logging.getLogger(__name__).info(f"clip captured: {clip}: {loop.total_bar_length}")
 
         if loop.total_bar_length >= 8:
             loop.bar_length = 8
@@ -101,18 +117,64 @@ class LiveSet(SlotManager):
         clip.quantize(0.5)
 
         # clip.stop(True)
-        clip.fire()
+
+        event.clip_slot.clip.fire()
+        # event.clip_slot.fire(force_legato=True)
 
         # Scheduler.defer(self._playback.stop_playing)
 
     @defer
-    def _on_clip_recorded(self, event: ClipRecordedEvent) -> None:
-        if event.clip in self._bass_track.clips:
-            make_clip_monophonic(self._bass_track.clip_slots[event.clip.index])
-        if event.clip in self._piano_track.clips:
-            quantize_bar_notes(self._piano_track.clip_slots[event.clip.index])
-        if event.clip in self._synth_track.clips:
-            split_bar_notes(self._synth_track.clip_slots[event.clip.index])
+    def _on_clip_recorded_event(self, event: ClipRecordedEvent) -> None:
+        self._on_clip_recorded(event.clip)
+
+    def _on_clip_recorded(self, clip: Clip) -> None:
+        import logging
+
+        logging.getLogger(__name__).info(f"clip recorded: {clip}, {clip.index}")
+        logging.getLogger(__name__).info(
+            (
+                clip in self._bass_track.clips,
+                clip in self._piano_track.clips,
+                clip in self._synth_track.clips,
+            )
+        )
+        if clip in self._bass_track.clips:
+            make_clip_monophonic(self._bass_track.clip_slots[clip.index])
+        if clip in self._piano_track.clips:
+            quantize_bar_notes(self._piano_track.clip_slots[clip.index])
+        if clip in self._synth_track.clips:
+            split_bar_notes(self._synth_track.clip_slots[clip.index])
+
+    def analyze_key(self) -> None:
+        clip = (
+            self._piano_track.playing_clip
+            or self._synth_track.playing_clip
+            or self._bass_track.playing_clip
+        )
+
+        def analyze_key_from_clip(midi_clip: MidiClip) -> None:
+            notes = [Note.from_live_note(live_note) for live_note in midi_clip.get_notes()]
+            notes_dict = [note.to_dict() for note in notes]
+            Backend.client().post_analyze_key(notes_dict)
+
+        if clip:
+            analyze_key_from_clip(clip)
+            return None
+
+        # no playing clip we capture midi live
+        if all(not track.arm_state.is_armed for track in self.instrument_tracks):
+            raise Protocol0Warning("No playing clip and no instrument track armed")
+
+        def clean_captured_clips() -> None:
+            for track in self.instrument_tracks:
+                if track.arm_state.is_armed:
+                    track.playing_clip.delete()
+
+        seq = Sequence()
+        seq.add(self.capture_midi)
+        seq.add(self.analyze_key)
+        seq.add(clean_captured_clips)
+        seq.done()
 
     def on_key_detected(self, pitch: int) -> None:
         keys = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"]
@@ -121,6 +183,8 @@ class LiveSet(SlotManager):
         self._vocal_track_pitch.value = pitch * 127.0 / 11
 
     def capture_midi(self) -> None:
+        DomainEventBus.subscribe(ClipCreatedOrDeletedEvent, self._on_clip_captured_event)
+
         seq = Sequence()
         if Song.tempo() < 120:
             seq.wait_for_event(Last16thPassedEvent)
@@ -130,7 +194,9 @@ class LiveSet(SlotManager):
         seq.wait_for_event(ClipCreatedOrDeletedEvent)
         seq.defer()
         seq.add(
-            partial(DomainEventBus.un_subscribe, ClipCreatedOrDeletedEvent, self._on_clip_captured)
+            partial(
+                DomainEventBus.un_subscribe, ClipCreatedOrDeletedEvent, self._on_clip_captured_event
+            )
         )
         seq.add(partial(self._midi_service.send_ec4_select_group, 9))
         seq.wait_for_event(BarChangedEvent)
