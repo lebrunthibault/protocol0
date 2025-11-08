@@ -5,7 +5,8 @@ import Live
 from _Framework.SubjectSlot import subject_slot, SlotManager
 
 from protocol0.domain.lom.clip.Clip import Clip
-from protocol0.domain.lom.clip.ClipCreatedOrDeletedEvent import ClipCreatedOrDeletedEvent
+from protocol0.domain.lom.clip.ClipCreatedEvent import ClipCreatedEvent
+from protocol0.domain.lom.clip.ClipDeletedEvent import ClipDeletedEvent
 from protocol0.domain.lom.clip_slot.ClipSlotAppearance import ClipSlotAppearance
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
@@ -41,7 +42,10 @@ class ClipSlot(SlotManager, Observable):
     def _has_clip_listener(self) -> None:
         self._map_clip()
 
-        DomainEventBus.emit(ClipCreatedOrDeletedEvent(self))
+        if self.has_clip:
+            DomainEventBus.emit(ClipCreatedEvent(self))
+        else:
+            DomainEventBus.emit(ClipDeletedEvent(self))
 
         Scheduler.defer(self.appearance.refresh)
 
@@ -90,7 +94,7 @@ class ClipSlot(SlotManager, Observable):
         seq = Sequence()
         if self._clip_slot and self.has_clip and self.clip:
             seq.add(self._clip_slot.delete_clip)
-            seq.wait_for_event(ClipCreatedOrDeletedEvent, self._clip_slot)
+            seq.wait_for_event(ClipDeletedEvent, self._clip_slot)
         return seq.done()
 
     def prepare_for_record(self, clear: bool = True) -> Sequence:
@@ -116,7 +120,7 @@ class ClipSlot(SlotManager, Observable):
 
         seq = Sequence()
         seq.add(partial(self._clip_slot.create_clip, Song.signature_numerator()))
-        seq.wait_for_event(ClipCreatedOrDeletedEvent, self._clip_slot)
+        seq.wait_for_event(ClipCreatedEvent, self._clip_slot)
         seq.defer()
         seq.add(lambda: self.clip.clip_name._name_listener())
         return seq.done()
@@ -125,7 +129,7 @@ class ClipSlot(SlotManager, Observable):
         seq = Sequence()
         if self._clip_slot:
             seq.add(partial(self._clip_slot.duplicate_clip_to, clip_slot._clip_slot))
-            seq.wait_for_event(ClipCreatedOrDeletedEvent, clip_slot)
+            seq.wait_for_event(ClipCreatedEvent, clip_slot)
             seq.defer()
         return seq.done()
 

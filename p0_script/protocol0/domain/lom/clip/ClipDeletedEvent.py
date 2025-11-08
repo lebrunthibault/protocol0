@@ -4,7 +4,7 @@ if TYPE_CHECKING:
     from protocol0.domain.lom.clip_slot.ClipSlot import ClipSlot
 
 
-class ClipCreatedOrDeletedEvent(object):
+class ClipDeletedEvent(object):
     def __init__(self, clip_slot: "ClipSlot") -> None:
         self.clip_slot = clip_slot
 

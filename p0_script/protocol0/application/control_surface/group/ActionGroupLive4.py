@@ -62,6 +62,6 @@ class ActionGroupLive4(ActionGroupInterface):
 
     def action_test(self) -> None:
         clip = Song.selected_clip(MidiClip)
-        notes = [Note.from_live_note(live_note) for live_note in clip.get_notes()]
-        notes_dict = [note.to_dict() for note in notes]
-        Backend.client().post_analyze_key(notes_dict)
+        import logging
+
+        logging.getLogger(__name__).info(clip.get_notes())
