@@ -1,38 +1,24 @@
 from typing import List
 
+from protocol0.domain.lom.clip.MidiClip import MidiClip
 from protocol0.domain.lom.clip_slot.MidiClipSlot import MidiClipSlot
 from protocol0.domain.lom.note.Note import Note
 from protocol0.shared.Song import Song
 
 
 def split_bar_notes(clip_slot: MidiClipSlot) -> None:
-    loop = clip_slot.clip.loop
-
-    # do this on the whole clip
-    loop_start = loop.start
-    loop.start = 0
-    live_notes = clip_slot.clip.get_notes()
-
-    if not live_notes:
-        return
-
-    notes = [Note.from_live_note(live_note) for live_note in live_notes]
-    split_notes = split_notes_to_beats(notes)
+    split_notes = split_notes_to_beats(clip_slot.clip.get_notes())
 
     clip_slot.clip.replace_notes(split_notes)
-    loop.start = loop_start
 
 
 def quantize_bar_notes(clip_slot: MidiClipSlot) -> None:
-    import logging
-
-    logging.getLogger(__name__).info("quantizing bar notes")
     loop = clip_slot.clip.loop
 
     # do this on the whole clip
     loop_start = loop.start
     loop.start = 0
-    live_notes = clip_slot.clip.get_notes()
+    live_notes = clip_slot.clip.get_live_notes()
 
     if not live_notes:
         return
@@ -48,22 +34,10 @@ def quantize_bar_notes(clip_slot: MidiClipSlot) -> None:
 def make_clip_monophonic(clip_slot: MidiClipSlot) -> None:
     import logging
 
-    logging.getLogger(__name__).info(clip_slot)
+    logging.getLogger(__name__).info("making monophonic")
     clip_slot.clip.quantize()
-    loop = clip_slot.clip.loop
 
-    # do this on the whole clip
-    loop_start = loop.start
-    loop.start = 0
-
-    live_notes = clip_slot.clip.get_notes()
-    if not live_notes:
-        return
-
-    notes = [Note.from_live_note(live_note) for live_note in live_notes]
-    import logging
-
-    logging.getLogger(__name__).info(notes)
+    notes = clip_slot.clip.get_notes()
 
     # Filter notes: keep only those with pitch <= C2 (MIDI note 36)
     bass_notes = [note for note in notes if note.pitch <= 48]
@@ -95,8 +69,6 @@ def make_clip_monophonic(clip_slot: MidiClipSlot) -> None:
     split_notes = split_notes_to_beats(bass_notes)
     clip_slot.clip.replace_notes(split_notes)
 
-    loop.start = loop_start
-
 
 def split_notes_to_beats(notes: List[Note]) -> List[Note]:
     """Split notes into bars: each note should not exceed one bar in length."""
@@ -127,3 +99,60 @@ def split_notes_to_beats(notes: List[Note]) -> List[Note]:
                 current_start = current_bar_end
 
     return split_notes
+
+
+def determine_captured_clip_bar_length(clip: MidiClip) -> float:
+    if clip.loop.total_bar_length < 2:
+        return clip.loop.bar_length
+
+    notes = clip.get_notes()
+    if not notes:
+        return clip.loop.bar_length
+
+    bar_length = Song.signature_numerator()
+
+    def has_note_in_bar(bar_index: int) -> bool:
+        """Check if any note exists in the given bar."""
+        bar_index = int(clip.loop.total_bar_length - 1) - bar_index
+        bar_start = bar_index * bar_length
+        bar_end = (bar_index + 1) * bar_length
+
+        import logging
+
+        logging.getLogger(__name__).info(
+            f"bar index: {bar_index}, bar start: {bar_start}, bar end: {bar_end}"
+        )
+
+        for note in notes:
+            # Note starts in bar, ends in bar, or spans the bar
+            if (
+                bar_start <= note.start < bar_end
+                or bar_start < note.end <= bar_end
+                or (note.start < bar_start and note.end > bar_end)
+            ):
+                return True
+
+        import logging
+
+        logging.getLogger(__name__).info("FALSE")
+        logging.getLogger(__name__).info(notes)
+        return False
+
+    import logging
+
+    logging.getLogger(__name__).info(clip.loop.total_bar_length)
+    logging.getLogger(__name__).info(all(has_note_in_bar(i) for i in range(8)))
+    logging.getLogger(__name__).info(all(has_note_in_bar(i) for i in range(4)))
+    logging.getLogger(__name__).info(all(has_note_in_bar(i) for i in range(2)))
+
+    # Check if we have notes in all 8 bars
+    if clip.loop.total_bar_length >= 8 and all(has_note_in_bar(i) for i in range(8)):
+        return 8
+    # Check if we have notes in all 4 bars
+    elif clip.loop.total_bar_length >= 4 and all(has_note_in_bar(i) for i in range(4)):
+        return 4
+    # Check if we have notes in all 2 bars
+    elif clip.loop.total_bar_length >= 2 and all(has_note_in_bar(i) for i in range(2)):
+        return 2
+    else:
+        return clip.loop.bar_length

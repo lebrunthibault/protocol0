@@ -383,9 +383,6 @@ class Song(object):
 
     @classmethod
     def capture_midi(cls) -> Optional["Sequence"]:
-        from protocol0.shared.sequence.Sequence import Sequence
-        from protocol0.domain.lom.clip.ClipCreatedOrDeletedEvent import ClipCreatedOrDeletedEvent
-
         if not cls._live_song().can_capture_midi:
             StatusBar.show_message("No midi to capture")
 

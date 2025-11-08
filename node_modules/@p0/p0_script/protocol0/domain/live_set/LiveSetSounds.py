@@ -20,7 +20,7 @@ def change_track_sound(track_type: str, sound_index: int) -> None:
         if not clip:
             continue
 
-        notes = clip.get_notes()
+        notes = clip.get_live_notes()
 
         lowest_pitch = min(note.pitch for note in notes) if notes else 0
 

@@ -20,7 +20,7 @@ class MidiClip(Clip):
         super(MidiClip, self).__init__(*a, **k)
         self._muted_listener.subject = self._clip
 
-    def get_notes(self) -> Live.Clip.MidiNoteVector:
+    def get_live_notes(self) -> Live.Clip.MidiNoteVector:
         if not self._clip:
             return []
 
@@ -30,6 +30,19 @@ class MidiClip(Clip):
             live_notes = self._clip.get_notes_extended(0, 128, self.loop.start, self.length)
 
         return live_notes
+
+    def get_notes(self) -> List[Note]:
+        # return all notes not just the loop ones
+        loop_start = self.loop.start
+        self.loop.start = 0
+        notes = list(map(Note.from_live_note, self.get_live_notes()))
+
+        self.loop.start = loop_start
+        return notes
+
+    def get_looped_notes(self) -> List[Note]:
+        """Return only loop section notes."""
+        return list(map(Note.from_live_note, self.get_live_notes()))
 
     def replace_notes(self, notes: List[Note]) -> Optional[Sequence]:
         if not self._clip:
@@ -44,8 +57,7 @@ class MidiClip(Clip):
         return seq.done()
 
     def clear_muted_notes(self) -> Optional[Sequence]:
-        notes = map(Note, self.get_notes())
-        return self.replace_notes([n for n in notes if not n.muted])
+        return self.replace_notes([n for n in self.get_notes() if not n.muted])
 
     @subject_slot("muted")
     def _muted_listener(self) -> None:
@@ -75,7 +87,7 @@ class MidiClip(Clip):
             self.quantize()
 
     def scale_velocities(self, go_next: bool, scaling_factor: int = 4) -> None:
-        note_vector = self.get_notes()
+        note_vector = self.get_live_notes()
         if len(list(note_vector)) == 0:
             return
         average_velo = sum([note.velocity for note in note_vector]) / len(note_vector)
