@@ -20,6 +20,8 @@ from protocol0.shared.sequence.Sequence import Sequence
 
 class Protocol0(ControlSurface):
     _BACKEND_ALIVE = False
+    _BACKEND_CHECK_MAX_ATTEMPTS = 3
+    _backend_check_attempts = 0
 
     def __init__(self, c_instance: Any = None) -> None:
         super(Protocol0, self).__init__(c_instance=c_instance)
@@ -55,9 +57,15 @@ class Protocol0(ControlSurface):
         Logger.info("P0 script loaded")
 
     def _check_backend_is_alive(self) -> None:
-        if not Protocol0._BACKEND_ALIVE:
-            StatusBar.show_message("Protocol0 backend is not running")
-            Backend.client().ping()
+        if Protocol0._BACKEND_ALIVE:
+            return
+
+        Protocol0._backend_check_attempts += 1
+        if Protocol0._backend_check_attempts > Protocol0._BACKEND_CHECK_MAX_ATTEMPTS:
+            return
+
+        StatusBar.show_message("Protocol0 backend is not running")
+        Backend.client().ping()
 
         seq = Sequence()
         seq.wait_ms(5000)
