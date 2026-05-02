@@ -158,7 +158,7 @@ class DeviceService(object):
         except IndexError:
             return
 
-        self.move_device(next_device, dry_wet_device.chains[1], 0)
+        # self.move_device(next_device, dry_wet_device.chains[1], 0)
 
     def _get_device_to_select_for_insertion(
         self, track: SimpleTrack, device_enum: DeviceEnum
