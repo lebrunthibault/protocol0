@@ -694,25 +694,6 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
-    def post_scene_stats(
-        self,
-        post_scene_stats_payload,
-    ):  # noqa: E501
-        # type: (PostSceneStatsPayload, ) -> None
-        """
-        Post Scene Stats  # noqa: E501
-        """
-
-        payload = {
-            "method": "POST",
-            "path": "/set/scene_stats",
-            "params": {
-                "post_scene_stats_payload": post_scene_stats_payload,
-            },
-        }
-
-        self._send_dict_as_midi(payload)
-
     def prepare_for_soundcloud(
         self,
         path,

@@ -69,6 +69,7 @@ class DeviceEnum(Enum):
     PITCH = "Pitch"
     PRO_Q_3 = "Pro-Q 3"
     PRO_Q_3_VST3 = "FabFilter Pro-Q 3"
+    PRO_Q_4 = "Pro-Q 4"
     PSY_SCOPE = "PsyScope_Pro"
     R_COMPRESSOR = "RCompressor Stereo"
     REVERB = "Reverb"

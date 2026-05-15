@@ -15,7 +15,6 @@ from protocol0.domain.lom.instrument.instrument.InstrumentService import Instrum
 from protocol0.domain.lom.scene.PlayingScene import PlayingScene
 from protocol0.domain.lom.scene.SceneService import SceneService
 from protocol0.domain.lom.set.AbletonSet import AbletonSet
-from protocol0.domain.lom.set.AudioExportService import AudioExportService
 from protocol0.domain.lom.set.MixingService import MixingService
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
 from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
@@ -105,9 +104,6 @@ class Container(ContainerInterface):
             track_crud_component,
         )
         song_stats_service = SongStatsService(ableton_set)
-        audio_export_service = AudioExportService(
-            song_stats_service, playback_component, scene_component
-        )
         Song(
             live_song,
             device_component,
@@ -151,8 +147,6 @@ class Container(ContainerInterface):
         # audit
         self._register(log_service)
         self._register(song_stats_service)
-
-        self._register(audio_export_service)
 
         ActionGroupFactory.create_action_groups(self, control_surface.component_guard)
 

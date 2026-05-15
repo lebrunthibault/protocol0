@@ -33,13 +33,18 @@ class AbletonSetManager:
         if cls.DEBUG:
             logger.info("registering current state")
 
-        path_info = PathInfo.create(get_launched_set_path())
+        set_path = get_launched_set_path()
+        if set_path is None:
+            logger.warning("Skipping current state: no existing .als path found in log.")
+            return
+
+        path_info = PathInfo.create(set_path)
 
         ableton_set = cls._ACTIVE_SET
         previous_tracks = ableton_set.current_state.tracks if ableton_set else []
         if not ableton_set or ableton_set.path_info.filename != path_info.filename:
             try:
-                ableton_set = AbletonSet.create(get_launched_set_path())
+                ableton_set = AbletonSet.create(set_path)
             except AssertionError:
                 try:
                     ableton_set = AbletonSet.create(settings.ableton_test_set_path)

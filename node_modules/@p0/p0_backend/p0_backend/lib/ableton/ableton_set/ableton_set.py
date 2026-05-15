@@ -9,8 +9,6 @@ from typing import List, Optional
 from loguru import logger
 from pydantic import BaseModel
 
-from p0_backend.lib.ableton.get_set import get_launched_set_path
-from p0_backend.lib.notification import notify
 from p0_backend.settings import Settings
 
 settings = Settings()
@@ -76,13 +74,6 @@ class PathInfo(BaseModel):
         )
 
 
-class SceneStat(BaseModel):
-    name: str
-    start: int
-    end: int
-    track_names: List[str]
-
-
 class AbletonSetStage(str, Enum):
     IDEA = "IDEA"
     TRACK = "TRACK"
@@ -93,7 +84,6 @@ class AbletonSetStage(str, Enum):
 class AbletonSetMetadata(BaseModel):
     path_info: Optional[PathInfo] = None
     tempo: float = 0
-    scenes: List[SceneStat] = []
     stars: int = 0
     comment: str = ""
     stage: AbletonSetStage = AbletonSetStage.IDEA
@@ -251,17 +241,3 @@ class AbletonSet:
     def save(self):
         with open(self.path_info.metadata_filename, "w") as f:
             f.write(self.metadata.model_dump_json(exclude={"path_info"}))
-
-
-def set_scene_stats(tempo: float, scene_stats: List[SceneStat]):
-    ableton_set = AbletonSet.create(get_launched_set_path())
-
-    ableton_set.metadata.tempo = tempo
-
-    if scene_stats:
-        ableton_set.metadata.scenes = scene_stats
-
-        song_bar_length = round(scene_stats[-1].end / 4)
-        notify(f"{song_bar_length} bars")
-
-    ableton_set.save()
