@@ -1,5 +1,4 @@
 from os.path import dirname
-from typing import List
 
 from fastapi import APIRouter
 from loguru import logger
@@ -9,8 +8,6 @@ from p0_backend.lib.ableton.ableton import (
     open_set,
 )
 from p0_backend.lib.ableton.ableton_set.ableton_set import (
-    set_scene_stats,
-    SceneStat,
     AbletonSetCurrentState,
     AbletonTrack,
     PathInfo,
@@ -55,23 +52,6 @@ async def update_track_color(payload: UpdateTrackColorPayload):
 @router.post("/clear_state")
 async def clear_state():
     AbletonSetManager.clear_state()
-
-
-class SceneStatsPayload(BaseModel):
-    tempo: float
-    scenes: List[SceneStat]
-
-
-class PostSceneStatsPayload(BaseModel):
-    post_scene_stats_payload: SceneStatsPayload
-
-
-@router.post("/scene_stats")
-async def post_scene_stats(payload: PostSceneStatsPayload):
-    set_scene_stats(
-        payload.post_scene_stats_payload.tempo,
-        payload.post_scene_stats_payload.scenes,
-    )
 
 
 @router.get("/open")

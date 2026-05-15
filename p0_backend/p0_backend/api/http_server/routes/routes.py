@@ -22,7 +22,6 @@ from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongComm
 from .action_routes import router as action_router
 from .clip_routes import router as clip_router
 from .device_routes import router as device_router
-from .export_routes import router as export_router
 from .keyboard_routes import router as keyboard_router
 from .monitoring_routes import router as monitoring_router
 from .process_routes import router as process_router
@@ -37,7 +36,6 @@ settings = Settings()
 router.include_router(action_router, prefix="/actions")
 router.include_router(clip_router, prefix="/clip")
 router.include_router(device_router, prefix="/device")
-router.include_router(export_router, prefix="/export")
 router.include_router(keyboard_router, prefix="/keyboard")
 router.include_router(monitoring_router, prefix="/monitoring")
 router.include_router(process_router, prefix="/process")

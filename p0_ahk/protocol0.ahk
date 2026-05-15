@@ -17,9 +17,6 @@ CoordMode,mouse,screen
 ^#+n::
 	callBackend("reload_ableton")
 return
-;#e::
-;    Run, explorer.exe "D:\ableton projects\tracks"
-;return
 
 ; ableton hotkeys
 #IfWinActive, ahk_exe Ableton Live 12 Suite.exe
@@ -29,21 +26,18 @@ return
 ^!q::
     Send ^!p  ; left hand shortcut
 return
-~^+r::
-	callBackend("export")
-return
 ~^+f::
 	Send ^+f  ; cancel Ableton Follow
 	callBackend("search/track")
-return
-^Numpad0::
-    callBackend("clip/clear_muted_notes")
 return
 ^!u::
     callBackend("device/load?name=UTILITY")
 return
 ^!e::
     callBackend("device/load?name=EQ_EIGHT")
+return
+^!p::
+    callBackend("device/load?name=PRO_Q_4")
 return
 
 ; SELECTING TRACKS
@@ -69,8 +63,5 @@ return
     callBackend("track/select?name=bass")
 return
 
-; test
-^!+t::
-    callBackend("actions/4/4")
 
 #IfWinActive
