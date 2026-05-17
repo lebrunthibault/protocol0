@@ -27,13 +27,11 @@ loguru = "^0.7.0"
 typing-extensions = "^4.6.3"
 dacite = "^1.8.1"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 flake8 = "*"
 vulture = "*"
 pytest = "*"
 build = "^0.10.0"
-
-[tool.poetry.group.dev.dependencies]
 
 [tool.black]
 line-length = 100

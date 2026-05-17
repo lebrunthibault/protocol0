@@ -186,10 +186,6 @@ class Clip(SlotManager, Observable):
 
         self._notes_shown = not self._notes_shown
 
-    def crop(self) -> Optional[Sequence]:
-        """implemented in MidiClip and AudioClip"""
-        raise NotImplementedError
-
     def post_record(self, _: int, __: bool) -> None:
         self.clip_name.update("")
 

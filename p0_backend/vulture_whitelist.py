@@ -22,7 +22,6 @@ validation_exception_handler  # unused function (p0_backend\api\http_server\main
 execute_action  # unused function (p0_backend\api\http_server\script_actions\router.py:71)
 toggle_fold_set  # unused function (p0_backend\lib\ableton\ableton.py:176)
 save_drum_rack  # unused function (p0_backend\lib\ableton\drum_rack.py:9)
-crop_clip  # unused function (p0_backend\lib\ableton\interface\clip.py:26)
 set_clip_file_path  # unused function (p0_backend\lib\ableton\interface\clip.py:13)
 websocket_endpoint  # unused function (p0_backend\api\http_server\ws.py:53)
 _catch_protocol0_errors  # unused function (p0_backend\api\http_server\main.py:57)

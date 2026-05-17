@@ -105,8 +105,3 @@ class MidiClip(Clip):
     def apply_note_modifications(self, notes: Live.Clip.MidiNoteVector) -> None:
         self._clip.apply_note_modifications(notes)
 
-    def crop(self) -> Optional[Sequence]:
-        if self._clip:
-            self._clip.crop()  # noqa
-
-        return None

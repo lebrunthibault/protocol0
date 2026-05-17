@@ -8,13 +8,9 @@ bootstrap: .env
 
 .PHONY: boostrap
 
-midi_server:
-	@poetry run midi-server
-.PHONY: midi_server
-
-http_server:
-	@poetry run http-server
-.PHONY: http_server
+backend:
+	@poetry run backend
+.PHONY: backend
 
 logs:
 	powershell -c "Get-Content -Path '${USERPROFILE}\AppData\Roaming\Ableton\Live $(abletonVersion)\Preferences\Log.txt' -Wait -Tail 50"
