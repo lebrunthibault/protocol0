@@ -28,3 +28,20 @@ callBackend(command, arg:="") {
 
     return oHttp.responseText  ; Return the response if the request is successful
 }
+
+callScript(command, arg:="") {
+	url := "http://127.0.0.1:9000/"command
+	if (arg != "") {
+		url = %url%/%arg%
+	}
+	oHttp := ComObjCreate("WinHttp.Winhttprequest.5.1")
+
+	try {
+        oHttp.open("GET", url)
+        oHttp.send()
+    } catch e {
+        return ""
+    }
+
+    return oHttp.responseText
+}

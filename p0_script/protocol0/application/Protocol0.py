@@ -5,6 +5,7 @@ from _Framework.ControlSurface import ControlSurface
 from protocol0.application.Container import Container
 from protocol0.application.ScriptDisconnectedEvent import ScriptDisconnectedEvent
 from protocol0.application.ScriptResetActivatedEvent import ScriptResetActivatedEvent
+from protocol0.application.http import HttpServer
 from protocol0.domain.live_set.LiveSet import LiveSet
 from protocol0.domain.lom.scene.SceneService import SceneService
 from protocol0.domain.lom.track.TrackMapperService import TrackMapperService
@@ -47,6 +48,8 @@ class Protocol0(ControlSurface):
         if Song.is_live_set():
             container._register(LiveSet(container.get(MidiService)))
 
+        HttpServer.start(container)
+
         Backend.client().ping()
         seq = Sequence()
         seq.wait_ms(3000)
@@ -79,6 +82,8 @@ class Protocol0(ControlSurface):
     def disconnect(self, reset: bool = False) -> None:
         if not reset:
             super(Protocol0, self).disconnect()
+
+        HttpServer.stop()
 
         DomainEventBus.emit(ScriptDisconnectedEvent())
         # without this, the events are going to be handled twice
