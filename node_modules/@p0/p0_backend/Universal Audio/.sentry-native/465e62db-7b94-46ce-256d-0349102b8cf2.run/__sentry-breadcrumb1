@@ -1,31 +1,0 @@
-Ö©timestamp∏2024-02-23T14:43:52.817Z§type•errorßmessageŸ√15.43.52.515814          Asserts@ERROR         Main            ASSERT: false
-{
-    "function": "UASleepNotificationMgr::Subscribe",
-    "file": "UASleepNotificationMgr_Win.cpp",
-    "line": 95
-}
-®categoryæeUALog_Category_Common_Asserts•level•errorÖ©timestamp∏2024-02-23T14:43:52.817Z§type§infoßmessageŸz15.43.52.538118(+22304)  Curl@info             Main            get_IsConnectedToInternet(): IsConnected=TRUE, HRESULT=0x0
-®categoryøeUALog_Category_Networking_Curl•level§infoÖ©timestamp∏2024-02-23T14:43:52.818Z§type§infoßmessageŸn15.43.52.538123(+5)      Curl@info             Main            UAConnectionUtils: internet reachability = yes
-®categoryøeUALog_Category_Networking_Curl•level§infoÖ©timestamp∏2024-02-23T14:43:52.818Z§typeßwarningßmessageŸ•15.43.52.657936(+119812) Cloud@warn            Main            Cloud_Service::SignInIfCreds - attempting to sign-in with stored credentials "thibaultlebrun@live.fr"
-®categoryµeUALog_Category_Cloud•levelßwarningÖ©timestamp∏2024-02-23T14:43:52.818Z§typeßwarningßmessageŸù15.43.52.672748(+14811)  Cloud@warn            Main            Cloud_Service::SignIn - attempting to sign-in to cloud: "thibaultlebrun@live.fr" (store = no)
-®categoryµeUALog_Category_Cloud•levelßwarningÖ©timestamp∏2024-02-23T14:43:52.818Z§typeßwarningßmessageŸá15.43.52.777476(+104727) PACE@warn             Main            PaceSW (installed=y) - lib: 5.8.1 d40534ab 4 licenseD: 5.9.0 edaa5278 4
-®category∏eUALog_Category_AuthPACE•levelßwarningÖ©timestamp∏2024-02-23T14:43:52.818Z§type§infoßmessageŸö15.43.52.789942(+12466)  PACE@info             Main            Auth_Licensing_PACE::UpdateLocations - findAuths results(unowned) changed(0 vs 1 products)
-®category∏eUALog_Category_AuthPACE•level§infoÖ©timestamp∏2024-02-23T14:43:52.818Z§typeßwarningßmessageŸå15.43.52.792904(+2961)   PACE@warn             Main            Auth_SrvAuthFolder::Initialize - pace installed = yes.  pace version = 5.9.0
-®category∏eUALog_Category_AuthPACE•levelßwarningÖ©timestamp∏2024-02-23T14:43:52.819Z§typeßwarningßmessageŸô15.43.52.801332(+8427)   Authlib@warn          Main            Auth_SrvCloudAppsFolder::CheckDirAndStartMonitor - starting DirMonitor - C:\Program Files
-®category∑eUALog_Category_Authlib•levelßwarningÖ©timestamp∏2024-02-23T14:43:52.819Z§typeßwarningßmessageŸÅ15.43.52.801335(+3)      Authlib@warn          Main            UAFlatDirMonitor::Impl::Impl - monitor started - C:\Program Files
-®category∑eUALog_Category_Authlib•levelßwarningÖ©timestamp∏2024-02-23T14:43:53.872Z§typeßwarningßmessageŸV15.43.53.416233(+614897) Cloud@warn            Main            Cloud sign in: success
-®categoryµeUALog_Category_Cloud•levelßwarningÖ©timestamp∏2024-02-23T14:43:53.872Z§typeßwarningßmessageŸW15.43.53.426519(+10286)  Cloud@warn            Main            Requesting User Role ID
-®categoryµeUALog_Category_Cloud•levelßwarningÖ©timestamp∏2024-02-23T14:43:53.872Z§typeßwarningßmessageŸ`15.43.53.655465(+101736) PACE@warn             Main            DownloadPace - min version 5.8.1
-®category∏eUALog_Category_AuthPACE•levelßwarningÖ©timestamp∏2024-02-23T14:43:53.872Z§typeßwarningßmessageŸ{15.43.53.655467(+2)      PACE@warn             Main            DownloadPace - versions compatible (min 5.8.1 vs cur 5.9.0)
-®category∏eUALog_Category_AuthPACE•levelßwarningÖ©timestamp∏2024-02-23T14:43:53.872Z§type§infoßmessageŸã15.43.53.658458(+2990)   PACE@info             Main            Auth_Licensing_PACE::VerifyAuthenticatedSession - pace account changed = no
-®category∏eUALog_Category_AuthPACE•level§infoÖ©timestamp∏2024-02-23T14:43:56.425Z§typeßwarningßmessageŸt15.43.56.181164          PACE@warn             Main            Auth_Licensing_PACE::CloseThriftConnection - success
-®category∏eUALog_Category_AuthPACE•levelßwarningÖ©timestamp∏2024-02-23T14:43:58.478Z§typeßwarningßmessageŸ¯15.43.58.264775          PACE@warn             Main            OpenAuthenticatedSession: checkResult false, error -1 / "", acccount thibaultlebrun@live.fr, token dbcca822-83c1-4eb7-b0e9-eb68
-TokenExpired - Authentication token provided has expired
-®category∏eUALog_Category_AuthPACE•levelßwarningÖ©timestamp∏2024-02-23T14:43:58.478Z§typeßwarningßmessageŸt15.43.58.264825(+49)     PACE@warn             Main            Auth_Licensing_PACE::CloseThriftConnection - success
-®category∏eUALog_Category_AuthPACE•levelßwarningÖ©timestamp∏2024-02-23T14:44:01.532Z§type§infoßmessageŸp15.44.01.317596          PACE@info             Main            Auth_Licensing_PACE::GetAuthenticatedAccountInfo
-®category∏eUALog_Category_AuthPACE•level§infoÖ©timestamp∏2024-02-23T14:44:02.634Z§type§infoßmessageŸû15.44.02.235230(+535229) PACE@info             Main            Pace account: thibaultlebrun@live.fr(thibaultlebrun@live.fr), cloud(y)=automatic, confirmed=no
-®category∏eUALog_Category_AuthPACE•level§infoÖ©timestamp∏2024-02-23T14:44:02.634Z§type•errorßmessageŸ™15.44.02.235237(+6)      PACE@ERROR            Main            OpenAuthenticatedSession: success.  pass 1.  thibaultlebrun@live.fr / 0bce33f4-0b0b-4889-929e-58d1b7b1a86b
-®category∏eUALog_Category_AuthPACE•level•errorÖ©timestamp∏2024-02-23T14:44:07.193Z§type§infoßmessageŸe15.44.07.180879          PACE@info             Main            Auth_Licensing_PACE::ServiceLocations
-®category∏eUALog_Category_AuthPACE•level§infoÖ©timestamp∏2024-02-23T14:44:07.744Z§type§infoßmessageŸn15.44.07.545873(+364993) PACE@info             Main            ServiceLocations - serviced ilok 0x0, result 0
-®category∏eUALog_Category_AuthPACE•level§infoÖ©timestamp∏2024-02-23T14:44:07.744Z§type§infoßmessageŸm15.44.07.545875(+2)      PACE@info             Main            ServiceLocations - serviced machine, result 0
-®category∏eUALog_Category_AuthPACE•level§info

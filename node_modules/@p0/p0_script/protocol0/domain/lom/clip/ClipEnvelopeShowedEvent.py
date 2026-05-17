@@ -1,2 +1,0 @@
-class ClipEnvelopeShowedEvent(object):
-    pass

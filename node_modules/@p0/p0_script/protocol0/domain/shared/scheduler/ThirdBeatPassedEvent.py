@@ -1,2 +1,0 @@
-class ThirdBeatPassedEvent(object):
-    pass

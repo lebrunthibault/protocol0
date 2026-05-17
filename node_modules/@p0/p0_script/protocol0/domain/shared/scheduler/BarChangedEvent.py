@@ -1,2 +1,0 @@
-class BarChangedEvent(object):
-    pass
