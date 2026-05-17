@@ -38,7 +38,7 @@ def monkey_patch_static():
     Logger.info = classmethod(nop)
     Logger.warning = classmethod(nop)
 
-    Backend(nop)
+    Backend()
     Undo(nop, nop)
     AbletonSet.notify = nop
     # noinspection PyTypeChecker
