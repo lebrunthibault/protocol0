@@ -33,37 +33,37 @@ return
 
 ; LOADING DEVICES
 ^!e::
-    callBackend("device/load?name=EQ_EIGHT")
+    callScript("device/load?name=EQ_EIGHT")
 return
 ^!p::
-    callBackend("device/load?name=PRO_Q_4")
+    callScript("device/load?name=PRO_Q_4")
 return
 ^!u::
-    callBackend("device/load?name=UTILITY")
+    callScript("device/load?name=UTILITY")
 return
 
 
 ; SELECTING TRACKS
 ~^+m::
-    callBackend("track/select?name=master")
+    callScript("track/select?name=master")
 return
 ~^+k::
-    callBackend("track/select?name=kick")
+    callScript("track/select?name=kick")
 return
 ~^+h::
-    callBackend("track/select?name=hats")
+    callScript("track/select?name=hats")
 return
 ~^+p::
-    callBackend("track/select?name=perc")
+    callScript("track/select?name=perc")
 return
 ~^+v::
-    callBackend("track/select?name=vocals")
+    callScript("track/select?name=vocals")
 return
 ~^+l::
-    callBackend("track/select?name=melody")
+    callScript("track/select?name=melody")
 return
 ~^+b::
-    callBackend("track/select?name=bass")
+    callScript("track/select?name=bass")
 return
 
 
