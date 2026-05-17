@@ -8,13 +8,8 @@ bootstrap:
 
 install_script:
 	@powershell -c 'cp -r -fo script_templates/p0 "$(REMOTE_SCRIPTS)"'
-	@powershell -c 'cd "$(REMOTE_SCRIPTS)\p0"; poetry install'
+	@powershell -c '$$src = (Resolve-Path .).Path; (Get-Content "$(REMOTE_SCRIPTS)\p0\__init__.py") -replace "__P0_SOURCE_DIR__", $$src | Set-Content "$(REMOTE_SCRIPTS)\p0\__init__.py"'
+	@powershell -c 'Get-ChildItem "$(REMOTE_SCRIPTS)\p0\.venv\Lib\site-packages" -Filter "protocol0*" -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force'
+	@powershell -c 'cd "$(REMOTE_SCRIPTS)\p0"; poetry lock; poetry install'
 	@echo "p0 installed"
 .PHONY: install_script
-
-publish:
-	@del dist /F /Q
-	@bump2version patch --allow-dirty
-	@python -m build
-	@twine upload dist/*
-.PHONY: publish
