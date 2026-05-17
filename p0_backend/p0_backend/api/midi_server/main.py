@@ -25,9 +25,6 @@ settings = Settings()
 
 
 def start():
-    # midi_port_backend_loopback = mido.open_input(
-    #     _get_input_port(settings.p0_backend_loopback_name), autoreset=False
-    # )
     midi_port_output = mido.open_input(
         _get_input_port(settings.p0_output_port_name), autoreset=False
     )
@@ -36,7 +33,6 @@ def start():
 
     while True:
         _poll_midi_port(midi_port=midi_port_output)
-        # _poll_midi_port(midi_port=midi_port_backend_loopback)
 
         time.sleep(0.005)  # release cpu
 
