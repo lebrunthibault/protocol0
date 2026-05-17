@@ -2,50 +2,27 @@
 
 Protocol0 is a control surface script for Ableton Live 11+
 
-It is focused on working in session view and usually acts on the selected track or scene. 
+It is as of today a minimal set of helpful tools for Ableton in particular:
+- quick track selection by name (e.g. "kick", "snare", "bass", "vocal", etc.)
+- fast device loading (possible to add custom shortcuts to load your most used devices)
 
-I've been specifically working on making the session recording more powerful and more adapted to my workflow.
-
-The scripts react to a set of midi note and cc messages. I'm currently triggering those using a Faderfox EC4.
-> This script is definitely a "working on my machine" script and is not generic to any layout / usage.
-> It should be interesting for a remote script dev though.
+The script can be used either with a midi controller (I'm using a Faderfox EC4) or with keyboard shortcuts (using AHK to trigger http calls to the script).
 
 ## Architecture
-- The script wraps a good part of the Live python api and adds its own logic on top
-- The script is accessible directly via midi cc and note messages. Originally I was reaching it only using my Faderfox EC4
-- The script can be reached via any MIDI port, so I've been using Loop Midi to send midi into the script 
-from python running on my local machine.
-- I do it by having a python fastapi server running locally
-- The server exposes a http api that work in 2 ways (bidirectional) :
-  - Be a backend to the script for tasks that need to run in a full python environment (call windows apis etc ..)
-  - Expose the api to the outside and translate calls into midi messages (I call them commands)
-- At the moment I consume the server api points in 2 ways (all the code is present in the monorepo):
-  - via my Elgato stream deck ([p0_stream_deck](https://github.com/lebrunthibault/protocol0/tree/main/p0_stream_deck))
-  - via a vue.js web app running locally ([p0_web](https://github.com/lebrunthibault/protocol0/tree/main/p0_web))
-
-## Features
-
-Used to be a session view tool for recording stuff like external synth / audio, scrolling scenes, duplicating clips, freezing / flattening tracks..
-It's not anymore, and I removed a few of the more complex features. 
-<br><br>
+- The script answers to midi cc and note messages. Originally I was reaching it only using my Faderfox EC4
+- The script also exposes its own HTTP server so anything on the machine can drive it without going
+  through MIDI — typically keyboard shortcuts (AHK) that hit a URL like
+  `http://127.0.0.1:9000/track/select?name=kick`.
+- The script also acts as an HTTP client: it can call out to a python
+  fastapi backend ([p0_backend](https://github.com/lebrunthibault/protocol0/tree/main/p0_backend))
+  running on the same machine, for things the Ableton-bundled python
+  interpreter can't do (spawn processes, win32 apis, mouse/keyboard, …).
 
 ## The backend
 
 This script executes in the context of ableton's bundled python interpreter, like any script. Some things are not
-possible in this environment like spawning processes or accessing win32apis (keyboard, mouse ..)
-A simple example : clicking on a device show button is not possible from a "normal" script. To make this kind of thing
-possible I've created a backend that you can find in [here](https://github.com/lebrunthibault/protocol0/tree/main/p0_backend).
-
-NB : quite some features are not implemented in the API (freezing, flattening, cropping .. but also dragging in or out tracks etc ..).
-All of this is implemented using the backend sometime leveraging wild mouse clicks.
-
-The backend is exposing its api over midi, and I'm using loopMidi virtual ports to communicate with it.
-
-> Without setting up the backend (might not be straightforward) the script will only partially work.
-
-> As it's not possible to listen to multiple midi ports from a surface script I'm using a "proxy" surface script that forwards messages
-> from my backend on its port to the main script. See `make install_scripts`
-> The same purpose would be achievable my external midi routing using e.g. midi ox.
+possible in this environment like accessing win32apis (keyboard, mouse ..)
+So I've set up a separate HTTP backend in python that the script can call.
 
 ## Installation
 
@@ -55,12 +32,8 @@ The backend is exposing its api over midi, and I'm using loopMidi virtual ports 
 
 - `make install_script`
 
-Will install two scripts
-- **p0**: the main script
-- **p0_midi**: a proxy script that forwards input midi messages to the main script (overcomes the windows single midi input limitation)
-
-> These commands will generate two simple midi remote scripts
-> importing control surfaces from the [protocol0](https://pypi.org/project/protocol0/) pypi library.
+> This generates a simple midi remote script importing the control surface
+> from the [protocol0](https://pypi.org/project/protocol0/) pypi library.
 
 ### Install the backend
 
