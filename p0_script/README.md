@@ -19,8 +19,7 @@ from python running on my local machine.
 - The server exposes a http api that work in 2 ways (bidirectional) :
   - Be a backend to the script for tasks that need to run in a full python environment (call windows apis etc ..)
   - Expose the api to the outside and translate calls into midi messages (I call them commands)
-- At the moment I consume the server api points in 3 ways (all the code is present in the monorepo):
-  - via ahk shortcuts, so I can create custom shortcuts linked to the script ([p0_ahk](https://github.com/lebrunthibault/protocol0/tree/main/p0_ahk))
+- At the moment I consume the server api points in 2 ways (all the code is present in the monorepo):
   - via my Elgato stream deck ([p0_stream_deck](https://github.com/lebrunthibault/protocol0/tree/main/p0_stream_deck))
   - via a vue.js web app running locally ([p0_web](https://github.com/lebrunthibault/protocol0/tree/main/p0_web))
 
