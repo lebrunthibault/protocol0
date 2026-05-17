@@ -14,14 +14,14 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.11",
     "Development Status :: 4 - Beta"
 ]
 keywords = ["remote script", "ableton"]
 
 
 [tool.poetry.dependencies]
-python = ">=3.7.3"
+python = ">=3.11"
 qualname = "^0.1.0"
 loguru = "^0.7.0"
 typing-extensions = "^4.6.3"
@@ -37,7 +37,7 @@ build = "^0.10.0"
 line-length = 100
 
 [tool.mypy]
-python_version = "3.7"
+python_version = "3.11"
 exclude = [
     'tests',
     'vulture_whitelist.py',
