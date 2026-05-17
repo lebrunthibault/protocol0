@@ -31,7 +31,6 @@ class Clip(SlotManager, Observable):
         self.playing_position: ClipPlayingPosition = ClipPlayingPosition(live_clip, self.loop)
 
         self.loop.register_observer(self)
-        self._notes_shown = True
 
         self._is_recording_listener.subject = live_clip
 
@@ -173,18 +172,6 @@ class Clip(SlotManager, Observable):
 
     def show_loop(self) -> None:
         self._clip.view.show_loop()
-
-    def show_notes(self) -> None:
-        self.automation.show_envelope()
-        self.automation.hide_envelope()
-
-    def toggle_notes(self) -> None:
-        if self._notes_shown:
-            self.automation.show_envelope()
-        else:
-            self.automation.hide_envelope()
-
-        self._notes_shown = not self._notes_shown
 
     def post_record(self, _: int, __: bool) -> None:
         self.clip_name.update("")

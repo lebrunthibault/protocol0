@@ -4,7 +4,6 @@
   "workspaces": [
     "p0_backend",
     "p0_script",
-    "p0_sdk",
     "p0_stream_deck",
     "p0_web/*"
   ],
@@ -20,8 +19,5 @@
     "prettier": "^2.5.1",
     "turbo": "^1.9.7"
   },
-  "packageManager": "npm@8.11.0",
-  "dependencies": {
-    "@openapitools/openapi-generator-cli": "^2.6.0"
-  }
+  "packageManager": "npm@8.11.0"
 }

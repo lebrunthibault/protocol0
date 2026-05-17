@@ -2,7 +2,6 @@ from typing import List
 
 import Live
 
-from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.utils.utils import float_seq
 
 
@@ -54,6 +53,3 @@ class ClipAutomationEnvelope(object):
             self.insert_step(0, 0, self.start)  # type: ignore[unreachable]
             self.insert_step(self._length, 0, 0)
 
-    @classmethod
-    def focus(cls) -> None:
-        Backend.client().move_to(1225, 1013)

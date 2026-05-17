@@ -168,19 +168,6 @@ class ClipLoop(SlotManager, Observable, LoopableInterface):
     def total_bar_length(self) -> float:
         return self.end_marker / Song.signature_numerator()
 
-    def move(self, forward: bool, bar: bool) -> None:
-        beats = Song.signature_numerator() if bar else 1
-        if forward:
-            self.end_marker += beats
-            self.end += beats
-            self.start_marker += beats
-            self.start += beats
-        else:
-            self.start_marker -= beats
-            self.start -= beats
-            self.end_marker -= beats
-            self.end -= beats
-
     def sync_markers(self) -> None:
         if self.start_marker < self.start:
             self.end_marker = self.end

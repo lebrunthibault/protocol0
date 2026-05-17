@@ -13,7 +13,6 @@ from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudCom
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
 from protocol0.domain.shared.BrowserServiceInterface import BrowserServiceInterface
-from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.shared.Song import Song
@@ -32,35 +31,6 @@ def find_parent_rack(track: SimpleTrack, device: Device) -> Optional[RackDevice]
                 return rack_device
 
     raise Protocol0Error("Couldn't find device %s (may be too nested to be detected)" % device.name)
-
-
-def _switch_master_cpu_devices() -> bool:
-    god_particle = Song.master_track().god_particle
-
-    # switch god particle
-    if not god_particle:
-        return False
-
-    god_particle_rack = find_parent_rack(Song.master_track(), god_particle)
-
-    if god_particle_rack:
-        god_particle = god_particle_rack
-
-    try:
-        master_devices = list(Song.master_track().devices)
-        next_device: Device = master_devices[master_devices.index(god_particle) + 1]
-    except IndexError:
-        return False
-
-    if (
-        next_device.enum != DeviceEnum.L2_LIMITER and not isinstance(next_device, RackDevice)
-    ) or next_device.is_enabled == god_particle.is_enabled:
-        return False
-
-    next_device.toggle()
-    god_particle.toggle()
-
-    return True
 
 
 class DeviceService(object):
@@ -202,27 +172,3 @@ class DeviceService(object):
 
         self._device_component.select_device(Song.selected_track(), device.chains[1].devices[-1])
 
-    def toggle_cpu_heavy_devices(self) -> None:
-        toggle_cpu_heavy = bool(
-            Song.master_track().god_particle and not Song.master_track().god_particle.is_enabled
-        )
-
-        master_handled = _switch_master_cpu_devices()
-
-        if not master_handled:
-            Backend.client().show_warning("Master devices not set up properly")
-            return None
-
-        drums_track = Song.drums_track()
-        if drums_track:
-            shadow_hills = drums_track.devices.get_one_from_enum(DeviceEnum.SHADOW_HILLS_COMP)
-            if shadow_hills:
-                shadow_hills.is_enabled = toggle_cpu_heavy
-            black_box = drums_track.devices.get_one_from_enum(DeviceEnum.BLACK_BOX)
-            if black_box:
-                black_box.is_enabled = toggle_cpu_heavy
-
-        if toggle_cpu_heavy:
-            StatusBar.show_message("High CPU enabled")
-        else:
-            StatusBar.show_message("Low CPU enabled")

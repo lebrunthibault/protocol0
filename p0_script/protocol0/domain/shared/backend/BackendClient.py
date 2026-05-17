@@ -82,18 +82,6 @@ class BackendClient(object):
         # type: (str) -> None
         self._get("/device/load", {"name": name})
 
-    def toggle_ableton_button(self, x, y):
-        # type: (int, int) -> None
-        self._get("/device/toggle_ableton_button", {"x": x, "y": y})
-
-    def move_to(self, x, y):
-        # type: (int, int) -> None
-        self._get("/keyboard/move_to", {"x": x, "y": y})
-
-    def scroll(self, pixels):
-        # type: (int) -> None
-        self._get("/keyboard/scroll", {"pixels": pixels})
-
     def post_analyze_key(self, notes):
         # type: (List[Any]) -> None
         self._post("/clip/analyze_key", {"notes": notes})

@@ -19,29 +19,19 @@ from protocol0.application.command.BackendPongCommand import BackendPongCommand
 from protocol0.application.command.LogSelectedCommand import LogSelectedCommand
 from protocol0.application.command.LogSongStatsCommand import LogSongStatsCommand
 from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongCommand
-from .action_routes import router as action_router
 from .clip_routes import router as clip_router
 from .device_routes import router as device_router
-from .keyboard_routes import router as keyboard_router
-from .monitoring_routes import router as monitoring_router
-from .process_routes import router as process_router
 from .search_routes import router as search_router
 from .set_routes import router as set_router
-from .track_routes import router as track_router
 
 router = APIRouter()
 
 settings = Settings()
 
-router.include_router(action_router, prefix="/actions")
 router.include_router(clip_router, prefix="/clip")
 router.include_router(device_router, prefix="/device")
-router.include_router(keyboard_router, prefix="/keyboard")
-router.include_router(monitoring_router, prefix="/monitoring")
-router.include_router(process_router, prefix="/process")
 router.include_router(search_router, prefix="/search")
 router.include_router(set_router, prefix="/set")
-router.include_router(track_router, prefix="/track")
 
 
 @router.get("/")
