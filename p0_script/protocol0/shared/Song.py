@@ -318,14 +318,6 @@ class Song(object):
         return cls.selected_track().devices.selected
 
     @classmethod
-    def loop_start(cls) -> float:
-        return cls._live_song().loop_start
-
-    @classmethod
-    def loop_end(cls) -> float:
-        return cls.loop_start() + cls._live_song().loop_length
-
-    @classmethod
     def loop_length(cls) -> float:
         return cls._live_song().loop_length
 

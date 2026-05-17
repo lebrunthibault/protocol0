@@ -56,9 +56,6 @@ class MidiClip(Clip):
         seq.defer()
         return seq.done()
 
-    def clear_muted_notes(self) -> Optional[Sequence]:
-        return self.replace_notes([n for n in self.get_notes() if not n.muted])
-
     @subject_slot("muted")
     def _muted_listener(self) -> None:
         if (

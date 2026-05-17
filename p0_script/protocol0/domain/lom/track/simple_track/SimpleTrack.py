@@ -14,7 +14,6 @@ from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParamete
 from protocol0.domain.lom.instrument.InstrumentInterface import InstrumentInterface
 from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitoringStateEnum
 from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
-from protocol0.domain.lom.track.routing.OutputRoutingTypeEnum import OutputRoutingTypeEnum
 from protocol0.domain.lom.track.routing.TrackInputRouting import TrackInputRouting
 from protocol0.domain.lom.track.routing.TrackOutputRouting import TrackOutputRouting
 from protocol0.domain.lom.track.simple_track.SimpleTrackAppearance import SimpleTrackAppearance
@@ -66,7 +65,6 @@ class SimpleTrack(SlotManager):
         # self.devices.register_observer(self)
 
         self.input_routing = TrackInputRouting(self._track)
-        self._previous_output_routing_track: Optional[SimpleTrack] = None
 
         self.arm_state = SimpleTrackArmState(live_track)
 
@@ -242,10 +240,6 @@ class SimpleTrack(SlotManager):
     def delete_clip(self, clip: Clip) -> None:
         self._track.delete_clip(clip._clip)
 
-    def scroll_volume(self, go_next: bool) -> None:
-        """Editing directly the mixer device volume"""
-        self.devices.mixer_device.volume.scroll(go_next)
-
     def duplicate_clip_to_arrangement(self, clip: Clip, time: float) -> None:
         self._track.duplicate_clip_to_arrangement(clip._clip, time)
 
@@ -255,22 +249,6 @@ class SimpleTrack(SlotManager):
                 self.delete_clip(clip)
         except RuntimeError:
             pass
-
-    def remove_arrangement_muted_clips(self, start_time: float, end_time: float) -> None:
-        try:
-            for clip in self.arrangement_clips:
-                if clip.start_marker >= start_time and clip.end_marker <= end_time and clip.muted:
-                    self.delete_clip(clip)
-        except RuntimeError:
-            pass
-
-    def toggle_ext_out_routing(self) -> None:
-        if self.output_routing.type != OutputRoutingTypeEnum.EXT_OUT:
-            self._previous_output_routing_track = self.output_routing.track
-            self.output_routing.type = OutputRoutingTypeEnum.EXT_OUT
-        else:
-            if self._previous_output_routing_track:
-                self.output_routing.track = self._previous_output_routing_track
 
     def un_collapse(self) -> None:
         # make it focused
@@ -292,7 +270,6 @@ class SimpleTrack(SlotManager):
         # hack : group tracks are not shown, only selected
         if self.is_foldable:
             self.sub_tracks[0].select()
-            Backend.client().scroll(-35)
         else:
             self.un_collapse()
 

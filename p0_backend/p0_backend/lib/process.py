@@ -7,7 +7,6 @@ from loguru import logger
 from psutil import Process, NoSuchProcess
 
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
-from p0_backend.lib.notification import notify
 from p0_backend.lib.window.find_window import find_window_handle_by_enum, SearchTypeEnum
 from p0_backend.settings import Settings
 
@@ -67,8 +66,3 @@ def is_process_running(program_name) -> bool:
     return False
 
 
-def measure_cpu_usage(interval: float = 10) -> float:
-    p = psutil.Process(get_ableton_pid())
-    notify(f"Measuring cpu usage for the next {interval} seconds")
-
-    return p.cpu_percent(interval=interval) / psutil.cpu_count()

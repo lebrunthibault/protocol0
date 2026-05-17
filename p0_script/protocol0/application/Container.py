@@ -9,13 +9,11 @@ from protocol0.application.control_surface.ActionGroupFactory import ActionGroup
 from protocol0.application.error.ErrorService import ErrorService
 from protocol0.domain.audit.LogService import LogService
 from protocol0.domain.audit.SongStatsService import SongStatsService
-from protocol0.domain.lom.device.DeviceDisplayService import DeviceDisplayService
 from protocol0.domain.lom.device.DeviceService import DeviceService
 from protocol0.domain.lom.instrument.instrument.InstrumentService import InstrumentService
 from protocol0.domain.lom.scene.PlayingScene import PlayingScene
 from protocol0.domain.lom.scene.SceneService import SceneService
 from protocol0.domain.lom.set.AbletonSet import AbletonSet
-from protocol0.domain.lom.set.MixingService import MixingService
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
 from protocol0.domain.lom.song.components.PlaybackComponent import PlaybackComponent
 from protocol0.domain.lom.song.components.QuantizationComponent import QuantizationComponent
@@ -89,7 +87,6 @@ class Container(ContainerInterface):
 
         browser = control_surface.application().browser
         browser_service = BrowserService(browser, BrowserLoaderService(browser))
-        DeviceDisplayService()
         device_service = DeviceService(
             track_crud_component, device_component, browser_service, live_song.move_device
         )
@@ -116,8 +113,6 @@ class Container(ContainerInterface):
             track_mapper_service,
         )
 
-        mixing_service = MixingService()
-
         # audit
         log_service = LogService(ableton_set, track_mapper_service)
 
@@ -141,7 +136,6 @@ class Container(ContainerInterface):
         self._register(instrument_service)
         self._register(device_service)
 
-        self._register(mixing_service)
         self._register(track_recorder_service)
 
         # audit
