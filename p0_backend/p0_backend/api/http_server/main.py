@@ -59,14 +59,16 @@ def _configure_logging() -> None:
 from p0_backend.api.http_server.routes.routes import router  # noqa
 from p0_backend.api.http_server.ws import ws_router  # noqa
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from protocol0.application.command.GetSetStateCommand import GetSetStateCommand  # noqa
 
 settings = Settings()
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    p0_script_client().dispatch(GetSetStateCommand())
+    try:
+        p0_script_client().get_set_state()
+    except Exception as e:
+        logger.warning(f"lifespan get_set_state failed: {e}")
     yield
 
 
@@ -128,7 +130,7 @@ def start():
     uvicorn.run(
         "p0_backend.api.http_server.main:app",
         host="0.0.0.0",
-        port=8000,
+        port=Settings().p0_backend_port,
         log_config="p0_backend/api/http_server/logging-config.yaml",
         workers=1,
     )

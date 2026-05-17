@@ -1,36 +1,52 @@
-import mido
-
-
+import requests
+from fastapi import HTTPException
 from loguru import logger
 
 from p0_backend.settings import Settings
-from p0_backend.lib.midi.mido import get_output_port
-from p0_backend.lib.utils import make_sysex_message_from_command
-from protocol0.application.command.SerializableCommand import SerializableCommand
 
 
 class P0ScriptClient(object):
     _INSTANCE = None
 
-    def __init__(self, midi_port_name: str):
-        self._midi_port_name = midi_port_name
-        self._midi_port = mido.open_output(get_output_port(self._midi_port_name), autoreset=False)
+    def __init__(self, base_url: str):
+        self._base_url = base_url
+        self._session = requests.Session()
 
-    def dispatch(self, command: SerializableCommand, log=True) -> None:
-        # Pass the focused set info to the script in case of multiple sets
-        from p0_backend.lib.ableton.ableton_set.ableton_set_manager import get_focused_set
+    def _get(self, path: str, params: dict = None) -> None:
+        url = self._base_url + path
+        try:
+            r = self._session.get(url, params=params, timeout=5)
+            r.raise_for_status()
+        except requests.RequestException as e:
+            logger.warning(f"script HTTP {path} failed: {e}")
+            raise HTTPException(status_code=503, detail=f"p0_script unreachable: {e}")
 
-        focused_set = get_focused_set()
-        if focused_set is not None and command.set_id is None:
-            command.set_id = focused_set.path_info.filename
+    def load_device(self, name: str) -> None:
+        self._get("/device/load", {"name": name})
 
-        msg = make_sysex_message_from_command(command=command)
-        self._midi_port.send(msg)
-        if log:
-            logger.info(f"Sent command to script: {command}")
+    def select_track(self, name: str) -> None:
+        self._get("/track/select", {"name": name})
+
+    def get_set_state(self) -> None:
+        self._get("/set/get_state")
+
+    def play_pause(self) -> None:
+        self._get("/song/play_pause")
+
+    def log_selected(self) -> None:
+        self._get("/log/selected")
+
+    def log_song_stats(self) -> None:
+        self._get("/log/song_stats")
+
+    def toggle_follow_song(self) -> None:
+        self._get("/song/toggle_follow")
+
+    def on_key_detected(self, pitch: int) -> None:
+        self._get("/clip/key_detected", {"pitch": pitch})
 
 
-def p0_script_client():
+def p0_script_client() -> P0ScriptClient:
     if P0ScriptClient._INSTANCE is None:
-        P0ScriptClient._INSTANCE = P0ScriptClient(Settings().p0_input_port_name)
+        P0ScriptClient._INSTANCE = P0ScriptClient(Settings().p0_script_url)
     return P0ScriptClient._INSTANCE

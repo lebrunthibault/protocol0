@@ -33,7 +33,6 @@ six=" ^1.16.0"
 uvicorn = {extras = ["standard"], version = "^0.22.0"}
 protocol0 = {path = "../p0_script", develop = true}
 loguru = "^0.7.0"
-mido = "^1.2.10"
 pygame = "^2.4.0"
 fastapi = "^0.104.0"
 python-dotenv = "^1.0.0"
@@ -51,7 +50,6 @@ librosa = "^0.10.1"
 asyncer = "^0.0.2"
 fastapi-limiter = "^0.1.6"
 ahk = "^1.7.1"
-python-rtmidi = "^1.5.8"
 
 [tool.poetry.scripts]
 backend = "p0_backend.api.http_server.main:start"

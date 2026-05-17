@@ -10,21 +10,17 @@ from protocol0.domain.live_set.LiveSet import LiveSet
 from protocol0.domain.lom.scene.SceneService import SceneService
 from protocol0.domain.lom.track.TrackMapperService import TrackMapperService
 from protocol0.domain.shared.backend.Backend import Backend
+from protocol0.domain.shared.backend.BackendClient import BackendClient
 from protocol0.domain.shared.errors.ErrorRaisedEvent import ErrorRaisedEvent
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.infra.midi.MidiBytesReceivedEvent import MidiBytesReceivedEvent
 from protocol0.infra.midi.MidiService import MidiService
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
-from protocol0.shared.logging.StatusBar import StatusBar
 from protocol0.shared.sequence.Sequence import Sequence
 
 
 class Protocol0(ControlSurface):
-    _BACKEND_ALIVE = False
-    _BACKEND_CHECK_MAX_ATTEMPTS = 3
-    _backend_check_attempts = 0
-
     def __init__(self, c_instance: Any = None) -> None:
         super(Protocol0, self).__init__(c_instance=c_instance)
         self._initialize()
@@ -50,34 +46,13 @@ class Protocol0(ControlSurface):
 
         HttpServer.start(container)
 
-        Backend.client().ping()
-        seq = Sequence()
-        seq.wait_ms(3000)
-        seq.add(Backend.client().ping)
-        seq.wait_ms(5000)
-        seq.add(self._check_backend_is_alive)
-        seq.done()
+        if not Backend.client().ping():
+            Logger.warning("Protocol0 backend is not running at %s" % BackendClient._BASE_URL)
 
         Logger.info("P0 script loaded")
 
     def receive_midi(self, midi_bytes: Tuple) -> None:
         DomainEventBus.emit(MidiBytesReceivedEvent(midi_bytes))
-
-    def _check_backend_is_alive(self) -> None:
-        if Protocol0._BACKEND_ALIVE:
-            return
-
-        Protocol0._backend_check_attempts += 1
-        if Protocol0._backend_check_attempts > Protocol0._BACKEND_CHECK_MAX_ATTEMPTS:
-            return
-
-        StatusBar.show_message("Protocol0 backend is not running")
-        Backend.client().ping()
-
-        seq = Sequence()
-        seq.wait_ms(5000)
-        seq.add(self._check_backend_is_alive)
-        seq.done()
 
     def disconnect(self, reset: bool = False) -> None:
         if not reset:

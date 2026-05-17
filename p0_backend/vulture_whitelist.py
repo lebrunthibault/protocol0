@@ -11,8 +11,6 @@ outdated  # unused variable (p0_backend\lib\ableton\ableton_set\ableton_set.py:9
 FILTER_KEYWORDS  # unused variable (p0_backend\scripts\tail_ableton_logs.py:49)
 env_file  # unused variable (p0_backend\settings.py:9)
 http_api_url  # unused variable (p0_backend\settings.py:49)
-p0_output_port_name  # unused variable (p0_backend\settings.py:54)
-_get_input_port  # unused function (p0_backend\lib\midi\mido.py:12)
 nop_decorator  # unused function (p0_backend\lib\utils.py:25)
 tail_ableton_log_file_raw  # unused function (p0_backend\scripts\tail_ableton_logs.py:171)
 Config  # unused class (p0_backend\settings.py:8)
