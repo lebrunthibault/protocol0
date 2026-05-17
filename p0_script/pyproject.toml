@@ -41,7 +41,6 @@ python_version = "3.7"
 exclude = [
     'tests',
     'vulture_whitelist.py',
-    'protocol0/domain/shared/backend/p0_backend_client'
 ]
 pretty = false
 ignore_missing_imports = true
@@ -70,7 +69,6 @@ exclude = [
     'command/',
     'command_handler/',
     'RecordingBarLengthEnum.py',
-    'protocol0/domain/shared/backend/p0_backend_client',
 ]
 ignore_names = [
     "subject",
