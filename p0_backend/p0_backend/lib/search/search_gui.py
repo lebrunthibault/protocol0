@@ -9,7 +9,6 @@ from p0_backend.lib.ableton.ableton_set.ableton_set import AbletonTrack
 from p0_backend.lib.ableton.ableton_set.ableton_set_manager import AbletonSetManager
 from p0_backend.lib.search.search_queue import search_queue
 from p0_backend.lib.window.window import focus_window_by_handle, focus_tkinter_window
-from protocol0.application.command.SelectTrackByNameCommand import SelectTrackByNameCommand
 
 thread: Optional[Thread] = None
 track_list_search_history: set[str] = set()
@@ -171,7 +170,11 @@ class SearchBox:
                 track_name = track_sub_list[0].name
 
         track_list_search_history.add(track_name)
-        p0_script_client().dispatch(SelectTrackByNameCommand(track_name))
+        try:
+            p0_script_client().select_track(track_name)
+        except Exception as e:
+            from loguru import logger as _logger
+            _logger.warning(f"select_track failed: {e}")
 
         if self._autoclose_timer:
             self._autoclose_timer.cancel()  # type: ignore[unreachable]

@@ -3,6 +3,8 @@ import urllib.parse
 import urllib.request
 from typing import Any, List
 
+from protocol0.shared.env import get as env_get
+
 
 class BackendClient(object):
     """HTTP client for the p0_backend FastAPI server.
@@ -12,7 +14,7 @@ class BackendClient(object):
     method, path, and payload shape (see p0_backend/.../routes/).
     """
 
-    _BASE_URL = "http://127.0.0.1:8000"
+    _BASE_URL = "http://127.0.0.1:" + env_get("P0_BACKEND_PORT", "8000")
 
     def _get(self, path, params=None):
         # type: (str, dict) -> None
@@ -51,8 +53,12 @@ class BackendClient(object):
                 pass
 
     def ping(self):
-        # type: () -> None
-        self._get("/ping")
+        # type: () -> bool
+        try:
+            urllib.request.urlopen(self._BASE_URL + "/ping", timeout=2).close()
+            return True
+        except Exception:
+            return False
 
     def tail_logs(self):
         # type: () -> None

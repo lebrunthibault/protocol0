@@ -6,7 +6,6 @@ from loguru import logger
 from pydantic import BaseModel
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from protocol0.application.command.KeyDetectedCommand import KeyDetectedCommand
 
 
 class NoteModel(BaseModel):
@@ -114,4 +113,4 @@ def analyze_key(notes_data: List[NoteModel]) -> None:
         major_key = notes[notes.index(key) + 3 % 12]
 
     print("🎵 Major key:", major_key)
-    p0_script_client().dispatch(KeyDetectedCommand(pitch=notes.index(key)))
+    p0_script_client().on_key_detected(pitch=notes.index(key))

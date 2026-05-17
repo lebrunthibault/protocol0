@@ -1,3 +1,4 @@
+import os
 from os.path import dirname
 
 from pydantic_settings import BaseSettings
@@ -6,7 +7,7 @@ from pydantic import Field
 
 class Settings(BaseSettings):
     class Config:
-        env_file = ".env"
+        env_file = os.path.join(dirname(dirname(dirname(__file__))), ".env")
 
     user_home: str
     ableton_name: str = Field(alias="abletonName")
@@ -50,6 +51,9 @@ class Settings(BaseSettings):
 
     log_window_title: str = "Protocol0 logs"
 
-    # Midi port names are relative to the Protocol0 script and not this midi backend
-    p0_output_port_name: str = "P0_OUT"
-    p0_input_port_name: str = "P0_IN"
+    p0_backend_port: int = 8000
+    p0_script_port: int = 9000
+
+    @property
+    def p0_script_url(self) -> str:
+        return f"http://127.0.0.1:{self.p0_script_port}"

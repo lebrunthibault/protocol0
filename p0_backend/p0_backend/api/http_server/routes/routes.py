@@ -15,10 +15,6 @@ from p0_backend.lib.window.find_window import find_window_handle_by_enum
 from p0_backend.lib.window.window import focus_window
 from p0_backend.settings import Settings
 
-from protocol0.application.command.BackendPongCommand import BackendPongCommand
-from protocol0.application.command.LogSelectedCommand import LogSelectedCommand
-from protocol0.application.command.LogSongStatsCommand import LogSongStatsCommand
-from protocol0.application.command.PlayPauseSongCommand import PlayPauseSongCommand
 from .clip_routes import router as clip_router
 from .device_routes import router as device_router
 from .search_routes import router as search_router
@@ -40,8 +36,8 @@ def home() -> str:
 
 
 @router.get("/ping")
-def ping() -> None:
-    p0_script_client().dispatch(BackendPongCommand())
+def ping() -> str:
+    return "pong"
 
 
 @router.get("/reload_ableton")
@@ -100,14 +96,14 @@ async def tail_logs_raw():
 
 @router.get("/play_pause")
 async def play_pause():
-    p0_script_client().dispatch(PlayPauseSongCommand())
+    p0_script_client().play_pause()
 
 
 @router.get("/log_selected")
 async def _log_selected():
-    p0_script_client().dispatch(LogSelectedCommand())
+    p0_script_client().log_selected()
 
 
 @router.get("/log_song_stats")
 async def _log_song_stats():
-    p0_script_client().dispatch(LogSongStatsCommand())
+    p0_script_client().log_song_stats()
