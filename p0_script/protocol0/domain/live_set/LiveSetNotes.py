@@ -132,18 +132,7 @@ def determine_captured_clip_bar_length(clip: MidiClip) -> float:
             ):
                 return True
 
-        import logging
-
-        logging.getLogger(__name__).info("FALSE")
-        logging.getLogger(__name__).info(notes)
         return False
-
-    import logging
-
-    logging.getLogger(__name__).info(clip.loop.total_bar_length)
-    logging.getLogger(__name__).info(all(has_note_in_bar(i) for i in range(8)))
-    logging.getLogger(__name__).info(all(has_note_in_bar(i) for i in range(4)))
-    logging.getLogger(__name__).info(all(has_note_in_bar(i) for i in range(2)))
 
     # Check if we have notes in all 8 bars
     if clip.loop.total_bar_length >= 8 and all(has_note_in_bar(i) for i in range(8)):

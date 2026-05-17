@@ -30,15 +30,18 @@ return
 	Send ^+f  ; cancel Ableton Follow
 	callBackend("search/track")
 return
-^!u::
-    callBackend("device/load?name=UTILITY")
-return
+
+; LOADING DEVICES
 ^!e::
     callBackend("device/load?name=EQ_EIGHT")
 return
 ^!p::
     callBackend("device/load?name=PRO_Q_4")
 return
+^!u::
+    callBackend("device/load?name=UTILITY")
+return
+
 
 ; SELECTING TRACKS
 ~^+m::
