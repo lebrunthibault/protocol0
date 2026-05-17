@@ -1,24 +1,9 @@
-[build-system]
-requires = ["poetry-core>=1.6.1"]
-build-backend = "poetry.core.masonry.api"
-
 [tool.poetry]
 name = "protocol0"
-version = "1.0.15"
-description = "Protocol0 ableton remote script"
-readme = "README.md"
+version = "0.0.0"
+description = "Protocol0 ableton remote script (loaded from source, not packaged)"
 authors = ["Thibault Lebrun <thibaultlebrun@live.fr>"]
-license = "MIT"
-repository = "https://github.com/lebrunthibault/protocol0"
-classifiers = [
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
-    "Development Status :: 4 - Beta"
-]
-keywords = ["remote script", "ableton"]
-
+package-mode = false
 
 [tool.poetry.dependencies]
 python = ">=3.11"
@@ -31,7 +16,6 @@ dacite = "^1.8.1"
 flake8 = "*"
 vulture = "*"
 pytest = "*"
-build = "^0.10.0"
 
 [tool.black]
 line-length = 100
