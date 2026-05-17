@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Tuple
 
 from _Framework.ControlSurface import ControlSurface
 
@@ -11,6 +11,7 @@ from protocol0.domain.lom.track.TrackMapperService import TrackMapperService
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.ErrorRaisedEvent import ErrorRaisedEvent
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
+from protocol0.infra.midi.MidiBytesReceivedEvent import MidiBytesReceivedEvent
 from protocol0.infra.midi.MidiService import MidiService
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
@@ -55,6 +56,9 @@ class Protocol0(ControlSurface):
         seq.done()
 
         Logger.info("P0 script loaded")
+
+    def receive_midi(self, midi_bytes: Tuple) -> None:
+        DomainEventBus.emit(MidiBytesReceivedEvent(midi_bytes))
 
     def _check_backend_is_alive(self) -> None:
         if Protocol0._BACKEND_ALIVE:
