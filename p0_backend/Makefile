@@ -13,8 +13,12 @@ backend:
 .PHONY: backend
 
 logs:
-	powershell -c "Get-Content -Path '${USERPROFILE}\AppData\Roaming\Ableton\Live $(abletonVersion)\Preferences\Log.txt' -Wait -Tail 50"
+	@poetry run logs
 .PHONY: logs
+
+logs-ableton:
+	@poetry run logs-ableton
+.PHONY: logs-ableton
 
 test:
 	@poetry run python p0_backend/scripts/cli.py test

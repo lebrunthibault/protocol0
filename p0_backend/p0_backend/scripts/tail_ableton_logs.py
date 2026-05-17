@@ -1,6 +1,8 @@
 import ctypes
+import os
 import re
 import sys
+import threading
 import time
 from dataclasses import dataclass
 from enum import Enum
@@ -112,14 +114,11 @@ def _filter_line(line: LogLine) -> bool:
     if line.has_patterns(LogConfig.BLACK_LIST_KEYWORDS):
         return False
 
-    if line.is_error:
-        return True
-
     if line.has_patterns([LogConfig.CLEAR_KEYWORD]):
         clear_console()
         return False
 
-    return line.has_patterns(LogConfig.FILTER_KEYWORDS)
+    return True
 
 
 def _is_error(line: LogLine) -> bool:
@@ -241,6 +240,33 @@ def tail_logs(f):
         #     color=log_line.color,
         # )
         logger.info(log_line)
+
+
+def _tail_backend_file_in_thread(path: str) -> None:
+    """Tail the backend log file in a daemon thread and stream lines through
+    the same loguru logger so they interleave with the Ableton tail."""
+
+    def _run() -> None:
+        while not os.path.exists(path):
+            time.sleep(0.5)
+        with open(path, "r", encoding="utf-8", errors="replace") as f:
+            f.seek(0, os.SEEK_END)
+            for line in follow(f, sleep_sec=0.2):
+                line = line.rstrip("\n")
+                line = log_string(line)
+                logger.opt(colors=True).info(f"<cyan>[backend]</cyan> {line}")
+
+    threading.Thread(target=_run, daemon=True).start()
+
+
+def tail_combined_logs() -> None:
+    """Stream the backend log (rotated by loguru into .logs/backend.log) and the
+    Ableton P0 log into one terminal. Backend lines are prefixed [backend];
+    Ableton lines go through the existing filtered/colored pipeline."""
+    repo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+    backend_log = os.path.join(repo_root, ".logs", "backend.log")
+    _tail_backend_file_in_thread(backend_log)
+    tail_ableton_log_file()
 
 
 if __name__ == "__main__":

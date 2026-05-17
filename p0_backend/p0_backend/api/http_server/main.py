@@ -1,4 +1,7 @@
 """ http / websocket gateway server. Hit by ahk, the stream deck, and the Ableton remote script. """
+import logging
+import os
+import sys
 import traceback
 from contextlib import asynccontextmanager
 
@@ -18,6 +21,40 @@ from p0_backend.lib.notification import notify
 from p0_backend.settings import Settings
 
 load_dotenv()
+
+
+class _InterceptHandler(logging.Handler):
+    """Forward stdlib logging records (uvicorn, etc.) into loguru."""
+
+    def emit(self, record: logging.LogRecord) -> None:
+        try:
+            level = logger.level(record.levelname).name
+        except ValueError:
+            level = record.levelno
+        logger.opt(depth=6, exception=record.exc_info).log(level, record.getMessage())
+
+
+def _configure_logging() -> None:
+    """Route uvicorn/stdlib + loguru into a single rotating log file.
+
+    Active only when P0_LOG_FILE is set (the scheduled-task launcher sets it);
+    `poetry run backend` in a terminal keeps its plain stderr behavior.
+    """
+    log_file = os.environ.get("P0_LOG_FILE")
+    if not log_file:
+        return
+
+    os.makedirs(os.path.dirname(log_file), exist_ok=True)
+
+    logger.remove()
+    logger.add(sys.stderr, level="INFO")
+    logger.add(log_file, rotation="10 MB", retention=5, level="INFO", enqueue=True)
+
+    intercept = _InterceptHandler()
+    for name in ("uvicorn", "uvicorn.error", "uvicorn.access", "fastapi"):
+        target = logging.getLogger(name)
+        target.handlers = [intercept]
+        target.propagate = False
 
 from p0_backend.api.http_server.routes.routes import router  # noqa
 from p0_backend.api.http_server.ws import ws_router  # noqa
@@ -87,12 +124,11 @@ app.mount("/static", StaticFiles(directory=settings.ableton_set_directory), name
 
 
 def start():
+    _configure_logging()
     uvicorn.run(
         "p0_backend.api.http_server.main:app",
         host="0.0.0.0",
         port=8000,
-        reload=True,
         log_config="p0_backend/api/http_server/logging-config.yaml",
-        reload_dirs=settings.project_directory,
         workers=1,
     )

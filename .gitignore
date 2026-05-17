@@ -1,3 +1,4 @@
 .turbo
 .idea
 node_modules/
+.logs/
