@@ -55,7 +55,7 @@ class Container(ContainerInterface):
         Logger(LoggerService())
         Undo(live_song.begin_undo_step, live_song.end_undo_step)
         StatusBar(control_surface.show_message)
-        Backend(control_surface._send_midi)
+        Backend()
         ErrorService(live_song)
         midi_service = MidiService(control_surface._send_midi)
         beat_scheduler = BeatScheduler(live_song)

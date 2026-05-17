@@ -1,5 +1,4 @@
-""" http / websocket gateway server. Hit by ahk and the stream deck. Also runs the MIDI listener in the background. """
-import asyncio
+""" http / websocket gateway server. Hit by ahk, the stream deck, and the Ableton remote script. """
 import traceback
 from contextlib import asynccontextmanager
 
@@ -23,7 +22,6 @@ load_dotenv()
 from p0_backend.api.http_server.routes.routes import router  # noqa
 from p0_backend.api.http_server.ws import ws_router  # noqa
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.api.midi_server.main import run_midi_listener  # noqa
 from protocol0.application.command.GetSetStateCommand import GetSetStateCommand  # noqa
 
 settings = Settings()
@@ -31,22 +29,8 @@ settings = Settings()
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    # redis_connection = redis.from_url("redis://localhost:6379", encoding="utf8")
-    # await FastAPILimiter.init(redis_connection)
-
     p0_script_client().dispatch(GetSetStateCommand())
-
-    midi_task = asyncio.create_task(run_midi_listener())
-
     yield
-
-    midi_task.cancel()
-    try:
-        await midi_task
-    except asyncio.CancelledError:
-        pass
-
-    # await FastAPILimiter.close()
 
 
 app = FastAPI(lifespan=lifespan, debug=True, title="p0_backend", version="1.0.0")

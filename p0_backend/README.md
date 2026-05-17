@@ -26,7 +26,6 @@ calling the script by dispatching script RPC commands.
 - most commands I run from the terminal are gathered here (starting processes, sdk generation, tests and lint)
 
 ### Start the backend
-- `make midi_server`
 - `make http_server`
 
 ## API
@@ -39,8 +38,4 @@ It serves several clients :
 - my streamdeck ([p0_stream_deck](https://github.com/lebrunthibault/protocol0/tree/main/p0_stream_deck)). The server pushes song state changes to the stream deck via a websocket
 - p0_web ([p0_web](https://github.com/lebrunthibault/protocol0/tree/main/p0_web)) : the small protocol0 control web app 
 
-
-
-#### Midi server
-A gateway MIDI server that allows the backend to be reached via midi (from the control surface script) that doesn't handle well http.
 

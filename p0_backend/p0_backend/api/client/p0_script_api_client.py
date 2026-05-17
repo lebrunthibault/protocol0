@@ -1,12 +1,8 @@
-import sys
-
 import mido
 
 
 from loguru import logger
 
-from p0_backend.lib.enum.notification_enum import NotificationEnum
-from p0_backend.lib.notification import notify
 from p0_backend.settings import Settings
 from p0_backend.lib.midi.mido import get_output_port
 from p0_backend.lib.utils import make_sysex_message_from_command
@@ -14,7 +10,7 @@ from protocol0.application.command.SerializableCommand import SerializableComman
 
 
 class P0ScriptClient(object):
-    FROM_HTTP = None
+    _INSTANCE = None
 
     def __init__(self, midi_port_name: str):
         self._midi_port_name = midi_port_name
@@ -35,12 +31,6 @@ class P0ScriptClient(object):
 
 
 def p0_script_client():
-    is_midi = "midi_server" in sys.argv[0]
-
-    if is_midi:
-        notify("Cannot call p0 script from midi", NotificationEnum.WARNING)
-        raise Exception("Cannot call p0 script from midi")
-    else:
-        if P0ScriptClient.FROM_HTTP is None:
-            P0ScriptClient.FROM_HTTP = P0ScriptClient(Settings().p0_input_port_name)
-        return P0ScriptClient.FROM_HTTP
+    if P0ScriptClient._INSTANCE is None:
+        P0ScriptClient._INSTANCE = P0ScriptClient(Settings().p0_input_port_name)
+    return P0ScriptClient._INSTANCE
