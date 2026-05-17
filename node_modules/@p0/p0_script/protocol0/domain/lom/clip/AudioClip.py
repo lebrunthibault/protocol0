@@ -1,12 +1,7 @@
-from functools import partial
-from typing import Any, Optional
-
 import Live
 
 from protocol0.domain.lom.clip.Clip import Clip
-from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.ui.ColorEnum import ColorEnum
-from protocol0.shared.sequence.Sequence import Sequence
 
 
 class AudioClip(Clip):
@@ -32,17 +27,3 @@ class AudioClip(Clip):
 
     def focus(self) -> None:
         self.color = ColorEnum.FOCUSED.value
-
-    def crop(self) -> Optional[Sequence]:
-        self.loop.fix()
-
-        clip_color = self.color
-
-        seq = Sequence()
-        seq.defer()
-        seq.add(self.focus)
-        seq.defer()
-        seq.add(Backend.client().crop_clip)
-        seq.wait_for_backend_event("clip_cropped")
-        seq.add(partial(setattr, self, "color", clip_color))
-        return seq.done()

@@ -239,18 +239,6 @@ class P0BackendClient(object):
 
         self._send_dict_as_midi(payload)
 
-    def crop_clip(
-        self,
-    ):  # noqa: E501
-        # type: () -> None
-        """
-        Crop Clip  # noqa: E501
-        """
-
-        payload = {"method": "GET", "path": "/clip/crop", "params": {}}
-
-        self._send_dict_as_midi(payload)
-
     def drum_rack_to_simpler(
         self,
     ):  # noqa: E501

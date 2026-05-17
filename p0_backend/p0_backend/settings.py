@@ -52,4 +52,4 @@ class Settings(BaseSettings):
 
     # Midi port names are relative to the Protocol0 script and not this midi backend
     p0_output_port_name: str = "P0_OUT"
-    p0_input_port_name: str = "P0_IN_HTTP"
+    p0_input_port_name: str = "P0_IN"

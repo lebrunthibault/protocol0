@@ -1,6 +1,4 @@
-import signal
-import sys
-import time
+import asyncio
 import traceback
 
 import mido
@@ -9,9 +7,9 @@ from loguru import logger
 from mido import Message
 
 from p0_backend.api.client.p0_script_api_client import p0_script_client
-from p0_backend.lib.notification import notify
 from p0_backend.lib.enum.notification_enum import NotificationEnum
 from p0_backend.lib.midi.mido import _get_input_port
+from p0_backend.lib.notification import notify
 from p0_backend.lib.utils import (
     log_string,
     make_dict_from_sysex_message,
@@ -24,45 +22,42 @@ logger = logger.opt(colors=True)
 settings = Settings()
 
 
-def start():
-    midi_port_output = mido.open_input(
-        _get_input_port(settings.p0_output_port_name), autoreset=False
+async def run_midi_listener() -> None:
+    """Listen to MIDI input via rtmidi callback and dispatch messages asynchronously.
+
+    The callback runs in rtmidi's internal thread; we hand messages off to the
+    asyncio event loop via call_soon_threadsafe + asyncio.Queue, then consume
+    them here.
+    """
+    loop = asyncio.get_running_loop()
+    queue: asyncio.Queue[Message] = asyncio.Queue()
+
+    def callback(message: Message) -> None:
+        loop.call_soon_threadsafe(queue.put_nowait, message)
+
+    port = mido.open_input(
+        _get_input_port(settings.p0_output_port_name),
+        callback=callback,
+        autoreset=False,
     )
+    logger.info(f"Midi server listening on {port}")
 
-    logger.info(f"Midi server listening on {midi_port_output}")
-
-    while True:
-        _poll_midi_port(midi_port=midi_port_output)
-
-        time.sleep(0.005)  # release cpu
-
-
-def signal_handler(*_):
-    logger.warning("exiting after SIGINT")
-    sys.exit()
-
-
-signal.signal(signal.SIGINT, signal_handler)
-
-
-def _poll_midi_port(midi_port):
-    """non blocking poll"""
-    while True:
-        msg_output = midi_port.poll()
-        if msg_output:
+    try:
+        while True:
+            message = await queue.get()
             try:
-                _execute_midi_message(message=msg_output)
+                _execute_midi_message(message)
             except Exception as e:
-                message = f"Midi server error\n\n{e}"
-                message += traceback.format_exc()
-                logger.error(log_string(message))
-                logger.error(log_string(traceback.format_exc()))
-                notify(message, NotificationEnum.ERROR)
-        else:
-            break
+                err = f"Midi server error\n\n{e}\n{traceback.format_exc()}"
+                logger.error(log_string(err))
+                notify(err, NotificationEnum.ERROR)
+    except asyncio.CancelledError:
+        raise
+    finally:
+        port.close()
 
 
-def _execute_midi_message(message: Message):
+def _execute_midi_message(message: Message) -> None:
     # shortcut to call directly the script api
     command = make_script_command_from_sysex_message(message=message)
     if command:
