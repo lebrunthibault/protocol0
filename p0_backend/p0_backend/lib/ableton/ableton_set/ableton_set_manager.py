@@ -85,6 +85,8 @@ class AbletonSetManager:
 
     @classmethod
     def clear_state(cls) -> None:
+        if not cls.has_active_set():
+            return
         cls.active().tracks.clear_selection_history()
 
     @classmethod
