@@ -168,16 +168,8 @@ def get_line_observable_from_file(file: TextIO):
     return create(_make_observable)
 
 
-def tail_ableton_log_file_raw():
-    tail_ableton_log_file(raw=True)
-
-
 @log_exceptions
-def tail_ableton_log_file(raw=False):
-    if raw:
-        LogConfig.PROCESS_LOGS = False
-        LogConfig.START_SIZE = 200
-
+def tail_ableton_log_file():
     ctypes.windll.kernel32.SetConsoleTitleW(settings.log_window_title)
 
     if LogConfig.LOG_LEVEL == LogLevelEnum.INFO:
