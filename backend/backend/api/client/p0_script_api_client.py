@@ -21,22 +21,6 @@ class P0ScriptClient(object):
             logger.warning(f"script HTTP {path} failed: {e}")
             raise HTTPException(status_code=503, detail=f"script unreachable: {e}")
 
-    def select_track(self, name: str) -> None:
-        self._get("/track/select", {"name": name})
-
-    def get_set_state(self) -> dict:
-        url = self._base_url + "/set/get_state"
-        try:
-            r = self._session.get(url, timeout=5)
-            r.raise_for_status()
-            return r.json()
-        except requests.RequestException as e:
-            logger.warning(f"script HTTP /set/get_state failed: {e}")
-            raise HTTPException(status_code=503, detail=f"script unreachable: {e}")
-
-    def toggle_follow_song(self) -> None:
-        self._get("/song/toggle_follow")
-
     def on_key_detected(self, pitch: int) -> None:
         self._get("/clip/key_detected", {"pitch": pitch})
 

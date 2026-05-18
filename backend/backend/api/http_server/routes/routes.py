@@ -6,12 +6,10 @@ from fastapi.responses import HTMLResponse
 from fastapi.routing import APIRoute
 
 from .clip_routes import router as clip_router
-from .search_routes import router as search_router
 
 router = APIRouter()
 
 router.include_router(clip_router, prefix="/clip")
-router.include_router(search_router, prefix="/search")
 
 
 def _params_label(route: APIRoute) -> str:
