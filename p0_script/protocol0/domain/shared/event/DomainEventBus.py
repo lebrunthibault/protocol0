@@ -15,7 +15,6 @@ from protocol0.domain.shared.scheduler.Last8thPassedEvent import Last8thPassedEv
 from protocol0.domain.shared.scheduler.LastBeatPassedEvent import LastBeatPassedEvent
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.func import is_func_equal, get_callable_repr, get_class_from_func
-from protocol0.infra.midi.MidiBytesReceivedEvent import MidiBytesReceivedEvent
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.logging.StatusBar import StatusBar
 from protocol0.shared.types import T
@@ -38,7 +37,6 @@ class DomainEventBus(object):
         SceneLastBarPassedEvent,
         PlayingSceneChangedEvent,
         SongStoppedEvent,
-        MidiBytesReceivedEvent,
     )
     _registry: Dict[Type, List[Callable]] = {}
 

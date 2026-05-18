@@ -3,10 +3,11 @@ import tkinter as tk
 from threading import Timer, Thread
 from typing import List, Optional
 
+from loguru import logger
+
 from p0_backend.api.client.p0_script_api_client import p0_script_client
 from p0_backend.lib.ableton.ableton import focus_ableton
 from p0_backend.lib.ableton.ableton_set.ableton_set import AbletonTrack
-from p0_backend.lib.ableton.ableton_set.ableton_set_manager import AbletonSetManager
 from p0_backend.lib.search.search_queue import search_queue
 from p0_backend.lib.window.window import focus_window_by_handle, focus_tkinter_window
 
@@ -18,8 +19,6 @@ selected_track: Optional[str] = None
 def create_thread(reset: bool) -> None:
     global thread
 
-    # from loguru import logger
-    # logger.success(thread)
     if thread:
         if reset:
             search_queue.put("stop")
@@ -32,23 +31,6 @@ def create_thread(reset: bool) -> None:
     thread.start()
 
 
-def filter_tracks_from_search(tracks: List[AbletonTrack], search: str) -> List[AbletonTrack]:
-    if search == "":
-        if len(AbletonSetManager.active().tracks.selection_history) > 1:
-            # hide currently selected track
-            return AbletonSetManager.active().tracks.selection_history[1:]
-        else:
-            return tracks
-
-    data = []
-
-    for track in tracks:
-        if search.lower() in track.name.lower():
-            data.append(track)
-
-    return data
-
-
 def get_selected_index(event: tk.Event):
     return int(event.widget.curselection()[0])
 
@@ -57,7 +39,8 @@ class SearchBox:
     def __init__(self):
         self.root = _get_search_window()
 
-        self._tracks = AbletonSetManager.active().current_state.tracks
+        self._tracks: List[AbletonTrack] = []
+        self._selection_history: List[AbletonTrack] = []
         self._autoclose_timer = None
 
         self._entry = tk.Entry(self.root, width=20, font=("Arial", 12))
@@ -82,8 +65,6 @@ class SearchBox:
 
         self._entry.bind("<KeyRelease>", self.on_key_press)
 
-        self.update_search_results(self._tracks)
-
         self._list_box.bind("<Return>", self.on_select)
         self._list_box.bind("<space>", self.on_select)
         self._list_box.bind("<Double-1>", self.on_select)
@@ -96,9 +77,30 @@ class SearchBox:
         def get_input() -> None:
             self.submit(self._entry.get())
 
-    def update_tracks(self, tracks: List[AbletonTrack]):
-        self._tracks = tracks
-        self.update_search_results(filter_tracks_from_search(self._tracks, ""))
+    def _refresh_tracks(self) -> None:
+        """Pull the current set state from the script and refresh the local
+        track list. Selection history entries that no longer match a track
+        are dropped (track might have been renamed/removed)."""
+        try:
+            state = p0_script_client().get_set_state()
+        except Exception as e:
+            logger.warning(f"get_set_state failed: {e}")
+            self._tracks = []
+            return
+
+        self._tracks = [AbletonTrack(**t) for t in state["tracks"]]
+        track_names = {t.name for t in self._tracks}
+        self._selection_history = [t for t in self._selection_history if t.name in track_names]
+
+    def _filter(self, search: str) -> List[AbletonTrack]:
+        if search == "":
+            if len(self._selection_history) > 1:
+                # hide currently selected track
+                return self._selection_history[1:]
+            else:
+                return self._tracks
+
+        return [t for t in self._tracks if search.lower() in t.name.lower()]
 
     def _init_autoclose(self):
         if self._autoclose_timer:
@@ -116,7 +118,7 @@ class SearchBox:
         self._autoclose_timer.start()
 
     def on_key_press(self, event) -> None:
-        self.update_search_results(filter_tracks_from_search(self._tracks, event.widget.get()))
+        self.update_search_results(self._filter(event.widget.get()))
         self._init_autoclose()
 
     def on_entry_tab(self, _: tk.Event) -> None:
@@ -144,8 +146,9 @@ class SearchBox:
         self.submit(evt.widget.get(get_selected_index(evt)))
 
     def show(self) -> None:
+        self._refresh_tracks()
         self.root.deiconify()
-        self.update_search_results(filter_tracks_from_search(self._tracks, ""))
+        self.update_search_results(self._filter(""))
         self._entry.delete(0, tk.END)
         focus_tkinter_window(self.root)
         self._entry.focus_set()
@@ -161,11 +164,8 @@ class SearchBox:
 
     def submit(self, track_name: str) -> None:
         # if input is partial, select the first track name in the list
-        # if track_name.lower() == "kick bus":
-        #     track_name = "Kick"
-
         if track_name not in [t.name for t in self._tracks]:
-            track_sub_list = filter_tracks_from_search(self._tracks, track_name)
+            track_sub_list = self._filter(track_name)
             if track_sub_list:
                 track_name = track_sub_list[0].name
 
@@ -173,8 +173,13 @@ class SearchBox:
         try:
             p0_script_client().select_track(track_name)
         except Exception as e:
-            from loguru import logger as _logger
-            _logger.warning(f"select_track failed: {e}")
+            logger.warning(f"select_track failed: {e}")
+
+        # Local selection history (last selected first, deduped).
+        track = next((t for t in self._tracks if t.name == track_name), None)
+        if track is not None and track.name.lower() != "master":
+            self._selection_history = [t for t in self._selection_history if t.name != track.name]
+            self._selection_history.insert(0, track)
 
         if self._autoclose_timer:
             self._autoclose_timer.cancel()  # type: ignore[unreachable]
@@ -193,7 +198,6 @@ def _get_search_window() -> tk.Tk:
     h = 450  # height for the Tk root
 
     # get screen width and height
-    # ws = root.winfo_screenwidth()  # width of the screen
     hs = root.winfo_screenheight()  # height of the screen
 
     # calculate x and y coordinates for the Tk root window
@@ -213,8 +217,6 @@ def _get_search_window() -> tk.Tk:
 
 def search_track() -> None:
     search_box = SearchBox()
-    from loguru import logger
-
     logger.success(search_box)
 
     def check_queue():
@@ -225,8 +227,6 @@ def search_track() -> None:
             elif task == "stop":
                 search_box.destroy()
                 return
-            elif isinstance(task, list):
-                search_box.update_tracks(task)
 
         except queue.Empty:
             pass

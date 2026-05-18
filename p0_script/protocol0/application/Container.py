@@ -3,7 +3,6 @@ from typing import Type, Dict, Any
 import Live
 from _Framework.ControlSurface import ControlSurface
 
-from protocol0.application.CommandBus import CommandBus
 from protocol0.application.ContainerInterface import ContainerInterface
 from protocol0.application.control_surface.ActionGroupFactory import ActionGroupFactory
 from protocol0.application.error.ErrorService import ErrorService
@@ -80,8 +79,6 @@ class Container(ContainerInterface):
         )
 
         ableton_set = AbletonSet()
-
-        CommandBus(self, ableton_set)
 
         ApplicationView(recording_component, control_surface.application().view)
 

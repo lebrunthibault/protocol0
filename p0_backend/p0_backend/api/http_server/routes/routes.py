@@ -8,7 +8,6 @@ from p0_backend.settings import Settings
 from .clip_routes import router as clip_router
 from .device_routes import router as device_router
 from .search_routes import router as search_router
-from .set_routes import router as set_router
 
 router = APIRouter()
 
@@ -17,7 +16,6 @@ settings = Settings()
 router.include_router(clip_router, prefix="/clip")
 router.include_router(device_router, prefix="/device")
 router.include_router(search_router, prefix="/search")
-router.include_router(set_router, prefix="/set")
 
 
 @router.get("/")

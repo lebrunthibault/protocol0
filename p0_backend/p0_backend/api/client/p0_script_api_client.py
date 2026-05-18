@@ -27,8 +27,15 @@ class P0ScriptClient(object):
     def select_track(self, name: str) -> None:
         self._get("/track/select", {"name": name})
 
-    def get_set_state(self) -> None:
-        self._get("/set/get_state")
+    def get_set_state(self) -> dict:
+        url = self._base_url + "/set/get_state"
+        try:
+            r = self._session.get(url, timeout=5)
+            r.raise_for_status()
+            return r.json()
+        except requests.RequestException as e:
+            logger.warning(f"script HTTP /set/get_state failed: {e}")
+            raise HTTPException(status_code=503, detail=f"p0_script unreachable: {e}")
 
     def play_pause(self) -> None:
         self._get("/song/play_pause")
