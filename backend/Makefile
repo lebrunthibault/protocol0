@@ -6,7 +6,7 @@ bootstrap: ../.env
 	@poetry install
 	@echo project bootstrapped
 
-.PHONY: boostrap
+.PHONY: bootstrap
 
 backend:
 	@poetry run backend

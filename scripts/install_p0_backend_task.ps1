@@ -1,7 +1,11 @@
 # Register p0_backend as a Windows Scheduled Task that:
 #   - starts at user logon (runs under the current user -> poetry venv reachable)
-#   - restarts on crash (3x at 1-min intervals)
+#   - restarts on Task-Scheduler-detected crash (up to 999x at 1-min intervals)
 #   - writes logs to <repo>/.logs/backend.log via P0_LOG_FILE env var
+#
+# Note: clean exits (exit 0) and freezes are not auto-recovered -- Task Scheduler
+# only retriggers RestartCount on crash-style failures. Run `make reload` to
+# bring the backend back up in those cases.
 #
 # Run from a regular PowerShell (no admin needed for logon-triggered tasks).
 # Idempotent: re-registers cleanly. Use uninstall_p0_backend_task.ps1 to remove.
@@ -28,7 +32,7 @@ if (-not (Test-Path $backendExe)) {
 New-Item -ItemType Directory -Force -Path $logsDir | Out-Null
 
 # Launch via wscript.exe + a VBScript shim. wscript.exe is a GUI-subsystem
-# process, so PowerShell started underneath it never owns a console window —
+# process, so PowerShell started underneath it never owns a console window --
 # unlike running powershell.exe -WindowStyle Hidden directly, which can flash
 # a console for ~100ms on Win11 before the hide attribute takes effect
 # (visible every time the 2-min repeat trigger fires + IgnoreNew kills the
@@ -43,18 +47,10 @@ $action = New-ScheduledTaskAction `
     -Execute "wscript.exe" `
     -Argument $argTemplate
 
-# Two triggers:
-#  1. At user logon (current user). Switch to "AtStartup" if you want it
-#     running even before login, but that forces SYSTEM context -> no venv access.
-#  2. Repeat every 2 minutes forever. Combined with -MultipleInstances IgnoreNew
-#     below, this is a no-op while the backend is alive and becomes the
-#     restart-on-crash mechanism when it dies. Simpler and more reliable than
-#     event-based triggers (which need Microsoft-Windows-TaskScheduler/Operational
-#     enabled — disabled by default).
-$logonTrigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
-$repeatTrigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(2) `
-    -RepetitionInterval (New-TimeSpan -Minutes 2)
-$trigger = @($logonTrigger, $repeatTrigger)
+# Single trigger: at user logon (current user). Switch to "AtStartup" if you
+# want it running even before login, but that forces SYSTEM context -> no
+# venv access. Crash recovery is handled by RestartCount below.
+$trigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
 
 $settings = New-ScheduledTaskSettingsSet `
     -AllowStartIfOnBatteries `
