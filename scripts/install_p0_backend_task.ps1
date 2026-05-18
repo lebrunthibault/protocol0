@@ -27,20 +27,20 @@ if (-not (Test-Path $backendExe)) {
 
 New-Item -ItemType Directory -Force -Path $logsDir | Out-Null
 
-# Use PowerShell directly so we can set the env var and cd to the project dir
-# without an extra .cmd wrapper. -WindowStyle Hidden keeps no console popping up.
+# Launch via wscript.exe + a VBScript shim. wscript.exe is a GUI-subsystem
+# process, so PowerShell started underneath it never owns a console window —
+# unlike running powershell.exe -WindowStyle Hidden directly, which can flash
+# a console for ~100ms on Win11 before the hide attribute takes effect
+# (visible every time the 2-min repeat trigger fires + IgnoreNew kills the
+# new instance).
 # Stderr is captured to a side-file because uvicorn's startup errors print
 # there before loguru's file sink is configured.
-$stderrFile = Join-Path $logsDir "backend.err.log"
-$argTemplate = @(
-    '-NoProfile'
-    '-WindowStyle', 'Hidden'
-    '-Command',
-    "& { `$env:P0_LOG_FILE = '$logFile'; Set-Location '$backendDir'; & '$backendExe' *>> '$stderrFile' }"
-) -join ' '
+$stderrFile  = Join-Path $logsDir "backend.err.log"
+$vbsLauncher = Join-Path $PSScriptRoot "run_p0_backend.vbs"
+$argTemplate = '"{0}" "{1}" "{2}" "{3}" "{4}"' -f $vbsLauncher, $logFile, $backendDir, $backendExe, $stderrFile
 
 $action = New-ScheduledTaskAction `
-    -Execute "powershell.exe" `
+    -Execute "wscript.exe" `
     -Argument $argTemplate
 
 # Two triggers:
