@@ -52,6 +52,7 @@ def _configure_logging() -> None:
     for name in ("uvicorn", "uvicorn.error", "uvicorn.access", "fastapi"):
         target = logging.getLogger(name)
         target.handlers = [intercept]
+        target.setLevel(logging.INFO)
         target.propagate = False
 
 
@@ -111,10 +112,11 @@ app.mount("/static", StaticFiles(directory=settings.ableton_set_directory), name
 
 def start():
     _configure_logging()
+    log_file = os.environ.get("P0_LOG_FILE")
     uvicorn.run(
         "backend.api.http_server.main:app",
         host="0.0.0.0",
         port=Settings().p0_backend_port,
-        log_config="backend/api/http_server/logging-config.yaml",
+        log_config=None if log_file else "backend/api/http_server/logging-config.yaml",
         workers=1,
     )
