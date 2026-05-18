@@ -12,9 +12,9 @@ from protocol0.domain.lom.clip.MidiClip import MidiClip
 
 # noinspection SpellCheckingInspection
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
+from protocol0.domain.lom.device.DeviceService import DeviceService
 from protocol0.domain.lom.note.Note import Note
 from protocol0.domain.lom.track.simple_track.audio.master.MasterTrack import MasterTrack
-from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.shared.Song import Song
 
 
@@ -43,10 +43,10 @@ class ActionGroupLive4(ActionGroupInterface):
             if Song.splice_track():
                 Song.splice_track().toggle()
             else:
-                Backend.client().load_device(DeviceEnum.SPLICE_BRIDGE.name)
+                self._container.get(DeviceService).load_device(DeviceEnum.SPLICE_BRIDGE.name)
 
         def create_splice_track() -> None:
-            Backend.client().load_device(DeviceEnum.SPLICE_BRIDGE.name)
+            self._container.get(DeviceService).load_device(DeviceEnum.SPLICE_BRIDGE.name)
 
         def scroll_splice_track_volume(go_next: bool) -> None:
             if Song.splice_track():

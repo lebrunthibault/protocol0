@@ -21,9 +21,6 @@ class P0ScriptClient(object):
             logger.warning(f"script HTTP {path} failed: {e}")
             raise HTTPException(status_code=503, detail=f"p0_script unreachable: {e}")
 
-    def load_device(self, name: str) -> None:
-        self._get("/device/load", {"name": name})
-
     def select_track(self, name: str) -> None:
         self._get("/track/select", {"name": name})
 
@@ -36,15 +33,6 @@ class P0ScriptClient(object):
         except requests.RequestException as e:
             logger.warning(f"script HTTP /set/get_state failed: {e}")
             raise HTTPException(status_code=503, detail=f"p0_script unreachable: {e}")
-
-    def play_pause(self) -> None:
-        self._get("/song/play_pause")
-
-    def log_selected(self) -> None:
-        self._get("/log/selected")
-
-    def log_song_stats(self) -> None:
-        self._get("/log/song_stats")
 
     def toggle_follow_song(self) -> None:
         self._get("/song/toggle_follow")

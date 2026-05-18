@@ -15,6 +15,7 @@ selected_track: Optional[str] = None
 
 @router.get("/track")
 async def _search_track(reset: bool = False) -> None:
+    """Open the track search GUI window and stop the Live arrangement from following the playhead."""
     create_thread(reset)
     search_queue.put("show_window")
 

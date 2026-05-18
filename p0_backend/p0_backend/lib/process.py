@@ -64,5 +64,3 @@ def is_process_running(program_name) -> bool:
             return True
 
     return False
-
-
