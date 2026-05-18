@@ -2,8 +2,8 @@
   "name": "p0",
   "private": true,
   "workspaces": [
-    "p0_backend",
-    "p0_script"
+    "backend",
+    "script"
   ],
   "scripts": {
     "build": "turbo run build",

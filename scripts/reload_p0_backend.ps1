@@ -11,7 +11,11 @@
 $ErrorActionPreference = "Stop"
 
 $taskName = "p0_backend"
-$port = if ($env:P0_BACKEND_PORT) { [int]$env:P0_BACKEND_PORT } else { 8000 }
+
+$envFile = Join-Path $PSScriptRoot "..\.env"
+$portLine = Get-Content $envFile | Where-Object { $_ -match '^P0_BACKEND_PORT=' } | Select-Object -First 1
+if (-not $portLine) { throw "P0_BACKEND_PORT not found in $envFile" }
+$port = [int]($portLine -replace '^P0_BACKEND_PORT=', '')
 
 try { Stop-ScheduledTask -TaskName $taskName -ErrorAction Stop } catch {}
 

@@ -10,7 +10,7 @@ $ErrorActionPreference = "Stop"
 
 $taskName   = "p0_backend"
 $repoRoot   = (Resolve-Path "$PSScriptRoot\..").Path
-$backendDir = Join-Path $repoRoot "p0_backend"
+$backendDir = Join-Path $repoRoot "backend"
 $logsDir    = Join-Path $repoRoot ".logs"
 $logFile    = Join-Path $logsDir "backend.log"
 
