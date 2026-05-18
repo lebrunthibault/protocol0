@@ -6,8 +6,6 @@ from _Framework.ControlSurface import ControlSurface
 from protocol0.application.ContainerInterface import ContainerInterface
 from protocol0.application.control_surface.ActionGroupFactory import ActionGroupFactory
 from protocol0.application.error.ErrorService import ErrorService
-from protocol0.domain.audit.LogService import LogService
-from protocol0.domain.audit.SongStatsService import SongStatsService
 from protocol0.domain.lom.device.DeviceService import DeviceService
 from protocol0.domain.lom.instrument.instrument.InstrumentService import InstrumentService
 from protocol0.domain.lom.scene.PlayingScene import PlayingScene
@@ -97,7 +95,6 @@ class Container(ContainerInterface):
             quantization_component,
             track_crud_component,
         )
-        song_stats_service = SongStatsService(ableton_set)
         Song(
             live_song,
             device_component,
@@ -109,9 +106,6 @@ class Container(ContainerInterface):
             scene_service,
             track_mapper_service,
         )
-
-        # audit
-        log_service = LogService(ableton_set, track_mapper_service)
 
         self._register(midi_service)
         self._register(browser_service)
@@ -134,10 +128,6 @@ class Container(ContainerInterface):
         self._register(device_service)
 
         self._register(track_recorder_service)
-
-        # audit
-        self._register(log_service)
-        self._register(song_stats_service)
 
         ActionGroupFactory.create_action_groups(self, control_surface.component_guard)
 
