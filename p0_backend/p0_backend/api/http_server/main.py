@@ -3,7 +3,6 @@ import logging
 import os
 import sys
 import traceback
-from contextlib import asynccontextmanager
 
 import uvicorn
 from dotenv import load_dotenv
@@ -57,21 +56,11 @@ def _configure_logging() -> None:
 
 from p0_backend.api.http_server.routes.routes import router  # noqa
 from p0_backend.api.http_server.ws import ws_router  # noqa
-from p0_backend.api.client.p0_script_api_client import p0_script_client
 
 settings = Settings()
 
 
-@asynccontextmanager
-async def lifespan(_: FastAPI):
-    try:
-        p0_script_client().get_set_state()
-    except Exception as e:
-        logger.warning(f"lifespan get_set_state failed: {e}")
-    yield
-
-
-app = FastAPI(lifespan=lifespan, debug=True, title="p0_backend", version="1.0.0")
+app = FastAPI(debug=True, title="p0_backend", version="1.0.0")
 
 origins = [
     "http://localhost",

@@ -27,10 +27,6 @@ class BackendClient(object):
         # type: (str, dict) -> None
         self._send(self._json_request(path, body, "POST"))
 
-    def _put(self, path, body):
-        # type: (str, dict) -> None
-        self._send(self._json_request(path, body, "PUT"))
-
     def _json_request(self, path, body, method):
         # type: (str, dict, str) -> urllib.request.Request
         return urllib.request.Request(
@@ -64,10 +60,6 @@ class BackendClient(object):
         # type: () -> None
         self._get("/tail_logs")
 
-    def clear_state(self):
-        # type: () -> None
-        self._post("/set/clear_state", {})
-
     def load_device(self, name):
         # type: (str) -> None
         self._get("/device/load", {"name": name})
@@ -75,11 +67,3 @@ class BackendClient(object):
     def post_analyze_key(self, notes):
         # type: (List[Any]) -> None
         self._post("/clip/analyze_key", {"notes": notes})
-
-    def post_current_state(self, post_current_state_payload):
-        # type: (Any) -> None
-        self._post("/set/current_state", {"post_current_state_payload": post_current_state_payload})
-
-    def update_track_color(self, update_track_color_payload):
-        # type: (Any) -> None
-        self._put("/set/track_color", {"update_track_color_payload": update_track_color_payload})

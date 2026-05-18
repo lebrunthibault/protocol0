@@ -6,7 +6,6 @@ sys.path.insert(0, f"{dirname(__file__)}/protocol0_stub")
 
 from protocol0.application.Protocol0 import Protocol0
 from protocol0.application.control_surface.ActionGroupFactory import ActionGroupFactory
-from protocol0.domain.lom.set.AbletonSet import AbletonSet
 from protocol0.domain.lom.track.routing.RoutingTrackDescriptor import RoutingTrackDescriptor
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
@@ -40,7 +39,6 @@ def monkey_patch_static():
 
     Backend()
     Undo(nop, nop)
-    AbletonSet.notify = nop
     # noinspection PyTypeChecker
     Scheduler(TickSchedulerTest(), None)  # ignore beat scheduling in tests
 

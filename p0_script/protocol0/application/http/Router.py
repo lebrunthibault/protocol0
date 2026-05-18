@@ -5,6 +5,8 @@ Reproduit le pattern FastAPI du backend (p0_backend/.../http_server/routes/)
 mais sans framework — on n'a accès qu'à la stdlib dans Ableton.
 """
 import inspect
+import json
+import threading
 from http.server import BaseHTTPRequestHandler
 from typing import Callable, Dict, Tuple
 from urllib.parse import urlparse, parse_qs
@@ -15,6 +17,11 @@ from protocol0.shared.logging.Logger import Logger
 # modules dans routes/__init__.py.
 _ROUTES: Dict[Tuple[str, str], Callable] = {}
 
+# Borne d'attente du thread HTTP pendant que le handler s'exécute sur le
+# thread Live. L'API Live répond en quelques ms à un tick (~17 ms) ; 2 s laisse
+# largement la marge même sous burst.
+_HANDLER_TIMEOUT_S = 2.0
+
 
 def route(method: str, path: str) -> Callable:
     def wrap(fn: Callable) -> Callable:
@@ -22,6 +29,10 @@ def route(method: str, path: str) -> Callable:
         return fn
 
     return wrap
+
+
+def get_routes() -> Dict[Tuple[str, str], Callable]:
+    return _ROUTES
 
 
 def _coerce(value: str, annotation: type):
@@ -44,6 +55,13 @@ def _build_kwargs(fn: Callable, query: Dict[str, list]) -> dict:
             continue
         kwargs[name] = _coerce(query[name][0], param.annotation)
     return kwargs
+
+
+def _returns_value(fn: Callable) -> bool:
+    """Vrai si le handler a une annotation de retour non-None (donc on attend
+    son résultat pour le sérialiser en JSON). Sinon fire-and-forget."""
+    ann = inspect.signature(fn).return_annotation
+    return ann is not inspect.Signature.empty and ann is not None and ann is not type(None)
 
 
 class HttpRequestHandler(BaseHTTPRequestHandler):
@@ -74,10 +92,51 @@ class HttpRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(str(e).encode())
             return
 
-        # Pont vers le thread Live : on ne touche surtout pas à l'API Ableton ici
-        # (on est sur un thread daemon du serveur HTTP).
-        HttpServer.submit(lambda: fn(**kwargs))
         Logger.info("HTTP %s %s" % (method, self.path))
 
+        if not _returns_value(fn):
+            # Pont vers le thread Live : on ne touche surtout pas à l'API Ableton ici
+            # (on est sur un thread daemon du serveur HTTP).
+            HttpServer.submit(lambda: fn(**kwargs))
+            self.send_response(200)
+            self.end_headers()
+            return
+
+        # Handler avec retour : on attend le résultat depuis le thread Live.
+        done = threading.Event()
+        slot: dict = {}
+
+        def run() -> None:
+            try:
+                slot["result"] = fn(**kwargs)
+            except Exception as e:
+                slot["error"] = e
+            finally:
+                done.set()
+
+        HttpServer.submit(run)
+
+        if not done.wait(_HANDLER_TIMEOUT_S):
+            self.send_response(504)
+            self.end_headers()
+            self.wfile.write(b"handler timeout")
+            return
+
+        if "error" in slot:
+            self.send_response(500)
+            self.end_headers()
+            self.wfile.write(str(slot["error"]).encode())
+            return
+
+        result = slot["result"]
+        if isinstance(result, str):
+            body = result.encode("utf-8")
+            content_type = "text/html; charset=utf-8"
+        else:
+            body = json.dumps(result).encode("utf-8")
+            content_type = "application/json"
         self.send_response(200)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(body)))
         self.end_headers()
+        self.wfile.write(body)
