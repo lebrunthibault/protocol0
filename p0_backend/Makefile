@@ -1,7 +1,7 @@
-.env:
-	powershell -Command "cp .env.dist .env"
+../.env:
+	powershell -Command "cp ../.env.dist ../.env"
 
-bootstrap: .env
+bootstrap: ../.env
 	@pyenv local 3.11.3
 	@poetry install
 	@echo project bootstrapped
