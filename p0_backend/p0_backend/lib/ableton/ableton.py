@@ -10,7 +10,6 @@ from p0_backend.lib.ableton.ableton_set.ableton_set import PathInfo
 from p0_backend.lib.errors.Protocol0Error import Protocol0Error
 from p0_backend.lib.keys import send_keys
 from p0_backend.lib.keys import send_right
-from p0_backend.lib.notification import notify
 from p0_backend.lib.process import execute_powershell_command, kill_window_by_criteria
 from p0_backend.lib.window.find_window import find_window_handle_by_enum, SearchTypeEnum
 from p0_backend.lib.window.window import (
@@ -76,11 +75,6 @@ def open_set(filename: str, confirm_dialog=True):
     logger.info(f"opening {filename}")
 
     path_info = PathInfo.create(filename)
-
-    relative_path = path_info.filename.replace(f"{settings.ableton_set_directory}\\", "").replace(
-        "//", "\\"
-    )
-    notify(f"Opening '{relative_path}'")
 
     try:
         focus_ableton()

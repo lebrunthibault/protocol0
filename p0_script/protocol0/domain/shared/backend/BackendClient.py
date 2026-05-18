@@ -68,22 +68,6 @@ class BackendClient(object):
         # type: () -> None
         self._post("/set/clear_state", {})
 
-    def show_info(self, message):
-        # type: (str) -> None
-        self._get("/show_info", {"message": message})
-
-    def show_success(self, message):
-        # type: (str) -> None
-        self._get("/show_success", {"message": message})
-
-    def show_warning(self, message):
-        # type: (str) -> None
-        self._get("/show_warning", {"message": message})
-
-    def show_error(self, message):
-        # type: (str) -> None
-        self._get("/show_error", {"message": message})
-
     def load_device(self, name):
         # type: (str) -> None
         self._get("/device/load", {"name": name})

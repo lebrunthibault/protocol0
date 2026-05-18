@@ -32,13 +32,9 @@ class Logger(object):
         if not show_notification:
             return None
 
-        from protocol0.domain.shared.backend.Backend import Backend
+        from protocol0.shared.logging.StatusBar import StatusBar
 
-        Backend.client().show_error(message)
-        if "\n" not in message:
-            from protocol0.shared.logging.StatusBar import StatusBar
-
-            StatusBar.show_message(message)
+        StatusBar.show_message(" ".join(message.splitlines()))
 
     @classmethod
     def _log(
