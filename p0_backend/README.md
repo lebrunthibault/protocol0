@@ -31,10 +31,5 @@ calling the script by dispatching script RPC commands.
 ## API
 
 #### HTTP
-A fastapi exposing the backend API for consumption by the [control surface script](https://github.com/lebrunthibault/Protocol0-Ableton-Surface-Script)
-
-It serves several clients :
-- my streamdeck ([p0_stream_deck](https://github.com/lebrunthibault/protocol0/tree/main/p0_stream_deck)). The server pushes song state changes to the stream deck via a websocket
-- p0_web ([p0_web](https://github.com/lebrunthibault/protocol0/tree/main/p0_web)) : the small protocol0 control web app 
-
+A fastapi exposing the backend API for consumption by the [control surface script](https://github.com/lebrunthibault/Protocol0-Ableton-Surface-Script) or any other client.
 
