@@ -56,14 +56,6 @@ class BackendClient(object):
         except Exception:
             return False
 
-    def tail_logs(self):
-        # type: () -> None
-        self._get("/tail_logs")
-
-    def load_device(self, name):
-        # type: (str) -> None
-        self._get("/device/load", {"name": name})
-
     def post_analyze_key(self, notes):
         # type: (List[Any]) -> None
         self._post("/clip/analyze_key", {"notes": notes})

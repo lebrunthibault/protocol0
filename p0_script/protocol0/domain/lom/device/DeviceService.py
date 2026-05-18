@@ -171,4 +171,3 @@ class DeviceService(object):
         device.selected_chain = device.chains[1]
 
         self._device_component.select_device(Song.selected_track(), device.chains[1].devices[-1])
-

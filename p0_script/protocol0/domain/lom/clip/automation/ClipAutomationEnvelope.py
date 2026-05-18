@@ -52,4 +52,3 @@ class ClipAutomationEnvelope(object):
         else:
             self.insert_step(0, 0, self.start)  # type: ignore[unreachable]
             self.insert_step(self._length, 0, 0)
-

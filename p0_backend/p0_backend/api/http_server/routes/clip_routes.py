@@ -14,4 +14,5 @@ class NotesModel(BaseModel):
 
 @router.post("/analyze_key")
 async def _analyze_key(notes: NotesModel):
+    """Analyze a list of MIDI notes and detect the musical key of the clip."""
     analyze_key(notes.notes)

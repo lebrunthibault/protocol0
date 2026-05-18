@@ -54,6 +54,7 @@ def _configure_logging() -> None:
         target.handlers = [intercept]
         target.propagate = False
 
+
 from p0_backend.api.http_server.routes.routes import router  # noqa
 from p0_backend.api.http_server.ws import ws_router  # noqa
 

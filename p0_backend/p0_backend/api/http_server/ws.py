@@ -50,11 +50,6 @@ class WebSocketManager:
 ws_manager = WebSocketManager()
 
 
-@ws_router.get("/ws/connections")
-async def get_connections():
-    return [ws.client for ws in ws_manager.active_connections]
-
-
 @ws_router.websocket("/")
 async def websocket_endpoint(websocket: WebSocket):
     await ws_manager.connect(websocket)
