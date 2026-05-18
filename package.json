@@ -3,9 +3,7 @@
   "private": true,
   "workspaces": [
     "p0_backend",
-    "p0_script",
-    "p0_stream_deck",
-    "p0_web/*"
+    "p0_script"
   ],
   "scripts": {
     "build": "turbo run build",
