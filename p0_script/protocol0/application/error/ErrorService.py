@@ -6,7 +6,6 @@ from typing import Optional, List, Type
 
 import Live
 
-from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.backend.BackendEvent import BackendEvent
 from protocol0.domain.shared.errors.ErrorRaisedEvent import ErrorRaisedEvent
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
@@ -16,6 +15,7 @@ from protocol0.domain.shared.utils.timing import debounce
 from protocol0.shared.Config import Config
 from protocol0.shared.Undo import Undo
 from protocol0.shared.logging.Logger import Logger
+from protocol0.shared.logging.StatusBar import StatusBar
 from protocol0.shared.sequence.Sequence import Sequence
 
 
@@ -51,7 +51,7 @@ class ErrorService(object):
 
     @debounce(duration=1000)
     def _show_error(self, error_message: str) -> None:
-        Backend.client().show_error(error_message)
+        StatusBar.show_message(" ".join(error_message.splitlines()))
 
     def _on_backend_event(self, event: BackendEvent) -> None:
         if event.event == "error":

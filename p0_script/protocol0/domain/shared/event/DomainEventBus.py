@@ -6,7 +6,6 @@ from typing import Dict, List, Type, Callable, TYPE_CHECKING
 from protocol0.domain.lom.scene.PlayingSceneChangedEvent import PlayingSceneChangedEvent
 from protocol0.domain.lom.scene.SceneLastBarPassedEvent import SceneLastBarPassedEvent
 from protocol0.domain.lom.song.SongStoppedEvent import SongStoppedEvent
-from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.scheduler.BarChangedEvent import BarChangedEvent
 from protocol0.domain.shared.scheduler.BarEndingEvent import BarEndingEvent
@@ -18,6 +17,7 @@ from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.func import is_func_equal, get_callable_repr, get_class_from_func
 from protocol0.infra.midi.MidiBytesReceivedEvent import MidiBytesReceivedEvent
 from protocol0.shared.logging.Logger import Logger
+from protocol0.shared.logging.StatusBar import StatusBar
 from protocol0.shared.types import T
 
 if TYPE_CHECKING:
@@ -61,9 +61,9 @@ class DomainEventBus(object):
 
         for sub in cls._registry[domain_event]:
             if is_func_equal(sub, subscriber, unique_method):
-                Backend.client().show_warning(
-                    "duplicate subscriber : %s for event %s" % (sub, domain_event)
-                )
+                msg = "duplicate subscriber : %s for event %s" % (sub, domain_event)
+                Logger.warning(msg)
+                StatusBar.show_message(msg)
                 if inspect.ismethod(sub):
                     Logger.warning(
                         "method class: %s <-> %s"

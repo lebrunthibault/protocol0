@@ -12,7 +12,6 @@ from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitor
 from protocol0.domain.lom.track.routing.InputRoutingChannelEnum import InputRoutingChannelEnum
 from protocol0.domain.lom.track.simple_track.SimpleTrack import SimpleTrack
 from protocol0.domain.shared.ApplicationView import ApplicationView
-from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.ErrorRaisedEvent import ErrorRaisedEvent
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
@@ -29,6 +28,7 @@ from protocol0.domain.track_recorder.RecordingBarLengthEnum import (
 )
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
+from protocol0.shared.logging.StatusBar import StatusBar
 from protocol0.shared.sequence.Sequence import Sequence
 
 
@@ -84,7 +84,7 @@ class RecordService(object):
         if self._DEBUG:
             Logger.info("recorder_config: %s" % config)
 
-        Backend.client().show_info(f"Rec: {config.record_type.name} ({config.bar_length} bars)")
+        StatusBar.show_message(f"Rec: {config.record_type.name} ({config.bar_length} bars)")
 
         seq.add(partial(self._start_recording, record_type, config))
         return seq.done()
@@ -145,7 +145,8 @@ class RecordService(object):
 
         self._recorder = None
         if show_notification:
-            Backend.client().show_warning("Recording cancelled")
+            Logger.warning("Recording cancelled")
+            StatusBar.show_message("Recording cancelled")
 
     def _on_song_stopped_event(self, _: SongStoppedEvent) -> None:
         """happens when manually stopping song while recording."""

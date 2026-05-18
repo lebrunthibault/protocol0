@@ -23,7 +23,6 @@ from protocol0.domain.lom.track.simple_track.SimpleTrackDeletedEvent import Simp
 from protocol0.domain.lom.track.simple_track.SimpleTrackSelectedEvent import (
     SimpleTrackSelectedEvent,
 )
-from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.forward_to import ForwardTo
@@ -31,6 +30,7 @@ from protocol0.domain.shared.utils.list import find_if
 from protocol0.domain.shared.utils.utils import volume_to_db, db_to_volume
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
+from protocol0.shared.logging.StatusBar import StatusBar
 from protocol0.shared.sequence.Sequence import Sequence
 
 
@@ -146,7 +146,8 @@ class SimpleTrack(SlotManager):
         try:
             self._track.current_monitoring_state = monitoring_state.value  # noqa
         except Exception as e:
-            Backend.client().show_warning(str(e))
+            Logger.warning(str(e))
+            StatusBar.show_message(str(e))
 
     @property
     def instrument(self) -> Optional[InstrumentInterface]:

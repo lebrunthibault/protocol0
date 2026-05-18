@@ -8,12 +8,12 @@ from protocol0.domain.lom.scene.PlayingScene import PlayingScene
 from protocol0.domain.lom.scene.Scene import Scene
 from protocol0.domain.lom.scene.ScenesMappedEvent import ScenesMappedEvent
 from protocol0.domain.lom.song.components.SceneCrudComponent import SceneCrudComponent
-from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
+from protocol0.shared.logging.StatusBar import StatusBar
 
 
 class SceneService(SlotManager):
@@ -105,9 +105,14 @@ class SceneService(SlotManager):
                 PlayingScene.set(None)
 
         if len(deleted_scenes) == 1:
-            Backend.client().show_warning(f"You just deleted {deleted_scenes[0]}")
+            msg = f"You just deleted {deleted_scenes[0]}"
         elif len(deleted_scenes) > 1:
-            Backend.client().show_warning(f"You just deleted {len(deleted_scenes)} scenes")
+            msg = f"You just deleted {len(deleted_scenes)} scenes"
+        else:
+            msg = ""
+        if msg:
+            Logger.warning(msg)
+            StatusBar.show_message(msg)
 
     def generate_scene(self, live_scene: Live.Scene.Scene, index: int) -> None:
         # switching to full remap because of persisting mapping problems when moving scenes

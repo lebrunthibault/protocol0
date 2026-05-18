@@ -1,4 +1,4 @@
-""" http / websocket gateway server. Hit by ahk, the stream deck, and the Ableton remote script. """
+""" http / websocket server. """
 import logging
 import os
 import sys
@@ -17,7 +17,6 @@ from starlette.requests import Request
 from starlette.responses import PlainTextResponse
 from starlette.staticfiles import StaticFiles
 
-from p0_backend.lib.notification import notify
 from p0_backend.settings import Settings
 
 load_dotenv()
@@ -105,9 +104,6 @@ async def _catch_protocol0_errors(request: Request, call_next):
         if not isinstance(e, RateLimitException):
             traceback.print_tb(e.__traceback__)
             logger.error(e)
-
-            if request.method != "PUT":
-                notify(str(e))
 
         return PlainTextResponse(str(e), status_code=500)
 
