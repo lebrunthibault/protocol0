@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "p0"
+version = "1.0.0"
+description = ""
+authors = ["Thibault Lebrun <thibaultlebrun@live.fr>"]
+package-mode = false
+
+# The protocol0 source itself is loaded from the checked-out repo
+# (see __init__.py, P0_SOURCE_DIR). This venv only carries the
+# runtime deps that protocol0 needs at import time.
+[tool.poetry.dependencies]
+python = "3.11.*"
+qualname = "^0.1.0"
+loguru = "^0.7.0"
+typing-extensions = "^4.6.3"
+dacite = "^1.8.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

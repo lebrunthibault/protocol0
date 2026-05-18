@@ -1,0 +1,35 @@
+# Protocol0 control surface script backend
+
+This repo is the backend of ([Ableton control surface script](https://github.com/lebrunthibault/Protocol0-Ableton-Surface-Script))
+
+I created it because the python environment in the control surface script executes in ableton and is limited in several
+ways
+(cannot use threading, asyncio, python3, a bunch of system libraries etc ...)
+
+This repo has none of these limitations and exposes an API to the protocol0 script 
+while also being able to do the opposite : 
+calling the script by dispatching script RPC commands.
+
+- This backend is Windows specific (some library code is relative to windows and keyboard management))
+
+## Installation
+
+`make bootstrap`
+
+### Set up the midi ports
+- Create LoopMidi virtual ports (P0_IN and P0_OUT)
+- configure ableton midi as so :
+    <img width="260px" src="https://raw.githubusercontent.com/lebrunthibault/Protocol-0-backend/master/doc/img/ableton_midi_config.PNG?sanitize=true" alt="ableton screenshot">
+
+  
+### Makefile
+- most commands I run from the terminal are gathered here (starting processes, sdk generation, tests and lint)
+
+### Start the backend
+- `make http_server`
+
+## API
+
+#### HTTP
+A fastapi exposing the backend API for consumption by the [control surface script](https://github.com/lebrunthibault/Protocol0-Ableton-Surface-Script) or any other client.
+

@@ -70,6 +70,6 @@ D:\dev\code\projects\p0\scripts\uninstall_p0_backend_task.ps1
 
 ## Dev workflow without the task
 
-`poetry run backend` from `p0_backend/` still works as before — the
+`poetry run backend` from `backend/` still works as before — the
 loguru-to-file routing only activates when `P0_LOG_FILE` is set in the
 environment (the scheduled task sets it; manual runs don't).
