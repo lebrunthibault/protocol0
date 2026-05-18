@@ -276,10 +276,6 @@ class SimpleTrack(SlotManager):
 
         DomainEventBus.emit(SimpleTrackSelectedEvent(self._track))
 
-    @property
-    def load_time(self) -> int:
-        return self.devices.load_time
-
     def on_set_save(self) -> None:
         # there's no selected variation index listener
         if self.instrument_rack_device:

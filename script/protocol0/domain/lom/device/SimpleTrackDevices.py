@@ -187,10 +187,6 @@ class SimpleTrackDevices(SlotManager):
             list(chain(*[device.parameters for device in self.all])) + self.mixer_device.parameters
         )
 
-    @property
-    def load_time(self) -> int:
-        return sum(d.enum.load_time for d in self if d.enum is not None)
-
     def disconnect(self) -> None:
         super(SimpleTrackDevices, self).disconnect()
         for device in self.all:

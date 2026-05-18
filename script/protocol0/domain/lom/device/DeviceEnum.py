@@ -1,7 +1,6 @@
 from enum import Enum
-from typing import List, Union, TYPE_CHECKING
+from typing import List, TYPE_CHECKING
 
-from protocol0.domain.lom.device.DeviceEnumGroup import DeviceEnumGroup
 from protocol0.domain.shared.ui.ColorEnum import ColorEnum
 
 if TYPE_CHECKING:
@@ -158,104 +157,6 @@ class DeviceEnum(Enum):
 
         return device.enum == self
 
-    @classmethod
-    def favorites(cls) -> List[List[Union["DeviceEnum", DeviceEnumGroup]]]:
-        return [
-            [
-                DeviceEnumGroup("EQ", [cls.EQ_EIGHT, cls.PRO_Q_3]),
-                DeviceEnumGroup(
-                    "Meter", [cls.PSY_SCOPE, cls.M_ANALYZER, cls.YOULEAN, cls.M_STEREO_SCOPE]
-                ),
-                cls.UTILITY,
-            ],
-            [
-                DeviceEnumGroup(
-                    "Comp",
-                    [cls.R_COMPRESSOR, cls.COMPRESSOR, cls.SSL_COMP, cls.C4, cls.TDR_KOTELNIKOV],
-                ),
-                DeviceEnumGroup(
-                    "Sat",
-                    [
-                        cls.SPECTRE,
-                        cls.DECAPITATOR,
-                        cls.DYNAMIC_TUBE,
-                        cls.SATURN_2,
-                        cls.SATURATOR,
-                        cls.BLACK_BOX,
-                    ],
-                ),
-                DeviceEnumGroup("Delay", [cls.INSERT_ECHO, cls.INSERT_DELAY]),
-            ],
-            # [
-            #     DeviceEnumGroup("Volume", [cls.LFO_TOOL, cls.DUCK]),
-            #     DeviceEnumGroup(
-            #         "Reverb", [cls.INSERT_REVERB, cls.VALHALLA_VINTAGE_VERB, cls.REVERB]
-            #     ),
-            # ],
-        ]
-
-    @property
-    def load_time(self) -> int:
-        """
-        load time in ms : by how much loading a single device / plugin instance slows down the set startup
-        measured by loading multiple device instances (20) in an empty set and timing multiple times the set load
-        very rough approximation of the performance impact of a device on the whole set
-        """
-        return {
-            DeviceEnum.AUDIO_EFFECT_RACK: 8,
-            DeviceEnum.AUTO_FILTER: 7,
-            DeviceEnum.BEAT_REPEAT: 7,
-            DeviceEnum.COMPRESSOR: 11,
-            DeviceEnum.DECAPITATOR: 309,
-            DeviceEnum.DE_ESSER: 90,
-            DeviceEnum.DELAY: 10,
-            DeviceEnum.DRUM_BUSS: 18,
-            DeviceEnum.DOUBLER2: 43,
-            DeviceEnum.DOUBLER4: 46,
-            DeviceEnum.EFFECTRIX: 133,
-            DeviceEnum.ENIGMA: 0,
-            DeviceEnum.EQ_EIGHT: 31,
-            DeviceEnum.EQ_ROOM: 31,
-            DeviceEnum.EXTERNAL_AUDIO_EFFECT: 5,
-            DeviceEnum.EXTERNAL_INSTRUMENT: 20,
-            DeviceEnum.KONTAKT: 1000,
-            DeviceEnum.GATE: 7,
-            DeviceEnum.GATEKEEPER: 130,
-            DeviceEnum.GLUE_COMPRESSOR: 6,
-            DeviceEnum.H_COMP: 75,
-            DeviceEnum.INSTRUMENT_RACK: 10,
-            DeviceEnum.JJP_STRINGS: 280,
-            DeviceEnum.LFO_TOOL: 180,
-            DeviceEnum.L1_LIMITER: 64,
-            DeviceEnum.L1_ULTRAMAXIMIZER: 64,
-            DeviceEnum.LIMITER: 5,
-            DeviceEnum.PITCH: 2,
-            DeviceEnum.PRO_Q_3: 53,
-            DeviceEnum.PRO_Q_3_VST3: 53,
-            DeviceEnum.REVERB: 9,
-            DeviceEnum.REV2_EDITOR: 80,
-            DeviceEnum.R_VERB: 114,
-            DeviceEnum.SATURATOR: 8,
-            DeviceEnum.SATURN_2: 50,
-            DeviceEnum.SERUM: 147,
-            DeviceEnum.SIMPLER: 56,
-            DeviceEnum.SOOTHE2: 206,
-            DeviceEnum.SOUNDID_REFERENCE_PLUGIN: 0,
-            DeviceEnum.SPIFF: 270,
-            DeviceEnum.SSL_COMP: 81,
-            DeviceEnum.SUPER_TAP_2: 45,
-            DeviceEnum.SUPER_TAP_6: 45,
-            DeviceEnum.SURFEREQ: 116,
-            DeviceEnum.SYLENTH1: 314,
-            DeviceEnum.TRACK_SPACER: 207,
-            DeviceEnum.TRUE_VERB: 82,
-            DeviceEnum.TUNER: 0,
-            DeviceEnum.UTILITY: 4,
-            DeviceEnum.VALHALLA_VINTAGE_VERB: 71,
-            DeviceEnum.VCOMP: 52,
-            DeviceEnum.VEQ: 55,
-        }.get(self, 0)
-
     @property
     def device_group_position(self) -> int:
         predicates = [
@@ -285,12 +186,9 @@ class DeviceEnum(Enum):
         return self in [
             DeviceEnum.DIVA,
             DeviceEnum.DRUM_RACK,
-            DeviceEnum.KICK_2,
             DeviceEnum.KONTAKT,
-            DeviceEnum.LABS,
             DeviceEnum.REV2_EDITOR,
             DeviceEnum.SERUM,
-            DeviceEnum.SINE_PLAYER,
             DeviceEnum.SPLICE_BRIDGE,
             DeviceEnum.SYLENTH1,
             DeviceEnum.SYLENTH1_RACK,
@@ -308,8 +206,6 @@ class DeviceEnum(Enum):
     def is_limiter(self) -> bool:
         return self in [
             DeviceEnum.LIMITER,
-            DeviceEnum.L1_LIMITER,
-            DeviceEnum.L1_ULTRAMAXIMIZER,
             DeviceEnum.L2_LIMITER,
             DeviceEnum.GOD_PARTICLE,
         ]
@@ -332,7 +228,6 @@ class DeviceEnum(Enum):
             DeviceEnum.COMPRESSOR,
             DeviceEnum.GLUE_COMPRESSOR,
             DeviceEnum.H_COMP,
-            DeviceEnum.L1_LIMITER,
             DeviceEnum.SSL_COMP,
             DeviceEnum.TDR_KOTELNIKOV,
             DeviceEnum.VCOMP,
@@ -344,7 +239,6 @@ class DeviceEnum(Enum):
             DeviceEnum.BLACK_BOX,
             DeviceEnum.DECAPITATOR,
             DeviceEnum.DRUM_BUSS,
-            DeviceEnum.DYNAMIC_TUBE,
             DeviceEnum.OVERDRIVE,
             DeviceEnum.SATURATOR,
             DeviceEnum.SATURN_2,
@@ -372,7 +266,6 @@ class DeviceEnum(Enum):
     def is_delay(self) -> bool:
         return self in [
             DeviceEnum.DELAY,
-            DeviceEnum.ENIGMA,
             DeviceEnum.H_DELAY,
             DeviceEnum.INSERT_DELAY,
             DeviceEnum.SUPER_TAP_2,
@@ -393,8 +286,6 @@ class DeviceEnum(Enum):
     def is_fx(self) -> bool:
         return self in [
             DeviceEnum.AUTO_PAN,
-            DeviceEnum.DOUBLER2,
-            DeviceEnum.DOUBLER4,
             DeviceEnum.EFFECTRIX,
         ]
 
@@ -433,9 +324,7 @@ class DeviceEnum(Enum):
         return {
             DeviceEnum.DIVA: "Diva",
             DeviceEnum.KONTAKT: "Kontakt",
-            DeviceEnum.LABS: "LABS",
             DeviceEnum.SERUM: "Serum",
-            DeviceEnum.SINE_PLAYER: "Sine Player",
             DeviceEnum.SPLICE_BRIDGE: "Splice",
             DeviceEnum.SYLENTH1: "Sylenth1",
             DeviceEnum.SYLENTH1_RACK: "Sylenth1",

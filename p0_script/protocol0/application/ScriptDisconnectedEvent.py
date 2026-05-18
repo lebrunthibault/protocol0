@@ -1,2 +1,0 @@
-class ScriptDisconnectedEvent(object):
-    pass

@@ -56,7 +56,6 @@ def _configure_logging() -> None:
 
 
 from backend.api.http_server.routes.routes import router  # noqa
-from backend.api.http_server.ws import ws_router  # noqa
 
 settings = Settings()
 
@@ -76,7 +75,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(router)
-app.include_router(ws_router)
 
 
 @app.exception_handler(RequestValidationError)
