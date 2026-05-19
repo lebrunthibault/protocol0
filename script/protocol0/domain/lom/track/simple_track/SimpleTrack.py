@@ -161,10 +161,20 @@ class SimpleTrack(SlotManager):
 
     @property
     def instrument_rack_device(self) -> Optional[RackDevice]:
-        if not self.instrument or not self.instrument.device:
-            return None
+        if self.instrument and self.instrument.device:
+            rack = self.devices.get_device_or_rack_device(self.instrument.device)
+            if rack:
+                return rack
 
-        return self.devices.get_device_or_rack_device(self.instrument.device)
+        # fallback: first Instrument Rack at the top of the chain
+        # (covers tracks whose instrument is not registered as an InstrumentInterface)
+        return next(
+            (
+                d for d in self.devices
+                if isinstance(d, RackDevice) and d.class_name == "InstrumentGroupDevice"
+            ),
+            None,
+        )
 
     @property
     def is_foldable(self) -> bool:
@@ -275,11 +285,6 @@ class SimpleTrack(SlotManager):
             self.un_collapse()
 
         DomainEventBus.emit(SimpleTrackSelectedEvent(self._track))
-
-    def on_set_save(self) -> None:
-        # there's no selected variation index listener
-        if self.instrument_rack_device:
-            self.instrument_rack_device.notify_observers()
 
     def to_dict(self) -> Dict:
         return {

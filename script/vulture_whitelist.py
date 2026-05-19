@@ -55,7 +55,6 @@ _.should_quantize  # unused property (protocol0\domain\track_recorder\RecordType
 _.drums_track  # unused method (protocol0\shared\Song.py:197)
 _.set_current_song_time  # unused method (protocol0\shared\Song.py:349)
 create_instance  # unused function (protocol0\application\main.py:4)
-_.on_set_save  # unused method (protocol0\domain\lom\track\simple_track\SimpleTrack.py:282)
 _.show_arrangement  # unused method (protocol0\domain\shared\ApplicationView.py:46)
 ActionGroupLive3  # unused class (protocol0\application\control_surface\group\ActionGroupLive2.py:4)
 toggle_splice_track  # unused function (protocol0\application\control_surface\group\ActionGroupLive4.py:42)
