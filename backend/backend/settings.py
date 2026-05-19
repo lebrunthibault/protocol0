@@ -9,11 +9,9 @@ class Settings(BaseSettings):
     class Config:
         env_file = os.path.join(dirname(dirname(dirname(__file__))), ".env")
 
-    user_home: str
-
     @property
     def log_file_path(self) -> str:
-        ableton_root = Path(self.user_home) / "AppData" / "Roaming" / "Ableton"
+        ableton_root = Path.home() / "AppData" / "Roaming" / "Ableton"
         candidates = [
             p / "Preferences" / "Log.txt"
             for p in ableton_root.glob("Live *")
