@@ -170,7 +170,7 @@ def get_line_observable_from_file(file: TextIO):
 
 @log_exceptions
 def tail_ableton_log_file():
-    ctypes.windll.kernel32.SetConsoleTitleW(settings.log_window_title)
+    ctypes.windll.kernel32.SetConsoleTitleW("Protocol0 logs")
 
     if LogConfig.LOG_LEVEL == LogLevelEnum.INFO:
         LogConfig.BLACK_LIST_KEYWORDS.append("P0 - debug")
