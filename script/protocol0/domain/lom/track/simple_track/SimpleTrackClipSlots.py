@@ -1,4 +1,4 @@
-from typing import List, Type, Optional, Iterator
+from typing import List, Type, Iterator
 
 import Live
 from _Framework.CompoundElement import subject_slot_group
@@ -7,7 +7,6 @@ from _Framework.SubjectSlot import SlotManager
 from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.clip_slot.ClipSlot import ClipSlot
 from protocol0.domain.lom.clip_slot.ClipSlotHasClipEvent import ClipSlotHasClipEvent
-from protocol0.domain.lom.instrument.InstrumentInterface import InstrumentInterface
 from protocol0.domain.lom.track.simple_track.SimpleTrackClips import SimpleTrackClips
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
@@ -31,13 +30,8 @@ class SimpleTrackClipSlots(SlotManager):
         self._clips = SimpleTrackClips(self)
         self._has_clip_listener.replace_subjects(live_track.clip_slots)
 
-        self._instrument: Optional[InstrumentInterface] = None
-
     def __iter__(self) -> Iterator[ClipSlot]:
         return iter(self._clip_slots)
-
-    def set_instrument(self, instrument: Optional[InstrumentInterface]) -> None:
-        self._instrument = instrument
 
     @property
     def clip_slots(self) -> List[ClipSlot]:

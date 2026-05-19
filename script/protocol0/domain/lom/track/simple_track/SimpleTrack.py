@@ -11,7 +11,6 @@ from protocol0.domain.lom.clip_slot.ClipSlot import ClipSlot
 from protocol0.domain.lom.device.RackDevice import RackDevice
 from protocol0.domain.lom.device.SimpleTrackDevices import SimpleTrackDevices
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
-from protocol0.domain.lom.instrument.InstrumentInterface import InstrumentInterface
 from protocol0.domain.lom.track.CurrentMonitoringStateEnum import CurrentMonitoringStateEnum
 from protocol0.domain.lom.track.TracksMappedEvent import TracksMappedEvent
 from protocol0.domain.lom.track.routing.TrackInputRouting import TrackInputRouting
@@ -54,7 +53,6 @@ class SimpleTrack(SlotManager):
         self.group_track: Optional[SimpleTrack] = None
         self.sub_tracks: List[SimpleTrack] = []
 
-        self._instrument: Optional[InstrumentInterface] = None
         self._view = live_track.view
 
         self.devices = SimpleTrackDevices(live_track)
@@ -74,14 +72,6 @@ class SimpleTrack(SlotManager):
         return f"SimpleTrack({self.name})"
 
     device_insert_mode = cast(int, ForwardTo("_view", "device_insert_mode"))
-
-    # def update(self, observable: Observable) -> None:
-    #     if isinstance(observable, SimpleTrackDevices):
-    #         # Refreshing is only really useful from simpler devices that change when a new sample is loaded
-    #         if self.IS_ACTIVE and not self.is_foldable:
-    #             self.instrument = InstrumentFactory.make_instrument(self)
-    #
-    #     return None
 
     name = cast(str, ForwardTo("appearance", "name"))
     lower_name = cast(str, ForwardTo("appearance", "lower_name"))
@@ -150,24 +140,8 @@ class SimpleTrack(SlotManager):
             StatusBar.show_message(str(e))
 
     @property
-    def instrument(self) -> Optional[InstrumentInterface]:
-        return self._instrument
-
-    @instrument.setter
-    def instrument(self, instrument: Optional[InstrumentInterface]) -> None:
-        self._instrument = instrument
-        self.appearance.set_instrument(instrument)
-        self._clip_slots.set_instrument(instrument)
-
-    @property
     def instrument_rack_device(self) -> Optional[RackDevice]:
-        if self.instrument and self.instrument.device:
-            rack = self.devices.get_device_or_rack_device(self.instrument.device)
-            if rack:
-                return rack
-
-        # fallback: first Instrument Rack at the top of the chain
-        # (covers tracks whose instrument is not registered as an InstrumentInterface)
+        """First Instrument Rack at the top of the device chain, if any."""
         return next(
             (
                 d for d in self.devices
@@ -302,5 +276,3 @@ class SimpleTrack(SlotManager):
 
         self.devices.disconnect()
         self._clip_slots.disconnect()
-        if self.instrument:
-            self.instrument.disconnect()

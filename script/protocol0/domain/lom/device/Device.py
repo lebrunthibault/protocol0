@@ -3,7 +3,6 @@ from typing import List, Any, Type, Optional, Union, Set
 import Live
 from _Framework.SubjectSlot import SlotManager, subject_slot
 
-from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
 from protocol0.domain.lom.device_parameter.DeviceParameter import DeviceParameter
 from protocol0.domain.shared.utils.list import find_if
@@ -57,13 +56,6 @@ class Device(SlotManager):
     def update(self, observable: Observable) -> None:
         if isinstance(observable, DeviceParameter):
             self.automated_params.add(observable)
-
-    @property
-    def enum(self) -> Optional[DeviceEnum]:
-        try:
-            return DeviceEnum(self.name)
-        except ValueError:
-            return None
 
     @subject_slot("parameters")
     def _parameters_listener(self) -> None:

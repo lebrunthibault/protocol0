@@ -1,9 +1,6 @@
-from typing import Optional
-
 import Live
 from _Framework.SubjectSlot import subject_slot, SlotManager
 
-from protocol0.domain.lom.instrument.InstrumentInterface import InstrumentInterface
 from protocol0.domain.lom.track.simple_track.SimpleTrackColorUpdatedEvent import (
     SimpleTrackColorUpdatedEvent,
 )
@@ -21,15 +18,11 @@ class SimpleTrackAppearance(SlotManager, Observable):
     def __init__(self, live_track: Live.Track.Track) -> None:
         super(SimpleTrackAppearance, self).__init__()
         self._live_track = live_track
-        self._instrument: Optional[InstrumentInterface] = None
         self._name_listener.subject = live_track
         self._cached_name = self.name
         self._cached_color = self.color
 
         self._color_listener.subject = live_track
-
-    def set_instrument(self, instrument: Optional[InstrumentInterface]) -> None:
-        self._instrument = instrument
 
     @subject_slot("color")
     def _color_listener(self) -> None:

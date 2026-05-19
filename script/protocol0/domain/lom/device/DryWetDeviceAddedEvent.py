@@ -1,2 +1,0 @@
-class DryWetDeviceAddedEvent(object):
-    pass

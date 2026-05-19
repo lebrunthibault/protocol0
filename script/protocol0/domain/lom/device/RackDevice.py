@@ -4,10 +4,6 @@ import Live
 
 from protocol0.domain.lom.device.Device import Device
 from protocol0.domain.lom.device.DeviceChain import DeviceChain
-from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
-from protocol0.domain.lom.device.DryWetDeviceAddedEvent import DryWetDeviceAddedEvent
-from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
-from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.utils.list import find_if
 from protocol0.shared.observer.Observable import Observable
 
@@ -32,9 +28,6 @@ class RackDevice(Device, Observable):
             self.remove_macro()
             self.remove_macro()
             self.remove_macro()
-
-        if self.name.lower() == "dry wet":
-            DomainEventBus.emit(DryWetDeviceAddedEvent())
 
     @property
     def is_showing_chain_devices(self) -> bool:
@@ -66,21 +59,6 @@ class RackDevice(Device, Observable):
                 self._device.remove_macro()
         except RuntimeError:
             pass
-
-    @property
-    def enum(self) -> Optional[DeviceEnum]:
-        if not self.get_parameter_by_name(DeviceParamEnum.INPUT) or not self.get_parameter_by_name(
-            DeviceParamEnum.WET
-        ):
-            return super(RackDevice, self).enum
-
-        for chain in self.chains:
-            if any(device.enum == DeviceEnum.VALHALLA_VINTAGE_VERB for device in chain.devices):
-                return DeviceEnum.INSERT_REVERB
-            if any(device.enum == DeviceEnum.DELAY for device in chain.devices):
-                return DeviceEnum.INSERT_DELAY
-
-        return super(RackDevice, self).enum
 
     def disconnect(self) -> None:
         super(RackDevice, self).disconnect()

@@ -122,7 +122,7 @@ class SimpleTrackDevices(SlotManager):
         if enabled:
             devices = [d for d in devices if d.is_enabled]
 
-        return find_if(device_enum.matches, devices)
+        return find_if(lambda d: d.name == device_enum.value, devices)
 
     def _find_all_devices(
         self, devices: Optional[List[Device]], only_visible: bool = False

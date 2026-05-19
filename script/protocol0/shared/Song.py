@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, Optional, List, cast, Type
 
 import Live
 
-from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.utils.list import find_if
@@ -197,14 +196,6 @@ class Song(object):
     @classmethod
     def drums_track(cls) -> Optional["SimpleTrack"]:
         return find_track_or_none("drums")
-
-    @classmethod
-    def splice_track(cls) -> Optional["SimpleTrack"]:
-        return find_if(
-            lambda t: t.instrument is not None
-            and t.instrument.device.enum == DeviceEnum.SPLICE_BRIDGE,
-            cls.simple_tracks(),
-        )
 
     @classmethod
     def return_tracks(cls) -> List[Live.Track.Track]:
