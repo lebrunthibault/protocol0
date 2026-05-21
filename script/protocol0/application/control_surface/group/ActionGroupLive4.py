@@ -1,7 +1,7 @@
 from functools import partial
 
 from protocol0.application.control_surface.ActionGroupInterface import ActionGroupInterface
-from protocol0.domain.live_set.LiveSetInstruments import (
+from protocol0.plugins.live_set.LiveSetInstruments import (
     move_clip_loop,
     change_clip_loop,
     sync_markers,

@@ -1,9 +1,9 @@
 from typing import Iterable, List
 
-from protocol0.domain.live_set.LiveSet import LiveTrack
 from protocol0.domain.lom.clip.MidiClip import MidiClip
 from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
 from protocol0.domain.shared.scheduler.BarEndingEvent import BarEndingEvent
+from protocol0.plugins.live_set.LiveTrack import LiveTrack
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.StatusBar import StatusBar
 from protocol0.shared.sequence.Sequence import Sequence

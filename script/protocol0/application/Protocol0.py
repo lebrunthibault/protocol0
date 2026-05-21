@@ -2,18 +2,18 @@ from typing import Any
 
 from _Framework.ControlSurface import ControlSurface
 
+import protocol0.plugins as plugins_package
 from protocol0.application.Container import Container
 from protocol0.application.ScriptDisconnectedEvent import ScriptDisconnectedEvent
 from protocol0.application.ScriptResetActivatedEvent import ScriptResetActivatedEvent
 from protocol0.application.http import HttpServer
-from protocol0.domain.live_set.LiveSet import LiveSet
+from protocol0.application.plugin.PluginLoader import PluginLoader
 from protocol0.domain.lom.scene.SceneService import SceneService
 from protocol0.domain.lom.track.TrackMapperService import TrackMapperService
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.backend.BackendClient import BackendClient
 from protocol0.domain.shared.errors.ErrorRaisedEvent import ErrorRaisedEvent
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
-from protocol0.infra.midi.MidiService import MidiService
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
@@ -40,13 +40,12 @@ class Protocol0(ControlSurface):
         container.get(TrackMapperService).tracks_listener()
         container.get(SceneService).scenes_listener()
 
-        if Song.is_live_set():
-            container._register(LiveSet(container.get(MidiService)))
-
-        HttpServer.start(container)
+        PluginLoader.load_and_start(container, plugins_package)
 
         if not Backend.client().ping():
             Logger.warning("Protocol0 backend is not running at %s" % BackendClient._BASE_URL)
+
+        HttpServer.start(container)
 
         Logger.info("P0 script loaded")
 

@@ -1,16 +1,10 @@
-import enum
 from functools import partial
-from typing import Optional, cast, List
+from typing import Optional, List
 
 from _Framework.SubjectSlot import subject_slot, SlotManager
 
-import Live
-from protocol0.domain.live_set.LiveSetNotes import (
-    make_clip_monophonic,
-    quantize_bar_notes,
-    split_bar_notes,
-    determine_captured_clip_bar_length,
-)
+from protocol0.application.ContainerInterface import ContainerInterface
+from protocol0.application.plugin.PluginInterface import PluginInterface
 from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.clip.ClipCreatedEvent import ClipCreatedEvent
 from protocol0.domain.lom.clip.ClipLoop import ClipLoop
@@ -18,7 +12,6 @@ from protocol0.domain.lom.clip.ClipRecordedEvent import ClipRecordedEvent
 from protocol0.domain.lom.clip.MidiClip import MidiClip
 from protocol0.domain.lom.device.DeviceEnum import DeviceEnum
 from protocol0.domain.lom.device_parameter.DeviceParamEnum import DeviceParamEnum
-from protocol0.domain.lom.note.Note import Note
 from protocol0.domain.lom.song.SongStoppedEvent import SongStoppedEvent
 from protocol0.domain.lom.track.simple_track.midi.SimpleMidiTrack import SimpleMidiTrack
 from protocol0.domain.shared.backend.Backend import Backend
@@ -28,35 +21,41 @@ from protocol0.domain.shared.scheduler.BarChangedEvent import BarChangedEvent
 from protocol0.domain.shared.scheduler.Last16thPassedEvent import Last16thPassedEvent
 from protocol0.domain.shared.scheduler.Last8thPassedEvent import Last8thPassedEvent
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
-from protocol0.domain.shared.utils.list import find_if
 from protocol0.domain.shared.utils.timing import defer
 from protocol0.infra.midi.MidiService import MidiService
-from protocol0.shared.Song import Song, find_track
+from protocol0.plugins.live_set.LiveSetNotes import (
+    make_clip_monophonic,
+    quantize_bar_notes,
+    split_bar_notes,
+    determine_captured_clip_bar_length,
+)
+from protocol0.plugins.live_set.LiveTrack import LiveTrack
+from protocol0.shared.Song import Song
 from protocol0.shared.logging.StatusBar import StatusBar
 from protocol0.shared.sequence.Sequence import Sequence
 
 
-class LiveTrack(enum.Enum):
-    KICK = "KICK"
-    HAT = "HAT"
-    PERC = "PERC"
-    FX = "FX"
-    VOCALS = "VOCALS"
-    BASS = "BASS"
-    SYNTH = "SYNTH"
-    PIANO = "PIANO"
+class LiveSetPlugin(PluginInterface, SlotManager):
+    name = "live_set"
 
-    def get(self) -> SimpleMidiTrack:
-        return cast(SimpleMidiTrack, find_track(self.value.title(), exact=False))
+    def __init__(self, container: ContainerInterface) -> None:
+        PluginInterface.__init__(self, container)
+        SlotManager.__init__(self)
 
-    def uses_simpler(self) -> bool:
-        return self in (LiveTrack.HAT, LiveTrack.PERC, LiveTrack.VOCALS)
+        self._midi_service: Optional[MidiService] = None
+        self._bass_track: Optional[SimpleMidiTrack] = None
+        self._synth_track: Optional[SimpleMidiTrack] = None
+        self._synth_track_pitch = None
+        self._piano_track: Optional[SimpleMidiTrack] = None
+        self._piano_track_pitch = None
+        self._vocal_track: Optional[SimpleMidiTrack] = None
+        self._vocal_track_pitch = None
 
+    def should_start(self) -> bool:
+        return Song.is_live_set()
 
-class LiveSet(SlotManager):
-    def __init__(self, midi_service: MidiService) -> None:
-        super().__init__()
-        self._midi_service = midi_service
+    def start(self) -> None:
+        self._midi_service = self._container.get(MidiService)
 
         self._bass_track = LiveTrack.BASS.get()
         self._synth_track = LiveTrack.SYNTH.get()
@@ -68,14 +67,25 @@ class LiveSet(SlotManager):
             DeviceEnum.DRUM_RACK
         ).get_parameter_by_name(DeviceParamEnum.PITCH)
 
-        def unsubscribe_on_clip_captured() -> None:
-            DomainEventBus.un_subscribe(ClipCreatedEvent, self._on_clip_captured_event)
-
-        DomainEventBus.subscribe(SongStoppedEvent, unsubscribe_on_clip_captured)
-
+        DomainEventBus.subscribe(SongStoppedEvent, self._unsubscribe_on_clip_captured)
         DomainEventBus.subscribe(ClipRecordedEvent, self._on_clip_recorded_event)
 
         self._bass_track_arm_listener.subject = self._bass_track._track
+
+    def stop(self) -> None:
+        DomainEventBus.un_subscribe(SongStoppedEvent, self._unsubscribe_on_clip_captured)
+        DomainEventBus.un_subscribe(ClipRecordedEvent, self._on_clip_recorded_event)
+        try:
+            DomainEventBus.un_subscribe(ClipCreatedEvent, self._on_clip_captured_event)
+        except Exception:
+            pass
+        self.disconnect()
+
+    def _unsubscribe_on_clip_captured(self, _: SongStoppedEvent) -> None:
+        try:
+            DomainEventBus.un_subscribe(ClipCreatedEvent, self._on_clip_captured_event)
+        except Exception:
+            pass
 
     @property
     def instrument_tracks(self) -> List[SimpleMidiTrack]:
@@ -111,12 +121,7 @@ class LiveSet(SlotManager):
         self._on_clip_recorded(clip)
         clip.quantize(0.5)
 
-        # clip.stop(True)
-
         event.clip_slot.clip.fire()
-        # event.clip_slot.fire(force_legato=True)
-
-        # Scheduler.defer(self._playback.stop_playing)
 
     @defer
     def _on_clip_recorded_event(self, event: ClipRecordedEvent) -> None:
