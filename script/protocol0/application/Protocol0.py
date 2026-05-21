@@ -40,7 +40,7 @@ class Protocol0(ControlSurface):
         container.get(TrackMapperService).tracks_listener()
         container.get(SceneService).scenes_listener()
 
-        PluginLoader.load_and_start(container, plugins_package)
+        PluginLoader.load_and_start(plugins_package)
 
         if not Backend.client().ping():
             Logger.warning("Protocol0 backend is not running at %s" % BackendClient._BASE_URL)

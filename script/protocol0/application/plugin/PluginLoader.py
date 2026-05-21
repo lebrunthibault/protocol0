@@ -1,7 +1,6 @@
 import types
 from typing import Dict, List, Type, TypeVar
 
-from protocol0.application.ContainerInterface import ContainerInterface
 from protocol0.application.ScriptDisconnectedEvent import ScriptDisconnectedEvent
 from protocol0.application.plugin.PluginInterface import PluginInterface
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
@@ -16,14 +15,12 @@ class PluginLoader(object):
     _by_class: Dict[Type[PluginInterface], PluginInterface] = {}
 
     @classmethod
-    def load_and_start(
-        cls, container: ContainerInterface, plugins_package: types.ModuleType
-    ) -> None:
+    def load_and_start(cls, plugins_package: types.ModuleType) -> None:
         import_package(plugins_package)
 
         for plugin_class in PluginInterface.__subclasses__():
             try:
-                plugin = plugin_class(container)
+                plugin = plugin_class()
                 if not plugin.should_start():
                     Logger.info("Plugin %s skipped (should_start=False)" % plugin.name)
                     continue

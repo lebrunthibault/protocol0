@@ -3,6 +3,7 @@ from typing import Optional, Callable
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.infra.midi.MidiBytesSentEvent import MidiBytesSentEvent
 from protocol0.infra.midi.NoteSentEvent import NoteSentEvent
+from protocol0.infra.midi.SysexSentEvent import SysexSentEvent
 from protocol0.shared.logging.Logger import Logger
 
 
@@ -13,6 +14,7 @@ class MidiService(object):
         self._send_midi = send_midi
 
         DomainEventBus.subscribe(NoteSentEvent, self._on_note_sent_event)
+        DomainEventBus.subscribe(SysexSentEvent, self._on_sysex_sent_event)
 
     def _send_cc(self, cc: int, channel: int = 0, value: int = 0) -> None:
         self._send_formatted_midi_message("cc", channel, cc, value)
@@ -30,34 +32,11 @@ class MidiService(object):
         self._send_midi(midi_message)
         DomainEventBus.emit(MidiBytesSentEvent(midi_message))
 
-    def send_ec4_select_group(self, group_number: int) -> None:
-        """Send SysEx command to EC4 to select group (1-16)"""
-        if not (1 <= group_number <= 16):
-            raise ValueError("Group number must be between 1 and 16")
-
-        # Convert to 0-based index for SysEx
-        group_index = group_number - 1
-
-        # EC4 select group SysEx
-        sysex_message = (
-            0xF0,
-            0x00,
-            0x00,
-            0x00,
-            0x4E,
-            0x2C,
-            0x1B,
-            0x4E,
-            0x24,
-            0x10 | group_index,
-            0xF7,
-        )
-
-        Logger.info(f"MidiService sending EC4 group select: group {group_number})")
-        self._send_midi(sysex_message)
-        DomainEventBus.emit(MidiBytesSentEvent(sysex_message))
-
     def _on_note_sent_event(self, event: NoteSentEvent) -> None:
         self._send_formatted_midi_message(
             "note", event.midi_channel, event.note_number, event.velocity
         )
+
+    def _on_sysex_sent_event(self, event: SysexSentEvent) -> None:
+        self._send_midi(event.message)
+        DomainEventBus.emit(MidiBytesSentEvent(event.message))

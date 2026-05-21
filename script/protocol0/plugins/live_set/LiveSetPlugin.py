@@ -3,7 +3,6 @@ from typing import Optional, List
 
 from _Framework.SubjectSlot import subject_slot, SlotManager
 
-from protocol0.application.ContainerInterface import ContainerInterface
 from protocol0.application.plugin.PluginInterface import PluginInterface
 from protocol0.domain.lom.clip.Clip import Clip
 from protocol0.domain.lom.clip.ClipCreatedEvent import ClipCreatedEvent
@@ -22,7 +21,6 @@ from protocol0.domain.shared.scheduler.Last16thPassedEvent import Last16thPassed
 from protocol0.domain.shared.scheduler.Last8thPassedEvent import Last8thPassedEvent
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.domain.shared.utils.timing import defer
-from protocol0.infra.midi.MidiService import MidiService
 from protocol0.plugins.live_set.LiveSetNotes import (
     make_clip_monophonic,
     quantize_bar_notes,
@@ -30,6 +28,7 @@ from protocol0.plugins.live_set.LiveSetNotes import (
     determine_captured_clip_bar_length,
 )
 from protocol0.plugins.live_set.LiveTrack import LiveTrack
+from protocol0.plugins.live_set.ec4 import send_ec4_select_group
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.StatusBar import StatusBar
 from protocol0.shared.sequence.Sequence import Sequence
@@ -38,11 +37,9 @@ from protocol0.shared.sequence.Sequence import Sequence
 class LiveSetPlugin(PluginInterface, SlotManager):
     name = "live_set"
 
-    def __init__(self, container: ContainerInterface) -> None:
-        PluginInterface.__init__(self, container)
+    def __init__(self) -> None:
         SlotManager.__init__(self)
 
-        self._midi_service: Optional[MidiService] = None
         self._bass_track: Optional[SimpleMidiTrack] = None
         self._synth_track: Optional[SimpleMidiTrack] = None
         self._synth_track_pitch = None
@@ -55,8 +52,6 @@ class LiveSetPlugin(PluginInterface, SlotManager):
         return Song.is_live_set()
 
     def start(self) -> None:
-        self._midi_service = self._container.get(MidiService)
-
         self._bass_track = LiveTrack.BASS.get()
         self._synth_track = LiveTrack.SYNTH.get()
         self._synth_track_pitch = self._synth_track.devices.get_one_from_enum(DeviceEnum.PITCH)
@@ -185,7 +180,7 @@ class LiveSetPlugin(PluginInterface, SlotManager):
         seq.add(
             partial(DomainEventBus.un_subscribe, ClipCreatedEvent, self._on_clip_captured_event)
         )
-        seq.add(partial(self._midi_service.send_ec4_select_group, 9))
+        seq.add(partial(send_ec4_select_group, 9))
         seq.wait_for_event(BarChangedEvent)
 
         seq.done()
