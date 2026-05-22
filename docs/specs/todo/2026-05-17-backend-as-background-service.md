@@ -20,7 +20,7 @@ uses LoopMIDI — containers can't reach Windows virtual MIDI ports.
 In a regular PowerShell (admin not needed):
 
 ```powershell
-D:\dev\code\projects\p0\scripts\install_p0_backend_task.ps1
+D:\dev\p0\scripts\install_p0_backend_task.ps1
 ```
 
 The script is idempotent. Re-run it after `poetry install` changes the venv,
@@ -40,7 +40,7 @@ Start-ScheduledTask -TaskName p0_backend
 GUI: `taskschd.msc` -> Task Scheduler Library -> p0_backend (right-click to
 run / end / view history).
 
-Logs at `D:\dev\code\projects\p0\.logs\backend.log` — loguru handles
+Logs at `D:\dev\p0\.logs\backend.log` — loguru handles
 rotation (10 MB per file, 5 backups). All output (uvicorn access logs +
 loguru messages from the backend code) is funneled into this one file.
 
@@ -65,7 +65,7 @@ RestartCount=3, RestartInterval=1min).
 ## Uninstall
 
 ```powershell
-D:\dev\code\projects\p0\scripts\uninstall_p0_backend_task.ps1
+D:\dev\p0\scripts\uninstall_p0_backend_task.ps1
 ```
 
 ## Dev workflow without the task

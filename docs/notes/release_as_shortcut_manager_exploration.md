@@ -15,7 +15,7 @@ Objectif du plan : document factuel + reco d'archi claire pour le release. **Pas
 
 ## État des lieux p0 actuel
 
-Recherche faite sur `D:\dev\code\projects\p0`. Voir agent Explore ([rapport détaillé](question-d-exploration-pure-par-expressive-acorn-agent-Explore.md)).
+Recherche faite sur `D:\dev\p0`. Voir agent Explore ([rapport détaillé](question-d-exploration-pure-par-expressive-acorn-agent-Explore.md)).
 
 - **Communication Ableton** : Remote Script Python (`script/protocol0/application/Protocol0.py`) via ControlSurface + LOM + MIDI. Pas d'OSC.
 - **Réception commandes** : double serveur HTTP :
@@ -240,11 +240,11 @@ Quand viendra le moment de coder :
 
 ## Fichiers de référence (pour exploration ultérieure)
 
-- `D:\dev\code\projects\p0\script\protocol0\application\http\HttpServer.py` — serveur HTTP du script (~100 lignes, base pour ajouter static + LNA-aware si jamais)
-- `D:\dev\code\projects\p0\script\protocol0\application\http\Router.py` — mini-routeur (~150 lignes, à étendre avec registre énumérable)
-- `D:\dev\code\projects\p0\script\protocol0\application\http\routes\*` — endpoints existants à wrapper en actions
-- `D:\dev\code\projects\p0\backend\backend\api\http_server\main.py` — backend FastAPI (séparé, garde son rôle de jobs lourds)
-- `D:\dev\code\projects\p0\.env` — `P0_SCRIPT_PORT=9000`, `P0_BACKEND_PORT=9001`
+- `D:\dev\p0\script\protocol0\application\http\HttpServer.py` — serveur HTTP du script (~100 lignes, base pour ajouter static + LNA-aware si jamais)
+- `D:\dev\p0\script\protocol0\application\http\Router.py` — mini-routeur (~150 lignes, à étendre avec registre énumérable)
+- `D:\dev\p0\script\protocol0\application\http\routes\*` — endpoints existants à wrapper en actions
+- `D:\dev\p0\backend\backend\api\http_server\main.py` — backend FastAPI (séparé, garde son rôle de jobs lourds)
+- `D:\dev\p0\.env` — `P0_SCRIPT_PORT=9000`, `P0_BACKEND_PORT=9001`
 
 ---
 

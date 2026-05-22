@@ -1,6 +1,4 @@
 ; ============ ABLETON ============
-; Included from D:\dev\code\projects\scripts\scripts\mappings.ahk
-; Edit this file in the p0 repo to change Ableton-related shortcuts.
 
 ; -- reload Ableton (hors #IfWinActive pour marcher même si Ableton n'a plus le focus) --
 ^#+n::
