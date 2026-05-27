@@ -40,6 +40,9 @@ return
 
 #IfWinActive
 
+; ============ GLOBAL ============
+#s::Run, explorer.exe "%A_MyDocuments%\..\Pictures\Screenshots"
+
 ; ============ HTTP HELPERS ============
 callBackend(command, arg:="") {
     return callHttp("http://127.0.0.1:9001/", command, arg)
