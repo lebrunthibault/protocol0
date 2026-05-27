@@ -88,27 +88,54 @@ over HTTP already work*. What's missing is:
 These decisions shape the first iteration. They are made to **test a
 hypothesis** (see §4), and are revisable if the hypothesis is invalidated.
 
-### 3.1 Key detection lives in the remote script
+### 3.1 Key detection lives in a local detector process
 
-The global keyboard hook is installed **by the remote script itself**, inside
-Ableton's Python environment — not by AHK nor by an external service.
+> **Updated 2026-05-28 — the original decision was invalidated by a spike.**
+> The original §3.1 placed the global keyboard hook **inside the remote script**
+> (Ableton's Python), to test the "script-only" hypothesis (§4). A prototype
+> spike proved this impossible. The original intent — *same shortcuts
+> everywhere, configured globally* — is unchanged; only the *where* of detection
+> moved. The rest of this section records both the verdict and the new decision.
 
-**Why.** The distribution goal is to be able to **release the script only** if
-it proves capable of carrying everything on its own (see §4). Putting detection
-in the script is the way to directly test that autonomy.
+**Verdict of the spike (NO-GO, in-script detection).** Ableton's embedded Python
+cannot host a keyboard hook, for three independent reasons:
 
-**Accepted risk.** Live's Python environment is constrained, and a poorly
-managed global keyboard hook can disrupt Live (tick latency, key stealing,
-interference with native shortcuts). The hook must therefore:
+1. **No `ctypes`.** Live ships a stripped, statically-linked CPython
+   (`win_64_static`): no `ctypes` package, no `_ctypes.pyd`, in fact **no C
+   extensions at all** and no `python311.dll`. `import ctypes` →
+   `ModuleNotFoundError`. Both candidate implementations (`pynput` and raw
+   `ctypes`) depend on it.
+2. **Loading a `.pyd` crashes Live.** A stock CPython C-extension links against
+   `python311.dll`, which doesn't exist in this static build, so dropping in
+   `_ctypes.pyd` doesn't restore it — it crashes the host. No known project has
+   ever loaded native code in-process.
+3. **No message loop.** Even with `ctypes`, a `WH_KEYBOARD_LL` hook needs the
+   installing thread to run a Windows message loop; the remote-script thread is
+   tick-driven and has none, so callbacks would never fire.
 
-- never block the Live thread (reuse the `submit()` → tick-drain bridge,
-  exactly as the HTTP server already does);
-- be cleanly installed/uninstalled via a plugin's lifecycle (`start` / `stop`),
-  to survive script reloads without leaking a hook;
-- stay neutral toward keys it doesn't handle (not consume them).
+**New decision.** The global keyboard hook is installed by a **dedicated local
+detector process** running under a normal system Python (where `ctypes`/`pynput`
+work). It is **separate from the cloud backend** (§5) — detection is intrinsically
+local (it runs on the user's machine and watches their keyboard), so it cannot
+live in a service meant to run remotely. On a configured combo it resolves the
+binding against the global config (§3.3) and calls the script's existing HTTP API
+(`:9000`, e.g. `/device/load?name=…`).
 
-**AHK becomes legacy.** `mappings.ahk` remains a documented fallback as long as
-the native solution isn't proven, but the target is to **drop AHK**.
+**Why a separate process and not the backend.** The backend is a **cloud** service
+(§5); the detector must be local. Keeping them as distinct artifacts also means a
+crash in one doesn't take down the other.
+
+**Constraints on the detector.**
+
+- stay neutral toward keys it doesn't handle (not consume them);
+- only fire when Ableton is the foreground window (a local OS check), so it never
+  steals keys from other apps;
+- be installable/launchable as a background service so it survives logon;
+- keep the capture/execution boundary over HTTP, exactly as today.
+
+**AHK becomes legacy.** `mappings.ahk` remains a documented fallback until the
+dedicated detector is proven, but the target is to **drop AHK** in favor of the
+configurable detector.
 
 ### 3.2 The configuration frontend is served by the script
 
@@ -122,13 +149,17 @@ routes). It allows the user to:
 3. parameterize the action (e.g. the name of the device to load);
 4. persist the binding in the global configuration.
 
-**Why the script and not the backend.** Same reason as §3.1: we're testing
-whether the script can be the single artifact to distribute. Serving the
-frontend from the script keeps everything in a single process for this
-evaluation phase.
+**Why the script and not the backend.** The backend is a remote cloud service
+(§5); the config frontend must be reachable locally and offline, and it reads the
+action catalog the script already exposes. Serving it from the script keeps the
+configuration experience self-contained, with no dependency on the cloud or on
+the local detector being up.
 
 **Accepted cost.** This adds weight to the Ableton environment (serving web
-assets from the script) and will need to be re-evaluated at packaging time.
+assets from the script) and will need to be re-evaluated at packaging time. Note
+that §3.1's in-script detection was invalidated, but §3.2 still holds: serving a
+web UI from the script is fine (no `ctypes`/native code needed), unlike a
+keyboard hook.
 
 ### 3.3 Binding configuration is global
 
@@ -148,37 +179,88 @@ configurable actions; it must not hard-code them.
 The existing HTTP routes (`/device/load`, `/track/select`, …) prefigure this
 catalog: each action is, or builds on, a functionality exposed by the Live API.
 
-## 4. Hypothesis to validate: "script-only"
+## 4. Hypothesis tested: "script-only" — partially invalidated
 
-The cross-cutting guideline behind all the decisions above is to **test whether
-the remote script alone** can carry the whole thing:
+The original cross-cutting guideline was to **test whether the remote script
+alone** could carry the whole thing:
 
 > key detection **+** configuration frontend **+** action execution, all in a
 > single distributable artifact.
 
-If the hypothesis holds, distribution simplifies radically: **a single binary /
-single installer**, with no mandatory AHK or backend.
+**Result (2026-05-28).** The hypothesis is **invalidated for key detection**:
+Ableton's embedded Python cannot host a keyboard hook (no `ctypes`, `.pyd`
+loading crashes Live, no message loop — see §3.1). It **holds for the frontend
+and execution**, which the script serves and runs natively without any C
+extension.
 
-If the hypothesis is invalidated (unstable keyboard hook in the Live env,
-frontend too heavy to serve from the script, blocking thread constraints, …),
-the fallback plan is to **move key detection and/or the frontend into a
-background service** — either the existing backend (`:9001`, already packaged as
-a Scheduled Task), or a dedicated service. The architecture must keep this
-switch cheap: detection and execution are already decoupled over HTTP.
+**Consequence — the fallback (former plan B) is now the plan.** Key detection
+moves out of the script into a **dedicated local detector process** (§3.1),
+distinct from the cloud backend (§5). The distributable is therefore **two local
+artifacts** — the remote script (frontend + execution) and the detector — not
+one. The capture/execution boundary stays over HTTP (`:9000`), which is what made
+this switch cheap: only the *producer* of key events changed; the script's action
+API was untouched.
 
-## 5. Distribution target
+What remains true: **the same shortcuts everywhere**, configured globally (§3.3),
+through a UI that discovers actions (§3.4). Only the autonomy ("script as the
+single artifact") was the casualty.
+
+## 5. Distribution target & the role of the backend
 
 The project must eventually be **packaged as an installable binary** for users
-(not merely runnable from sources). Design consequences to keep in mind without
-implementing them prematurely:
+(not merely runnable from sources).
+
+**Three tiers, not one process.** The architecture settles into three distinct
+pieces, each with a different home:
+
+1. **The remote script** — runs inside Ableton; serves the config frontend (§3.2)
+   and executes actions via the Live API (§3.4). Constrained Python (no C ext).
+2. **The local detector** — a separate process on the user's machine that owns
+   the keyboard hook (§3.1) and calls the script's `:9000` API. Normal system
+   Python, so `ctypes`/`pynput` work.
+3. **The backend** — *not local and not part of the shortcut hot path*. It is a
+   **remote, cloud-hosted service** dedicated to heavy work that is impractical
+   on the user's machine: **machine-learning tasks** (e.g. key/audio analysis)
+   and similar compute. It is a candidate to sit **behind a paywall**. The current
+   local `:9001` FastAPI service (packaged as a Scheduled Task) is a **development
+   stand-in** for this future cloud backend, not its final form. Crucially, key
+   detection must **never** depend on the backend — a paywalled/remote service
+   cannot gate a local keyboard shortcut.
+
+   **Status (2026-05-28): the backend is paused.** While the shortcut manager is
+   built, the backend is **not run or maintained locally** — no Scheduled Task,
+   no dev process. Nothing in the shortcut path depends on it (guaranteed above),
+   so it can stay down. It will be picked back up when ML features are on the
+   roadmap, most likely directly as the cloud service rather than the local
+   `:9001` stand-in.
+
+Design consequences to keep in mind without implementing them prematurely:
 
 - the global configuration must live at a stable, documented user location (not
-  inside the source tree);
-- installation must place the remote script at the right location for Live and,
-  if needed (fallback plan §4), register the background service;
+  inside the source tree), readable by both the script and the local detector;
+- installation must place the remote script at the right location for Live **and**
+  install/register the local detector as a background process (§3.1);
 - the script's dependencies must remain compatible with Live's constrained
   Python environment (cf. `src/script/pyproject.toml`: stdlib + a minimum of
-  lightweight deps).
+  lightweight deps); the detector, running under normal Python, has no such limit;
+- keep a clean seam between local (script + detector) and remote (backend) so the
+  backend can be lifted to the cloud — and metered/paywalled — without touching
+  the shortcut path.
+
+### 5.1 Running the pieces in development
+
+- **The detector** runs in dev as `poetry run detector` in a terminal: live logs,
+  Ctrl+C to stop, instant restart. This is the everyday dev loop.
+- **Docker is not an option for the detector.** It owns a global keyboard hook
+  (`pynput`/`SetWindowsHookEx`) and a foreground-window check
+  (`GetForegroundWindow`) — both are integration with the *host* Windows session.
+  A container (WSL2) is isolated from the host's keyboard and window manager and
+  cannot reach them, the same reason the backend can't be containerized while its
+  reverse channel uses LoopMIDI. The detector *is* host-level OS integration, so
+  it always runs as a native host process.
+- **Production packaging** (auto-start at logon via a Scheduled Task) is a later
+  milestone, deliberately separate from the dev loop — do not conflate the two.
+- **The backend** is paused (see §5, tier 3) and not run in dev for now.
 
 ## 6. Scope of the first iteration (prototype)
 
@@ -190,14 +272,16 @@ in the frontend.
 
 This exercises the whole chain in a minimal version:
 
-- native key detection in the script (§3.1);
+- key detection in the local detector process (§3.1);
 - a minimal frontend served by the script (§3.2) to enter "key combination →
   `load_device(name=…)`";
-- a persisted global configuration (§3.3);
-- execution via the existing `load_device` action (§3.4).
+- a persisted global configuration (§3.3), shared by detector and script;
+- execution via the existing `load_device` action (§3.4), reached over the
+  script's `:9000` API.
 
 Out of scope for the prototype (but within the vision): the full action catalog,
-final binary packaging, fully replacing AHK.
+final binary packaging, fully replacing AHK, and the cloud backend (§5) — the
+prototype is local-only.
 
 ## 7. Guiding principles
 

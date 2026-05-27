@@ -1,0 +1,26 @@
+[build-system]
+requires = ["poetry-core>=1.6.1"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "p0-detector"
+version = "0.1.0"
+description = "Protocol0 local keyboard-shortcut detector (out-of-process). Watches the keyboard, resolves bindings against the global config, and calls the remote script's HTTP API. Runs under normal system Python (ctypes/pynput available), unlike the Ableton-embedded interpreter."
+authors = ["Thibault Lebrun <thibaultlebrun@live.fr>"]
+packages = [{include = "detector"}]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<4.0"
+pynput = "^1.7.6"
+requests = "^2.31.0"
+pydantic-settings = "^2.0.3"
+
+[tool.poetry.scripts]
+detector = "detector.main:start"
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "*"
+pytest = "*"
+
+[tool.black]
+line-length = 100
