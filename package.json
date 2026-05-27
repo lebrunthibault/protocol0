@@ -2,8 +2,8 @@
   "name": "p0",
   "private": true,
   "workspaces": [
-    "backend",
-    "script"
+    "src/backend",
+    "src/script"
   ],
   "scripts": {
     "lint": "",

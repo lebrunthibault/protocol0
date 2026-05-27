@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "p0"
+name = "protocol0-loader"
 version = "1.0.0"
 description = ""
 authors = ["Thibault Lebrun <thibaultlebrun@live.fr>"]

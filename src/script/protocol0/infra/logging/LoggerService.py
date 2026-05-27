@@ -44,7 +44,7 @@ class LoggerService(LoggerServiceInterface):
                     frame_info.method_name,
                 )
 
-        logging.info(f"P0 - {message}")
+        logging.info(f"Protocol 0 - {message}")
 
         # for line in message.splitlines():
         #     logging.info(f"P0 - {line}")

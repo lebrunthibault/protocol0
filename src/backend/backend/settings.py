@@ -7,7 +7,9 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     class Config:
-        env_file = os.path.join(dirname(dirname(dirname(__file__))), ".env")
+        # __file__ -> <repo>/src/backend/backend/settings.py; the monorepo-root
+        # .env is 4 dirnames up (settings.py -> backend -> backend -> src -> <repo>).
+        env_file = os.path.join(dirname(dirname(dirname(dirname(__file__)))), ".env")
 
     @property
     def log_file_path(self) -> str:

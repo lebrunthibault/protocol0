@@ -1,9 +1,9 @@
 """Mini .env reader (stdlib only).
 
 Reads the monorepo-root .env. Works in both layouts:
-- dev: this file is at script/protocol0/shared/env.py, root is 3 dirnames up
+- dev: this file is at src/script/protocol0/shared/env.py, root is 4 dirnames up
 - deployed: same path, because the deployed script imports from P0_SOURCE_DIR
-  (rewritten at install time to point at the repo) — see script_templates/p0/__init__.py.
+  (rewritten at install time to point at the repo) — see script_templates/protocol0/__init__.py.
 """
 import os
 
@@ -16,9 +16,9 @@ def load_env():
     if _CACHE is not None:
         return _CACHE
     here = os.path.dirname(os.path.abspath(__file__))
-    # here -> <repo>/script/protocol0/shared
-    # parents: shared -> protocol0 -> script -> <repo>
-    root = os.path.dirname(os.path.dirname(os.path.dirname(here)))
+    # here -> <repo>/src/script/protocol0/shared
+    # parents: shared -> protocol0 -> script -> src -> <repo>
+    root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(here))))
     path = os.path.join(root, ".env")
     _CACHE = _parse(path) if os.path.isfile(path) else {}
     return _CACHE

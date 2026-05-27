@@ -1,7 +1,7 @@
-../.env:
-	powershell -Command "cp ../.env.dist ../.env"
+../../.env:
+	powershell -Command "cp ../../.env.dist ../../.env"
 
-bootstrap: ../.env
+bootstrap: ../../.env
 	@pyenv local 3.11.3
 	@poetry install
 	@echo project bootstrapped
@@ -13,7 +13,7 @@ backend:
 .PHONY: backend
 
 reload:
-	@powershell -NoProfile -ExecutionPolicy Bypass -File ../scripts/reload_p0_backend.ps1
+	@powershell -NoProfile -ExecutionPolicy Bypass -File ../../scripts/reload_p0_backend.ps1
 .PHONY: reload
 
 test:

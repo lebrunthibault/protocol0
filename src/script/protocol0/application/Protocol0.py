@@ -47,7 +47,7 @@ class Protocol0(ControlSurface):
 
         HttpServer.start(container)
 
-        Logger.info("P0 script loaded")
+        Logger.info("Protocol 0 script loaded")
 
     def disconnect(self, reset: bool = False) -> None:
         if not reset:
