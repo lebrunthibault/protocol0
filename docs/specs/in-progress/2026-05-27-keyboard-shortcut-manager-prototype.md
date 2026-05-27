@@ -1,5 +1,24 @@
 # Prototype — Keyboard Shortcut Manager (détecteur local dédié)
 
+## État d'avancement (reprise) — 2026-05-28
+
+Branche : `keyboard-shortcut-manager-prototype`. Dernier commit : `74dce210`
+(« Pivot keyboard detection out-of-process: dedicated local detector (M1) »).
+
+- **Spike détection in-script : NO-GO** (voir « Verdict du spike M0 » plus bas).
+  Code du spike créé puis **supprimé** dans la branche (aucune trace dans l'historique).
+  Constitution mise à jour en conséquence (§3.1, §3.2, §4, §5, §5.1, §6).
+- **M1 : FAIT & VALIDÉ end-to-end dans Live.** Détecteur `src/detector/` opérationnel :
+  `ctrl+alt+e` → EQ Eight, `ctrl+alt+u` → Utility, foreground-only. Lancé en dev par
+  `cd src/detector ; poetry run detector` (logs au terminal, Ctrl+C pour arrêter).
+  Config de test posée : `%APPDATA%\Protocol0\shortcuts.json`.
+- **Prochaine étape : M2** (catalogue `GET /actions` dérivé des `@route` +
+  `ShortcutConfigService` côté script), puis **M3** (frontend HTML/JS inline servi
+  par le script), puis **M4** (packaging Scheduled Task, différé).
+- **Point d'attention M3** : la capture navigateur doit produire la **même chaîne
+  canonique** que le détecteur. Côté détecteur, le nom de touche vient du **`vk`**
+  (position physique) ; côté navigateur, utiliser **`e.code`** (idem) — pas `e.key`.
+
 ## Contexte
 
 `constitution.md` fixe la vision : remplacer le gestionnaire de raccourcis natif
