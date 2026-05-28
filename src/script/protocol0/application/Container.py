@@ -24,6 +24,7 @@ from protocol0.domain.shared.ApplicationView import ApplicationView
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
+from protocol0.domain.shortcut.ShortcutConfigService import ShortcutConfigService
 from protocol0.domain.track_recorder.RecordService import RecordService
 from protocol0.infra.interface.BrowserLoaderService import BrowserLoaderService
 from protocol0.infra.interface.BrowserService import BrowserService
@@ -123,6 +124,8 @@ class Container(ContainerInterface):
 
         self._register(scene_service)
         self._register(device_service)
+
+        self._register(ShortcutConfigService())
 
         self._register(track_recorder_service)
 

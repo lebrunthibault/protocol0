@@ -4,6 +4,7 @@
 
 Branche : `keyboard-shortcut-manager-prototype`. Dernier commit : `74dce210`
 (« Pivot keyboard detection out-of-process: dedicated local detector (M1) »).
+M2 codé après ce commit (pas encore committé).
 
 - **Spike détection in-script : NO-GO** (voir « Verdict du spike M0 » plus bas).
   Code du spike créé puis **supprimé** dans la branche (aucune trace dans l'historique).
@@ -12,9 +13,17 @@ Branche : `keyboard-shortcut-manager-prototype`. Dernier commit : `74dce210`
   `ctrl+alt+e` → EQ Eight, `ctrl+alt+u` → Utility, foreground-only. Lancé en dev par
   `cd src/detector ; poetry run detector` (logs au terminal, Ctrl+C pour arrêter).
   Config de test posée : `%APPDATA%\Protocol0\shortcuts.json`.
-- **Prochaine étape : M2** (catalogue `GET /actions` dérivé des `@route` +
-  `ShortcutConfigService` côté script), puis **M3** (frontend HTML/JS inline servi
-  par le script), puis **M4** (packaging Scheduled Task, différé).
+- **M2 : FAIT & VALIDÉ en live.** `GET :9000/actions` renvoie bien le catalogue
+  depuis le script chargé dans Ableton (2026-05-28). Côté script :
+  `ActionCatalog` (catalogue dérivé des `@route`, allow-list `load_device`),
+  route `GET /actions`, `domain/shortcut/{Binding,ShortcutConfigService}.py`
+  (load/save/upsert sur `shortcuts.json`, enveloppe versionnée, écriture atomique).
+  `ShortcutConfigService` enregistré au container. flake8 clean ; smoke OK (catalogue,
+  round-trip upsert/list, dédup par combo, tolérance corruption) ; **contrat
+  cross-process vérifié** (fichier écrit par le script → relu par `detector.config`).
+- **Prochaine étape : M3** (frontend HTML/JS inline servi par le script : routes
+  `GET /shortcuts`, `/shortcuts/list`, `/shortcuts/add`, capture combo via `e.code`),
+  puis **M4** (packaging Scheduled Task, différé).
 - **Point d'attention M3** : la capture navigateur doit produire la **même chaîne
   canonique** que le détecteur. Côté détecteur, le nom de touche vient du **`vk`**
   (position physique) ; côté navigateur, utiliser **`e.code`** (idem) — pas `e.key`.
@@ -177,6 +186,25 @@ directement le JSON (M1) — pas besoin du script pour ça.
   { "combo": "ctrl+alt+e", "action": "load_device", "params": { "name": "EQ Eight" } }
 ] }
 ```
+
+**État M2 (FAIT & VALIDÉ en live — 2026-05-28)**
+- `application/http/ActionCatalog.py` : `get_catalog()` dérive le catalogue de
+  `get_routes()`, filtré par `_ALLOWED_ACTIONS = ("load_device",)`. Par entrée :
+  `name` (== `fn.__name__` == `binding.action`), `label` (1re ligne `getdoc`),
+  `params` (`name`/`type`/`required` depuis la signature), `path`, `method`.
+- `application/http/routes/shortcut_routes.py` : `GET /actions` → catalogue JSON.
+  Enregistré dans `routes/__init__.py`. Les routes frontend (`/shortcuts*`) sont en M3.
+- `domain/shortcut/Binding.py` : dataclass (combo/action/params) + `to_dict`/`from_dict`,
+  miroir de `detector.config.Binding`.
+- `domain/shortcut/ShortcutConfigService.py` : `list`/`upsert` stdlib sur
+  `%APPDATA%\Protocol0\shortcuts.json`. Lecture tolérante (`[]` si absent/corrompu) ;
+  écriture **atomique** (tmp + `os.replace`) pour que le détecteur ne lise jamais un
+  fichier à moitié écrit ; `upsert` clé par **combo** (cohérent avec le dédup par combo
+  du détecteur). Enregistré au container (`Container.py`).
+- **Vérifs** : flake8 clean ; smoke (catalogue, round-trip upsert/list, dédup par combo,
+  tolérance corruption) ; **contrat cross-process confirmé** (fichier écrit par
+  `ShortcutConfigService` relu correctement par `detector.config.ShortcutConfig`) ;
+  **`GET :9000/actions` validé en live** dans Ableton (renvoie l'entrée `load_device`).
 
 ## M3 — Frontend HTML/JS minimal inline (route GET, servi par le script)
 
