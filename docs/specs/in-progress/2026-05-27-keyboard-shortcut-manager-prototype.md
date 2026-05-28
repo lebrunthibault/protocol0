@@ -2,9 +2,8 @@
 
 ## État d'avancement (reprise) — 2026-05-28
 
-Branche : `keyboard-shortcut-manager-prototype`. Dernier commit : `74dce210`
-(« Pivot keyboard detection out-of-process: dedicated local detector (M1) »).
-M2 codé après ce commit (pas encore committé).
+Branche : `keyboard-shortcut-manager-prototype`. M2 committé (`a2b6559c`).
+M3 codé après ce commit (pas encore committé).
 
 - **Spike détection in-script : NO-GO** (voir « Verdict du spike M0 » plus bas).
   Code du spike créé puis **supprimé** dans la branche (aucune trace dans l'historique).
@@ -21,12 +20,21 @@ M2 codé après ce commit (pas encore committé).
   `ShortcutConfigService` enregistré au container. flake8 clean ; smoke OK (catalogue,
   round-trip upsert/list, dédup par combo, tolérance corruption) ; **contrat
   cross-process vérifié** (fichier écrit par le script → relu par `detector.config`).
-- **Prochaine étape : M3** (frontend HTML/JS inline servi par le script : routes
-  `GET /shortcuts`, `/shortcuts/list`, `/shortcuts/add`, capture combo via `e.code`),
-  puis **M4** (packaging Scheduled Task, différé).
-- **Point d'attention M3** : la capture navigateur doit produire la **même chaîne
-  canonique** que le détecteur. Côté détecteur, le nom de touche vient du **`vk`**
-  (position physique) ; côté navigateur, utiliser **`e.code`** (idem) — pas `e.key`.
+- **M3 : FAIT & VALIDÉ end-to-end (2026-05-28).** Page → capture combo → add →
+  le détecteur relit (mtime) et charge le device dans Ableton. L'action end-to-end
+  visée (§6) est bouclée. Routes
+  `GET /shortcuts` (page HTML/JS inline), `/shortcuts/list` (bindings JSON),
+  `/shortcuts/add` (upsert ; `params` = blob JSON url-encodé) dans `shortcut_routes.py`.
+  Capture combo par `keydown` + `e.code` → chaîne canonique. flake8 clean ; smoke
+  (add/list, JSON params, dédup, rejet JSON invalide) ; **JS syntax-check (node)** ;
+  **parité capture confirmée value-for-value** : un harness Node rejoue `buildCombo`
+  et un harness Python pilote le vrai `detector._build_combo` sur les mêmes cas → mêmes
+  chaînes (`ctrl+alt+e`, `ctrl+alt+5` pour Digit5 *et* Numpad5, `f12`, rejets identiques).
+- **Prochaine étape : M4** (packaging Scheduled Task du détecteur, différé — cf. §M4).
+  Le cœur du prototype (M1→M3) est complet et validé en live.
+- **Point d'attention M3 (RÉSOLU par la parité ci-dessus)** : la capture navigateur
+  produit la **même chaîne canonique** que le détecteur (détecteur `vk`, navigateur
+  `e.code` — position physique des deux côtés, pas `e.key`).
 
 ## Contexte
 
@@ -224,9 +232,30 @@ directement le JSON (M1) — pas besoin du script pour ça.
 - **Gotcha Win** : Windows intercepte `Win+X` avant le navigateur → best-effort ;
   privilégier `Ctrl+Alt+X`, documenter.
 
-**Recharge config détecteur** : le détecteur surveille le mtime de `shortcuts.json` (ou
-relit à chaque combo non trouvé) → pas besoin que le frontend notifie le détecteur. À
-trancher en M3 (le plus simple : relire le fichier périodiquement / sur changement mtime).
+**Recharge config détecteur** : tranché — le détecteur relit `shortcuts.json` **sur
+changement de mtime, à chaque combo** (`config.reload_if_changed()` dans
+`listener._handle_main_key`, déjà en place depuis M1). Le frontend n'a donc rien à
+notifier : il écrit le fichier (atomiquement), le détecteur reprend la nouvelle config
+au prochain appui. Pas de polling périodique séparé.
+
+**État M3 (FAIT & VALIDÉ end-to-end — 2026-05-28)**
+- `shortcut_routes.py` : `GET /shortcuts` renvoie `_PAGE` (HTML/JS inline, calqué sur
+  le style `index_routes.index()`) ; `GET /shortcuts/list` → bindings JSON via
+  `ShortcutConfigService.list()` ; `GET /shortcuts/add?combo=&action=&params=` →
+  `json.loads(params)` (rejette non-JSON / non-objet), `upsert`, renvoie le binding.
+- Page : charge les actions depuis `/actions` (dropdown + un champ par param du
+  catalogue), capture la combo (`keydown` + `preventDefault`/`stopPropagation`, lit
+  `e.code` + `ctrl/alt/shift/metaKey`), liste les bindings courants, ajoute via
+  `/shortcuts/add`. Zéro build, `fetch` vanilla.
+- **Parité capture vérifiée value-for-value** : harness Node (`buildCombo`/`keyName`
+  extraits de la page) vs harness Python pilotant le vrai `detector._build_combo` →
+  chaînes identiques sur E/U/K, Digit5 & Numpad5 (→ `5`), F5/F12, `ctrl+alt+shift+win+x`,
+  et rejets (`Comma`, `F13` → null des deux côtés). Le « point d'attention » est clos.
+- **Vérifs** : flake8 clean ; smoke route-logic (add/list, params JSON, dédup,
+  rejet JSON invalide) ; **`node --check`** sur le JS de la page (syntaxe OK).
+- **VALIDÉ en live (2026-05-28)** : `http://localhost:9000/shortcuts` → capture combo
+  → add → binding listé *et* déclenché par le détecteur au prochain appui (reload mtime,
+  sans relancer le détecteur). Gotcha `Win+…` : privilégier `Ctrl+Alt+…`.
 
 ## M4 — Packaging détecteur (Scheduled Task) — DIFFÉRÉ
 
