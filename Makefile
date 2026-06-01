@@ -2,6 +2,10 @@ backend:
 	@cd src/backend && poetry run backend
 .PHONY: backend
 
+detector:
+	@cd src/detector && poetry run detector
+.PHONY: detector
+
 install:
 	@cd src/script && make install_script
 .PHONY: install
