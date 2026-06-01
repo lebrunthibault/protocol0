@@ -7,4 +7,3 @@ live_environment_loaded = "Live" in sys.modules
 if not live_environment_loaded:
     sys.modules["Live"] = Mock()
     sys.modules["MidiRemoteScript"] = Mock()
-    sys.modules["multipledispatch"] = Mock()

@@ -11,10 +11,6 @@ packages = [{include = "protocol0"}]
 
 [tool.poetry.dependencies]
 python = ">=3.11"
-qualname = "^0.1.0"
-loguru = "^0.7.0"
-typing-extensions = "^4.6.3"
-dacite = "^1.8.1"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "*"

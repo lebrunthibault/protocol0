@@ -1,10 +1,8 @@
 import os
-import site
 import sys
 
-_here = os.path.dirname(os.path.abspath(__file__))
-
-site.addsitedir(os.path.join(_here, ".venv", "Lib", "site-packages"))
+# protocol0 has no third-party runtime deps — it runs on stdlib-only
+# Python 3.11, so there is no .venv/site-packages to add to the path.
 
 # P0_SOURCE_DIR is rewritten by `make install_script` to point at the
 # checked-out script repo, so changes to protocol0/ are picked up

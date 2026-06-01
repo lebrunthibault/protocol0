@@ -1,4 +1,4 @@
-from typing_extensions import Protocol
+from typing import Protocol
 
 
 class LiveObject(Protocol):

@@ -1,5 +1,5 @@
 import Live
-from typing_extensions import Protocol
+from typing import Protocol
 
 
 class P0TrackInterface(Protocol):

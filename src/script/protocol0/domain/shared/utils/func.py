@@ -1,5 +1,4 @@
 import inspect
-import sys
 import types
 from functools import partial
 
@@ -44,13 +43,7 @@ def get_class_name_from_method(func: Any) -> str:
         return class_name
 
     try:
-        if sys.version_info.major == 2:
-            from qualname import qualname
-
-            func_qualname = qualname(func)
-        else:
-            func_qualname = func.__qualname__
-
+        func_qualname = func.__qualname__
         return ".".join(func_qualname.split(".")[:-1])
     except (AttributeError, IOError):
         return "unknown %s" % func
