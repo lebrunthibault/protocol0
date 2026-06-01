@@ -27,12 +27,8 @@ share/python-wheels/
 MANIFEST
 
 # PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
-*.spec
-# ... but protocol0-detector.spec est notre spec de build versionnée (commit volontaire).
-!protocol0-detector.spec
+# Note : on versionne les .spec (notre spec de build est committée), donc PAS de "*.spec" ici.
 
 # Installer logs
 pip-log.txt
