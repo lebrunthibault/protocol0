@@ -16,6 +16,7 @@ from starlette.requests import Request
 from starlette.responses import PlainTextResponse
 
 from backend.settings import Settings
+from backend.version import __version__
 
 load_dotenv()
 
@@ -60,7 +61,7 @@ from backend.api.http_server.routes.routes import router  # noqa
 settings = Settings()
 
 
-app = FastAPI(debug=True, title="backend", version="1.0.0")
+app = FastAPI(debug=True, title="backend", version=__version__)
 
 origins = [
     "http://localhost",

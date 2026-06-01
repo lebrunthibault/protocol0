@@ -144,6 +144,20 @@ def _get_color(line: LogLine) -> Optional[str]:
     return None
 
 
+# Lignes émises par le remote script : "Protocol 0 - <message>" (ex. "Protocol 0 - HTTP GET /").
+# On les retag "[script]" en vert, en retirant le préfixe "Protocol 0 - " (cf. _tag_script_line).
+_SCRIPT_PREFIX_RE = re.compile(r"^\s*Protocol 0 - ")
+
+
+def _tag_script_line(line: LogLine) -> LogLine:
+    """Si la ligne vient du script (préfixe "Protocol 0 - "), retire le préfixe et
+    force le tag [script] vert (homogène avec [detector])."""
+    if _SCRIPT_PREFIX_RE.search(line.line):
+        clean = _SCRIPT_PREFIX_RE.sub("", line.line)
+        return LogLine(line="[script] " + clean, is_error=line.is_error, color="green")
+    return line
+
+
 def get_line_observable_from_file(file: TextIO):
     sleep_sec = 0.1
 
@@ -193,6 +207,7 @@ def tail_ableton_log_file():
                     line=_get_clean_line(line.line), is_error=line.is_error, color=line.color
                 )
             ),
+            op.map(_tag_script_line),
         ]
 
     with open(settings.log_file_path, "r") as file:
@@ -234,9 +249,20 @@ def tail_logs(f):
         logger.info(log_line)
 
 
-def _tail_backend_file_in_thread(path: str) -> None:
-    """Tail the backend log file in a daemon thread and stream lines through
-    the same loguru logger so they interleave with the Ableton tail."""
+# Préfixe du logging stdlib du detector : "2026-06-02 01:54:10,066 INFO detector: ".
+# Redondant dans make logs (qui ajoute déjà son propre time + le tag [detector]) -> on le retire.
+_DETECTOR_PREFIX_RE = re.compile(
+    r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3} \w+ [\w.]+: "
+)
+
+
+def _tail_file_in_thread(
+    path: str, prefix: str, color: str, strip: Optional["re.Pattern"] = None
+) -> None:
+    """Tail a plain log file in a daemon thread and stream lines through the same
+    loguru logger so they interleave with the Ableton tail. Lines are prefixed
+    with `[prefix]` in `color`. `strip`, if given, removes a leading pattern from
+    each line (e.g. the source logger's own timestamp/level prefix)."""
 
     def _run() -> None:
         while not os.path.exists(path):
@@ -245,19 +271,26 @@ def _tail_backend_file_in_thread(path: str) -> None:
             f.seek(0, os.SEEK_END)
             for line in follow(f, sleep_sec=0.2):
                 line = line.rstrip("\n")
+                if strip is not None:
+                    line = strip.sub("", line)
                 line = log_string(line)
-                logger.opt(colors=True).info(f"<cyan>[backend]</cyan> {line}")
+                logger.opt(colors=True).info(f"<{color}>[{prefix}]</{color}> {line}")
 
     threading.Thread(target=_run, daemon=True).start()
 
 
 def tail_combined_logs() -> None:
-    """Stream the backend log (rotated by loguru into .logs/backend.log) and the
-    Ableton P0 log into one terminal. Backend lines are prefixed [backend];
-    Ableton lines go through the existing filtered/colored pipeline."""
-    repo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-    backend_log = os.path.join(repo_root, ".logs", "backend.log")
-    _tail_backend_file_in_thread(backend_log)
+    """Stream the detector log (%APPDATA%\\Protocol0\\logs\\detector.log) and the
+    Ableton P0 log into one terminal. Detector lines are prefixed [detector];
+    Ableton lines go through the existing filtered/colored pipeline.
+
+    (The backend is paused for now, so its log is not streamed.)"""
+    detector_log = os.path.join(
+        os.environ["APPDATA"], "Protocol0", "logs", "detector.log"
+    )
+    _tail_file_in_thread(
+        detector_log, prefix="detector", color="magenta", strip=_DETECTOR_PREFIX_RE
+    )
     tail_ableton_log_file()
 
 

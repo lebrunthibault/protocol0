@@ -18,7 +18,9 @@ a = Analysis(
     ['detector\\main_entry.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    # VERSION (racine du repo) embarqué dans le bundle -> lu via sys._MEIPASS par
+    # detector/version.py, l'exe n'ayant pas d'arbre source pour remonter jusqu'à lui.
+    datas=[('..\\..\\VERSION', '.')],
     hiddenimports=['pynput.keyboard._win32', 'pynput.mouse._win32'],
     hookspath=[],
     hooksconfig={},

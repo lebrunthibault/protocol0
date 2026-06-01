@@ -12,7 +12,15 @@
 ; doivent exister (cf. scripts\build_installer.ps1).
 
 #define MyAppName "Protocol 0"
-#define MyAppVersion "0.1.0"
+; Version lue depuis le fichier VERSION racine (source de vérité unique, bumpée par /commit)
+; au moment de la compilation ISCC. Évite une version hardcodée qui dériverait.
+#define VersionFile = FileOpen(SourcePath + "..\VERSION")
+#if VersionFile
+  #define MyAppVersion = Trim(FileRead(VersionFile))
+  #expr FileClose(VersionFile)
+#else
+  #error VERSION file not found at repo root
+#endif
 #define MyAppPublisher "Thibault Lebrun"
 
 [Setup]
@@ -40,9 +48,19 @@ ArchitecturesInstallIn64BitMode=x64compatible
 ; en %APPDATA%, jamais touché.
 Type: filesandordirs; Name: "{code:GetRemoteScriptsDir}\Protocol_0\*"
 
+[Dirs]
+; Donne aux Users le droit Modify sur le dossier du remote script (et héritage vers
+; le contenu). Sans ça, l'installeur (process élevé) pose des fichiers en ACL
+; Administrators-only : une réinstall dev par `make install` (non élevée) ne peut alors
+; ni écraser ni supprimer __init__.py -> "Access denied". Avec users-modify, le dossier
+; reste géré par une install dev sans admin.
+Name: "{code:GetRemoteScriptsDir}\Protocol_0"; Permissions: users-modify
+
 [Files]
 Source: "..\src\detector\dist\protocol0-detector.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\build\stage\Protocol_0\*"; DestDir: "{code:GetRemoteScriptsDir}\Protocol_0"; Flags: ignoreversion recursesubdirs createallsubdirs
+; users-modify : chaque fichier déposé hérite du droit Modify pour les Users (cf. [Dirs]),
+; pour que `make install` en dev puisse les remplacer sans élévation.
+Source: "..\build\stage\Protocol_0\*"; DestDir: "{code:GetRemoteScriptsDir}\Protocol_0"; Permissions: users-modify; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\scripts\install_protocol0_detector_task.ps1"; DestDir: "{app}\scripts"; Flags: ignoreversion
 Source: "..\scripts\uninstall_protocol0_detector_task.ps1"; DestDir: "{app}\scripts"; Flags: ignoreversion
 

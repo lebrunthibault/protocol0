@@ -5,6 +5,8 @@ from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.routing import APIRoute
 
+from backend.version import __version__
+
 from .clip_routes import router as clip_router
 
 router = APIRouter()
@@ -66,7 +68,8 @@ def home(request: Request) -> str:
         "th{background:#f4f4f4}"
         "code,a{font-family:monospace}"
         "</style></head><body>"
-        "<h1>backend HTTP endpoints</h1>"
+        "<h1>backend HTTP endpoints "
+        "<small style='color:#888;font-weight:normal'>v" + __version__ + "</small></h1>"
         "<table><thead><tr><th>Method</th><th>Path</th><th>Params</th><th>Description</th></tr></thead>"
         "<tbody>" + rows + "</tbody></table>"
         "</body></html>"

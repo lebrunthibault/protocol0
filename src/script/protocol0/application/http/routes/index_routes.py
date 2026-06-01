@@ -2,6 +2,7 @@ import html
 import inspect
 
 from protocol0.application.http.Router import get_routes, route
+from protocol0.version import __version__
 
 
 def _param_label(name: str, param: inspect.Parameter) -> str:
@@ -47,7 +48,8 @@ def index() -> str:
         "th{background:#f4f4f4}"
         "code,a{font-family:monospace}"
         "</style></head><body>"
-        "<h1>script HTTP endpoints</h1>"
+        "<h1>script HTTP endpoints "
+        "<small style='color:#888;font-weight:normal'>v" + __version__ + "</small></h1>"
         "<table><thead><tr><th>Method</th><th>Path</th><th>Params</th><th>Description</th></tr></thead>"
         "<tbody>" + rows + "</tbody></table>"
         "</body></html>"

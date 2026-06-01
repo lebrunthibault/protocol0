@@ -13,6 +13,7 @@ from detector.config import ShortcutConfig, config_path
 from detector.listener import ShortcutListener
 from detector.script_client import ScriptClient
 from detector.settings import Settings
+from detector.version import __version__
 
 
 def _log_dir() -> str:
@@ -49,6 +50,7 @@ def _configure_logging() -> None:
 def start() -> None:
     _configure_logging()
     logger = logging.getLogger("detector")
+    logger.info("detector version: %s", __version__)
 
     if sys.platform != "win32":
         logger.error("detector prototype is Windows-only (foreground check is Win32)")
