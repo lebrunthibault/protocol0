@@ -3,3 +3,9 @@
 node_modules/
 .logs/
 /.env
+
+# Artefacts de packaging (Jalon 1 installeur Windows)
+/build/
+/dist-installer/
+/src/detector/build/
+/src/detector/dist/

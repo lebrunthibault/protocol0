@@ -16,7 +16,6 @@ from protocol0.application.ContainerInterface import ContainerInterface
 from protocol0.application.http.Router import HttpRequestHandler
 from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
-from protocol0.shared.env import get as env_get
 from protocol0.shared.logging.Logger import Logger
 
 # Borne le nombre de callbacks exécutés par tick (~17 ms). Au-delà, on rend
@@ -25,7 +24,11 @@ from protocol0.shared.logging.Logger import Logger
 # traités au tick suivant.
 _MAX_CALLBACKS_PER_TICK = 8
 
-_PORT = int(env_get("P0_SCRIPT_PORT"))
+# Port en dur pour l'instant. Venait de P0_SCRIPT_PORT lu dans le .env racine,
+# absent en prod (install par exe) -> crashait le chargement du script.
+# TODO: rendre configurable via %APPDATA%\Protocol0\settings.json
+# (cf. docs/specs/backlog/2026-06-02-script-settings-json.md).
+_PORT = 9000
 
 _queue: "queue.Queue[Callable]" = queue.Queue()
 _container: Optional[ContainerInterface] = None

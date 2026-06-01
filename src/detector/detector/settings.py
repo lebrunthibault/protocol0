@@ -1,20 +1,17 @@
+"""Réglages runtime du détecteur.
+
+Le détecteur est distribué comme exe autonome (PyInstaller), sans .env à côté :
+le port du script a donc un défaut câblé (9000, la valeur dev historique),
+surchargeable par la variable d'environnement P0_SCRIPT_PORT pour les cas avancés.
+"""
 import os
-from os.path import dirname
 
-from pydantic_settings import BaseSettings
+DEFAULT_SCRIPT_PORT = 9000
 
 
-class Settings(BaseSettings):
-    class Config:
-        # __file__ -> <repo>/src/detector/detector/settings.py; the monorepo-root
-        # .env is 4 dirnames up (settings.py -> detector -> detector -> src -> <repo>).
-        # Same depth/convention as backend/settings.py.
-        env_file = os.path.join(dirname(dirname(dirname(dirname(__file__)))), ".env")
-        # The shared root .env also carries P0_BACKEND_PORT (for the backend); the
-        # detector only needs the script port, so ignore unrelated keys.
-        extra = "ignore"
-
-    p0_script_port: int
+class Settings:
+    def __init__(self) -> None:
+        self.p0_script_port = int(os.environ.get("P0_SCRIPT_PORT", DEFAULT_SCRIPT_PORT))
 
     @property
     def p0_script_url(self) -> str:

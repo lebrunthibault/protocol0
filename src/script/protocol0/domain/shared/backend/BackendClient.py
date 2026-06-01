@@ -3,8 +3,6 @@ import urllib.parse
 import urllib.request
 from typing import Any, List
 
-from protocol0.shared.env import get as env_get
-
 
 class BackendClient(object):
     """HTTP client for the backend FastAPI server.
@@ -14,7 +12,12 @@ class BackendClient(object):
     method, path, and payload shape (see backend/.../routes/).
     """
 
-    _BASE_URL = "http://127.0.0.1:" + env_get("P0_BACKEND_PORT")
+    # URL en dur pour l'instant. Le port venait de P0_BACKEND_PORT lu dans le .env
+    # racine, absent en prod (install par exe) -> env_get renvoyait None et crashait
+    # le chargement du script ("can only concatenate str (not NoneType)").
+    # TODO: rendre configurable via %APPDATA%\Protocol0\settings.json
+    # (cf. docs/specs/backlog/2026-06-02-script-settings-json.md).
+    _BASE_URL = "http://127.0.0.1:9001"
 
     def _get(self, path, params=None):
         # type: (str, dict) -> None
