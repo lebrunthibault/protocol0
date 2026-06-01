@@ -2,8 +2,10 @@
 
 ## État d'avancement (reprise) — 2026-05-28
 
-Branche : `keyboard-shortcut-manager-prototype`. M2 committé (`a2b6559c`).
-M3 codé après ce commit (pas encore committé).
+Branche : `keyboard-shortcut-manager-prototype`. M2 committé (`a2b6559c`),
+M3 committé (`68cbe343`). Cœur du proto (M1→M3) terminé & validé end-to-end ;
+M4 (packaging Scheduled Task) explicitement différé (cf. §M4). Spec déplacé en
+`docs/specs/done/` le 2026-06-01 ; M4 reste un suivi séparé.
 
 - **Spike détection in-script : NO-GO** (voir « Verdict du spike M0 » plus bas).
   Code du spike créé puis **supprimé** dans la branche (aucune trace dans l'historique).
