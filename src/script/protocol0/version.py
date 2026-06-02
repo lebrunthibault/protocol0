@@ -4,7 +4,7 @@ Source de vérité unique (bumpée par le skill /commit). Résolution robuste ca
 paquets tournent depuis des contextes différents :
   - dev (sources / __P0_SOURCE_DIR__) : remonte depuis __file__ jusqu'au VERSION racine ;
   - prod (bundle Protocol_0/ installé) : remonte jusqu'au VERSION déposé dans Protocol_0/
-    par scripts/stage_remote_script.ps1 ;
+    par scripts/stage_remote_script.py ;
   - exe gelé (PyInstaller) : VERSION embarqué, lu via sys._MEIPASS.
 """
 import sys

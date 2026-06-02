@@ -4,7 +4,7 @@
 # Le tag est créé par la skill `/release` (jamais par `/commit`, qui se contente
 # de bumper VERSION). Ce workflow ne bumpe ni ne committe rien : il consomme le
 # tag déjà poussé, build l'installeur via le même script que le build local
-# (scripts/build_installer.ps1), et attache l'exe à la release.
+# (scripts/windows/build_installer.ps1), et attache l'exe à la release.
 #
 # Sources : pas besoin d'uploader un .zip — GitHub attache automatiquement
 # « Source code (zip/tar.gz) » à chaque release.
@@ -40,7 +40,7 @@ jobs:
       # Enchaîne detector exe (PyInstaller) -> stage remote script -> ISCC.
       # Sort dist-installer/Protocol0-Setup-<version>.exe.
       - name: Build installer
-        run: pwsh scripts/build_installer.ps1
+        run: pwsh scripts/windows/build_installer.ps1
 
       # Filet de sécurité : échouer explicitement si l'exe n'a pas été produit,
       # plutôt que de créer une release vide.

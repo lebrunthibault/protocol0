@@ -145,11 +145,11 @@ Two ways to install and run Protocol0.
   make detector
   ```
 
-- Install the remote script into Ableton:
+- First-time setup (both poetry envs + install the remote script into Ableton):
 
   ```sh
-  cd src/script && make bootstrap   # first time: pyenv 3.11 + poetry install
-  make install_script               # copy Protocol_0 into MIDI Remote Scripts
+  make bootstrap   # finds Python >=3.11, sets up envs, deploys Protocol_0 (Win + macOS)
+  make install     # redeploy just the remote script after editing it
   ```
 
 - Config UI: `http://127.0.0.1:9000/shortcuts`. Logs: `%APPDATA%\Protocol0\logs\`.

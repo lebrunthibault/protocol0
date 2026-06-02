@@ -1,17 +1,19 @@
-# One-command local setup for a fresh checkout: installs both Python
-# environments (remote script + detector) and deploys the remote script into
-# Ableton. After this, `make detector` is all you need to run.
+# Thin cross-platform dispatcher. All per-OS logic lives in the stdlib-only
+# scripts/*.py (no PowerShell, no pyenv). Override PY on a fresh machine where
+# `python` isn't a 3.x, e.g. `make PY=python3 bootstrap`.
+PY ?= python
+
+# One-command local setup for a fresh checkout: both poetry envs + deploy the
+# remote script into Ableton. After this, `make detector` is all you need.
 bootstrap:
-	@cd src/script && make bootstrap
-	@cd src/detector && poetry install
-	@$(MAKE) install
-	@echo "Bootstrap complete — run 'make detector' to start."
+	@$(PY) scripts/bootstrap.py
 .PHONY: bootstrap
+
+# Redeploy just the remote script into Ableton (after editing it).
+install:
+	@$(PY) scripts/install_remote_script.py
+.PHONY: install
 
 detector:
 	@cd src/detector && poetry run detector
 .PHONY: detector
-
-install:
-	@cd src/script && make install_script
-.PHONY: install

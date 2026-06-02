@@ -9,7 +9,7 @@
 ; les fichiers, MAIS préserve %APPDATA%\Protocol0\shortcuts.json (jamais référencé).
 ;
 ; Prérequis de build : src\detector\dist\protocol0-detector.exe et build\stage\Protocol_0\
-; doivent exister (cf. scripts\build_installer.ps1).
+; doivent exister (cf. scripts\windows\build_installer.ps1).
 
 #define MyAppName "Protocol 0"
 ; Version lue depuis le fichier VERSION racine (source de vérité unique, bumpée par /commit)
@@ -61,8 +61,8 @@ Source: "..\src\detector\dist\protocol0-detector.exe"; DestDir: "{app}"; Flags: 
 ; users-modify : chaque fichier déposé hérite du droit Modify pour les Users (cf. [Dirs]),
 ; pour que `make install` en dev puisse les remplacer sans élévation.
 Source: "..\build\stage\Protocol_0\*"; DestDir: "{code:GetRemoteScriptsDir}\Protocol_0"; Permissions: users-modify; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\scripts\install_protocol0_detector_task.ps1"; DestDir: "{app}\scripts"; Flags: ignoreversion
-Source: "..\scripts\uninstall_protocol0_detector_task.ps1"; DestDir: "{app}\scripts"; Flags: ignoreversion
+Source: "..\scripts\windows\install_protocol0_detector_task.ps1"; DestDir: "{app}\scripts"; Flags: ignoreversion
+Source: "..\scripts\windows\uninstall_protocol0_detector_task.ps1"; DestDir: "{app}\scripts"; Flags: ignoreversion
 
 [Run]
 ; Crée + démarre la tâche planifiée au logon. runhidden : pas de fenêtre PowerShell.

@@ -20,18 +20,20 @@ Open an issue with that and we have something to work from.
 ## Running it locally
 
 Protocol0 is a monorepo with two surfaces under `src/`: the **remote
-script** (runs inside Ableton) and the **detector**. From the repo root:
+script** (runs inside Ableton) and the **detector**.
 
+Prerequisites (install once): `make`, [`poetry`](https://python-poetry.org/docs/#installation),
+and a Python `>=3.11`. Then, from the repo root:
+
+- **First-time setup** — `make bootstrap`. Cross-platform (Windows + macOS): it
+  finds a Python `>=3.11`, sets up both poetry envs, and installs the remote
+  script into Ableton's MIDI Remote Scripts folder (wiring up the source dir so
+  edits are picked up live). Re-run `make install` alone to redeploy just the
+  remote script after editing it.
 - **Detector** — `make detector`.
-- **Remote script** — install it into Ableton's MIDI Remote Scripts folder:
 
-  ```sh
-  cd src/script
-  make bootstrap        # pyenv local 3.11 + poetry install
-  make install_script   # copies the script into Ableton, wires up the source dir
-  ```
-
-  Then (re)start Ableton Live and select Protocol_0 as a Control Surface.
+  After `make bootstrap`, (re)start Ableton Live and select Protocol_0 as a
+  Control Surface.
 
 - **Config UI** — once the script is running, the shortcut-configuration page
   is served by the script itself at <http://127.0.0.1:9000/shortcuts>.

@@ -36,6 +36,9 @@ Visit the website: <https://protocol0-brown.vercel.app/>.
 
 ### From source (developers)
 
+Prerequisites (install once): `make`, [`poetry`](https://python-poetry.org/docs/#installation),
+and a Python `>=3.11`.
+
 ```sh
 # First time: set up everything (both Python envs + deploy the remote script)
 make bootstrap
@@ -44,9 +47,11 @@ make bootstrap
 make detector
 ```
 
-`make bootstrap` runs `src/script`'s bootstrap (pyenv 3.11 + `poetry install`),
-installs the detector's deps, and copies the remote script into Ableton. Re-run
-`make install` alone to redeploy just the remote script after editing it.
+`make bootstrap` is cross-platform (Windows + macOS): it finds a Python `>=3.11`,
+sets up both poetry envs (remote script + detector), and copies the remote script
+into Ableton. Re-run `make install` alone to redeploy just the remote script after
+editing it. (On macOS the env setup completes, but the detector itself is still
+Windows-only for now — see `docs/specs/backlog/`.)
 
 Config UI: <http://127.0.0.1:9000/shortcuts>. Logs: `%APPDATA%\Protocol0\logs\`.
 
