@@ -5,7 +5,6 @@ import sys
 import traceback
 
 import uvicorn
-from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
@@ -17,8 +16,6 @@ from starlette.responses import PlainTextResponse
 
 from backend.settings import Settings
 from backend.version import __version__
-
-load_dotenv()
 
 
 class _InterceptHandler(logging.Handler):

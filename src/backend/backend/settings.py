@@ -1,4 +1,3 @@
-import os
 from os.path import dirname
 from pathlib import Path
 
@@ -6,11 +5,6 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    class Config:
-        # __file__ -> <repo>/src/backend/backend/settings.py; the monorepo-root
-        # .env is 4 dirnames up (settings.py -> backend -> backend -> src -> <repo>).
-        env_file = os.path.join(dirname(dirname(dirname(dirname(__file__)))), ".env")
-
     @property
     def log_file_path(self) -> str:
         ableton_root = Path.home() / "AppData" / "Roaming" / "Ableton"
@@ -25,8 +19,10 @@ class Settings(BaseSettings):
 
     project_directory: str = dirname(dirname(__file__))
 
-    p0_backend_port: int
-    p0_script_port: int
+    # Ports en dur (le .env a été supprimé du projet). BaseSettings permet encore
+    # un override par variable d'environnement si besoin.
+    p0_backend_port: int = 9001
+    p0_script_port: int = 9000
 
     @property
     def p0_script_url(self) -> str:
