@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ &amp; troubleshooting — Protocol 0 docs</title>
+<meta name="description" content="Requirements, known limitations and fixes for common Protocol 0 issues: SmartScreen, shortcuts not firing, the control surface, and autostart.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+<link rel="stylesheet" href="/docs/docs.css">
+</head>
+<body>
+
+<header id="hdr">
+  <div class="wrap nav">
+    <a href="/" class="brand"><span class="dot">P0</span> Protocol 0</a>
+    <nav class="nav-links">
+      <a href="/">Home</a>
+      <a href="/docs/" class="active">Docs</a>
+      <a href="https://github.com/lebrunthibault/protocol0" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </nav>
+    <div class="nav-right">
+      <a href="/#contact" class="contact">Contact</a>
+      <a href="https://github.com/lebrunthibault/protocol0/releases" target="_blank" rel="noopener" class="btn btn-primary">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v9m0 0L4.5 6.5M8 10l3.5-3.5M2 13.5h12"/></svg>
+        Download
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="docs-layout">
+  <aside class="docs-sidebar">
+    <div class="group">
+      <div class="group-title">Documentation</div>
+      <a href="/docs/">Overview</a>
+      <a href="/docs/installation.html">Installation</a>
+      <a href="/docs/shortcuts.html">Configuring shortcuts</a>
+      <a href="/docs/http-api.html">HTTP API</a>
+      <a href="/docs/faq.html" class="active">FAQ &amp; troubleshooting</a>
+    </div>
+  </aside>
+
+  <article class="docs-article">
+    <div class="eyebrow-doc">Help</div>
+    <h1>FAQ &amp; troubleshooting</h1>
+    <p class="lead">The common questions, the known limitations, and fixes for the gotchas you're most likely to hit.</p>
+
+    <h2>Requirements &amp; support</h2>
+    <table>
+      <tr><th>Question</th><th>Answer</th></tr>
+      <tr><td>Which Ableton versions?</td><td>Live 11 and 12.</td></tr>
+      <tr><td>Which OS?</td><td>Windows today. macOS is planned but not yet available.</td></tr>
+      <tr><td>Do I need Python?</td><td>No. The installer bundles everything.</td></tr>
+      <tr><td>Is it free?</td><td>Yes — free and open source under the MIT license.</td></tr>
+      <tr><td>Does my config leave my machine?</td><td>No. The API is localhost-only and bindings are stored locally.</td></tr>
+    </table>
+
+    <h2>Known limitations</h2>
+    <ul>
+      <li><strong>Windows only</strong> for now — macOS support is on the roadmap.</li>
+      <li><strong>Unsigned installer</strong> — Windows SmartScreen warns on first run until code signing lands.</li>
+      <li><strong>Foreground only</strong> — shortcuts fire only while Ableton is the active window, by design.</li>
+      <li><strong>Some <code>Win</code> combos are reserved</strong> by Windows and never reach the app.</li>
+      <li><strong>Action catalog is growing</strong> — more of the underlying API is exposed to shortcuts over time.</li>
+    </ul>
+
+    <h2>Troubleshooting</h2>
+
+    <h3>SmartScreen blocks the installer</h3>
+    <p>Expected — the installer isn't code-signed yet. Click <strong>More info → Run anyway</strong>. Code signing is planned.</p>
+
+    <h3>Shortcuts aren't firing</h3>
+    <ol>
+      <li>Make sure <strong>Ableton is the foreground window</strong>. Shortcuts are intentionally ignored everywhere else.</li>
+      <li>Confirm the binding exists in the web UI at <a class="link" href="http://127.0.0.1:9000/shortcuts" target="_blank" rel="noopener"><code>http://127.0.0.1:9000/shortcuts</code></a> — it should be in the bindings table.</li>
+      <li>Check the control surface is loaded: <strong>Preferences → MIDI → Control Surface → Protocol 0</strong>.</li>
+      <li>Check the detector log at <code>%APPDATA%\Protocol0\logs\detector.log</code> for the combo being recognized and the action call.</li>
+    </ol>
+
+    <h3>The web UI won't load</h3>
+    <p>The UI is served by the remote script <em>inside</em> Ableton, so:</p>
+    <ul>
+      <li>Ableton must be running, with the <strong>Protocol 0</strong> control surface enabled.</li>
+      <li>If the page still doesn't load, confirm the remote script was copied into Live's <em>MIDI Remote Scripts</em> folder — reinstalling fixes a missing or partial copy.</li>
+    </ul>
+
+    <h3>"Script HTTP failed" in the detector log</h3>
+    <p>The detector couldn't reach the in-Ableton API on port <code>9000</code>. Make sure Ableton is open and the control surface is enabled; then check the detector log for details.</p>
+
+    <h3>The installer can't find Ableton</h3>
+    <p>If your Live install is in a non-standard location, the wizard offers a step to point at the <em>MIDI Remote Scripts</em> folder manually — typically:</p>
+    <pre><code>C:\ProgramData\Ableton\Live 12 Suite\Resources\MIDI Remote Scripts</code></pre>
+
+    <h3>It doesn't start automatically after login</h3>
+    <p>Autostart is a Windows scheduled task named <code>Protocol0</code>. Check it exists:</p>
+    <pre><code>Get-ScheduledTask -TaskName Protocol0</code></pre>
+    <p>If it's missing, reinstalling re-creates it.</p>
+
+    <h3>My bindings disappeared after reinstalling</h3>
+    <p>They shouldn't — bindings live in <code>%APPDATA%\Protocol0\shortcuts.json</code>, which installs and uninstalls leave alone. If the file got hand-edited into invalid JSON, the detector treats it as empty (no shortcuts) rather than crashing. Open the web UI and re-add the binding, or fix the JSON.</p>
+
+    <h2>Still stuck?</h2>
+    <p>Open an issue on <a class="link" href="https://github.com/lebrunthibault/protocol0/issues" target="_blank" rel="noopener">GitHub</a> or <a class="link" href="/#contact">get in touch</a>. Including the relevant lines from <code>%APPDATA%\Protocol0\logs\detector.log</code> helps a lot.</p>
+
+    <div class="doc-nav">
+      <a href="/docs/http-api.html">
+        <div class="dir">← Previous</div>
+        <div class="ttl">HTTP API</div>
+      </a>
+      <a class="next" href="/docs/">
+        <div class="dir">Next</div>
+        <div class="ttl">Back to overview →</div>
+      </a>
+    </div>
+  </article>
+</div>
+
+<footer>
+  <div class="wrap foot">
+    <a href="/" class="brand"><span class="dot">P0</span> Protocol 0</a>
+    <div class="flinks">
+      <a href="/">Home</a>
+      <a href="/docs/">Docs</a>
+      <a href="https://github.com/lebrunthibault/protocol0" target="_blank" rel="noopener">GitHub</a>
+      <a href="/#contact">Contact</a>
+    </div>
+    <div class="copy">© Thibault Lebrun 2026</div>
+  </div>
+</footer>
+
+<script>
+  const hdr=document.getElementById('hdr');
+  const onScroll=()=>hdr.classList.toggle('scrolled',window.scrollY>10);
+  onScroll();window.addEventListener('scroll',onScroll,{passive:true});
+</script>
+</body>
+</html>

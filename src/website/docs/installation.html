@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Installation — Protocol 0 docs</title>
+<meta name="description" content="How to install Protocol 0 for Ableton Live on Windows: download the installer, what it sets up, and how to confirm it's running.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+<link rel="stylesheet" href="/docs/docs.css">
+</head>
+<body>
+
+<header id="hdr">
+  <div class="wrap nav">
+    <a href="/" class="brand"><span class="dot">P0</span> Protocol 0</a>
+    <nav class="nav-links">
+      <a href="/">Home</a>
+      <a href="/docs/" class="active">Docs</a>
+      <a href="https://github.com/lebrunthibault/protocol0" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </nav>
+    <div class="nav-right">
+      <a href="/#contact" class="contact">Contact</a>
+      <a href="https://github.com/lebrunthibault/protocol0/releases" target="_blank" rel="noopener" class="btn btn-primary">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v9m0 0L4.5 6.5M8 10l3.5-3.5M2 13.5h12"/></svg>
+        Download
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="docs-layout">
+  <aside class="docs-sidebar">
+    <div class="group">
+      <div class="group-title">Documentation</div>
+      <a href="/docs/">Overview</a>
+      <a href="/docs/installation.html" class="active">Installation</a>
+      <a href="/docs/shortcuts.html">Configuring shortcuts</a>
+      <a href="/docs/http-api.html">HTTP API</a>
+      <a href="/docs/faq.html">FAQ &amp; troubleshooting</a>
+    </div>
+  </aside>
+
+  <article class="docs-article">
+    <div class="eyebrow-doc">Getting started</div>
+    <h1>Installation</h1>
+    <p class="lead">Protocol&#8202;0 ships as a single Windows installer. It bundles everything — you don't need Python, Poetry, or any developer tools to run it.</p>
+
+    <h2>Requirements</h2>
+    <ul>
+      <li><strong>Ableton Live 11 or 12</strong> (the installer auto-detects your install).</li>
+      <li><strong>Windows.</strong> macOS support is on the roadmap but not available yet.</li>
+      <li>That's it — no Python runtime required on your machine.</li>
+    </ul>
+
+    <h2>Install</h2>
+    <ol>
+      <li>Go to the <a class="link" href="https://github.com/lebrunthibault/protocol0/releases" target="_blank" rel="noopener">GitHub releases page</a> and download the latest <code>Protocol0-Setup-&lt;version&gt;.exe</code>.</li>
+      <li>Run it. If Ableton is installed in a standard location, the wizard finds your Live install automatically; otherwise it lets you pick the folder.</li>
+      <li>Finish the wizard. Protocol&#8202;0 starts immediately and from then on launches automatically when you log in.</li>
+    </ol>
+
+    <div class="warn">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+      <p><strong>SmartScreen warning.</strong> The installer is not yet code-signed, so Windows SmartScreen may flag it on first run. Click <strong>More info → Run anyway</strong>. Code signing is on the roadmap.</p>
+    </div>
+
+    <h2>What the installer sets up</h2>
+    <p>The installer does three things:</p>
+    <table>
+      <tr><th>Component</th><th>Where it goes</th><th>What it is</th></tr>
+      <tr><td>Detector</td><td><code>C:\Program Files\Protocol0\</code></td><td>The background app that watches your keyboard.</td></tr>
+      <tr><td>Remote script</td><td>Your Live <code>MIDI Remote Scripts\Protocol_0</code> folder</td><td>The control surface that runs inside Ableton and executes actions.</td></tr>
+      <tr><td>Autostart task</td><td>Windows Task Scheduler (<code>Protocol0</code>)</td><td>Launches the detector silently at login, restarting it if it crashes.</td></tr>
+    </table>
+
+    <h2>Enable the control surface in Live</h2>
+    <p>The remote script is copied into Ableton's <em>MIDI Remote Scripts</em> folder, but Live needs to load it once:</p>
+    <ol>
+      <li>Open Ableton Live.</li>
+      <li>Go to <strong>Preferences → Link / Tempo / MIDI</strong> (or <strong>MIDI</strong> on Live&nbsp;12).</li>
+      <li>Under <strong>Control Surface</strong>, select <strong>Protocol 0</strong> from the dropdown.</li>
+    </ol>
+    <p>Once selected, the in-Ableton HTTP server starts and the <a class="link" href="/docs/shortcuts.html">web UI</a> becomes reachable.</p>
+
+    <h2>Confirm it's running</h2>
+    <ul>
+      <li><strong>Detector:</strong> the autostart task <code>Protocol0</code> appears in Task Scheduler. You can also check the log at <code>%APPDATA%\Protocol0\logs\detector.log</code>.</li>
+      <li><strong>Remote script:</strong> with Live open and the control surface enabled, visit <a class="link" href="http://127.0.0.1:9000/shortcuts" target="_blank" rel="noopener"><code>http://127.0.0.1:9000/shortcuts</code></a> — the configuration UI should load.</li>
+    </ul>
+
+    <h2>Updating</h2>
+    <p>Download a newer <code>Protocol0-Setup-&lt;version&gt;.exe</code> from the releases page and run it over your existing install. Your shortcut bindings live in <code>%APPDATA%\Protocol0\shortcuts.json</code> and are <strong>not</strong> touched by reinstalls or uninstalls.</p>
+
+    <h2>Uninstalling</h2>
+    <p>Use <strong>Add or Remove Programs</strong> in Windows. The uninstaller removes the detector, the autostart task, and the remote script from Live. Your <code>shortcuts.json</code> config is kept, so reinstalling restores your bindings.</p>
+
+    <div class="note">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+      <p>Want to run from source instead of the installer? See the <a class="link" href="https://github.com/lebrunthibault/protocol0#readme" target="_blank" rel="noopener">README</a> for the developer setup (<code>make bootstrap</code>, <code>make detector</code>, <code>make install</code>).</p>
+    </div>
+
+    <div class="doc-nav">
+      <a href="/docs/">
+        <div class="dir">← Previous</div>
+        <div class="ttl">Overview</div>
+      </a>
+      <a class="next" href="/docs/shortcuts.html">
+        <div class="dir">Next</div>
+        <div class="ttl">Configuring shortcuts →</div>
+      </a>
+    </div>
+  </article>
+</div>
+
+<footer>
+  <div class="wrap foot">
+    <a href="/" class="brand"><span class="dot">P0</span> Protocol 0</a>
+    <div class="flinks">
+      <a href="/">Home</a>
+      <a href="/docs/">Docs</a>
+      <a href="https://github.com/lebrunthibault/protocol0" target="_blank" rel="noopener">GitHub</a>
+      <a href="/#contact">Contact</a>
+    </div>
+    <div class="copy">© Thibault Lebrun 2026</div>
+  </div>
+</footer>
+
+<script>
+  const hdr=document.getElementById('hdr');
+  const onScroll=()=>hdr.classList.toggle('scrolled',window.scrollY>10);
+  onScroll();window.addEventListener('scroll',onScroll,{passive:true});
+</script>
+</body>
+</html>

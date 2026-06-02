@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTTP API — Protocol 0 docs</title>
+<meta name="description" content="The localhost HTTP API Protocol 0 exposes to drive Ableton Live from a Stream Deck or external gear: endpoints, request format, and threading model.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+<link rel="stylesheet" href="/docs/docs.css">
+</head>
+<body>
+
+<header id="hdr">
+  <div class="wrap nav">
+    <a href="/" class="brand"><span class="dot">P0</span> Protocol 0</a>
+    <nav class="nav-links">
+      <a href="/">Home</a>
+      <a href="/docs/" class="active">Docs</a>
+      <a href="https://github.com/lebrunthibault/protocol0" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </nav>
+    <div class="nav-right">
+      <a href="/#contact" class="contact">Contact</a>
+      <a href="https://github.com/lebrunthibault/protocol0/releases" target="_blank" rel="noopener" class="btn btn-primary">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v9m0 0L4.5 6.5M8 10l3.5-3.5M2 13.5h12"/></svg>
+        Download
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="docs-layout">
+  <aside class="docs-sidebar">
+    <div class="group">
+      <div class="group-title">Documentation</div>
+      <a href="/docs/">Overview</a>
+      <a href="/docs/installation.html">Installation</a>
+      <a href="/docs/shortcuts.html">Configuring shortcuts</a>
+      <a href="/docs/http-api.html" class="active">HTTP API</a>
+      <a href="/docs/faq.html">FAQ &amp; troubleshooting</a>
+    </div>
+  </aside>
+
+  <article class="docs-article">
+    <div class="eyebrow-doc">Reference</div>
+    <h1>HTTP API</h1>
+    <p class="lead">The remote script inside Ableton runs a tiny localhost HTTP server. It's how the keyboard detector triggers actions — and it's open for you to call from a Stream Deck, a script, or any external gear. Think of it as an OSC-like control surface over plain HTTP.</p>
+
+    <h2>Base URL</h2>
+    <pre><code>http://127.0.0.1:9000</code></pre>
+    <ul>
+      <li><strong>Localhost only.</strong> The server binds to <code>127.0.0.1</code>, so it's never reachable from the network — your data stays on the machine.</li>
+      <li><strong>Port <code>9000</code>.</strong></li>
+      <li><strong>GET-only.</strong> Every endpoint is a <code>GET</code>; mutations pass their arguments as query parameters. This keeps callers (and Stream Deck buttons) trivially simple.</li>
+      <li>Available whenever Ableton is open with the <strong>Protocol 0</strong> control surface enabled.</li>
+    </ul>
+
+    <div class="note">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <p>Visit <a class="link" href="http://127.0.0.1:9000/" target="_blank" rel="noopener"><code>http://127.0.0.1:9000/</code></a> in a browser for a live index of every registered endpoint, its parameters, and its description.</p>
+    </div>
+
+    <h2>Responses</h2>
+    <table>
+      <tr><th>Handler returns</th><th>Response</th></tr>
+      <tr><td>An object / list</td><td><code>application/json</code></td></tr>
+      <tr><td>Text</td><td><code>text/html</code></td></tr>
+      <tr><td>Nothing</td><td><code>200 OK</code>, no body (fire-and-forget)</td></tr>
+    </table>
+    <p>Error codes:</p>
+    <table>
+      <tr><th>Code</th><th>Meaning</th></tr>
+      <tr><td><code>400</code></td><td>Missing or invalid query parameter</td></tr>
+      <tr><td><code>404</code></td><td>No such route</td></tr>
+      <tr><td><code>500</code></td><td>The handler raised an error</td></tr>
+      <tr><td><code>504</code></td><td>The action didn't complete in time on Live's thread</td></tr>
+    </table>
+
+    <h2>Action endpoints</h2>
+    <p>These drive Live directly. They're the same calls a keyboard shortcut makes under the hood.</p>
+
+    <h3>Load a device</h3>
+    <pre><code>GET /device/load?name=&lt;str&gt;</code></pre>
+    <p>Loads a device (instrument or audio effect) by name onto the selected track.</p>
+    <pre><code>GET /device/load?name=EQ%20Eight</code></pre>
+
+    <h3>Select a track</h3>
+    <pre><code>GET /track/select?name=&lt;str&gt;</code></pre>
+    <p>Selects a track by name. Pass <code>name=master</code> to select the master track.</p>
+
+    <h3>Stop following the playhead</h3>
+    <pre><code>GET /song/toggle_follow</code></pre>
+    <p>Stops Live from following the playhead in the arrangement view.</p>
+
+    <div class="note">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <p>Some routes exist but aren't yet exposed in the shortcut catalog the web UI shows. They're still callable directly over HTTP. The set of routes grows over time — the live index at <code>/</code> is always the source of truth.</p>
+    </div>
+
+    <h2>Shortcut-management endpoints</h2>
+    <p>The web UI is built on these — you can use them to manage bindings programmatically too.</p>
+
+    <table>
+      <tr><th>Endpoint</th><th>Returns</th></tr>
+      <tr><td><code>GET /shortcuts</code></td><td>The HTML configuration UI</td></tr>
+      <tr><td><code>GET /actions</code></td><td>JSON list of discoverable actions and their parameters</td></tr>
+      <tr><td><code>GET /shortcuts/list</code></td><td>JSON list of the current bindings</td></tr>
+      <tr><td><code>GET /shortcuts/add?combo=&amp;action=&amp;params=</code></td><td>Adds or replaces a binding</td></tr>
+    </table>
+
+    <h3>Adding a binding</h3>
+    <pre><code>GET /shortcuts/add?combo=&lt;str&gt;&amp;action=&lt;str&gt;&amp;params=&lt;json&gt;</code></pre>
+    <ul>
+      <li><code>combo</code> — canonical combo, e.g. <code>ctrl+alt+e</code></li>
+      <li><code>action</code> — action name, e.g. <code>load_device</code></li>
+      <li><code>params</code> — URL-encoded JSON object (defaults to <code>{}</code>)</li>
+    </ul>
+    <pre><code># Bind Ctrl+Alt+E to load EQ Eight
+GET /shortcuts/add?combo=ctrl%2Balt%2Be&amp;action=load_device&amp;params=%7B%22name%22%3A%22EQ%20Eight%22%7D</code></pre>
+    <p>The unencoded <code>params</code> there is <code>{"name":"EQ Eight"}</code>.</p>
+
+    <h2>Example: a Stream Deck button</h2>
+    <p>Point any "open URL" / "website" button at an action endpoint:</p>
+    <pre><code>http://127.0.0.1:9000/device/load?name=Utility</code></pre>
+    <p>Pressing the button loads a Utility device onto the selected track — no keyboard shortcut required.</p>
+
+    <div class="doc-nav">
+      <a href="/docs/shortcuts.html">
+        <div class="dir">← Previous</div>
+        <div class="ttl">Configuring shortcuts</div>
+      </a>
+      <a class="next" href="/docs/faq.html">
+        <div class="dir">Next</div>
+        <div class="ttl">FAQ &amp; troubleshooting →</div>
+      </a>
+    </div>
+  </article>
+</div>
+
+<footer>
+  <div class="wrap foot">
+    <a href="/" class="brand"><span class="dot">P0</span> Protocol 0</a>
+    <div class="flinks">
+      <a href="/">Home</a>
+      <a href="/docs/">Docs</a>
+      <a href="https://github.com/lebrunthibault/protocol0" target="_blank" rel="noopener">GitHub</a>
+      <a href="/#contact">Contact</a>
+    </div>
+    <div class="copy">© Thibault Lebrun 2026</div>
+  </div>
+</footer>
+
+<script>
+  const hdr=document.getElementById('hdr');
+  const onScroll=()=>hdr.classList.toggle('scrolled',window.scrollY>10);
+  onScroll();window.addEventListener('scroll',onScroll,{passive:true});
+</script>
+</body>
+</html>
