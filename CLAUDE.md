@@ -10,15 +10,17 @@ See `docs/specs/README.md` for the full lifecycle.
 
 # Releases
 
-Bumper et releaser sont deux actes séparés :
+Bumping and releasing are two separate acts:
 
-- **Bump** — `/commit` bumpe `VERSION` à chaque changement fonctionnel, commit et push.
-  Il ne tague **jamais**.
-- **Release** — `/release` (skill repo, `.claude/skills/release/`) tague la version courante
-  (`v<version>`) et pousse le tag. Ce push déclenche `.github/workflows/release.yml`, qui build
-  l'installeur sur un runner Windows (via `scripts/build_installer.ps1`) et publie une GitHub
-  Release contenant `Protocol0-Setup-<version>.exe` (notes tirées du message du tag annoté).
+- **Bump** — `/commit` (repo skill, `.claude/skills/commit/`) bumps `VERSION` on every
+  functional change, commits and pushes. It **never** tags.
+- **Release** — `/release` (repo skill, `.claude/skills/release/`) tags the current version
+  (`v<version>`) and pushes the tag. That push triggers `.github/workflows/release.yml`, which
+  builds the installer on a Windows runner (via `scripts/build_installer.ps1`) and publishes a
+  GitHub Release containing `Protocol0-Setup-<version>.exe` (notes taken from the annotated tag
+  message).
 
-Concrètement : on `/commit` plusieurs fois (la version monte), puis quand on veut publier, on dit
-« release » → `/release` crée le tag et la CI fait le reste. Le « Check for updates » du Jalon 2
-et la future landing page « one-click download » consomment `releases/latest` de cette même release.
+In practice: you `/commit` several times (the version climbs), then when you want to publish you
+say "release" → `/release` creates the tag and CI does the rest. The "Check for updates" of
+Milestone 2 and the future "one-click download" landing page both consume `releases/latest` of
+that same release.
