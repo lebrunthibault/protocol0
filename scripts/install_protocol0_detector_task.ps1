@@ -1,4 +1,4 @@
-# Enregistre protocol0-detector comme tâche planifiée Windows qui :
+# Enregistre le détecteur Protocol0 comme tâche planifiée Windows qui :
 #   - démarre à l'ouverture de session (session interactive : requis pour la capture
 #     clavier globale + le check de fenêtre au premier plan ; un service en session 0
 #     ne verrait pas le clavier ni le focus)
@@ -18,7 +18,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$taskName = "protocol0-detector"
+$taskName = "Protocol0"
 
 if (-not (Test-Path $ExePath)) {
     throw "Detector exe not found: $ExePath"
@@ -63,6 +63,6 @@ Get-ScheduledTask -TaskName $taskName | Format-Table -AutoSize TaskName, State
 Write-Host ""
 Write-Host "Logs: %APPDATA%\Protocol0\logs\detector.log"
 Write-Host "Manage with:"
-Write-Host "  Stop-ScheduledTask  -TaskName $taskName"
-Write-Host "  Start-ScheduledTask -TaskName $taskName"
-Write-Host "  taskschd.msc        (GUI)"
+Write-Host "  scripts\disable_protocol0_task.ps1   (disable + kill, for manual testing)"
+Write-Host "  scripts\enable_protocol0_task.ps1    (re-enable + start)"
+Write-Host "  taskschd.msc                         (GUI)"

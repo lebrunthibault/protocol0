@@ -9,6 +9,11 @@ Protocol 0 is free, open-source, and extensible :
 
 The project is in early development. Feedback and contributions are very welcome.
 
+> **Platform: Windows.** Protocol0 is developed and run on Windows. The installer,
+> the autostart mechanism (a Scheduled Task), and the operational tooling in
+> [`scripts/`](scripts/) are all PowerShell (`*.ps1`) and Windows-specific. macOS
+> support is on the backlog (see `docs/specs/backlog/`).
+
 See [`CONSTITUTION.md`](CONSTITUTION.md) for the vision and the design decisions
 behind it.
 
@@ -28,13 +33,16 @@ behind it.
 ### From source (developers)
 
 ```sh
-# Run the detector (live logs, Ctrl+C to stop)
-make detector
+# First time: set up everything (both Python envs + deploy the remote script)
+make bootstrap
 
-# Install the remote script into Ableton
-cd src/script && make bootstrap   # first time: pyenv 3.11 + poetry install
-make install_script
+# Then run the detector (live logs, Ctrl+C to stop)
+make detector
 ```
+
+`make bootstrap` runs `src/script`'s bootstrap (pyenv 3.11 + `poetry install`),
+installs the detector's deps, and copies the remote script into Ableton. Re-run
+`make install` alone to redeploy just the remote script after editing it.
 
 Config UI: <http://127.0.0.1:9000/shortcuts>. Logs: `%APPDATA%\Protocol0\logs\`.
 
@@ -55,6 +63,9 @@ keyboard ─► detector ──HTTP :9000──► remote script (in Ableton) �
 
 Bindings are stored globally (`%APPDATA%\Protocol0\shortcuts.json`), shared by the
 script and the detector. Full rationale in [`CONSTITUTION.md`](CONSTITUTION.md).
+
+Some build, packaging, and lifecycle tooling lives in [`scripts/`](scripts/) as
+PowerShell scripts (the project was initially developed on windows)
 
 ## Contributing
 

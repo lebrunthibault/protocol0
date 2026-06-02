@@ -165,7 +165,7 @@ var
   ResultCode: Integer;
 begin
   Result := '';
-  Exec('schtasks.exe', '/End /TN "protocol0-detector"',
+  Exec('schtasks.exe', '/End /TN "Protocol0"',
        '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   Exec('taskkill.exe', '/F /IM protocol0-detector.exe',
        '', SW_HIDE, ewWaitUntilTerminated, ResultCode);

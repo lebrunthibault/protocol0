@@ -89,6 +89,17 @@ rather than hard-coding the action list. Existing routes (`/device/load`,
 `/track/select`, …) prefigure the catalog — each action builds on a Live-API
 capability.
 
+### Windows-first
+
+The project is built and run **on Windows**, and the tooling reflects that. The
+detector ships as a Windows executable, autostarts through a **Scheduled Task**,
+and is packaged by a Windows installer; the operational scripts in `scripts/` are
+**PowerShell**. This is a practical consequence of the environment Protocol0 lives
+in — Ableton Live on the author's machine — not a rejection of other platforms.
+The architecture itself (HTTP boundary, global config, detector/script split) is
+portable; macOS support is tracked in `docs/specs/backlog/` and would replace the
+platform-specific packaging and autostart layer, not the core design.
+
 ### Two surfaces, not one process
 
 The architecture settles into two distinct pieces, each with a different home:

@@ -1,9 +1,9 @@
-# Retire la tâche planifiée protocol0-detector.
+# Retire la tâche planifiée Protocol0.
 # Appelé par l'uninstaller Inno Setup (avant suppression des fichiers).
 
 $ErrorActionPreference = "Stop"
 
-$taskName = "protocol0-detector"
+$taskName = "Protocol0"
 
 if (Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue) {
     Stop-ScheduledTask  -TaskName $taskName -ErrorAction SilentlyContinue
