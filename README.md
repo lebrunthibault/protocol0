@@ -17,6 +17,10 @@ The project is in early development. Feedback and contributions are very welcome
 See [`CONSTITUTION.md`](CONSTITUTION.md) for the vision and the design decisions
 behind it.
 
+## Documentation & installation
+
+Visit the website: <https://protocol0-brown.vercel.app/>.
+
 ## Installation
 
 ### End users (installer)
