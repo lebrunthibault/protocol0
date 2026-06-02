@@ -1,8 +1,7 @@
 """Client HTTP vers l'API du remote script (:9000).
 
-Reprend la couture existante (le backend appelle déjà le script via requests,
-cf. backend/api/client/p0_script_api_client.py). Le détecteur ne fait que
-remplacer AHK comme producteur d'événements : l'API d'action est inchangée.
+Le détecteur ne fait que remplacer AHK comme producteur d'événements :
+l'API d'action exposée par le script est inchangée.
 """
 import logging
 

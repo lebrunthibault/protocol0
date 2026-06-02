@@ -1,2 +1,0 @@
-class ButtonElement:
-    pass

@@ -19,12 +19,10 @@ Open an issue with that and we have something to work from.
 
 ## Running it locally
 
-Protocol0 is a monorepo with three surfaces under `src/`: the **remote
-script** (runs inside Ableton), the **detector**, and the **backend**. From the
-repo root:
+Protocol0 is a monorepo with two surfaces under `src/`: the **remote
+script** (runs inside Ableton) and the **detector**. From the repo root:
 
 - **Detector** — `make detector`.
-- **Backend** — `make backend`.
 - **Remote script** — install it into Ableton's MIDI Remote Scripts folder:
 
   ```sh
@@ -45,7 +43,7 @@ Commit messages should follow the [Conventional Commits](https://www.conventiona
 specification and be in lower case.
 
 Use a **scope** in the subject — the part of Protocol0 the commit affects.
-Typically this is one of the three surfaces (`script`, `detector`, `backend`),
+Typically this is one of the two surfaces (`script`, `detector`),
 but it can be finer-grained (`shortcut`, `http`, `installer`, …). Omit the scope
 for changes that don't target a specific component, such as build-system or
 documentation changes, or sweeping changes that would be cumbersome to list.

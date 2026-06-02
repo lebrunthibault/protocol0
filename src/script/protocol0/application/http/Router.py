@@ -1,8 +1,8 @@
 """Mini routeur HTTP stdlib pour le serveur exposé par le script.
 
 Décorateur @route + un BaseHTTPRequestHandler qui parse l'URL et dispatche.
-Reproduit le pattern FastAPI du backend (backend/.../http_server/routes/)
-mais sans framework — on n'a accès qu'à la stdlib dans Ableton.
+Reproduit le pattern FastAPI (décorateur de route + dispatch) mais sans
+framework — on n'a accès qu'à la stdlib dans Ableton.
 """
 import inspect
 import json

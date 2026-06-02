@@ -3,8 +3,7 @@
 #     clavier globale + le check de fenêtre au premier plan ; un service en session 0
 #     ne verrait pas le clavier ni le focus)
 #   - redémarre sur crash détecté par le Task Scheduler (jusqu'à 999x, intervalle 1 min)
-#   - tourne fenêtre cachée (l'exe est no-console, donc aucun flash — pas de shim VBS,
-#     contrairement à install_p0_backend_task.ps1 qui lance un powershell.exe à console)
+#   - tourne fenêtre cachée (l'exe est no-console, donc aucun flash — pas de shim VBS)
 #
 # Le détecteur logge lui-même dans %APPDATA%\Protocol0\logs\detector.log : pas de
 # redirection stderr ici (qui réintroduirait une console).

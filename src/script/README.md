@@ -13,16 +13,11 @@ The script can be used either with a midi controller (I'm using a Faderfox EC4) 
 - The script also exposes its own HTTP server so anything on the machine can drive it without going
   through MIDI — typically keyboard shortcuts (AHK) that hit a URL like
   `http://127.0.0.1:9000/track/select?name=kick`.
-- The script also acts as an HTTP client: it can call out to a python
-  fastapi backend ([backend](https://github.com/lebrunthibault/protocol0/tree/main/backend))
-  running on the same machine, for things the Ableton-bundled python
-  interpreter can't do (spawn processes, win32 apis, mouse/keyboard, …).
-
-## The backend
-
-This script executes in the context of ableton's bundled python interpreter, like any script. Some things are not
-possible in this environment like accessing win32apis (keyboard, mouse ..)
-So I've set up a separate HTTP backend in python that the script can call.
+- The script also acts as an HTTP client (via `BackendClient`): it can call out to
+  a local HTTP backend for things the Ableton-bundled python interpreter can't do
+  (spawn processes, win32 apis, mouse/keyboard, …). That backend has been extracted
+  to a separate repository and is currently dormant; the client stays in place for
+  if/when it is revived.
 
 ## Installation
 
@@ -34,10 +29,6 @@ So I've set up a separate HTTP backend in python that the script can call.
 
 > This generates a simple midi remote script importing the control surface
 > from the [protocol0](https://pypi.org/project/protocol0/) pypi library.
-
-### Install the backend
-
-- follow the README install section of the [backend](https://github.com/lebrunthibault/protocol0/tree/main/backend).
 
 ## Development
 

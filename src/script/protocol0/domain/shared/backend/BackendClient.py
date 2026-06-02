@@ -9,7 +9,8 @@ class BackendClient(object):
 
     Only methods actually called from the script are listed here. To wire a new
     backend route, add a method next to the others — match the route's HTTP
-    method, path, and payload shape (see backend/.../routes/).
+    method, path, and payload shape. The backend itself lives in a separate
+    (currently dormant) repository.
     """
 
     # URL en dur pour l'instant. Le port venait de P0_BACKEND_PORT lu dans le .env
