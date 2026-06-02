@@ -63,6 +63,6 @@ Get-ScheduledTask -TaskName $taskName | Format-Table -AutoSize TaskName, State
 Write-Host ""
 Write-Host "Logs: %APPDATA%\Protocol0\logs\detector.log"
 Write-Host "Manage with:"
-Write-Host "  scripts\disable_protocol0_task.ps1   (disable + kill, for manual testing)"
-Write-Host "  scripts\enable_protocol0_task.ps1    (re-enable + start)"
+Write-Host "  scripts\windows\disable_protocol0_task.ps1   (disable + kill, for manual testing)"
+Write-Host "  scripts\windows\enable_protocol0_task.ps1    (re-enable + start)"
 Write-Host "  taskschd.msc                         (GUI)"

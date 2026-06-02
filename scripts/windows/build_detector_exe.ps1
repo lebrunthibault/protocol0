@@ -9,7 +9,8 @@
 # le succès sur $LASTEXITCODE (le vrai code de sortie natif), pas sur le stderr.
 $ErrorActionPreference = "Continue"
 
-$repoRoot    = (Resolve-Path "$PSScriptRoot\..").Path
+# This script lives in scripts/windows/, so the repo root is two levels up.
+$repoRoot    = (Resolve-Path "$PSScriptRoot\..\..").Path
 $detectorDir = Join-Path $repoRoot "src\detector"
 
 Push-Location $detectorDir

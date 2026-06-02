@@ -9,14 +9,18 @@
 
 $ErrorActionPreference = "Stop"
 
-$repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
+# This script lives in scripts/windows/, so the repo root is two levels up.
+$repoRoot = (Resolve-Path "$PSScriptRoot\..\..").Path
 $iss      = Join-Path $repoRoot "installer\protocol0.iss"
 
 Write-Host "== 1/3 Build detector exe =="
 & (Join-Path $PSScriptRoot "build_detector_exe.ps1")
 
 Write-Host "== 2/3 Stage remote script =="
-& (Join-Path $PSScriptRoot "stage_remote_script.ps1")
+# Portable stdlib-only staging script (replaces the old stage_remote_script.ps1).
+# CI provides python on PATH (Setup Python step); judge success on $LASTEXITCODE.
+& python (Join-Path $repoRoot "scripts\stage_remote_script.py")
+if ($LASTEXITCODE -ne 0) { throw "stage_remote_script.py failed (exit $LASTEXITCODE)." }
 
 Write-Host "== 3/3 Compile installer (Inno Setup) =="
 $iscc = (Get-Command "ISCC.exe" -ErrorAction SilentlyContinue).Source
