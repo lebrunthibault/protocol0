@@ -1,0 +1,65 @@
+# Publie une GitHub Release quand un tag `v*` est poussé (modèle Syncthing :
+# build en CI sur tag, notes tirées du message du tag annoté).
+#
+# Le tag est créé par la skill `/release` (jamais par `/commit`, qui se contente
+# de bumper VERSION). Ce workflow ne bumpe ni ne committe rien : il consomme le
+# tag déjà poussé, build l'installeur via le même script que le build local
+# (scripts/build_installer.ps1), et attache l'exe à la release.
+#
+# Sources : pas besoin d'uploader un .zip — GitHub attache automatiquement
+# « Source code (zip/tar.gz) » à chaque release.
+
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write   # créer la release + uploader l'asset
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Install Inno Setup 6
+        run: choco install innosetup -y --no-progress
+
+      # Enchaîne detector exe (PyInstaller) -> stage remote script -> ISCC.
+      # Sort dist-installer/Protocol0-Setup-<version>.exe.
+      - name: Build installer
+        run: pwsh scripts/build_installer.ps1
+
+      # Filet de sécurité : échouer explicitement si l'exe n'a pas été produit,
+      # plutôt que de créer une release vide.
+      - name: Verify installer artifact
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem dist-installer -Filter 'Protocol0-Setup-*.exe' -ErrorAction SilentlyContinue
+          if (-not $exe) { throw "Aucun installeur produit dans dist-installer/." }
+          Write-Host "OK -> $($exe.FullName) ($([math]::Round($exe.Length/1MB,1)) MB)"
+
+      # --notes-from-tag : reprend le changelog que /release a mis dans le message
+      # du tag annoté. dist-installer/ est vierge en CI -> le glob est sans ambiguïté.
+      - name: Create GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $exe = (Get-ChildItem dist-installer -Filter 'Protocol0-Setup-*.exe').FullName
+          gh release create "$env:GITHUB_REF_NAME" `
+            --title "$env:GITHUB_REF_NAME" `
+            --notes-from-tag `
+            "$exe"
