@@ -8,7 +8,9 @@ allowed-tools: "Bash(git:*) Bash(gh:*) Read Write"
 
 Publie une version déjà bumpée comme **GitHub Release**. Le déclencheur de la release est la
 **création d'un tag git `v<version>`** : le workflow `.github/workflows/release.yml` (runner
-Windows) build l'installeur et publie la release avec `--notes-from-tag`.
+Windows) build l'installeur, extrait le message d'annotation du tag (`git tag -l --format=%(contents)`)
+et le passe à `gh release create --notes-file`. (Pas `--notes-from-tag` : sur un tag annoté poussé
+séparément, il retombe sur le message du *commit* pointé, pas du tag.)
 
 **Séparation stricte bump ↔ release :**
 
@@ -66,6 +68,10 @@ Format de chaque ligne : `- <description sans le préfixe de type> (<hash court>
 
 Premier release (aucun tag précédent) : utiliser tout l'historique, ou un simple
 `- Initial release` si l'historique est trop verbeux.
+
+**Ne pas** répéter `v<version>` en tête du changelog : le titre de la release est déjà `v<version>`.
+Commencer directement par les sections (`### Features`, …) — sinon la version apparaît en double
+dans les notes publiées.
 
 ### Étape 4 — Faire valider (« auto + édition »)
 

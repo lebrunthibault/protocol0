@@ -51,15 +51,20 @@ jobs:
           if (-not $exe) { throw "Aucun installeur produit dans dist-installer/." }
           Write-Host "OK -> $($exe.FullName) ($([math]::Round($exe.Length/1MB,1)) MB)"
 
-      # --notes-from-tag : reprend le changelog que /release a mis dans le message
-      # du tag annoté. dist-installer/ est vierge en CI -> le glob est sans ambiguïté.
+      # Notes = message d'annotation du tag (le changelog que /release y a mis).
+      # On l'extrait explicitement plutôt que via --notes-from-tag : ce dernier
+      # retombe sur le message du COMMIT pointé quand le tag annoté est poussé
+      # séparément, ce qui publierait le mauvais texte. %(contents) donne le corps
+      # du tag annoté de façon déterministe. dist-installer/ est vierge en CI ->
+      # le glob de l'exe est sans ambiguïté.
       - name: Create GitHub Release
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           $exe = (Get-ChildItem dist-installer -Filter 'Protocol0-Setup-*.exe').FullName
+          git tag -l "$env:GITHUB_REF_NAME" --format='%(contents)' | Out-File -FilePath notes.md -Encoding utf8
           gh release create "$env:GITHUB_REF_NAME" `
             --title "$env:GITHUB_REF_NAME" `
-            --notes-from-tag `
+            --notes-file notes.md `
             "$exe"
