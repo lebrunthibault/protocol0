@@ -89,6 +89,16 @@ rather than hard-coding the action list. Existing routes (`/device/load`,
 `/track/select`, …) prefigure the catalog — each action builds on a Live-API
 capability.
 
+### Plugins extend the script
+
+New behavior is added through **plugins** — small units inside the script that
+**react to events** in Live and **expose new actions**, without touching the
+core. A plugin declares what it listens to and what it offers; the script
+discovers it, wires it up, and tears it down cleanly. This keeps the action set
+**open and discoverable** (the natural extension of *Discoverable over
+hard-coded*): the way to grow Protocol0's vocabulary is to drop in a plugin, not
+to edit a central list. The *how* lives in [`docs/plugins.md`](docs/plugins.md).
+
 ### Windows-first
 
 The project is built and run **on Windows**, and the packaging reflects that. The

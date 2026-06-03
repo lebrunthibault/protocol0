@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Optional, List
+from typing import Callable, Dict, Optional, List, Type
 
 from _Framework.SubjectSlot import subject_slot, SlotManager
 
@@ -51,6 +51,15 @@ class LiveSetPlugin(PluginInterface, SlotManager):
     def should_start(self) -> bool:
         return Song.is_live_set()
 
+    def register_listeners(self) -> Dict[Type, Callable]:
+        # Lifecycle listeners: subscribed by the loader after start(), and
+        # unsubscribed automatically on stop. (ClipCreatedEvent is subscribed
+        # dynamically inside capture_midi, so it is not declared here.)
+        return {
+            SongStoppedEvent: self._unsubscribe_on_clip_captured,
+            ClipRecordedEvent: self._on_clip_recorded_event,
+        }
+
     def start(self) -> None:
         self._bass_track = LiveTrack.BASS.get()
         self._synth_track = LiveTrack.SYNTH.get()
@@ -62,14 +71,12 @@ class LiveSetPlugin(PluginInterface, SlotManager):
             DeviceEnum.DRUM_RACK
         ).get_parameter_by_name(DeviceParamEnum.PITCH)
 
-        DomainEventBus.subscribe(SongStoppedEvent, self._unsubscribe_on_clip_captured)
-        DomainEventBus.subscribe(ClipRecordedEvent, self._on_clip_recorded_event)
-
         self._bass_track_arm_listener.subject = self._bass_track._track
 
     def stop(self) -> None:
-        DomainEventBus.un_subscribe(SongStoppedEvent, self._unsubscribe_on_clip_captured)
-        DomainEventBus.un_subscribe(ClipRecordedEvent, self._on_clip_recorded_event)
+        # The two lifecycle listeners are removed by the loader; only the
+        # dynamic ClipCreatedEvent subscription (if a capture was in flight)
+        # needs a defensive cleanup here.
         try:
             DomainEventBus.un_subscribe(ClipCreatedEvent, self._on_clip_captured_event)
         except Exception:

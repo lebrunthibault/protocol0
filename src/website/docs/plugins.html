@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Creating plugins — Protocol 0 docs</title>
+<meta name="description" content="How to extend Protocol 0's Ableton remote script with a plugin: react to events in Live and expose new actions, declaratively, with no third-party dependencies.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/design-system.css">
+<link rel="stylesheet" href="/docs/docs.css">
+</head>
+<body>
+
+<header id="hdr">
+  <div class="wrap nav">
+    <a href="/" class="brand"><span class="dot">P0</span> Protocol 0</a>
+    <nav class="nav-links">
+      <a href="/">Home</a>
+      <a href="/docs/" class="active">Docs</a>
+      <a href="https://github.com/lebrunthibault/protocol0" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </nav>
+    <div class="nav-right">
+      <a href="/#contact" class="contact">Contact</a>
+      <a href="https://github.com/lebrunthibault/protocol0/releases" target="_blank" rel="noopener" class="btn btn-primary">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v9m0 0L4.5 6.5M8 10l3.5-3.5M2 13.5h12"/></svg>
+        Download
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="docs-layout">
+  <aside class="docs-sidebar">
+    <div class="group">
+      <div class="group-title">Documentation</div>
+      <a href="/docs/">Overview</a>
+      <a href="/docs/installation.html">Installation</a>
+      <a href="/docs/shortcuts.html">Configuring shortcuts</a>
+      <a href="/docs/http-api.html">HTTP API</a>
+      <a href="/docs/plugins.html" class="active">Creating plugins</a>
+      <a href="/docs/faq.html">FAQ &amp; troubleshooting</a>
+    </div>
+  </aside>
+
+  <article class="docs-article">
+    <div class="label-accent">Extending</div>
+    <h1>Creating plugins</h1>
+    <p class="lead">The remote script that runs inside Ableton is extensible through small <strong>plugins</strong>. A plugin can react to things happening in Live — a clip recorded, playback started, a track selected — and expose new actions that you can bind to a shortcut. You add behavior without touching the core.</p>
+
+    <div class="note">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <p>This is a developer topic — it assumes you run Protocol&#8202;0 <a class="link" href="https://github.com/lebrunthibault/protocol0#readme" target="_blank" rel="noopener">from source</a>. The full reference, with a copy-paste template, lives in <a class="link" href="https://github.com/lebrunthibault/protocol0/blob/main/docs/plugins.md" target="_blank" rel="noopener"><code>docs/plugins.md</code></a>.</p>
+    </div>
+
+    <h2>What a plugin does</h2>
+    <ul>
+      <li><strong>React to events.</strong> Declare a map of <em>event&nbsp;→&nbsp;handler</em>; the script subscribes and unsubscribes for you.</li>
+      <li><strong>Expose actions.</strong> A <code>@route</code> function becomes an HTTP endpoint listed on the script index and callable from a shortcut or external tool.</li>
+    </ul>
+
+    <h2>Where plugins live</h2>
+    <p>Plugins are Python packages under <code>src/script/protocol0/plugins/</code>. They're <strong>discovered automatically</strong> at startup — subclass <code>PluginInterface</code> and drop the file in; there is no registry to edit.</p>
+    <pre><code>src/script/protocol0/plugins/
+  example/      ← copy this to start your own
+  live_set/     ← the author's real-world plugin</code></pre>
+
+    <h2>The interface</h2>
+    <p>Everything except <code>name</code> is optional. A purely declarative plugin only implements <code>register_listeners</code> and/or <code>register_actions</code>.</p>
+    <pre><code>class PluginInterface:
+    name: str = ""
+
+    def should_start(self) -> bool: ...        # run this plugin? (default: True)
+    def start(self) -> None: ...               # optional one-time setup
+    def stop(self) -> None: ...                # optional teardown
+    def register_listeners(self): ...          # {EventType: handler}
+    def register_actions(self): ...            # [route functions]</code></pre>
+
+    <h2>Reacting to events</h2>
+    <pre><code>from protocol0.domain.lom.clip.ClipRecordedEvent import ClipRecordedEvent
+
+class MyPlugin(PluginInterface):
+    name = "my_plugin"
+
+    def register_listeners(self):
+        return {ClipRecordedEvent: self._on_clip_recorded}
+
+    def _on_clip_recorded(self, event: ClipRecordedEvent):
+        clip = event.clip            # events carry their payload as attributes
+        ...</code></pre>
+    <p>A few commonly useful events:</p>
+    <table>
+      <tr><th>Event</th><th>Fires when</th></tr>
+      <tr><td><code>SongStartedEvent</code></td><td>Playback starts</td></tr>
+      <tr><td><code>SongStoppedEvent</code></td><td>Playback stops</td></tr>
+      <tr><td><code>ClipRecordedEvent</code></td><td>A clip finishes recording</td></tr>
+      <tr><td><code>SimpleTrackSelectedEvent</code></td><td>A track is selected</td></tr>
+      <tr><td><code>TracksMappedEvent</code></td><td>The track tree is (re)mapped</td></tr>
+    </table>
+    <p>The full list is every <code>*Event.py</code> under <code>protocol0/domain/</code>.</p>
+
+    <h2>Adding an action</h2>
+    <p>An action is a <code>@route</code> function — exactly like the built-in ones (<code>/device/load</code>, …). It shows up on the <a class="link" href="/docs/http-api.html">script index</a> and is callable over HTTP.</p>
+    <pre><code>from protocol0.application.http.Router import route
+
+@route("GET", "/my_plugin/do_thing")
+def do_thing(name: str) -> None:
+    """Short docstring — shown as the action's label on the index."""
+    ...
+
+class MyPlugin(PluginInterface):
+    name = "my_plugin"
+
+    def register_actions(self):
+        return [do_thing]</code></pre>
+    <p>Query params are coerced from the signature (<code>name: str</code>, <code>count: int</code>, <code>flag: bool</code>); the return type drives the response (nothing → fire-and-forget, <code>str</code> → HTML, dict/list → JSON). The handler runs on Live's thread, so calling the Live API from it is safe.</p>
+
+    <h2>Constraints</h2>
+    <ul>
+      <li><strong>Stdlib-only.</strong> Ableton's embedded Python can't load third-party packages.</li>
+      <li><strong>Never block Live's thread.</strong> Keep listeners and actions short.</li>
+      <li><strong>One failing plugin won't take the script down</strong> — the loader isolates each plugin's startup.</li>
+    </ul>
+
+    <div class="note">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <p>Per-plugin configuration isn't available yet; it's tracked on the project's spec backlog. For now keep plugin behavior self-contained.</p>
+    </div>
+
+    <div class="doc-nav">
+      <a href="/docs/http-api.html">
+        <div class="dir">← Previous</div>
+        <div class="ttl">HTTP API</div>
+      </a>
+      <a class="next" href="/docs/faq.html">
+        <div class="dir">Next</div>
+        <div class="ttl">FAQ &amp; troubleshooting →</div>
+      </a>
+    </div>
+  </article>
+</div>
+
+<footer>
+  <div class="wrap foot">
+    <a href="/" class="brand"><span class="dot">P0</span> Protocol 0</a>
+    <div class="flinks">
+      <a href="/">Home</a>
+      <a href="/docs/">Docs</a>
+      <a href="https://github.com/lebrunthibault/protocol0" target="_blank" rel="noopener">GitHub</a>
+      <a href="/#contact">Contact</a>
+    </div>
+    <div class="copy">© Thibault Lebrun 2026</div>
+  </div>
+</footer>
+
+<script>
+  const hdr=document.getElementById('hdr');
+  const onScroll=()=>hdr.classList.toggle('scrolled',window.scrollY>10);
+  onScroll();window.addEventListener('scroll',onScroll,{passive:true});
+</script>
+</body>
+</html>

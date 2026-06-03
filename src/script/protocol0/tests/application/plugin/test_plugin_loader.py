@@ -1,6 +1,13 @@
+from typing import Callable, Dict, List, Type
+
 from protocol0.application.plugin.PluginInterface import PluginInterface
 from protocol0.application.plugin.PluginLoader import PluginLoader
+from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.tests.application.plugin import stub_plugins
+
+
+class _StubEvent(object):
+    pass
 
 
 class _StubStartStopPlugin(PluginInterface):
@@ -40,9 +47,22 @@ class _StubFailingStartPlugin(PluginInterface):
         _StubFailingStartPlugin.stopped = True
 
 
+class _StubListenerPlugin(PluginInterface):
+    name = "stub_listener"
+    received: List[_StubEvent] = []
+
+    def _on_event(self, event: _StubEvent) -> None:
+        _StubListenerPlugin.received.append(event)
+
+    def register_listeners(self) -> Dict[Type, Callable]:
+        return {_StubEvent: self._on_event}
+
+
 def _reset_loader() -> None:
     PluginLoader._started = []
     PluginLoader._by_class = {}
+    PluginLoader._listeners = []
+    DomainEventBus.reset()
 
 
 def test_plugin_start_and_stop() -> None:
@@ -76,3 +96,19 @@ def test_start_exception_is_swallowed() -> None:
 
     assert _StubFailingStartPlugin not in PluginLoader._by_class
     assert _StubStartStopPlugin in PluginLoader._by_class
+
+
+def test_listeners_are_subscribed_and_cleaned_up() -> None:
+    _reset_loader()
+    _StubListenerPlugin.received = []
+
+    PluginLoader.load_and_start(stub_plugins)
+
+    # The loader subscribed the declared listener: emitting reaches the handler.
+    DomainEventBus.emit(_StubEvent())
+    assert len(_StubListenerPlugin.received) == 1
+
+    # Stopping unsubscribes it: a further emit is not delivered.
+    PluginLoader._stop_all()
+    DomainEventBus.emit(_StubEvent())
+    assert len(_StubListenerPlugin.received) == 1

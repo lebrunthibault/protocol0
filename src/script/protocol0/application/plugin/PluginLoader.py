@@ -1,5 +1,5 @@
 import types
-from typing import Dict, List, Type, TypeVar
+from typing import Callable, Dict, List, Tuple, Type, TypeVar
 
 from protocol0.application.ScriptDisconnectedEvent import ScriptDisconnectedEvent
 from protocol0.application.plugin.PluginInterface import PluginInterface
@@ -13,6 +13,9 @@ P = TypeVar("P", bound=PluginInterface)
 class PluginLoader(object):
     _started: List[PluginInterface] = []
     _by_class: Dict[Type[PluginInterface], PluginInterface] = {}
+    # Listeners the loader subscribed on behalf of plugins, so it can undo them
+    # on stop without the plugin tracking anything.
+    _listeners: List[Tuple[Type, Callable]] = []
 
     @classmethod
     def load_and_start(cls, plugins_package: types.ModuleType) -> None:
@@ -25,6 +28,8 @@ class PluginLoader(object):
                     Logger.info("Plugin %s skipped (should_start=False)" % plugin.name)
                     continue
                 plugin.start()
+                cls._subscribe_listeners(plugin)
+                cls._register_actions(plugin)
                 cls._started.append(plugin)
                 cls._by_class[plugin_class] = plugin
                 Logger.info("Plugin %s started" % plugin.name)
@@ -34,11 +39,29 @@ class PluginLoader(object):
         DomainEventBus.subscribe(ScriptDisconnectedEvent, lambda _: cls._stop_all())
 
     @classmethod
+    def _subscribe_listeners(cls, plugin: PluginInterface) -> None:
+        for event_type, handler in plugin.register_listeners().items():
+            DomainEventBus.subscribe(event_type, handler)
+            cls._listeners.append((event_type, handler))
+
+    @classmethod
+    def _register_actions(cls, plugin: PluginInterface) -> None:
+        # The @route decorator already registered each action in the global
+        # route table at import time, so it shows up on the script index ("/")
+        # and is callable over HTTP. We just surface what the plugin exposes.
+        for fn in plugin.register_actions():
+            Logger.info("Plugin %s exposes action %s" % (plugin.name, fn.__name__))
+
+    @classmethod
     def get(cls, plugin_class: Type[P]) -> P:
         return cls._by_class[plugin_class]  # type: ignore[return-value]
 
     @classmethod
     def _stop_all(cls) -> None:
+        for event_type, handler in cls._listeners:
+            DomainEventBus.un_subscribe(event_type, handler)
+        cls._listeners = []
+
         for plugin in cls._started:
             try:
                 plugin.stop()
