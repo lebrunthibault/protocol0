@@ -91,14 +91,17 @@ capability.
 
 ### Windows-first
 
-The project is built and run **on Windows**, and the tooling reflects that. The
+The project is built and run **on Windows**, and the packaging reflects that. The
 detector ships as a Windows executable, autostarts through a **Scheduled Task**,
-and is packaged by a Windows installer; the operational scripts in `scripts/` are
-**PowerShell**. This is a practical consequence of the environment Protocol0 lives
-in — Ableton Live on the author's machine — not a rejection of other platforms.
-The architecture itself (HTTP boundary, global config, detector/script split) is
-portable; macOS support is tracked in `docs/specs/backlog/` and would replace the
-platform-specific packaging and autostart layer, not the core design.
+and is packaged by a Windows installer — the PowerShell that does this lives under
+`scripts/windows/`. Day-to-day developer setup is deliberately kept off that path:
+the dev entry points (`make bootstrap`/`install`) dispatch to **stdlib-only,
+cross-platform Python**, so a fresh checkout sets up on Windows *or* macOS. This is
+a practical consequence of the environment Protocol0 lives in — Ableton Live on the
+author's machine — not a rejection of other platforms. The architecture itself
+(HTTP boundary, global config, detector/script split) is portable; macOS support
+is tracked in `docs/specs/backlog/` and would replace the platform-specific
+packaging and autostart layer, not the core design.
 
 ### Two surfaces, not one process
 

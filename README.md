@@ -1,8 +1,8 @@
 # Protocol0
 
 Protocol 0 is a companion software for Ableton Live.
-It provides a global keyboard shortcut manager that works across all sets, letting you keymap usual  custom actions (load a device by name, select a track, or anything else the Live API (LOM) exposes).
-Configure it all from a small web UI instead of editing scripts.
+It provides a global keyboard shortcut manager that works across all sets, letting you keymap usual parameters as well as custom actions (load a device by name, select a track, or anything else the Live API (LOM) exposes).
+Configure it all from a small web UI.
 Protocol 0 is free, open-source, and extensible : 
 - you can add new actions by creating a plugin (doc to come)
 - the remote script exposes an HTTP API, so you can call it from your own tools (e.g. a Stream Deck plugin, or a custom frontend).
@@ -10,16 +10,17 @@ Protocol 0 is free, open-source, and extensible :
 The project is in early development. Feedback and contributions are very welcome.
 
 > **Platform: Windows.** Protocol0 is developed and run on Windows. The installer,
-> the autostart mechanism (a Scheduled Task), and the operational tooling in
-> [`scripts/`](scripts/) are all PowerShell (`*.ps1`) and Windows-specific. macOS
-> support is on the backlog (see `docs/specs/backlog/`).
+> the autostart mechanism (a Scheduled Task), and the packaging tooling under
+> [`scripts/windows/`](scripts/windows/) are PowerShell and Windows-specific. Dev
+> setup (`make bootstrap`) is cross-platform, but the detector itself is
+> Windows-only for now; macOS support is on the backlog (see `docs/specs/backlog/`).
 
 See [`CONSTITUTION.md`](CONSTITUTION.md) for the vision and the design decisions
 behind it.
 
 ## Documentation & installation
 
-Visit the website: <https://protocol0-brown.vercel.app/>.
+Visit the website: <https://www.protocol0.live/>.
 
 ## Installation
 
@@ -73,8 +74,14 @@ keyboard ─► detector ──HTTP :9000──► remote script (in Ableton) �
 Bindings are stored globally (`%APPDATA%\Protocol0\shortcuts.json`), shared by the
 script and the detector. Full rationale in [`CONSTITUTION.md`](CONSTITUTION.md).
 
-Some build, packaging, and lifecycle tooling lives in [`scripts/`](scripts/) as
-PowerShell scripts (the project was initially developed on windows)
+The repo also carries a third, non-runtime surface: the marketing site and user
+documentation in [`src/website/`](src/website/) — a static page deployed to
+<https://www.protocol0.live/> with no build step.
+
+Cross-platform setup lives in stdlib-only [`scripts/`](scripts/) Python (`make
+bootstrap`/`install` dispatch to them); the genuinely Windows-only tooling
+(installer, PyInstaller, Scheduled Tasks) sits under
+[`scripts/windows/`](scripts/windows/).
 
 ## Contributing
 
