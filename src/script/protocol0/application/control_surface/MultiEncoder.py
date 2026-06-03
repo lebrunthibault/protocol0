@@ -1,5 +1,6 @@
 import json
 import time
+import traceback
 from typing import List, Optional, Callable
 
 from _Framework.ButtonElement import ButtonElement
@@ -10,6 +11,7 @@ from protocol0.application.control_surface.EncoderAction import EncoderAction, E
 from protocol0.domain.shared.errors.ErrorRaisedEvent import ErrorRaisedEvent
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
+from protocol0.shared.logging.Logger import Logger
 
 
 class MultiEncoder(SlotManager):
@@ -111,7 +113,8 @@ class MultiEncoder(SlotManager):
                 params["go_next"] = go_next
 
             action.execute(encoder_name=self.name, **params)
-        except Exception as e:  # noqa
+        except Exception:  # noqa
+            Logger.error(traceback.format_exc(), show_notification=False)
             DomainEventBus.emit(ErrorRaisedEvent())
 
     def _find_matching_action(self, move_type: EncoderMoveEnum) -> Optional[EncoderAction]:

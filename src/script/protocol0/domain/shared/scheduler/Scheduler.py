@@ -65,5 +65,9 @@ class Scheduler(object):
 
     @classmethod
     def reset(cls) -> None:
+        # _INSTANCE may be None if Container construction failed before the
+        # Scheduler facade was set up, yet disconnect() still runs.
+        if cls._INSTANCE is None:
+            return
         cls._INSTANCE._tick_scheduler.stop()
         cls._INSTANCE._beat_scheduler.reset()

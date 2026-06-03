@@ -27,7 +27,7 @@ class MidiService(object):
         msg = [status, value]
         if value2:
             msg.append(value2)
-        Logger.info(f"MidiService sending : {message_type} {msg}")
+        Logger.dev(f"MidiService sending : {message_type} {msg}")
         midi_message = tuple(msg)
         self._send_midi(midi_message)
         DomainEventBus.emit(MidiBytesSentEvent(midi_message))
