@@ -66,11 +66,29 @@ def _key_name(key: object) -> Optional[str]:
     return None
 
 
+def _key_identity(key: object) -> object:
+    """Identité stable d'une touche pour le suivi enfoncé/relâché. On préfère le `vk`
+    (position physique, stable quel que soit le modificateur/layout) ; à défaut (touches
+    de fonction livrées comme Key.fN), le `name`. Dernier recours : l'objet lui-même."""
+    vk = getattr(key, "vk", None)
+    if vk is not None:
+        return vk
+    name = getattr(key, "name", None)
+    if name is not None:
+        return name
+    return key
+
+
 class ShortcutListener:
     def __init__(self, config: ShortcutConfig, on_action) -> None:
         self._config = config
         self._on_action = on_action
         self._pressed_modifiers: Set[str] = set()
+        # Touches non-modificatrices actuellement enfoncées (identifiées par leur id
+        # pynput). Sert à n'agir que sur le front montant : Windows répète on_press
+        # tant que la touche est tenue (auto-repeat), ce qui déclencherait l'action
+        # plusieurs fois pour une seule frappe.
+        self._held_keys: Set[object] = set()
         self._listener: Optional[keyboard.Listener] = None
 
     def start(self) -> None:
@@ -94,12 +112,20 @@ class ShortcutListener:
         if mod is not None:
             self._pressed_modifiers.add(mod)
             return
+        # Front montant uniquement : ignorer les on_press répétés par l'auto-repeat
+        # clavier tant que la touche reste tenue (sinon une frappe = N actions).
+        identity = _key_identity(key)
+        if identity in self._held_keys:
+            return
+        self._held_keys.add(identity)
         self._handle_main_key(key)
 
     def _on_release(self, key: object) -> None:
         mod = _MODIFIER_KEYS.get(key)
         if mod is not None:
             self._pressed_modifiers.discard(mod)
+            return
+        self._held_keys.discard(_key_identity(key))
 
     def _handle_main_key(self, key: object) -> None:
         name = _key_name(key)
