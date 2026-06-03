@@ -8,9 +8,10 @@ Spécifique Windows (ctypes/Win32). Isolé ici pour le futur portage macOS
 (équivalent : NSWorkspace.frontmostApplication).
 """
 import ctypes
+import os
 from ctypes import wintypes
 
-_ABLETON_EXE_SUBSTRING = "ableton live"
+from detector.process_check import matches_ableton
 
 _user32 = ctypes.windll.user32
 _kernel32 = ctypes.windll.kernel32
@@ -41,4 +42,6 @@ def _foreground_process_name() -> str:
 
 
 def ableton_is_foreground() -> bool:
-    return _ABLETON_EXE_SUBSTRING in _foreground_process_name().lower()
+    # _foreground_process_name renvoie un chemin complet (QueryFullProcessImageNameW) ->
+    # basename avant d'appliquer la règle de match partagée avec process_check.
+    return matches_ableton(os.path.basename(_foreground_process_name()))
