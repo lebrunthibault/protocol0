@@ -53,7 +53,9 @@
     <h1>Protocol&#8202;0 docs</h1>
     <p class="lead">Protocol&#8202;0 is a companion app for Ableton Live. It runs a global keyboard-shortcut manager that works across all your sets, so you can keymap custom actions — load a device by name, select a track, or anything the Live API exposes.</p>
 
-    <p>The system is two cooperating pieces: a background <strong>detector</strong> that watches the keyboard, and a <strong>remote script</strong> that lives inside Ableton and runs the actions. They talk to each other over a small localhost HTTP API. You don't have to think about any of that to use it — but it's all here if you want to script against it.</p>
+    <p>Ableton's keymapper is a basic, per-set, direct parameter mapping.<br>Protocol&#8202;0 is a global and smart keymapper.</p>
+
+    <p>The system is two cooperating pieces: a background <strong>agent</strong> that watches the keyboard and serves the configuration web UI, and a <strong>remote script</strong> that lives inside Ableton and runs the actions. They talk to each other over a small localhost HTTP API. You don't have to think about any of that to use it — but it's all here if you want to script against it.</p>
 
     <div class="doc-cards">
       <a class="card card--compact" href="/docs/installation.html">
@@ -80,7 +82,7 @@
       <tr><td>Supported host</td><td>Ableton Live 11 &amp; 12</td></tr>
       <tr><td>Operating system</td><td>Windows today; macOS planned</td></tr>
       <tr><td>Config file</td><td><code>%APPDATA%\Protocol0\shortcuts.json</code></td></tr>
-      <tr><td>Web UI</td><td><code>http://127.0.0.1:9000/shortcuts</code></td></tr>
+      <tr><td>Web UI</td><td><code>http://127.0.0.1:9010/shortcuts</code></td></tr>
       <tr><td>License</td><td>MIT</td></tr>
       <tr><td>Source</td><td><a class="link" href="https://github.com/lebrunthibault/protocol0" target="_blank" rel="noopener">github.com/lebrunthibault/protocol0</a></td></tr>
     </table>

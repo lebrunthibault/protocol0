@@ -80,20 +80,20 @@
     <h3>Shortcuts aren't firing</h3>
     <ol>
       <li>Make sure <strong>Ableton is the foreground window</strong>. Shortcuts are intentionally ignored everywhere else.</li>
-      <li>Confirm the binding exists in the web UI at <a class="link" href="http://127.0.0.1:9000/shortcuts" target="_blank" rel="noopener"><code>http://127.0.0.1:9000/shortcuts</code></a> — it should be in the bindings table.</li>
+      <li>Confirm the binding exists in the web UI at <a class="link" href="http://127.0.0.1:9010/shortcuts" target="_blank" rel="noopener"><code>http://127.0.0.1:9010/shortcuts</code></a> — it should be in the bindings table.</li>
       <li>Check the control surface is loaded: <strong>Preferences → MIDI → Control Surface → Protocol 0</strong>.</li>
-      <li>Check the detector log at <code>%APPDATA%\Protocol0\logs\detector.log</code> for the combo being recognized and the action call.</li>
+      <li>Check the agent log at <code>%APPDATA%\Protocol0\logs\agent.log</code> for the combo being recognized and the action call.</li>
     </ol>
 
     <h3>The web UI won't load</h3>
-    <p>The UI is served by the remote script <em>inside</em> Ableton, so:</p>
+    <p>The UI is served by the <strong>agent</strong> — the background app on your machine, not Ableton — so it works even with Live closed. If <a class="link" href="http://127.0.0.1:9010/shortcuts" target="_blank" rel="noopener"><code>http://127.0.0.1:9010/shortcuts</code></a> doesn't load:</p>
     <ul>
-      <li>Ableton must be running, with the <strong>Protocol 0</strong> control surface enabled.</li>
-      <li>If the page still doesn't load, confirm the remote script was copied into Live's <em>MIDI Remote Scripts</em> folder — reinstalling fixes a missing or partial copy.</li>
+      <li>Make sure the agent is running — its autostart task <code>Protocol0</code> should be in Task Scheduler. Reinstalling re-creates it.</li>
+      <li>Check the agent log at <code>%APPDATA%\Protocol0\logs\agent.log</code> for a startup error (e.g. port <code>9010</code> already in use).</li>
     </ul>
 
-    <h3>"Script HTTP failed" in the detector log</h3>
-    <p>The detector couldn't reach the in-Ableton API on port <code>9000</code>. Make sure Ableton is open and the control surface is enabled; then check the detector log for details.</p>
+    <h3>"Script HTTP failed" in the agent log</h3>
+    <p>The agent couldn't reach the in-Ableton action API. Make sure Ableton is open and the control surface is enabled; then check the agent log for details.</p>
 
     <h3>The installer can't find Ableton</h3>
     <p>If your Live install is in a non-standard location, the wizard offers a step to point at the <em>MIDI Remote Scripts</em> folder manually — typically:</p>
@@ -105,10 +105,10 @@
     <p>If it's missing, reinstalling re-creates it.</p>
 
     <h3>My bindings disappeared after reinstalling</h3>
-    <p>They shouldn't — bindings live in <code>%APPDATA%\Protocol0\shortcuts.json</code>, which installs and uninstalls leave alone. If the file got hand-edited into invalid JSON, the detector treats it as empty (no shortcuts) rather than crashing. Open the web UI and re-add the binding, or fix the JSON.</p>
+    <p>They shouldn't — bindings live in <code>%APPDATA%\Protocol0\shortcuts.json</code>, which installs and uninstalls leave alone. If the file got hand-edited into invalid JSON, the agent treats it as empty (no shortcuts) rather than crashing. Open the web UI and re-add the binding, or fix the JSON.</p>
 
     <h2>Still stuck?</h2>
-    <p>Open an issue on <a class="link" href="https://github.com/lebrunthibault/protocol0/issues" target="_blank" rel="noopener">GitHub</a> or <a class="link" href="/#contact">get in touch</a>. Including the relevant lines from <code>%APPDATA%\Protocol0\logs\detector.log</code> helps a lot.</p>
+    <p>Open an issue on <a class="link" href="https://github.com/lebrunthibault/protocol0/issues" target="_blank" rel="noopener">GitHub</a> or <a class="link" href="/#contact">get in touch</a>. Including the relevant lines from <code>%APPDATA%\Protocol0\logs\agent.log</code> helps a lot.</p>
 
     <div class="doc-nav">
       <a href="/docs/plugins.html">

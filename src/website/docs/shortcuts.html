@@ -54,14 +54,14 @@
     <p class="lead">A shortcut binds a key combo to an action. Bindings are global and persistent — set them once and they work in every set. The easiest way to manage them is the built-in web UI.</p>
 
     <h2>The web UI</h2>
-    <p>With Ableton running and the <strong>Protocol 0</strong> control surface enabled (see <a class="link" href="/docs/installation.html">Installation</a>), open:</p>
-    <pre><code>http://127.0.0.1:9000/shortcuts</code></pre>
-    <p>The page is connected directly to Ableton. From there you can:</p>
+    <p>The UI is served by the <strong>agent</strong>, the background app on your machine — so it's reachable even with Ableton closed. Open:</p>
+    <pre><code>http://127.0.0.1:9010/shortcuts</code></pre>
+    <p>From there you can:</p>
     <ul>
-      <li>Pick an <strong>action</strong> from the dropdown (the list is discovered from Live automatically).</li>
+      <li>Pick an <strong>action</strong> from the dropdown.</li>
       <li>Click the <strong>key-capture box</strong> and press your combo — it's canonicalized for you.</li>
       <li>Fill any <strong>parameters</strong> the action needs (e.g. a device name).</li>
-      <li>Save the binding — it takes effect immediately.</li>
+      <li>Save the binding — it takes effect immediately (the agent reloads the config on change).</li>
     </ul>
 
     <h2>Combo format</h2>
@@ -93,7 +93,7 @@ alt+l</code></pre>
     </div>
 
     <h2>Where the config lives</h2>
-    <p>All bindings are stored in a single JSON file, shared by the detector and the remote script:</p>
+    <p>All bindings are stored in a single JSON file, owned by the agent (written from the web UI, read by its keyboard listener):</p>
     <pre><code>%APPDATA%\Protocol0\shortcuts.json</code></pre>
     <p>The web UI writes it for you, but it's plain JSON if you want to inspect it. The shape is a versioned envelope:</p>
     <pre><code>{

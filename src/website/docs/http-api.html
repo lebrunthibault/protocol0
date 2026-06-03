@@ -51,20 +51,20 @@
   <article class="docs-article">
     <div class="label-accent">Reference</div>
     <h1>HTTP API</h1>
-    <p class="lead">The remote script inside Ableton runs a tiny localhost HTTP server. It's how the keyboard detector triggers actions — and it's open for you to call from a Stream Deck, a script, or any external gear. Think of it as an OSC-like control surface over plain HTTP.</p>
+    <p class="lead">The remote script inside Ableton runs a tiny localhost HTTP server. It's how the agent triggers actions on a keypress — and it's open for you to call from a Stream Deck, a script, or any external gear. Think of it as an OSC-like control surface over plain HTTP.</p>
 
     <h2>Base URL</h2>
     <pre><code>http://127.0.0.1:9000</code></pre>
     <ul>
       <li><strong>Localhost only.</strong> The server binds to <code>127.0.0.1</code>, so it's never reachable from the network — your data stays on the machine.</li>
-      <li><strong>Port <code>9000</code>.</strong></li>
+      <li><strong>Port <code>9000</code> by default, but dynamic.</strong> If <code>9000</code> is taken, the script picks another free port and publishes the effective one in <code>%APPDATA%\Protocol0\runtime.json</code>. Read that file if you need the exact URL.</li>
       <li><strong>GET-only.</strong> Every endpoint is a <code>GET</code>; mutations pass their arguments as query parameters. This keeps callers (and Stream Deck buttons) trivially simple.</li>
-      <li>Available whenever Ableton is open with the <strong>Protocol 0</strong> control surface enabled.</li>
+      <li>Available whenever Ableton is open with the <strong>Protocol 0</strong> control surface enabled — it lives and dies with Ableton.</li>
     </ul>
 
     <div class="note">
       <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-      <p>Visit <a class="link" href="http://127.0.0.1:9000/" target="_blank" rel="noopener"><code>http://127.0.0.1:9000/</code></a> in a browser for a live index of every registered endpoint, its parameters, and its description.</p>
+      <p>Visit <a class="link" href="http://127.0.0.1:9000/" target="_blank" rel="noopener"><code>http://127.0.0.1:9000/</code></a> in a browser for a live index of every registered endpoint, its parameters, and its description (use the port from <code>runtime.json</code> if the script isn't on <code>9000</code>).</p>
     </div>
 
     <h2>Responses</h2>
@@ -104,27 +104,8 @@
       <p>Some routes exist but aren't yet exposed in the shortcut catalog the web UI shows. They're still callable directly over HTTP. The set of routes grows over time — the live index at <code>/</code> is always the source of truth.</p>
     </div>
 
-    <h2>Shortcut-management endpoints</h2>
-    <p>The web UI is built on these — you can use them to manage bindings programmatically too.</p>
-
-    <table>
-      <tr><th>Endpoint</th><th>Returns</th></tr>
-      <tr><td><code>GET /shortcuts</code></td><td>The HTML configuration UI</td></tr>
-      <tr><td><code>GET /actions</code></td><td>JSON list of discoverable actions and their parameters</td></tr>
-      <tr><td><code>GET /shortcuts/list</code></td><td>JSON list of the current bindings</td></tr>
-      <tr><td><code>GET /shortcuts/add?combo=&amp;action=&amp;params=</code></td><td>Adds or replaces a binding</td></tr>
-    </table>
-
-    <h3>Adding a binding</h3>
-    <pre><code>GET /shortcuts/add?combo=&lt;str&gt;&amp;action=&lt;str&gt;&amp;params=&lt;json&gt;</code></pre>
-    <ul>
-      <li><code>combo</code> — canonical combo, e.g. <code>ctrl+alt+e</code></li>
-      <li><code>action</code> — action name, e.g. <code>load_device</code></li>
-      <li><code>params</code> — URL-encoded JSON object (defaults to <code>{}</code>)</li>
-    </ul>
-    <pre><code># Bind Ctrl+Alt+E to load EQ Eight
-GET /shortcuts/add?combo=ctrl%2Balt%2Be&amp;action=load_device&amp;params=%7B%22name%22%3A%22EQ%20Eight%22%7D</code></pre>
-    <p>The unencoded <code>params</code> there is <code>{"name":"EQ Eight"}</code>.</p>
+    <h2>Managing bindings</h2>
+    <p>Shortcut bindings are <strong>not</strong> managed through the script. They're owned by the <strong>agent</strong>, which serves the <a class="link" href="/docs/shortcuts.html">configuration web UI</a> and a small <code>/api</code> on <code>http://127.0.0.1:9010</code> — separate from the action API documented here. The agent stays up independently of Ableton, so you can edit bindings even with Live closed. To manage shortcuts, use the web UI; to drive Live directly, call the action endpoints above.</p>
 
     <h2>Example: a Stream Deck button</h2>
     <p>Point any "open URL" / "website" button at an action endpoint:</p>

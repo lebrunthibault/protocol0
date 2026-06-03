@@ -76,9 +76,9 @@
     <p>The installer does three things:</p>
     <table>
       <tr><th>Component</th><th>Where it goes</th><th>What it is</th></tr>
-      <tr><td>Detector</td><td><code>C:\Program Files\Protocol0\</code></td><td>The background app that watches your keyboard.</td></tr>
+      <tr><td>Agent</td><td><code>C:\Program Files\Protocol0\</code></td><td>The background app that watches your keyboard and serves the configuration web UI.</td></tr>
       <tr><td>Remote script</td><td>Your Live <code>MIDI Remote Scripts\Protocol_0</code> folder</td><td>The control surface that runs inside Ableton and executes actions.</td></tr>
-      <tr><td>Autostart task</td><td>Windows Task Scheduler (<code>Protocol0</code>)</td><td>Launches the detector silently at login, restarting it if it crashes.</td></tr>
+      <tr><td>Autostart task</td><td>Windows Task Scheduler (<code>Protocol0</code>)</td><td>Launches the agent silently at login, restarting it if it crashes.</td></tr>
     </table>
 
     <h2>Enable the control surface in Live</h2>
@@ -88,23 +88,23 @@
       <li>Go to <strong>Preferences → Link / Tempo / MIDI</strong> (or <strong>MIDI</strong> on Live&nbsp;12).</li>
       <li>Under <strong>Control Surface</strong>, select <strong>Protocol 0</strong> from the dropdown.</li>
     </ol>
-    <p>Once selected, the in-Ableton HTTP server starts and the <a class="link" href="/docs/shortcuts.html">web UI</a> becomes reachable.</p>
+    <p>Once selected, the in-Ableton HTTP server starts and shortcuts begin firing. (The <a class="link" href="/docs/shortcuts.html">web UI</a> itself is served by the agent and is reachable even before this step — see below.)</p>
 
     <h2>Confirm it's running</h2>
     <ul>
-      <li><strong>Detector:</strong> the autostart task <code>Protocol0</code> appears in Task Scheduler. You can also check the log at <code>%APPDATA%\Protocol0\logs\detector.log</code>.</li>
-      <li><strong>Remote script:</strong> with Live open and the control surface enabled, visit <a class="link" href="http://127.0.0.1:9000/shortcuts" target="_blank" rel="noopener"><code>http://127.0.0.1:9000/shortcuts</code></a> — the configuration UI should load.</li>
+      <li><strong>Agent:</strong> the autostart task <code>Protocol0</code> appears in Task Scheduler. Visit <a class="link" href="http://127.0.0.1:9010/shortcuts" target="_blank" rel="noopener"><code>http://127.0.0.1:9010/shortcuts</code></a> — the configuration UI should load even with Ableton closed. You can also check the log at <code>%APPDATA%\Protocol0\logs\agent.log</code>.</li>
+      <li><strong>Remote script:</strong> with Live open and the control surface enabled, press one of your bound combos with Ableton focused — the action should fire.</li>
     </ul>
 
     <h2>Updating</h2>
     <p>Download a newer <code>Protocol0-Setup-&lt;version&gt;.exe</code> from the releases page and run it over your existing install. Your shortcut bindings live in <code>%APPDATA%\Protocol0\shortcuts.json</code> and are <strong>not</strong> touched by reinstalls or uninstalls.</p>
 
     <h2>Uninstalling</h2>
-    <p>Use <strong>Add or Remove Programs</strong> in Windows. The uninstaller removes the detector, the autostart task, and the remote script from Live. Your <code>shortcuts.json</code> config is kept, so reinstalling restores your bindings.</p>
+    <p>Use <strong>Add or Remove Programs</strong> in Windows. The uninstaller removes the agent, the autostart task, and the remote script from Live. Your <code>shortcuts.json</code> config is kept, so reinstalling restores your bindings.</p>
 
     <div class="note">
       <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
-      <p>Want to run from source instead of the installer? See the <a class="link" href="https://github.com/lebrunthibault/protocol0#readme" target="_blank" rel="noopener">README</a> for the developer setup (<code>make bootstrap</code>, <code>make detector</code>, <code>make install</code>).</p>
+      <p>Want to run from source instead of the installer? See the <a class="link" href="https://github.com/lebrunthibault/protocol0#readme" target="_blank" rel="noopener">README</a> for the developer setup (<code>make bootstrap</code>, <code>make agent</code>, <code>make install</code>).</p>
     </div>
 
     <div class="doc-nav">

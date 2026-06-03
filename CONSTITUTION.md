@@ -50,36 +50,52 @@ Live's native key mapping is too limited on two axes:
   from the configuration frontend.
 - **Live API** — the action runs through the Ableton API, on the Live thread.
 
+Key detection, binding resolution and the configuration frontend all live in the
+**agent**; only the final action call crosses into the script inside Live.
+
 ## 2. Architecture choices
 
 The important technical decisions, kept deliberately simple. Implementation
 details live in `docs/specs/`.
 
-### Hotkey detection runs in a separate local process (the detector)
+### A standalone agent owns key detection and the configuration frontend
 
-Key detection lives in a **dedicated local process — the *detector*** — not in
-the remote script. It **cannot** be script-only: Ableton's embedded Python is a
-restricted runtime that cannot host a global keyboard hook (a prototype spike
-confirmed this and it is settled). The detector runs under a normal system
-Python, watches the keyboard, and — **only when Ableton is the foreground
-window** — resolves the binding and calls the script's HTTP API. It stays neutral
-toward keys it doesn't handle and survives logon as a background process.
+Everything outside Live lives in a **single standalone process — the *agent***,
+which runs under a normal system Python and survives logon as a background
+process. It owns two things:
 
-### The remote script exposes an HTTP API and serves the config frontend
+1. **Key detection.** The agent hosts the global keyboard hook. This **cannot** be
+   script-only: Ableton's embedded Python is a restricted runtime that cannot host
+   a global keyboard hook (a prototype spike confirmed this and it is settled). The
+   agent watches the keyboard and — **only when Ableton is the foreground
+   window** — resolves the binding and calls the script's action API. It stays
+   neutral toward keys it doesn't handle.
+2. **The configuration frontend and its API.** The agent serves a web app (the
+   keymapper UI) and the `/api` that reads and writes the bindings, on a fixed
+   `127.0.0.1:9010`. Because the agent is **always up — independent of Ableton** —
+   you can edit your shortcuts without Live even running. Configuration stays
+   **local and offline**, with no dependency on the cloud.
 
-The remote script runs **inside Ableton** and exposes an HTTP API on
-`127.0.0.1:9000`. It also **serves the configuration frontend** from there: the
-user enters a key combination, picks an action, parameterizes it, and persists
-the binding. Serving it from the script keeps configuration reachable **locally
-and offline**, with no dependency on the cloud or on the detector being up.
+This is a deliberate shift: detection *and* configuration sit in the same
+always-on process, and Ableton is needed only to *trigger* actions, never to
+*edit* them. (The frontend used to be served by the script inside Live and died
+with it; it now lives in the agent.)
+
+### The remote script exposes an action API inside Live
+
+The remote script runs **inside Ableton** and exposes an HTTP API — a `/health`
+check, an index, and the **action routes** (`/device/load`, `/track/select`, …)
+that drive Live through the LOM. Its port is **dynamic** (advertised via
+`runtime.json`), and it lives and dies with Ableton. The agent is its only caller:
+on a matched keypress, the agent looks up the script's URL and invokes the action.
 
 ### Bindings are global
 
 Shortcut → action bindings are stored in **a single configuration at the
-machine/user level** (`%APPDATA%\Protocol0\shortcuts.json`), shared by the script
-(writer) and the detector (reader), identical across all sets — never attached to
-a set. This is the core value over the native manager: *the same shortcuts
-everywhere*.
+machine/user level** (`%APPDATA%\Protocol0\shortcuts.json`), owned by the agent —
+written from its frontend, read by its keyboard listener (reloaded on file
+change). Identical across all sets, never attached to a set. This is the core
+value over the native manager: *the same shortcuts everywhere*.
 
 ### Actions form a discoverable catalog
 
@@ -102,14 +118,14 @@ to edit a central list. The *how* lives in [`docs/plugins.md`](docs/plugins.md).
 ### Windows-first
 
 The project is built and run **on Windows**, and the packaging reflects that. The
-detector ships as a Windows executable, autostarts through a **Scheduled Task**,
+agent ships as a Windows executable, autostarts through a **Scheduled Task**,
 and is packaged by a Windows installer — the PowerShell that does this lives under
 `scripts/windows/`. Day-to-day developer setup is deliberately kept off that path:
 the dev entry points (`make bootstrap`/`install`) dispatch to **stdlib-only,
 cross-platform Python**, so a fresh checkout sets up on Windows *or* macOS. This is
 a practical consequence of the environment Protocol0 lives in — Ableton Live on the
 author's machine — not a rejection of other platforms. The architecture itself
-(HTTP boundary, global config, detector/script split) is portable; macOS support
+(HTTP boundary, global config, agent/script split) is portable; macOS support
 is tracked in `docs/specs/backlog/` and would replace the platform-specific
 packaging and autostart layer, not the core design.
 
@@ -117,10 +133,11 @@ packaging and autostart layer, not the core design.
 
 The architecture settles into two distinct pieces, each with a different home:
 
-1. **The remote script** — runs inside Ableton; serves the frontend and executes
-   actions via the Live API. Constrained Python: **stdlib-only**.
-2. **The local detector** — a separate process on the user's machine that owns the
-   keyboard hook and calls the script's `:9000` API. Normal system Python.
+1. **The agent** — an always-on process on the user's machine. It owns the keyboard
+   hook, serves the configuration frontend and its `/api` on a fixed `:9010`, and
+   calls the script's action API on a matched keypress. Normal system Python.
+2. **The remote script** — runs inside Ableton; exposes the action API and executes
+   actions via the Live API on a dynamic port. Constrained Python: **stdlib-only**.
 
 ### Guiding principles
 
@@ -143,19 +160,20 @@ Two ways to install and run Protocol0.
 
 1. Download `Protocol0-Setup-<version>.exe` from the project's **GitHub
    Releases**.
-2. Run it. The installer deploys the **detector** executable, copies the **remote
+2. Run it. The installer deploys the **agent** executable, copies the **remote
    script** into Ableton's MIDI Remote Scripts folder, and registers a **Scheduled
-   Task** so the detector autostarts at logon.
+   Task** so the agent autostarts at logon.
    - Windows SmartScreen will warn on first run — the installer is **currently
      unsigned** (code signing is on the backlog). Choose *More info → Run anyway*.
-3. Configure shortcuts at **`http://127.0.0.1:9000/shortcuts`**.
+3. Configure shortcuts at **`http://127.0.0.1:9010/shortcuts`** (works even with
+   Ableton closed — the agent is always up).
 
 ### Local / from source (developers)
 
-- Run the detector in a terminal (live logs, Ctrl+C to stop):
+- Run the agent in a terminal (live logs, Ctrl+C to stop):
 
   ```sh
-  make detector
+  make agent
   ```
 
 - First-time setup (both poetry envs + install the remote script into Ableton):
@@ -165,7 +183,7 @@ Two ways to install and run Protocol0.
   make install     # redeploy just the remote script after editing it
   ```
 
-- Config UI: `http://127.0.0.1:9000/shortcuts`. Logs: `%APPDATA%\Protocol0\logs\`.
+- Config UI: `http://127.0.0.1:9010/shortcuts`. Logs: `%APPDATA%\Protocol0\logs\`.
 
 ## 4. Roadmap
 
