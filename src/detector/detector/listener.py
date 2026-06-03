@@ -137,7 +137,7 @@ class ShortcutListener:
         if binding is None:
             return
         if not ableton_is_foreground():
-            logger.info("combo %s ignored (Ableton not foreground)" % combo)
+            logger.debug("combo %s ignored (Ableton not foreground)" % combo)
             return
         logger.info("combo %s -> %s %s" % (combo, binding.action, binding.params))
         try:
