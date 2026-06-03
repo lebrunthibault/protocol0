@@ -1,0 +1,7 @@
+{
+    "name": "protocol-0",
+    "author": "Thibault Lebrun",
+    "entry": "dist/extension.js",
+    "version": "1.0.0",
+    "minimumApiVersion": "1.0.0"
+}
