@@ -66,7 +66,7 @@
     <h2>What a plugin does</h2>
     <ul>
       <li><strong>React to events.</strong> Declare a map of <em>event&nbsp;→&nbsp;handler</em>; the script subscribes and unsubscribes for you.</li>
-      <li><strong>Expose actions.</strong> A <code>@route</code> function becomes an HTTP endpoint listed on the script index and callable from a shortcut or external tool.</li>
+      <li><strong>Expose actions.</strong> An <code>@api_route</code> function becomes an HTTP endpoint under <code>/api</code>, shown in the Swagger UI and callable from a shortcut or external tool.</li>
     </ul>
 
     <h2>Where plugins live</h2>
@@ -110,12 +110,12 @@ class MyPlugin(PluginInterface):
     <p>The full list is every <code>*Event.py</code> under <code>protocol0/domain/</code>.</p>
 
     <h2>Adding an action</h2>
-    <p>An action is a <code>@route</code> function — exactly like the built-in ones (<code>/device/load</code>, …). It shows up on the <a class="link" href="/docs/http-api.html">script index</a> and is callable over HTTP.</p>
-    <pre><code>from protocol0.application.http.Router import route
+    <p>An action is an <code>@api_route</code> function — exactly like the built-in ones (<code>/api/device/load</code>, …). It shows up in the <a class="link" href="/docs/http-api.html">Swagger UI</a> at <code>/docs</code> and is callable over HTTP. Mutations are <code>POST</code> (arguments in a JSON body); reads are <code>GET</code>.</p>
+    <pre><code>from protocol0.application.http.Router import api_route
 
-@route("GET", "/my_plugin/do_thing")
+@api_route("POST", "/my_plugin/do_thing")  # registers /api/my_plugin/do_thing
 def do_thing(name: str) -> None:
-    """Short docstring — shown as the action's label on the index."""
+    """Short docstring — shown as the action's summary in the Swagger UI."""
     ...
 
 class MyPlugin(PluginInterface):
@@ -123,7 +123,7 @@ class MyPlugin(PluginInterface):
 
     def register_actions(self):
         return [do_thing]</code></pre>
-    <p>Query params are coerced from the signature (<code>name: str</code>, <code>count: int</code>, <code>flag: bool</code>); the return type drives the response (nothing → fire-and-forget, <code>str</code> → HTML, dict/list → JSON). The handler runs on Live's thread, so calling the Live API from it is safe.</p>
+    <p>Arguments are coerced from the signature (<code>name: str</code>, <code>count: int</code>, <code>flag: bool</code>) — from the query string for <code>GET</code>, from the JSON body for <code>POST</code>; the return type drives the response (nothing → fire-and-forget, dict/list → JSON). The handler runs on Live's thread, so calling the Live API from it is safe.</p>
 
     <h2>Constraints</h2>
     <ul>

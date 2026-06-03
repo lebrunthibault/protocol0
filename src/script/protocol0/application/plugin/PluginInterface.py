@@ -41,12 +41,12 @@ class PluginInterface(object):
         return {}
 
     def register_actions(self) -> List[Callable]:
-        """Return ``@route``-decorated functions to expose as catalog actions.
+        """Return ``@api_route``-decorated functions to expose as catalog actions.
 
         Returning a route makes it assignable to a keyboard shortcut, exactly
         like the core actions under ``application/http/routes/``::
 
             def register_actions(self):
-                return [say_hello]  # say_hello is decorated with @route(...)
+                return [say_hello]  # say_hello is decorated with @api_route(...)
         """
         return []

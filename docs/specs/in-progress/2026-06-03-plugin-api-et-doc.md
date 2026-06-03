@@ -14,9 +14,11 @@ sous-documenté** :
   rien dans l'interface plugin ne dit « voici les routes que j'ajoute ».
   (Contexte : le `ActionCatalog`/allow-list `/actions` du script a été
   **supprimé** au commit `fac73a57` — l'agent SPA détient désormais la GUI
-  keymapper ; le script ne garde que `/health`, `/`, et ses routes d'action.
-  Une action de plugin est donc simplement une **route HTTP**, visible sur
-  l'index `/` via `get_routes()` et appelée par l'agent au keypress.)
+  keymapper ; le script ne garde que `/api/health`, `/docs`, et ses routes
+  d'action sous `/api`. Une action de plugin est donc simplement une **route
+  HTTP** (`@api_route`), visible dans la Swagger UI `/docs` / `/openapi.json`
+  via `get_routes()` et appelée par l'agent au keypress. Cf. spec
+  `2026-06-04-script-rest-api-and-swagger.md`.)
 - Le seul plugin existant (`LiveSetPlugin`) est **entièrement hardcodé** au set
   perso de l'auteur (BASS/SYNTH/PIANO/VOCALS) — il n'illustre pas une création
   de plugin générique.
@@ -36,7 +38,7 @@ enregistrement d'actions), puis **documenter** l'extensibilité dans
 |---|---|
 | `BeetsPlugin` base class | `PluginInterface` enrichie |
 | `register_listener(event, fn)` | `register_listeners()` → câblé sur le `DomainEventBus` existant |
-| `commands()` (sous-commandes CLI) | `register_actions()` → routes `@route` exposées sur l'index `/` |
+| `commands()` (sous-commandes CLI) | `register_actions()` → routes `@api_route` exposées dans `/docs` (Swagger) |
 | `config['plugin']` | **Hors lot** — délégué au spec `2026-06-02-script-settings-json.md` |
 
 On garde la contrainte **stdlib-only** (Ableton, cf. `CONSTITUTION.md §2`) : pas
@@ -64,8 +66,10 @@ de nouvelle dépendance, le mécanisme reste de l'introspection + le
    (`PluginLoader.load_and_start` s'exécute **avant** `HttpServer.start`, mais le
    registre `_ROUTES` est global donc l'ordre n'impacte pas le dispatch).
 4. Pas de dépendance à un catalogue (il n'existe plus côté script) : une action
-   de plugin est une route HTTP, découvrable sur l'index `/` comme les routes
-   core.
+   de plugin est une route HTTP, découvrable dans la Swagger UI `/docs` /
+   `/openapi.json` comme les routes core. (NB : l'index HTML `/` a été remplacé
+   par la doc OpenAPI — cf. spec `2026-06-04-script-rest-api-and-swagger.md` ;
+   les `@route` deviennent `@api_route`.)
 5. Un **plugin d'exemple générique** (`plugins/example/ExamplePlugin.py`) sert de
    template documenté, **désactivé par défaut** (`should_start()` → `False`) pour
    ne pas polluer l'usage réel.

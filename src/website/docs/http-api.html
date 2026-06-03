@@ -51,27 +51,26 @@
   <article class="docs-article">
     <div class="label-accent">Reference</div>
     <h1>HTTP API</h1>
-    <p class="lead">The remote script inside Ableton runs a tiny localhost HTTP server. It's how the agent triggers actions on a keypress — and it's open for you to call from a Stream Deck, a script, or any external gear. Think of it as an OSC-like control surface over plain HTTP.</p>
+    <p class="lead">The remote script inside Ableton runs a tiny localhost HTTP server — a real REST API under <code>/api</code>. It's how the agent triggers actions on a keypress, and it's open for you to call from a script or any tool that can issue HTTP requests. It even ships its own interactive Swagger UI.</p>
 
     <h2>Base URL</h2>
     <pre><code>http://127.0.0.1:9000</code></pre>
     <ul>
       <li><strong>Localhost only.</strong> The server binds to <code>127.0.0.1</code>, so it's never reachable from the network — your data stays on the machine.</li>
       <li><strong>Port <code>9000</code> by default, but dynamic.</strong> If <code>9000</code> is taken, the script picks another free port and publishes the effective one in <code>%APPDATA%\Protocol0\runtime.json</code>. Read that file if you need the exact URL.</li>
-      <li><strong>GET-only.</strong> Every endpoint is a <code>GET</code>; mutations pass their arguments as query parameters. This keeps callers (and Stream Deck buttons) trivially simple.</li>
+      <li><strong>REST under <code>/api</code>.</strong> Reads are <code>GET</code>; mutations are <code>POST</code> with a JSON body. (Earlier versions exposed everything as <code>GET</code> at the root — that has moved.)</li>
       <li>Available whenever Ableton is open with the <strong>Protocol 0</strong> control surface enabled — it lives and dies with Ableton.</li>
     </ul>
 
     <div class="note">
       <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-      <p>Visit <a class="link" href="http://127.0.0.1:9000/" target="_blank" rel="noopener"><code>http://127.0.0.1:9000/</code></a> in a browser for a live index of every registered endpoint, its parameters, and its description (use the port from <code>runtime.json</code> if the script isn't on <code>9000</code>).</p>
+      <p>Open <a class="link" href="http://127.0.0.1:9000/docs" target="_blank" rel="noopener"><code>http://127.0.0.1:9000/docs</code></a> in a browser for an interactive <strong>Swagger UI</strong> listing every endpoint, its parameters, and its description — generated live from the running script (the machine-readable spec is at <code>/openapi.json</code>). Use the port from <code>runtime.json</code> if the script isn't on <code>9000</code>. Visiting <code>/</code> redirects there.</p>
     </div>
 
     <h2>Responses</h2>
     <table>
       <tr><th>Handler returns</th><th>Response</th></tr>
       <tr><td>An object / list</td><td><code>application/json</code></td></tr>
-      <tr><td>Text</td><td><code>text/html</code></td></tr>
       <tr><td>Nothing</td><td><code>200 OK</code>, no body (fire-and-forget)</td></tr>
     </table>
     <p>Error codes:</p>
@@ -84,33 +83,42 @@
     </table>
 
     <h2>Action endpoints</h2>
-    <p>These drive Live directly. They're the same calls a keyboard shortcut makes under the hood.</p>
+    <p>These drive Live directly. They're the same calls a keyboard shortcut makes under the hood. Mutations are <code>POST</code> with a JSON body.</p>
 
     <h3>Load a device</h3>
-    <pre><code>GET /device/load?name=&lt;str&gt;</code></pre>
+    <pre><code>POST /api/device/load     { "name": "&lt;str&gt;" }</code></pre>
     <p>Loads a device (instrument or audio effect) by name onto the selected track.</p>
-    <pre><code>GET /device/load?name=EQ%20Eight</code></pre>
+    <pre><code>curl -X POST http://127.0.0.1:9000/api/device/load \
+     -H "Content-Type: application/json" \
+     -d '{"name": "EQ Eight"}'</code></pre>
 
     <h3>Select a track</h3>
-    <pre><code>GET /track/select?name=&lt;str&gt;</code></pre>
-    <p>Selects a track by name. Pass <code>name=master</code> to select the master track.</p>
+    <pre><code>POST /api/track/select    { "name": "&lt;str&gt;" }</code></pre>
+    <p>Selects a track by name. Pass <code>"name": "master"</code> to select the master track.</p>
 
     <h3>Stop following the playhead</h3>
-    <pre><code>GET /song/toggle_follow</code></pre>
+    <pre><code>POST /api/song/toggle_follow</code></pre>
     <p>Stops Live from following the playhead in the arrangement view.</p>
+
+    <h3>Read the set state</h3>
+    <pre><code>GET /api/set/get_state</code></pre>
+    <p>Returns the full serialized state of the current Ableton set as JSON. This one is a read, so it's a <code>GET</code>.</p>
 
     <div class="note">
       <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-      <p>Some routes exist but aren't yet exposed in the shortcut catalog the web UI shows. They're still callable directly over HTTP. The set of routes grows over time — the live index at <code>/</code> is always the source of truth.</p>
+      <p>Some routes exist but aren't yet exposed in the shortcut catalog the web UI shows. They're still callable directly over HTTP. The set of routes grows over time — the live Swagger UI at <code>/docs</code> is always the source of truth.</p>
     </div>
 
     <h2>Managing bindings</h2>
     <p>Shortcut bindings are <strong>not</strong> managed through the script. They're owned by the <strong>agent</strong>, which serves the <a class="link" href="/docs/shortcuts.html">configuration web UI</a> and a small <code>/api</code> on <code>http://127.0.0.1:9010</code> — separate from the action API documented here. The agent stays up independently of Ableton, so you can edit bindings even with Live closed. To manage shortcuts, use the web UI; to drive Live directly, call the action endpoints above.</p>
 
-    <h2>Example: a Stream Deck button</h2>
-    <p>Point any "open URL" / "website" button at an action endpoint:</p>
-    <pre><code>http://127.0.0.1:9000/device/load?name=Utility</code></pre>
-    <p>Pressing the button loads a Utility device onto the selected track — no keyboard shortcut required.</p>
+    <h2>Example: driving it from external gear</h2>
+    <p>Any tool that can send an HTTP <code>POST</code> can trigger an action. For a Stream Deck, use a plugin that issues an HTTP request (a plain "open URL" button only does <code>GET</code>, which no longer triggers mutations):</p>
+    <pre><code>POST http://127.0.0.1:9000/api/device/load
+Content-Type: application/json
+
+{"name": "Utility"}</code></pre>
+    <p>That loads a Utility device onto the selected track — no keyboard shortcut required.</p>
 
     <div class="doc-nav">
       <a href="/docs/shortcuts.html">

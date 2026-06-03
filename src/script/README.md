@@ -10,9 +10,10 @@ The script can be used either with a midi controller (I'm using a Faderfox EC4) 
 
 ## Architecture
 - The script answers to midi cc and note messages. Originally I was reaching it only using my Faderfox EC4
-- The script also exposes its own HTTP server so anything on the machine can drive it without going
-  through MIDI — typically keyboard shortcuts (AHK) that hit a URL like
-  `http://127.0.0.1:9000/track/select?name=kick`.
+- The script also exposes its own HTTP server (a REST API under `/api`, with a
+  Swagger UI at `/docs`) so anything on the machine can drive it without going
+  through MIDI — typically keyboard shortcuts that POST to a route like
+  `http://127.0.0.1:9000/api/track/select` with `{"name": "kick"}`.
 - The script also acts as an HTTP client (via `BackendClient`): it can call out to
   a local HTTP backend for things the Ableton-bundled python interpreter can't do
   (spawn processes, win32 apis, mouse/keyboard, …). That backend has been extracted

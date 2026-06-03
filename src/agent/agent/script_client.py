@@ -43,14 +43,16 @@ class ScriptClient:
             if not name:
                 logger.warning("load_device binding without 'name' param")
                 return
-            self._get(base_url, "/device/load", {"name": name})
+            # Mutation -> POST sous /api (l'API du script est une vraie API REST :
+            # GET en lecture, POST en mutation). Les args passent en body JSON.
+            self._post(base_url, "/api/device/load", {"name": name})
         else:
             logger.warning("unknown action: %s" % binding.action)
 
-    def _get(self, base_url: str, path: str, params: dict) -> None:
+    def _post(self, base_url: str, path: str, body: dict) -> None:
         url = base_url + path
         try:
-            r = self._session.get(url, params=params, timeout=5)
+            r = self._session.post(url, json=body, timeout=5)
             r.raise_for_status()
         except requests.RequestException as e:
             logger.warning("script HTTP %s failed: %s" % (path, e))

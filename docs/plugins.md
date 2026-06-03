@@ -45,7 +45,7 @@ class PluginInterface:
     def start(self) -> None: ...                 # optional one-time setup
     def stop(self) -> None: ...                  # optional teardown
     def register_listeners(self) -> Dict[Type, Callable]: ...   # event -> handler
-    def register_actions(self) -> List[Callable]: ...           # @route functions
+    def register_actions(self) -> List[Callable]: ...           # @api_route functions
 ```
 
 Everything except `name` is optional. A purely declarative plugin only
@@ -111,21 +111,23 @@ event type, not to a string name.
 
 ## Adding an action
 
-An **action** is a function decorated with `@route` — exactly like the script's
-built-in actions (`/device/load`, `/track/select`, …). It becomes an HTTP
-endpoint listed on the script index at <http://127.0.0.1:9000/> and callable by
-the agent at keypress time (or by any tool — see the
+An **action** is a function decorated with `@api_route` — exactly like the
+script's built-in actions (`/api/device/load`, `/api/track/select`, …). It becomes
+an HTTP endpoint under `/api`, shown in the Swagger UI at
+<http://127.0.0.1:9000/docs> (and in `/openapi.json`), and callable by the agent
+at keypress time (or by any tool — see the
 [HTTP API docs](https://www.protocol0.live/docs/http-api.html)).
 
-Declare your routes from `register_actions()` so the loader logs them and the
-intent is explicit:
+Mutations are `POST` (the action takes its arguments as a JSON body); pure reads
+are `GET`. Declare your routes from `register_actions()` so the loader logs them
+and the intent is explicit:
 
 ```python
-from protocol0.application.http.Router import route
+from protocol0.application.http.Router import api_route
 
-@route("GET", "/my_plugin/do_thing")
+@api_route("POST", "/my_plugin/do_thing")
 def do_thing(name: str) -> None:
-    """Short docstring — shown as the action's label on the index."""
+    """Short docstring — shown as the action's summary in the Swagger UI."""
     get_container().get(SomeService).do_thing(name)
 
 class MyPlugin(PluginInterface):
@@ -135,13 +137,16 @@ class MyPlugin(PluginInterface):
         return [do_thing]
 ```
 
+`@api_route("POST", "/my_plugin/do_thing")` registers the route at
+`/api/my_plugin/do_thing` — the `/api` prefix is added for you.
+
 Notes on routes (handled by `application/http/Router.py`, unchanged by plugins):
 
-- **Query params are coerced** from the function signature: `name: str`,
+- **Arguments are coerced** from the function signature: `name: str`,
   `count: int`, `flag: bool`. A parameter without a default is required (→ `400`
-  if missing).
+  if missing). `GET` reads them from the query string; `POST` from the JSON body.
 - **Return type drives the response.** Return `None` → fire-and-forget `200`.
-  Return a `str` → `text/html`. Return a dict/list → `application/json`.
+  Return a dict/list → `application/json`.
 - The handler runs **on Live's thread** via the HTTP bridge — safe to call the
   Live API from inside it.
 
@@ -170,5 +175,5 @@ make install     # copies the remote script into Ableton's Remote Scripts
 ```
 
 Then check `%APPDATA%\Protocol0\logs\` for `Plugin <name> started`, open
-<http://127.0.0.1:9000/> to see your action listed, and trigger your event to
-confirm the listener fires.
+<http://127.0.0.1:9000/docs> to see your action listed in the Swagger UI, and
+trigger your event to confirm the listener fires.

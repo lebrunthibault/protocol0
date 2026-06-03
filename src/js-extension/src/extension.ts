@@ -11,9 +11,9 @@ import bundledInterface from "../ui/interface.html";
 // SPIKE — valider Test A/B/C de l'audit (portage Protocol0 -> Extensions SDK).
 //
 //   Test A : un http.createServer sur 127.0.0.1 survit-il dans l'Extension Host
-//            (sandbox) ? -> GET /health.
+//            (sandbox) ? -> GET /api/health.
 //   Test B : une action Live (insertDevice natif) marche-t-elle depuis un handler
-//            HTTP ? -> GET /device/load?name=Reverb. Latence loggée.
+//            HTTP ? -> POST /api/device/load {name:"Reverb"}. Latence loggée.
 //   Test C : le detector existant (qui lit runtime.json / P0_SCRIPT_PORT) peut
 //            taper cette extension sans changer son contrat -> on écrit runtime.json
 //            au même schéma/au même endroit que le script Python.
@@ -82,6 +82,9 @@ export function activate(activation: ActivationContext) {
   });
 
   // --- Serveur HTTP (Test A) -------------------------------------------------
+  // Le contrat suit l'API du script Python : routes sous /api, GET en lecture,
+  // POST (body JSON) en mutation. La mutation lit `name` dans le body POST ;
+  // `?via=command` reste un query param de debug.
   const server = http.createServer((req, res) => {
     const json = (code: number, body: unknown) => {
       res.writeHead(code, { "content-type": "application/json" });
@@ -96,37 +99,47 @@ export function activate(activation: ActivationContext) {
       console.error(`[http] bad request: ${String(e)}`);
       return json(400, { ok: false, error: "bad request" });
     }
-    const name = url.searchParams.get("name") ?? "";
     const via = url.searchParams.get("via"); // "command" pour forcer le repli
 
-    if (url.pathname === "/health") {
+    if (url.pathname === "/api/health" && req.method === "GET") {
       // Test A : si ça répond depuis l'extérieur, l'écoute survit au sandbox.
       return json(200, { ok: true, version: SPIKE_VERSION });
     }
 
-    if (url.pathname === "/device/load") {
-      if (!name) return json(400, { ok: false, error: "missing 'name'" });
-      const t0 = process.hrtime.bigint();
-      if (via === "command") {
-        // chemin repli : passe par le bus de commands du SDK
-        context.commands.executeCommand("protocol-0.load_device", name);
-        return json(202, { ok: true, path: "command", note: "fire-and-forget, voir logs" });
-      }
-      // chemin direct : object model touché depuis l'event loop Node
-      loadDeviceDirect(name)
-        .then((detail) => {
-          const ms = Number(process.hrtime.bigint() - t0) / 1e6;
-          console.log(`[load_device direct] ${detail} (${ms.toFixed(1)} ms)`);
-          json(200, { ok: true, path: "direct", detail, latency_ms: Number(ms.toFixed(1)) });
-        })
-        .catch((e) => {
-          console.error(`[load_device direct] error: ${String(e)}`);
-          json(500, { ok: false, path: "direct", error: String(e) });
-        });
+    if (url.pathname === "/api/device/load" && req.method === "POST") {
+      // Lit le body JSON {name}. On bufferise — les bodies sont minuscules.
+      let raw = "";
+      req.on("data", (chunk) => (raw += chunk));
+      req.on("end", () => {
+        let name = "";
+        try {
+          name = String((JSON.parse(raw || "{}") as { name?: unknown }).name ?? "");
+        } catch {
+          return json(400, { ok: false, error: "invalid JSON body" });
+        }
+        if (!name) return json(400, { ok: false, error: "missing 'name'" });
+        const t0 = process.hrtime.bigint();
+        if (via === "command") {
+          // chemin repli : passe par le bus de commands du SDK
+          context.commands.executeCommand("protocol-0.load_device", name);
+          return json(202, { ok: true, path: "command", note: "fire-and-forget, voir logs" });
+        }
+        // chemin direct : object model touché depuis l'event loop Node
+        loadDeviceDirect(name)
+          .then((detail) => {
+            const ms = Number(process.hrtime.bigint() - t0) / 1e6;
+            console.log(`[load_device direct] ${detail} (${ms.toFixed(1)} ms)`);
+            json(200, { ok: true, path: "direct", detail, latency_ms: Number(ms.toFixed(1)) });
+          })
+          .catch((e) => {
+            console.error(`[load_device direct] error: ${String(e)}`);
+            json(500, { ok: false, path: "direct", error: String(e) });
+          });
+      });
       return;
     }
 
-    if (url.pathname === "/track/select") {
+    if (url.pathname === "/api/track/select" && req.method === "POST") {
       // Pas d'API de sélection dans le SDK 1.0.0-beta.0 -> stub (conforme audit).
       console.warn("select_track not implemented — no SDK selection API");
       return json(501, { ok: false, error: "not implemented — no SDK selection API" });

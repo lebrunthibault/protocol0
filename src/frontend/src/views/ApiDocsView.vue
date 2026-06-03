@@ -4,8 +4,9 @@
 // documente ses routes en dur ici plutôt que de les fetch (la page s'affiche même
 // Ableton fermé). À garder en phase avec src/script/.../http/routes/*.
 //
-// Toutes les routes du script sont en GET (le routeur ne fait que do_GET) ; les
-// mutations passent leurs arguments en query params.
+// L'API du script est une vraie API REST sous /api : GET en lecture, POST (body
+// JSON) en mutation. La version live + interactive est servie par le script
+// lui-même en Swagger UI sur /docs (et /openapi.json) quand Ableton tourne.
 interface Param {
   name: string;
   type: string;
@@ -21,43 +22,43 @@ interface Endpoint {
 
 const endpoints: Endpoint[] = [
   {
-    method: "GET",
-    path: "/device/load",
+    method: "POST",
+    path: "/api/device/load",
     summary: "Load a device (instrument or audio effect) onto the selected track by name.",
     params: [{ name: "name", type: "str", required: true }],
-    returns: "204 — fire-and-forget",
+    returns: "200 — fire-and-forget",
   },
   {
-    method: "GET",
-    path: "/track/select",
+    method: "POST",
+    path: "/api/track/select",
     summary: 'Select a track by name (use "master" to select the master track).',
     params: [{ name: "name", type: "str", required: true }],
-    returns: "204 — fire-and-forget",
+    returns: "200 — fire-and-forget",
   },
   {
-    method: "GET",
-    path: "/song/toggle_follow",
+    method: "POST",
+    path: "/api/song/toggle_follow",
     summary: "Stop following the playhead in the arrangement view.",
     params: [],
-    returns: "204 — fire-and-forget",
+    returns: "200 — fire-and-forget",
   },
   {
-    method: "GET",
-    path: "/clip/key_detected",
+    method: "POST",
+    path: "/api/clip/key_detected",
     summary: "Notify the script that a musical key (MIDI pitch) was detected for the current clip.",
     params: [{ name: "pitch", type: "int", required: true }],
-    returns: "204 — fire-and-forget",
+    returns: "200 — fire-and-forget",
   },
   {
     method: "GET",
-    path: "/set/get_state",
+    path: "/api/set/get_state",
     summary: "Return the full serialized state of the current Ableton set.",
     params: [],
     returns: "AbletonSet — JSON",
   },
   {
     method: "GET",
-    path: "/health",
+    path: "/api/health",
     summary: "Liveness probe.",
     params: [],
     returns: "{ ok: true, version }",
@@ -88,15 +89,19 @@ function paramSignature(params: Param[]): string {
       <p>
         The script serves this API on a <strong>dynamic local port</strong> (it lives and dies
         with Ableton; the agent discovers its URL via
-        <code>%APPDATA%\Protocol0\runtime.json</code>). All routes are <code>GET</code>;
-        mutations take their arguments as query parameters. A live, always-current index is
-        served by the script itself at its root <code>/</code> when Ableton is running.
+        <code>%APPDATA%\Protocol0\runtime.json</code>). It's a REST API under <code>/api</code>:
+        reads are <code>GET</code>, mutations are <code>POST</code> with a JSON body. A live,
+        interactive Swagger UI is served by the script itself at <code>/docs</code> (and the
+        spec at <code>/openapi.json</code>) when Ableton is running.
       </p>
     </div>
 
     <div v-for="e in endpoints" :key="e.method + e.path" class="card card--flat endpoint">
       <div class="endpoint-head">
-        <span class="endpoint-method endpoint-method--get">{{ e.method }}</span>
+        <span
+          class="endpoint-method"
+          :class="e.method === 'GET' ? 'endpoint-method--get' : 'endpoint-method--post'"
+        >{{ e.method }}</span>
         <code class="endpoint-path">{{ e.path }}</code>
       </div>
       <p class="endpoint-summary">{{ e.summary }}</p>
@@ -132,6 +137,10 @@ function paramSignature(params: Param[]): string {
 .endpoint-method--get {
   color: var(--ok);
   background: rgba(95, 208, 138, 0.12);
+}
+.endpoint-method--post {
+  color: var(--accent-blue, #5aa9ff);
+  background: rgba(90, 169, 255, 0.12);
 }
 .endpoint-path {
   font-size: var(--fs-base);

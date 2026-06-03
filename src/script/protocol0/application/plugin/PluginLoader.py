@@ -46,9 +46,10 @@ class PluginLoader(object):
 
     @classmethod
     def _register_actions(cls, plugin: PluginInterface) -> None:
-        # The @route decorator already registered each action in the global
-        # route table at import time, so it shows up on the script index ("/")
-        # and is callable over HTTP. We just surface what the plugin exposes.
+        # The @api_route decorator already registered each action in the global
+        # route table at import time, so it shows up in the Swagger UI ("/docs")
+        # and /openapi.json, and is callable over HTTP. We just surface what the
+        # plugin exposes.
         for fn in plugin.register_actions():
             Logger.info("Plugin %s exposes action %s" % (plugin.name, fn.__name__))
 

@@ -1,63 +1,38 @@
-import html
-import inspect
-from typing import Any, Dict
+"""Routes techniques de l'API : santé, doc, racine.
 
-from protocol0.application.http.Router import get_routes, route
+L'API du script est une vraie API REST JSON : la racine ne sert plus de HTML
+(l'ancienne page d'index a disparu), elle redirige vers la Swagger UI. La surface
+humaine, c'est /docs ; la surface machine, c'est /openapi.json (généré depuis le
+registre de routes). Voir docs/specs/.../2026-06-04-script-rest-api-and-swagger.md.
+"""
+from protocol0.application.http import openapi, swagger_ui
+from protocol0.application.http.Router import Response, api_route, route
 from protocol0.version import __version__
 
 
-@route("GET", "/health")
-def health() -> Dict[str, Any]:
+@api_route("GET", "/health")
+def health() -> dict:
     """Liveness probe (cible de ping non ambiguë pour la page web de l'agent)."""
     return {"ok": True, "version": __version__}
 
 
-def _param_label(name: str, param: inspect.Parameter) -> str:
-    annotation = param.annotation
-    type_name = (
-        getattr(annotation, "__name__", "") if annotation is not inspect.Parameter.empty else ""
-    )
-    suffix = "" if param.default is inspect.Parameter.empty else "?"
-    return "%s%s%s" % (name, ":" + type_name if type_name else "", suffix)
-
-
-def _row(method: str, path: str, fn) -> str:
-    sig = inspect.signature(fn)
-    params = [_param_label(n, p) for n, p in sig.parameters.items()]
-    has_required = any(p.default is inspect.Parameter.empty for p in sig.parameters.values())
-    params_html = ", ".join(html.escape(p) for p in params)
-    path_html = html.escape(path)
-    if method == "GET" and not has_required:
-        path_cell = '<a href="%s">%s</a>' % (path_html, path_html)
-    else:
-        path_cell = path_html
-    doc = inspect.getdoc(fn) or ""
-    desc_html = html.escape(doc)
-    return "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>" % (
-        method,
-        path_cell,
-        params_html,
-        desc_html,
-    )
-
-
 @route("GET", "/")
-def index() -> str:
-    """Render an HTML index of every registered HTTP endpoint."""
-    rows = "\n".join(_row(method, path, fn) for (method, path), fn in sorted(get_routes().items()))
-    return (
-        "<!doctype html><html><head><meta charset='utf-8'>"
-        "<title>script HTTP</title>"
-        "<style>"
-        "body{font-family:sans-serif;max-width:720px;margin:2em auto;padding:0 1em}"
-        "table{border-collapse:collapse;width:100%}"
-        "th,td{border-bottom:1px solid #ddd;padding:.4em .6em;text-align:left}"
-        "th{background:#f4f4f4}"
-        "code,a{font-family:monospace}"
-        "</style></head><body>"
-        "<h1>script HTTP endpoints "
-        "<small style='color:#888;font-weight:normal'>v" + __version__ + "</small></h1>"
-        "<table><thead><tr><th>Method</th><th>Path</th><th>Params</th><th>Description</th></tr></thead>"
-        "<tbody>" + rows + "</tbody></table>"
-        "</body></html>"
-    )
+def index() -> Response:
+    """Redirige vers la Swagger UI (l'API ne sert pas de HTML à la racine)."""
+    return Response.redirect("/docs")
+
+
+@route("GET", "/openapi.json")
+def openapi_json() -> Response:
+    """Document OpenAPI 3.1 décrivant toute l'API (routes core + plugins)."""
+    return Response.json(openapi.build_spec())
+
+
+@route("GET", "/docs")
+def docs() -> Response:
+    """Swagger UI (vendorée, offline) — la surface humaine de l'API."""
+    served = swagger_ui.resolve("/docs")
+    if served is None:
+        return Response.bytes(b"swagger ui not found", "text/plain; charset=utf-8", 500)
+    body, content_type = served
+    return Response.bytes(body, content_type)

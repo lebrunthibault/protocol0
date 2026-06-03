@@ -53,6 +53,35 @@ Live's native key mapping is too limited on two axes:
 Key detection, binding resolution and the configuration frontend all live in the
 **agent**; only the final action call crosses into the script inside Live.
 
+### Future direction — a MIDI mapping mode alongside the keymapper
+
+The keyboard is the first input surface, not the only one. The same mental model —
+**set-independent bindings → discoverable smart actions → Live API** — extends to
+**MIDI**: a second "mapping mode" next to the keymapper, where a MIDI control (a
+knob, a button) is bound to an action instead of a key combination.
+
+The triggering use case is letting knobs drive the **first N parameters of the
+selected device** (up to 16, to match an Ableton Rack's macros) — the
+[*map encoders to the selected device*](https://midiremotescripts.structure-void.com/guides/cookbook/#map-encoders-to-the-selected-device)
+pattern. The script already does a fixed version of this (hard-coded encoder
+groups, e.g. the LaunchKey Mini → instrument-rack macros); the goal is to make it
+**configurable from the web UI**, like the keyboard — and more generally to map any
+catalog action to a MIDI control.
+
+Two properties carry over unchanged: bindings are **global** (a JSON under
+`%APPDATA%\Protocol0\`, never in the `.als`), and they target the **same
+discoverable action catalog**. One difference is deliberate: unlike the keyboard,
+**MIDI detection stays inside the script** — MIDI already arrives in Live through
+the remote-script framework, and routing "selected device → param n" needs the LOM
+live, so there is no reason to re-capture it out of process. The agent still owns
+only the configuration UI; the script reads the JSON, builds the actions, and
+attaches them to the encoders. *Decoupled capture / execution* holds either way:
+where the input is captured differs, but the action and its global config do not.
+
+This is **future work**, tracked in
+[`docs/specs/backlog/2026-06-04-midi-mapping-mode.md`](docs/specs/backlog/2026-06-04-midi-mapping-mode.md);
+it is recorded here as durable intent, not a committed iteration.
+
 ## 2. Architecture choices
 
 The important technical decisions, kept deliberately simple. Implementation
@@ -83,11 +112,13 @@ with it; it now lives in the agent.)
 
 ### The remote script exposes an action API inside Live
 
-The remote script runs **inside Ableton** and exposes an HTTP API — a `/health`
-check, an index, and the **action routes** (`/device/load`, `/track/select`, …)
-that drive Live through the LOM. Its port is **dynamic** (advertised via
-`runtime.json`), and it lives and dies with Ableton. The agent is its only caller:
-on a matched keypress, the agent looks up the script's URL and invokes the action.
+The remote script runs **inside Ableton** and exposes a REST HTTP API under
+`/api` — a `/api/health` check, a self-describing `/openapi.json`, a Swagger UI at
+`/docs`, and the **action routes** (`/api/device/load`, `/api/track/select`, …)
+that drive Live through the LOM. Reads are `GET`, mutations are `POST`. Its port is
+**dynamic** (advertised via `runtime.json`), and it lives and dies with Ableton.
+The agent is its main caller: on a matched keypress, the agent looks up the
+script's URL and invokes the action.
 
 ### Bindings are global
 
@@ -100,9 +131,9 @@ value over the native manager: *the same shortcuts everywhere*.
 ### Actions form a discoverable catalog
 
 An **action** is a named, parameterizable, self-described unit (name, label,
-expected parameters). The script exposes this catalog; the frontend **reads** it
-rather than hard-coding the action list. Existing routes (`/device/load`,
-`/track/select`, …) prefigure the catalog — each action builds on a Live-API
+expected parameters). The script exposes this catalog through its OpenAPI document
+(`/openapi.json`, rendered at `/docs`); existing routes (`/api/device/load`,
+`/api/track/select`, …) prefigure the catalog — each action builds on a Live-API
 capability.
 
 ### Plugins extend the script
