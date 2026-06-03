@@ -1,0 +1,7 @@
+# Build output (buildé en CI, embarqué dans l'exe agent via PyInstaller).
+dist/
+node_modules/
+
+# Copies générées au prebuild depuis la source unique src/website/ (jamais éditées ici).
+src/styles/design-system.css
+public/favicon.svg
