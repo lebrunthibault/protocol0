@@ -5,6 +5,10 @@
 # Sortie : dist/protocol0-detector.exe (binaire autonome, sans Python ni Poetry requis sur la cible).
 #
 # Notes :
+# - L'exe ouvre désormais un socket d'écoute LOCAL (127.0.0.1:9010, page launcher) en plus de
+#   capturer le clavier. Aucun appel réseau sortant, aucun download/lancement d'exe : le profil
+#   antivirus reste proche du Jalon 1. http.server/json sont stdlib (statiquement visibles),
+#   requests est déjà embarqué -> pas de nouvel hiddenimport requis.
 # - console=False : l'exe est lancé caché par la tâche planifiée au logon ; pas de flash de console.
 # - hiddenimports : pynput charge son backend plateforme paresseusement (pynput.keyboard._win32 /
 #   pynput.mouse._win32), que l'analyse statique de PyInstaller ne voit pas -> sans ça l'exe gelé

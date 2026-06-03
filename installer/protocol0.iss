@@ -55,6 +55,9 @@ Type: filesandordirs; Name: "{code:GetRemoteScriptsDir}\Protocol_0\*"
 ; ni écraser ni supprimer __init__.py -> "Access denied". Avec users-modify, le dossier
 ; reste géré par une install dev sans admin.
 Name: "{code:GetRemoteScriptsDir}\Protocol_0"; Permissions: users-modify
+; Garantit l'existence du dossier du menu Démarrer avant que [INI] n'y écrive le raccourci .url.
+; Sans [Icons] ni cette ligne (DisableProgramGroupPage=yes), {group} pourrait ne pas être créé.
+Name: "{group}"
 
 [Files]
 Source: "..\src\detector\dist\protocol0-detector.exe"; DestDir: "{app}"; Flags: ignoreversion
@@ -71,6 +74,14 @@ Filename: "powershell.exe"; \
   StatusMsg: "Registering startup task..."; \
   Flags: runhidden waituntilterminated
 
+[INI]
+; Raccourci web (Internet Shortcut .url) vers la page launcher servie par le detector.
+; Ouvre dans le navigateur par défaut, sans flash de console (contrairement à un .lnk
+; pointant sur cmd /c start). Port 9010 câblé = LAUNCHER_PORT dans src/detector/.../settings.py :
+; le raccourci doit rester bookmarkable, donc le launcher n'a PAS de fallback de port.
+Filename: "{group}\Protocol 0.url"; Section: "InternetShortcut"; Key: "URL"; String: "http://127.0.0.1:9010/"
+Filename: "{autodesktop}\Protocol 0.url"; Section: "InternetShortcut"; Key: "URL"; String: "http://127.0.0.1:9010/"
+
 [UninstallRun]
 ; Retire la tâche AVANT que les fichiers ne soient supprimés.
 Filename: "powershell.exe"; \
@@ -82,6 +93,9 @@ Filename: "powershell.exe"; \
 ; Le dossier Protocol_0 vit hors de {app} (dans le dossier Ableton) : à supprimer
 ; explicitement. shortcuts.json (dans %APPDATA%) n'est jamais touché -> préservé.
 Type: filesandordirs; Name: "{code:GetRemoteScriptsDir}\Protocol_0"
+; Les raccourcis .url (créés via [INI], donc non suivis par le mécanisme [Icons]).
+Type: files; Name: "{group}\Protocol 0.url"
+Type: files; Name: "{autodesktop}\Protocol 0.url"
 
 [Code]
 var
