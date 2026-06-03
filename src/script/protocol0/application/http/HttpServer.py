@@ -6,6 +6,7 @@ franchir cette frontière sans risquer de corrompre TickScheduler._scheduled_eve
 (pas de lock interne), on passe par une queue.Queue (thread-safe par construction)
 drainée à chaque tick.
 """
+import os
 import queue
 import threading
 from http.server import ThreadingHTTPServer
@@ -13,10 +14,12 @@ from queue import Empty
 from typing import Callable, Optional
 
 from protocol0.application.ContainerInterface import ContainerInterface
+from protocol0.application.http import runtime_state
 from protocol0.application.http.Router import HttpRequestHandler
 from protocol0.domain.shared.errors.error_handler import handle_errors
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.shared.logging.Logger import Logger
+from protocol0.version import __version__
 
 # Borne le nombre de callbacks exécutés par tick (~17 ms). Au-delà, on rend
 # la main au thread Live pour ne pas allonger le tick en cas de burst de
@@ -24,11 +27,13 @@ from protocol0.shared.logging.Logger import Logger
 # traités au tick suivant.
 _MAX_CALLBACKS_PER_TICK = 8
 
-# Port en dur pour l'instant. Venait de P0_SCRIPT_PORT lu dans le .env racine,
-# absent en prod (install par exe) -> crashait le chargement du script.
-# TODO: rendre configurable via %APPDATA%\Protocol0\settings.json
-# (cf. docs/specs/backlog/2026-06-02-script-settings-json.md).
-_PORT = 9000
+# Port préféré. S'il est déjà pris (autre instance, ou un service squattant 9000),
+# on retombe sur un port libre choisi par l'OS (bind sur 0) plutôt que de crasher le
+# chargement du script. Le port effectif est publié dans runtime.json pour que le
+# detector/launcher le retrouvent (best-practice OSS : port fixe + fallback + fichier
+# d'adresse, cf. Jupyter/RFC 8252). Override manuel encore possible côté detector via
+# P0_SCRIPT_PORT (escape hatch).
+_DEFAULT_PORT = 9000
 
 _queue: "queue.Queue[Callable]" = queue.Queue()
 _container: Optional[ContainerInterface] = None
@@ -83,10 +88,20 @@ def start(container: ContainerInterface) -> None:
     # ThreadingHTTPServer pour ne pas bloquer entre requêtes concurrentes
     # (AHK peut spammer). Chaque requête est de toute façon fire-and-forget
     # côté thread Live via submit().
-    _server = ThreadingHTTPServer(("127.0.0.1", _PORT), HttpRequestHandler)
+    try:
+        _server = ThreadingHTTPServer(("127.0.0.1", _DEFAULT_PORT), HttpRequestHandler)
+    except OSError:
+        # Port préféré pris : laisser l'OS en choisir un libre (bind sur 0).
+        _server = ThreadingHTTPServer(("127.0.0.1", 0), HttpRequestHandler)
+    port = _server.server_address[1]
     _thread = threading.Thread(target=_server.serve_forever, daemon=True)
     _thread.start()
-    Logger.info("HttpServer listening on 127.0.0.1:%d" % _PORT)
+    Logger.info("HttpServer listening on 127.0.0.1:%d" % port)
+
+    # Publie l'URL effective pour le detector/launcher. os.getpid() ici = PID
+    # d'Ableton (le script tourne dans son interpréteur) -> sert au cross-check
+    # de fraîcheur côté launcher.
+    runtime_state.write("http://127.0.0.1:%d" % port, os.getpid(), __version__)
 
 
 def stop() -> None:
@@ -98,3 +113,6 @@ def stop() -> None:
         _server.shutdown()
         _server.server_close()
         _server = None
+    # Le serveur n'écoute plus : retire le fichier d'état (absence = script inactif
+    # pour le detector/launcher).
+    runtime_state.clear()

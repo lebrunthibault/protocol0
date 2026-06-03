@@ -1,8 +1,15 @@
 import html
 import inspect
+from typing import Any, Dict
 
 from protocol0.application.http.Router import get_routes, route
 from protocol0.version import __version__
+
+
+@route("GET", "/health")
+def health() -> Dict[str, Any]:
+    """Liveness probe (cible de ping non ambiguë pour le launcher du detector)."""
+    return {"ok": True, "version": __version__}
 
 
 def _param_label(name: str, param: inspect.Parameter) -> str:
