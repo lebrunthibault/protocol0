@@ -18,6 +18,13 @@ detector:
 	@cd src/detector && poetry run detector
 .PHONY: detector
 
+# Affiche les process detector en cours (exe gele + mode source) et les tue.
+# Deux detectors en parallele = un raccourci declenche plusieurs fois (cf.
+# docs/debug-double-shortcut.md) : a lancer si un lancement source traine.
+kill-detector:
+	@$(PY) scripts/kill_detector.py
+.PHONY: kill-detector
+
 # Serve src/website with live-reload for editing the landing page.
 # Uses npx live-server (Node is already present in the repo); the first run
 # downloads it, then it's cached. Override the port with `make website PORT=3000`.
