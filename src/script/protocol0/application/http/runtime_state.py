@@ -1,10 +1,10 @@
 """Fichier d'état runtime publié par le script à %APPDATA%\\Protocol0\\runtime.json.
 
 Le script choisit son port d'écoute dynamiquement (cf. HttpServer : 9000, sinon un
-port libre). Le detector — qui vit hors d'Ableton et survit à ses redémarrages — n'a
+port libre). L'agent — qui vit hors d'Ableton et survit à ses redémarrages — n'a
 aucun moyen de deviner ce port. On le publie donc ici : le script écrit l'URL effective
 au démarrage du serveur et supprime le fichier à l'arrêt (disconnect). L'absence du
-fichier vaut "script pas actif" pour les lecteurs (detector, launcher).
+fichier vaut "script pas actif" pour les lecteurs (agent).
 
 Tourne dans le Python embarqué d'Ableton : stdlib uniquement (json, os).
 """

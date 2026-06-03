@@ -11,7 +11,7 @@ import ctypes
 import os
 from ctypes import wintypes
 
-from detector.process_check import matches_ableton
+from agent.process_check import matches_ableton
 
 _user32 = ctypes.windll.user32
 _kernel32 = ctypes.windll.kernel32

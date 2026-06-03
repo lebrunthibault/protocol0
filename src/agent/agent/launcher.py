@@ -1,4 +1,4 @@
-"""Serveur "launcher" servi par le detector (toujours vivant via la tâche planifiée).
+"""Serveur "launcher" servi par l'agent (toujours vivant via la tâche planifiée).
 
 Le serveur HTTP de config (page /shortcuts) est servi par le script DANS Ableton : il
 meurt avec Ableton. Le launcher, lui, survit et porte donc le diagnostic quand le script
@@ -21,10 +21,10 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import requests
 
-from detector import process_check, runtime_state
-from detector.settings import LAUNCHER_PORT
+from agent import process_check, runtime_state
+from agent.settings import LAUNCHER_PORT
 
-logger = logging.getLogger("detector")
+logger = logging.getLogger("agent")
 
 HELP_URL = "https://www.protocol0.live/"
 

@@ -1,8 +1,8 @@
 """Verrou single-instance via named mutex Win32.
 
-Deux detectors en parallèle = deux hooks clavier WH_KEYBOARD_LL, donc chaque frappe
+Deux agents en parallèle = deux hooks clavier WH_KEYBOARD_LL, donc chaque frappe
 est traitée deux fois (raccourci déclenché en double). Ça arrive notamment à l'install :
-le [Run] de l'installeur lance le detector pendant que la tâche planifiée le lance aussi.
+le [Run] de l'installeur lance l'agent pendant que la tâche planifiée le lance aussi.
 
 Un named mutex est le verrou idiomatique Windows : l'OS le relâche à la mort du process
 (pas d'orphelin après crash, contrairement à un lockfile), et c'est plus fiable que de se
@@ -20,7 +20,12 @@ _handle = None
 
 
 def acquire(name: str = "Protocol0-Detector") -> bool:
-    """Tente de prendre le verrou. True si on est la 1re instance, False si une autre tourne."""
+    """Tente de prendre le verrou. True si on est la 1re instance, False si une autre tourne.
+
+    Le nom du mutex reste "Protocol0-Detector" (identité interne stable) même après le renommage
+    detector -> agent : l'installeur tue l'ancien exe avant d'installer le nouveau, donc deux
+    versions ne coexistent jamais, et le renommer n'apporterait rien.
+    """
     global _handle
     kernel32 = ctypes.windll.kernel32
     _handle = kernel32.CreateMutexW(None, False, name)

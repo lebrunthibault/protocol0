@@ -1,7 +1,7 @@
 """Lecture du fichier d'état runtime publié par le script.
 
 Le script (dans Ableton) écrit %APPDATA%\\Protocol0\\runtime.json avec l'URL effective
-de son serveur HTTP (port dynamique), et le supprime à l'arrêt. Côté detector on le lit
+de son serveur HTTP (port dynamique), et le supprime à l'arrêt. Côté agent on le lit
 pour découvrir le port courant ; l'absence ou la corruption du fichier valent "script
 pas actif" (lecture tolérante, jamais d'exception au runtime).
 """

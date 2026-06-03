@@ -1,5 +1,5 @@
 """Tests de la règle de match Ableton et du parsing de la sortie tasklist."""
-from detector import process_check
+from agent import process_check
 
 
 def test_matches_real_editions():

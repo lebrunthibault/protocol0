@@ -1,8 +1,8 @@
 # -*- mode: python ; coding: utf-8 -*-
-# Spec PyInstaller du détecteur Protocol0.
+# Spec PyInstaller de l'agent Protocol0.
 #
-# Build : depuis src/detector,  poetry run pyinstaller --clean --noconfirm protocol0-detector.spec
-# Sortie : dist/protocol0-detector.exe (binaire autonome, sans Python ni Poetry requis sur la cible).
+# Build : depuis src/agent,  poetry run pyinstaller --clean --noconfirm protocol0-agent.spec
+# Sortie : dist/protocol0-agent.exe (binaire autonome, sans Python ni Poetry requis sur la cible).
 #
 # Notes :
 # - L'exe ouvre désormais un socket d'écoute LOCAL (127.0.0.1:9010, page launcher) en plus de
@@ -13,17 +13,17 @@
 # - hiddenimports : pynput charge son backend plateforme paresseusement (pynput.keyboard._win32 /
 #   pynput.mouse._win32), que l'analyse statique de PyInstaller ne voit pas -> sans ça l'exe gelé
 #   lèverait un ImportError au runtime.
-# - upx=False : la compression UPX déclenche des faux positifs antivirus, d'autant qu'un détecteur
-#   clavier est déjà un profil sensible.
+# - upx=False : la compression UPX déclenche des faux positifs antivirus, d'autant qu'un agent
+#   à hook clavier est déjà un profil sensible.
 
 block_cipher = None
 
 a = Analysis(
-    ['detector\\main_entry.py'],
+    ['agent\\main_entry.py'],
     pathex=[],
     binaries=[],
     # VERSION (racine du repo) embarqué dans le bundle -> lu via sys._MEIPASS par
-    # detector/version.py, l'exe n'ayant pas d'arbre source pour remonter jusqu'à lui.
+    # agent/version.py, l'exe n'ayant pas d'arbre source pour remonter jusqu'à lui.
     datas=[('..\\..\\VERSION', '.')],
     hiddenimports=['pynput.keyboard._win32', 'pynput.mouse._win32'],
     hookspath=[],
@@ -45,7 +45,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='protocol0-detector',
+    name='protocol0-agent',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

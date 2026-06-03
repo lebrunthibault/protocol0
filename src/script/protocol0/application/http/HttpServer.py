@@ -29,9 +29,9 @@ _MAX_CALLBACKS_PER_TICK = 8
 
 # Port préféré. S'il est déjà pris (autre instance, ou un service squattant 9000),
 # on retombe sur un port libre choisi par l'OS (bind sur 0) plutôt que de crasher le
-# chargement du script. Le port effectif est publié dans runtime.json pour que le
-# detector/launcher le retrouvent (best-practice OSS : port fixe + fallback + fichier
-# d'adresse, cf. Jupyter/RFC 8252). Override manuel encore possible côté detector via
+# chargement du script. Le port effectif est publié dans runtime.json pour que
+# l'agent le retrouve (best-practice OSS : port fixe + fallback + fichier
+# d'adresse, cf. Jupyter/RFC 8252). Override manuel encore possible côté agent via
 # P0_SCRIPT_PORT (escape hatch).
 _DEFAULT_PORT = 9000
 
@@ -98,7 +98,7 @@ def start(container: ContainerInterface) -> None:
     _thread.start()
     Logger.info("HttpServer listening on 127.0.0.1:%d" % port)
 
-    # Publie l'URL effective pour le detector/launcher. os.getpid() ici = PID
+    # Publie l'URL effective pour l'agent. os.getpid() ici = PID
     # d'Ableton (le script tourne dans son interpréteur) -> sert au cross-check
     # de fraîcheur côté launcher.
     runtime_state.write("http://127.0.0.1:%d" % port, os.getpid(), __version__)
@@ -114,5 +114,5 @@ def stop() -> None:
         _server.server_close()
         _server = None
     # Le serveur n'écoute plus : retire le fichier d'état (absence = script inactif
-    # pour le detector/launcher).
+    # pour l'agent).
     runtime_state.clear()

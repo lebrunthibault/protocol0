@@ -1,6 +1,6 @@
-"""Réglages runtime du détecteur.
+"""Réglages runtime de l'agent.
 
-Le détecteur est distribué comme exe autonome (PyInstaller), sans .env à côté.
+L'agent est distribué comme exe autonome (PyInstaller), sans .env à côté.
 
 Le port du script n'est plus câblé : le script le choisit dynamiquement et publie son
 URL effective dans runtime.json (cf. runtime_state). On découvre donc l'URL à l'exécution.
@@ -10,7 +10,7 @@ court-circuite runtime.json (cas avancés / dev).
 import os
 from typing import Optional
 
-# Port fixe du serveur "launcher" servi par le detector (page de diagnostic + redirection
+# Port fixe du serveur "launcher" servi par l'agent (page de diagnostic + redirection
 # vers l'UI du script). Câblé en dur car le raccourci Windows (.url) pointe dessus et doit
 # rester bookmarkable -> pas de fallback dynamique côté launcher. DOIT correspondre à l'URL
 # du raccourci dans installer/protocol0.iss.

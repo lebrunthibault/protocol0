@@ -1,8 +1,8 @@
-"""Tests de la lecture tolérante de runtime.json côté detector."""
+"""Tests de la lecture tolérante de runtime.json côté agent."""
 import json
 import os
 
-from detector import runtime_state
+from agent import runtime_state
 
 
 def _set_appdata(monkeypatch, tmp_path):

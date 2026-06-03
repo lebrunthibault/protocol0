@@ -4,7 +4,7 @@
 PY ?= python
 
 # One-command local setup for a fresh checkout: both poetry envs + deploy the
-# remote script into Ableton. After this, `make detector` is all you need.
+# remote script into Ableton. After this, `make agent` is all you need.
 bootstrap:
 	@$(PY) scripts/bootstrap.py
 .PHONY: bootstrap
@@ -14,16 +14,22 @@ install:
 	@$(PY) scripts/install_remote_script.py
 .PHONY: install
 
-detector:
-	@cd src/detector && poetry run detector
-.PHONY: detector
+agent:
+	@cd src/agent && poetry run agent
+.PHONY: agent
 
-# Affiche les process detector en cours (exe gele + mode source) et les tue.
-# Deux detectors en parallele = un raccourci declenche plusieurs fois (cf.
+# Run the Vue 3 front (src/frontend) with Vite live-reload. Proxies /api and
+# /status to the running agent on :9010. Run `make agent` in another terminal.
+frontend:
+	@cd src/frontend && npm run dev
+.PHONY: frontend
+
+# Affiche les process agent en cours (exe gele + mode source) et les tue.
+# Deux agents en parallele = un raccourci declenche plusieurs fois (cf.
 # docs/debug-double-shortcut.md) : a lancer si un lancement source traine.
-kill-detector:
-	@$(PY) scripts/kill_detector.py
-.PHONY: kill-detector
+kill-agent:
+	@$(PY) scripts/kill_agent.py
+.PHONY: kill-agent
 
 # Serve src/website with live-reload for editing the landing page.
 # Uses npx live-server (Node is already present in the repo); the first run

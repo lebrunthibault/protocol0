@@ -1,15 +1,15 @@
-# Enregistre le détecteur Protocol0 comme tâche planifiée Windows qui :
+# Enregistre l'agent Protocol0 comme tâche planifiée Windows qui :
 #   - démarre à l'ouverture de session (session interactive : requis pour la capture
 #     clavier globale + le check de fenêtre au premier plan ; un service en session 0
 #     ne verrait pas le clavier ni le focus)
 #   - redémarre sur crash détecté par le Task Scheduler (jusqu'à 999x, intervalle 1 min)
 #   - tourne fenêtre cachée (l'exe est no-console, donc aucun flash — pas de shim VBS)
 #
-# Le détecteur logge lui-même dans %APPDATA%\Protocol0\logs\detector.log : pas de
+# L'agent logge lui-même dans %APPDATA%\Protocol0\logs\agent.log : pas de
 # redirection stderr ici (qui réintroduirait une console).
 #
 # Appelé par l'installeur Inno Setup avec -ExePath. Idempotent. Voir
-# uninstall_protocol0_detector_task.ps1 pour le retrait.
+# uninstall_protocol0_agent_task.ps1 pour le retrait.
 
 param(
     [Parameter(Mandatory = $true)]
@@ -21,7 +21,7 @@ $ErrorActionPreference = "Stop"
 $taskName = "Protocol0"
 
 if (-not (Test-Path $ExePath)) {
-    throw "Detector exe not found: $ExePath"
+    throw "Agent exe not found: $ExePath"
 }
 
 $action = New-ScheduledTaskAction -Execute $ExePath
@@ -53,7 +53,7 @@ Register-ScheduledTask `
     -Trigger $trigger `
     -Settings $settings `
     -Principal $principal `
-    -Description "Protocol0 keyboard-shortcut detector (auto-start at logon, restart on crash)." | Out-Null
+    -Description "Protocol0 agent — keyboard shortcuts + local web UI (auto-start at logon, restart on crash)." | Out-Null
 
 Write-Host "Starting $taskName..."
 Start-ScheduledTask -TaskName $taskName
@@ -61,7 +61,7 @@ Start-ScheduledTask -TaskName $taskName
 Start-Sleep -Seconds 2
 Get-ScheduledTask -TaskName $taskName | Format-Table -AutoSize TaskName, State
 Write-Host ""
-Write-Host "Logs: %APPDATA%\Protocol0\logs\detector.log"
+Write-Host "Logs: %APPDATA%\Protocol0\logs\agent.log"
 Write-Host "Manage with:"
 Write-Host "  scripts\windows\disable_protocol0_task.ps1   (disable + kill, for manual testing)"
 Write-Host "  scripts\windows\enable_protocol0_task.ps1    (re-enable + start)"

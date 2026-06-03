@@ -1,6 +1,6 @@
 """Le listener ne doit déclencher qu'au front montant, pas sur l'auto-repeat clavier."""
-from detector.config import Binding, ShortcutConfig
-from detector.listener import ShortcutListener
+from agent.config import Binding, ShortcutConfig
+from agent.listener import ShortcutListener
 
 
 class _FakeKey:
@@ -24,7 +24,7 @@ class _StubConfig(ShortcutConfig):
 
 def _make_listener(monkeypatch, calls):
     # Ableton toujours "au premier plan" pour ne pas court-circuiter l'action.
-    monkeypatch.setattr("detector.listener.ableton_is_foreground", lambda: True)
+    monkeypatch.setattr("agent.listener.ableton_is_foreground", lambda: True)
     binding = Binding(combo="u", action="load_device", params={"name": "Utility"})
     return ShortcutListener(_StubConfig(binding), lambda b: calls.append(b))
 

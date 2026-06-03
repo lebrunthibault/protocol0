@@ -16,7 +16,7 @@ import logging
 import subprocess
 from typing import Iterable
 
-logger = logging.getLogger("detector")
+logger = logging.getLogger("agent")
 
 # Préfixe AVEC espace final : exclut "Ableton Index.exe" et un éventuel "Ableton Live.exe"
 # sans suffixe d'édition (jamais observé, mais on reste strict).

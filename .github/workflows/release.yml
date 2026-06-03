@@ -31,13 +31,22 @@ jobs:
         with:
           python-version: '3.11'
 
+      # Node pour builder la SPA Vue 3 (src/frontend) — étape 1/4 de build_installer.ps1,
+      # embarquée dans l'exe agent via PyInstaller datas.
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: src/frontend/package-lock.json
+
       - name: Install Poetry
         run: pip install poetry
 
       - name: Install Inno Setup 6
         run: choco install innosetup -y --no-progress
 
-      # Enchaîne detector exe (PyInstaller) -> stage remote script -> ISCC.
+      # Enchaîne front Vue 3 (Vite) -> agent exe (PyInstaller) -> stage remote script -> ISCC.
       # Sort dist-installer/Protocol0-Setup-<version>.exe.
       - name: Build installer
         run: pwsh scripts/windows/build_installer.ps1

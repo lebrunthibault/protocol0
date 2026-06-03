@@ -1,7 +1,7 @@
 """Lecture de la config globale des bindings.
 
 Fichier unique à %APPDATA%\\Protocol0\\shortcuts.json (constitution §3.3, §5),
-écrit par le frontend servi par le script, lu ici par le détecteur. Stdlib only.
+écrit par le frontend servi par le script, lu ici par l'agent. Stdlib only.
 
 Schéma (enveloppe versionnée) :
     { "version": 1, "bindings": [

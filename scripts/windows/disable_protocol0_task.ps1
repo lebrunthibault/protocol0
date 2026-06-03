@@ -1,4 +1,4 @@
-# Désactive manuellement le détecteur Protocol0, pour les tests.
+# Désactive manuellement l'agent Protocol0, pour les tests.
 #
 # Disable-ScheduledTask seul ne suffit PAS : il empêche les futurs déclenchements
 # (logon-trigger) mais ne tue pas le process déjà lancé, et Stop-ScheduledTask seul
@@ -21,14 +21,14 @@ if (-not (Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue)) 
 Disable-ScheduledTask -TaskName $taskName | Out-Null
 
 # Tue le process déjà lancé (le scheduler ne le relance pas : la tâche est disabled).
-taskkill /F /IM protocol0-detector.exe 2>$null | Out-Null
+taskkill /F /IM protocol0-agent.exe 2>$null | Out-Null
 
 Start-Sleep -Seconds 1
 
 $state = (Get-ScheduledTask -TaskName $taskName).State
-$alive = Get-Process -Name "protocol0-detector" -ErrorAction SilentlyContinue
+$alive = Get-Process -Name "protocol0-agent" -ErrorAction SilentlyContinue
 if ($state -eq "Disabled" -and -not $alive) {
-    Write-Host "OK: '$taskName' is Disabled and no detector process is running."
+    Write-Host "OK: '$taskName' is Disabled and no agent process is running."
 } else {
     Write-Host "WARNING: state=$state, process running=$([bool]$alive)"
     exit 1

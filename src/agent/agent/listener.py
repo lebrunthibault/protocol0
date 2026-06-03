@@ -14,10 +14,10 @@ from typing import Optional, Set
 
 from pynput import keyboard
 
-from detector.config import ShortcutConfig
-from detector.foreground import ableton_is_foreground
+from agent.config import ShortcutConfig
+from agent.foreground import ableton_is_foreground
 
-logger = logging.getLogger("detector")
+logger = logging.getLogger("agent")
 
 _MODIFIER_ORDER = ["ctrl", "alt", "shift", "win"]
 

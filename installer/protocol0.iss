@@ -1,15 +1,15 @@
-; Installeur Windows de Protocol0 (Jalon 1 : install + autostart).
+; Installeur Windows de Protocol0 (install + autostart).
 ; Inspiré de SyncthingWindowsSetup. Build : ISCC.exe installer\protocol0.iss
 ;
 ; Dépose :
-;   - protocol0-detector.exe  -> {app} (Program Files\Protocol0)
+;   - protocol0-agent.exe     -> {app} (Program Files\Protocol0)
 ;   - Protocol_0\             -> <Ableton>\MIDI Remote Scripts\Protocol_0 (copie pure)
 ;   - scripts de tâche        -> {app}\scripts (pour que l'uninstaller appelle sa copie)
 ; Puis crée la tâche planifiée au logon. À la désinstallation : retire la tâche, supprime
 ; les fichiers, MAIS préserve %APPDATA%\Protocol0\shortcuts.json (jamais référencé).
 ;
-; Prérequis de build : src\detector\dist\protocol0-detector.exe et build\stage\Protocol_0\
-; doivent exister (cf. scripts\windows\build_installer.ps1).
+; Prérequis de build : src\agent\dist\protocol0-agent.exe (qui embarque src\frontend\dist)
+; et build\stage\Protocol_0\ doivent exister (cf. scripts\windows\build_installer.ps1).
 
 #define MyAppName "Protocol 0"
 ; Version lue depuis le fichier VERSION racine (source de vérité unique, bumpée par /commit)
@@ -60,33 +60,33 @@ Name: "{code:GetRemoteScriptsDir}\Protocol_0"; Permissions: users-modify
 Name: "{group}"
 
 [Files]
-Source: "..\src\detector\dist\protocol0-detector.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\src\agent\dist\protocol0-agent.exe"; DestDir: "{app}"; Flags: ignoreversion
 ; users-modify : chaque fichier déposé hérite du droit Modify pour les Users (cf. [Dirs]),
 ; pour que `make install` en dev puisse les remplacer sans élévation.
 Source: "..\build\stage\Protocol_0\*"; DestDir: "{code:GetRemoteScriptsDir}\Protocol_0"; Permissions: users-modify; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\scripts\windows\install_protocol0_detector_task.ps1"; DestDir: "{app}\scripts"; Flags: ignoreversion
-Source: "..\scripts\windows\uninstall_protocol0_detector_task.ps1"; DestDir: "{app}\scripts"; Flags: ignoreversion
+Source: "..\scripts\windows\install_protocol0_agent_task.ps1"; DestDir: "{app}\scripts"; Flags: ignoreversion
+Source: "..\scripts\windows\uninstall_protocol0_agent_task.ps1"; DestDir: "{app}\scripts"; Flags: ignoreversion
 
 [Run]
 ; Crée + démarre la tâche planifiée au logon. runhidden : pas de fenêtre PowerShell.
 Filename: "powershell.exe"; \
-  Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\scripts\install_protocol0_detector_task.ps1"" -ExePath ""{app}\protocol0-detector.exe"""; \
+  Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\scripts\install_protocol0_agent_task.ps1"" -ExePath ""{app}\protocol0-agent.exe"""; \
   StatusMsg: "Registering startup task..."; \
   Flags: runhidden waituntilterminated
 
 [INI]
-; Raccourci web (Internet Shortcut .url) vers la page launcher servie par le detector.
+; Raccourci web (Internet Shortcut .url) vers la page servie par l'agent.
 ; Ouvre dans le navigateur par défaut, sans flash de console (contrairement à un .lnk
-; pointant sur cmd /c start). Port 9010 câblé = LAUNCHER_PORT dans src/detector/.../settings.py :
-; le raccourci doit rester bookmarkable, donc le launcher n'a PAS de fallback de port.
+; pointant sur cmd /c start). Port 9010 câblé = LAUNCHER_PORT dans src/agent/.../settings.py :
+; le raccourci doit rester bookmarkable, donc l'agent n'a PAS de fallback de port.
 Filename: "{group}\Protocol 0.url"; Section: "InternetShortcut"; Key: "URL"; String: "http://127.0.0.1:9010/"
 Filename: "{autodesktop}\Protocol 0.url"; Section: "InternetShortcut"; Key: "URL"; String: "http://127.0.0.1:9010/"
 
 [UninstallRun]
 ; Retire la tâche AVANT que les fichiers ne soient supprimés.
 Filename: "powershell.exe"; \
-  Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\scripts\uninstall_protocol0_detector_task.ps1"""; \
-  RunOnceId: "RemoveDetectorTask"; \
+  Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\scripts\uninstall_protocol0_agent_task.ps1"""; \
+  RunOnceId: "RemoveAgentTask"; \
   Flags: runhidden waituntilterminated
 
 [UninstallDelete]
@@ -181,6 +181,6 @@ begin
   Result := '';
   Exec('schtasks.exe', '/End /TN "Protocol0"',
        '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-  Exec('taskkill.exe', '/F /IM protocol0-detector.exe',
+  Exec('taskkill.exe', '/F /IM protocol0-agent.exe',
        '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
 end;

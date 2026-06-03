@@ -15,5 +15,5 @@ if (Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue) {
 
 # Tuer le process s'il tourne encore : sans ça l'uninstaller ne peut pas supprimer
 # l'exe verrouillé dans Program Files. La tâche étant déjà retirée, il ne redémarre pas.
-taskkill /F /IM protocol0-detector.exe 2>$null
+taskkill /F /IM protocol0-agent.exe 2>$null
 exit 0

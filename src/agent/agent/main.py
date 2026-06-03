@@ -1,7 +1,7 @@
-"""Point d'entrée du détecteur (`poetry run detector`).
+"""Point d'entrée de l'agent (`poetry run agent`).
 
-Charge la config, démarre l'écoute clavier, et tourne jusqu'à interruption.
-Tourne sous Python système (pynput/ctypes dispo), hors d'Ableton.
+Charge la config, démarre l'écoute clavier, sert la page web (launcher), et tourne
+jusqu'à interruption. Tourne sous Python système (pynput/ctypes dispo), hors d'Ableton.
 """
 import logging
 import os
@@ -9,12 +9,12 @@ import sys
 import time
 from logging.handlers import RotatingFileHandler
 
-from detector import launcher, single_instance
-from detector.config import ShortcutConfig, config_path
-from detector.listener import ShortcutListener
-from detector.script_client import ScriptClient
-from detector.settings import Settings
-from detector.version import __version__
+from agent import launcher, single_instance
+from agent.config import ShortcutConfig, config_path
+from agent.listener import ShortcutListener
+from agent.script_client import ScriptClient
+from agent.settings import Settings
+from agent.version import __version__
 
 
 def _log_dir() -> str:
@@ -24,9 +24,9 @@ def _log_dir() -> str:
 
 
 def _configure_logging() -> None:
-    """Logge vers fichier rotatif (%APPDATA%\\Protocol0\\logs\\detector.log) ET console.
+    """Logge vers fichier rotatif (%APPDATA%\\Protocol0\\logs\\agent.log) ET console.
 
-    Le fichier est l'unique diagnostic quand le détecteur tourne en tâche planifiée
+    Le fichier est l'unique diagnostic quand l'agent tourne en tâche planifiée
     sans console (exe no-console). Le handler console reste utile en dev terminal et
     devient un no-op silencieux sous l'exe gelé sans console attachée.
     """
@@ -35,7 +35,7 @@ def _configure_logging() -> None:
     root.setLevel(logging.INFO)
 
     file_handler = RotatingFileHandler(
-        os.path.join(_log_dir(), "detector.log"),
+        os.path.join(_log_dir(), "agent.log"),
         maxBytes=2_000_000,
         backupCount=5,
         encoding="utf-8",
@@ -50,16 +50,16 @@ def _configure_logging() -> None:
 
 def start() -> None:
     _configure_logging()
-    logger = logging.getLogger("detector")
-    logger.info("detector version: %s", __version__)
+    logger = logging.getLogger("agent")
+    logger.info("agent version: %s", __version__)
 
     if sys.platform != "win32":
-        logger.error("detector prototype is Windows-only (foreground check is Win32)")
+        logger.error("agent is Windows-only (foreground check is Win32)")
         return
 
-    # Un seul detector à la fois : deux instances = deux hooks clavier = raccourci en double.
+    # Un seul agent à la fois : deux instances = deux hooks clavier = raccourci en double.
     if not single_instance.acquire():
-        logger.info("another detector instance is already running, exiting")
+        logger.info("another agent instance is already running, exiting")
         return
 
     settings = Settings()

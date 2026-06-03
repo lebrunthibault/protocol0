@@ -8,7 +8,7 @@ from protocol0.version import __version__
 
 @route("GET", "/health")
 def health() -> Dict[str, Any]:
-    """Liveness probe (cible de ping non ambiguë pour le launcher du detector)."""
+    """Liveness probe (cible de ping non ambiguë pour la page web de l'agent)."""
     return {"ok": True, "version": __version__}
 
 

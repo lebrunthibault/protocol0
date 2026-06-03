@@ -1,9 +1,9 @@
 """Client HTTP vers l'API du remote script.
 
-Le détecteur ne fait que remplacer AHK comme producteur d'événements :
+L'agent ne fait que remplacer AHK comme producteur d'événements :
 l'API d'action exposée par le script est inchangée.
 
-L'URL de base est résolue À CHAQUE APPEL, pas une fois pour toutes : le detector vit du
+L'URL de base est résolue À CHAQUE APPEL, pas une fois pour toutes : l'agent vit du
 logon au logoff, alors qu'Ableton (et son serveur, sur un port dynamique) démarre/s'arrête
 plusieurs fois entre-temps. On lit donc l'URL courante depuis P0_SCRIPT_PORT (override) ou
 runtime.json à chaque exécution d'un binding ; absence = script pas actif = no-op.
@@ -13,11 +13,11 @@ from typing import Optional
 
 import requests
 
-from detector import runtime_state
-from detector.config import Binding
-from detector.settings import Settings
+from agent import runtime_state
+from agent.config import Binding
+from agent.settings import Settings
 
-logger = logging.getLogger("detector")
+logger = logging.getLogger("agent")
 
 
 class ScriptClient:

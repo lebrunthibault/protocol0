@@ -1,7 +1,7 @@
 """One-command local dev setup, cross-platform (Windows + macOS).
 
-Sets up both poetry envs (remote script + detector) and deploys the remote script
-into Ableton. After this, `make detector` is all you need.
+Sets up both poetry envs (remote script + agent) and deploys the remote script
+into Ableton. After this, `make agent` is all you need.
 
 Prerequisites the dev installs once (this script checks, it does not install them):
   - make, poetry, and a Python >= 3.11.
@@ -17,7 +17,7 @@ import install_remote_script
 from _pyfind import REPO_ROOT, find_python311
 
 # Projects that each get their own poetry env.
-POETRY_PROJECTS = ["src/script", "src/detector"]
+POETRY_PROJECTS = ["src/script", "src/agent"]
 
 
 def _require_poetry():
@@ -45,7 +45,7 @@ def main():
         _run(["poetry", "install"], cwd=project)
 
     install_remote_script.main()
-    print("Bootstrap complete - run 'make detector' to start.")
+    print("Bootstrap complete - run 'make agent' to start.")
 
 
 if __name__ == "__main__":
