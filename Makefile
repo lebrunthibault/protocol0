@@ -24,6 +24,12 @@ frontend:
 	@cd src/frontend && npm run dev
 .PHONY: frontend
 
+# Tail combine les logs Ableton (remote script, via Log.txt) et ceux de l'agent
+# (%APPDATA%\Protocol0\logs\agent.log) dans un seul terminal. Stdlib pur, Windows-only.
+logs:
+	@$(PY) scripts/logs.py
+.PHONY: logs
+
 # Affiche les process agent en cours (exe gele + mode source) et les tue.
 # Deux agents en parallele = un raccourci declenche plusieurs fois (cf.
 # docs/debug-double-shortcut.md) : a lancer si un lancement source traine.
