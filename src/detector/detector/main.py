@@ -9,7 +9,7 @@ import sys
 import time
 from logging.handlers import RotatingFileHandler
 
-from detector import launcher
+from detector import launcher, single_instance
 from detector.config import ShortcutConfig, config_path
 from detector.listener import ShortcutListener
 from detector.script_client import ScriptClient
@@ -55,6 +55,11 @@ def start() -> None:
 
     if sys.platform != "win32":
         logger.error("detector prototype is Windows-only (foreground check is Win32)")
+        return
+
+    # Un seul detector à la fois : deux instances = deux hooks clavier = raccourci en double.
+    if not single_instance.acquire():
+        logger.info("another detector instance is already running, exiting")
         return
 
     settings = Settings()
