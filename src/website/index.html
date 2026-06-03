@@ -9,9 +9,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/shared.css">
+<link rel="stylesheet" href="/design-system.css">
 <style>
-  /* ---------- Hero (landing only) ---------- */
+  /* Page-specific styles for the landing page only.
+     Shared tokens & components (cards, buttons, eyebrow, badge, callouts,
+     tables, footer…) live in /design-system.css. */
+
+  /* ---------- Hero ---------- */
   .hero{position:relative;padding:118px 0 56px;text-align:center;overflow:hidden}
   .waves{
     position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:3px;
@@ -22,139 +26,89 @@
   }
   .waves span{
     width:2px;border-radius:2px;
-    background:linear-gradient(to bottom,transparent,rgba(120,170,255,0.55),transparent);
+    background:linear-gradient(to bottom,transparent,var(--accent-soft),transparent);
     animation:pulse 3.6s ease-in-out infinite;
   }
   @keyframes pulse{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
   @media (prefers-reduced-motion:reduce){.waves span{animation:none}}
 
   .hero-inner{position:relative;z-index:1}
-  .eyebrow{
-    display:inline-flex;align-items:center;gap:8px;
-    font-size:12.5px;color:var(--muted);
-    border:1px solid var(--line);border-radius:100px;
-    padding:5px 13px 5px 9px;margin-bottom:30px;
-    background:rgba(255,255,255,0.02);
-  }
-  .eyebrow .badge{
-    font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;
-    color:var(--accent);background:rgba(77,159,255,0.12);
-    padding:2px 6px;border-radius:5px;letter-spacing:.02em;
-  }
+  .hero .eyebrow{margin-bottom:var(--space-6)}
   h1{
-    font-size:clamp(38px,6.4vw,68px);
-    font-weight:600;line-height:1.04;letter-spacing:-0.025em;
+    font-size:var(--fs-h1);
+    font-weight:var(--fw-semibold);line-height:1.04;letter-spacing:var(--ls-tight);
     margin:0 auto;max-width:none;
   }
   h1 .accent{color:var(--accent)}
-  h1 .sub-title{font-size:.62em;font-weight:500;color:#c9cbd1;letter-spacing:-0.02em;display:inline-block;margin-top:.18em;white-space:nowrap}
+  h1 .sub-title{font-size:.62em;font-weight:var(--fw-medium);color:var(--text-soft);letter-spacing:-0.02em;display:inline-block;margin-top:.18em;white-space:nowrap}
   .hero p.lead{
-    margin:24px auto 0;max-width:42ch;
+    margin:var(--space-5) auto 0;max-width:42ch;
     font-size:clamp(16px,2vw,19px);color:var(--muted);line-height:1.55;
   }
-  .hero-actions{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:38px;flex-wrap:wrap}
-  .hero-actions .btn{padding:12px 22px;font-size:15px}
+  .hero-actions{display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:38px;flex-wrap:wrap}
+  .hero-actions .btn{padding:12px 22px;font-size:var(--fs-md)}
 
   /* keycaps motif */
   .keys{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:60px}
   .keycap{
-    font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:500;color:#c9cbd1;
+    font-family:var(--font-mono);font-size:var(--fs-md);font-weight:var(--fw-medium);color:var(--text-soft);
     min-width:48px;height:48px;padding:0 14px;
     display:flex;align-items:center;justify-content:center;
     border-radius:11px;
     background:linear-gradient(180deg,#191b1f,#0c0d10);
     border:1px solid var(--line-strong);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,0.07),0 3px 0 rgba(0,0,0,0.6),0 8px 22px rgba(0,0,0,0.5);
+    box-shadow:var(--shadow-key);
   }
-  .keycap.lit{color:#fff;border-color:rgba(77,159,255,0.5);box-shadow:inset 0 1px 0 rgba(255,255,255,0.1),0 3px 0 rgba(0,0,0,0.6),0 0 24px rgba(77,159,255,0.4)}
-  .keys .plus{color:var(--muted-2);font-size:18px}
+  .keycap.lit{color:#fff;border-color:rgba(77,159,255,0.5);box-shadow:var(--shadow-key-lit)}
+  .keys .plus{color:var(--muted-2);font-size:var(--fs-xl)}
 
-  /* ---------- Feature card ---------- */
-  .card-head{
-    display:flex;align-items:center;gap:10px;
-    font-size:13px;font-weight:500;color:var(--muted);
-    padding-bottom:22px;margin-bottom:8px;border-bottom:1px solid var(--line);
-    position:relative;
-  }
-  .card-head .ico{color:var(--accent)}
+  /* ---------- Feature list (inside a .card) ---------- */
   .feature{
-    display:flex;gap:16px;align-items:flex-start;
+    display:flex;gap:var(--space-4);align-items:flex-start;
     padding:17px 0;border-bottom:1px solid var(--line);position:relative;
   }
   .feature:last-child{border-bottom:none;padding-bottom:2px}
   .feature .ic{
-    flex:0 0 auto;width:34px;height:34px;border-radius:9px;
+    flex:0 0 auto;width:34px;height:34px;border-radius:var(--radius-md);
     display:flex;align-items:center;justify-content:center;
-    background:rgba(77,159,255,0.08);border:1px solid rgba(77,159,255,0.18);
+    background:var(--accent-bg);border:1px solid var(--accent-line);
     color:var(--accent-soft);
   }
   .feature .ic svg{width:17px;height:17px}
-  .feature .txt h3{font-size:15.5px;font-weight:500;color:var(--text);letter-spacing:-0.01em}
-  .feature .txt p{font-size:14px;color:var(--muted);margin-top:3px;line-height:1.5}
-  .feature .txt p code{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--accent-soft);background:rgba(77,159,255,0.08);padding:1px 5px;border-radius:4px}
+  .feature .txt h3{font-size:15.5px;font-weight:var(--fw-medium);color:var(--text);letter-spacing:var(--ls-snug)}
+  .feature .txt p{font-size:var(--fs-base);color:var(--muted);margin-top:3px;line-height:var(--lh-snug)}
 
-  /* ---------- Download ---------- */
-  .download-card{
-    background:linear-gradient(180deg,var(--panel-2),var(--panel));
-    border:1px solid var(--line);border-radius:20px;
-    padding:54px 40px;text-align:center;position:relative;overflow:hidden;
-  }
-  .download-card::after{
-    content:"";position:absolute;left:50%;top:-40%;transform:translateX(-50%);
-    width:520px;height:320px;border-radius:50%;
-    background:radial-gradient(circle,rgba(77,159,255,0.16),transparent 65%);
-    pointer-events:none;
-  }
-  .download-card .inner{position:relative;z-index:1}
-  .download-card h2{margin-bottom:0}
-  .download-card .sub{margin-top:14px}
-  .download-card .btn{margin-top:30px;padding:14px 26px;font-size:15px}
-  .meta-line{
-    margin-top:22px;font-size:13px;color:var(--muted-2);
-    font-family:'JetBrains Mono',monospace;display:flex;gap:18px;justify-content:center;flex-wrap:wrap;
-  }
-  .meta-line span{display:inline-flex;align-items:center;gap:6px}
-
-  /* ---------- Contact ---------- */
-  .contact-card{
-    border:1px solid var(--line);border-radius:20px;background:var(--panel);
-    padding:42px 40px;text-align:center;
-  }
-  .contact-card h2{font-size:clamp(24px,3vw,32px)}
-  .mail{
-    display:inline-flex;align-items:center;gap:10px;margin-top:24px;
-    font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--text);
-    padding:13px 22px;border-radius:11px;
-    border:1px solid var(--line-strong);background:rgba(255,255,255,0.03);transition:all .2s;
-  }
-  .mail:hover{border-color:rgba(77,159,255,0.5);color:#fff;box-shadow:0 0 24px rgba(77,159,255,0.18)}
-  .mail svg{width:16px;height:16px;color:var(--accent)}
-
-  /* ---------- Installation / How it works ---------- */
-  .info-card{
-    background:linear-gradient(180deg,var(--panel-2),var(--panel));
-    border:1px solid var(--line);border-radius:20px;
-    padding:40px 40px;text-align:center;position:relative;overflow:hidden;
-  }
+  /* ---------- Section-card local tweaks ---------- */
+  .info-card{padding:var(--space-7) var(--space-7)}
+  .contact-card{padding:42px var(--space-7)}
+  .info-card h2,.contact-card h2{font-size:clamp(24px,3vw,32px)}
   .info-card .kicker{margin-bottom:10px}
-  .info-card h2{font-size:clamp(24px,3vw,32px)}
-  .info-card p{color:var(--muted);max-width:52ch;margin:14px auto 0;font-size:16px;line-height:1.6}
+  .info-card p{color:var(--muted);max-width:52ch;margin:var(--space-4) auto 0;font-size:16px;line-height:var(--lh-relaxed)}
   .info-card .doclink{
-    display:inline-flex;align-items:center;gap:8px;margin-top:24px;
-    font-size:15px;font-weight:500;color:var(--accent);
-    padding:11px 20px;border-radius:9px;
-    border:1px solid rgba(77,159,255,0.3);background:rgba(77,159,255,0.06);transition:all .2s;
+    display:inline-flex;align-items:center;gap:var(--space-2);margin-top:var(--space-5);
+    font-size:var(--fs-md);font-weight:var(--fw-medium);color:var(--accent);
+    padding:11px 20px;border-radius:var(--radius-md);
+    border:1px solid rgba(77,159,255,0.3);background:var(--accent-bg);transition:all var(--t);
   }
   .info-card .doclink:hover{border-color:rgba(77,159,255,0.6);background:rgba(77,159,255,0.1);color:var(--accent-soft)}
   .info-card .doclink svg{width:14px;height:14px}
-  .info-card p a.inline{color:var(--accent);transition:color .2s}
+  .info-card p a.inline{color:var(--accent);transition:color var(--t)}
   .info-card p a.inline:hover{color:var(--accent-soft);text-decoration:underline}
-  .info-card p code{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--accent-soft);background:rgba(77,159,255,0.08);padding:2px 6px;border-radius:5px;white-space:nowrap}
+  .info-card p code{font-size:var(--fs-base);white-space:nowrap}
+
+  /* ---------- Contact ---------- */
+  .mail{
+    display:inline-flex;align-items:center;gap:10px;margin-top:var(--space-5);
+    font-family:var(--font-mono);font-size:16px;color:var(--text);
+    padding:13px 22px;border-radius:11px;
+    border:1px solid var(--line-strong);background:rgba(255,255,255,0.03);transition:all var(--t);
+  }
+  .mail:hover{border-color:rgba(77,159,255,0.5);color:#fff;box-shadow:var(--shadow-glow)}
+  .mail svg{width:16px;height:16px;color:var(--accent)}
 
   @media (max-width:720px){
     .hero{padding:90px 0 64px}
     .keys{flex-wrap:wrap}
-    .download-card{padding:42px 24px}
   }
 </style>
 </head>
@@ -253,7 +207,7 @@
 <!-- INSTALLATION -->
 <section class="section-pad" id="installation">
   <div class="wrap col">
-    <div class="info-card">
+    <div class="card card--center info-card">
       <div class="kicker">Installation</div>
       <h2>Up and running in minutes</h2>
       <p>Launch the <a href="https://github.com/lebrunthibault/protocol0/releases" target="_blank" rel="noopener" class="inline">installer</a>, activate the Protocol 0 remote script in Ableton and configure your shortcuts at <code>http://localhost:9000</code></p>
@@ -268,7 +222,7 @@
 <!-- HOW IT WORKS -->
 <section class="section-pad" id="how-it-works">
   <div class="wrap col">
-    <div class="info-card">
+    <div class="card card--center info-card">
       <div class="kicker">How does it work?</div>
       <h2>A remote script, wired into Live</h2>
       <p>Protocol&#8202;0 works by installing itself as a remote script. Learn more in the <a href="/docs/" class="inline">documentation</a>.</p>
@@ -279,7 +233,7 @@
 <!-- CONTACT -->
 <section class="section-pad" id="contact">
   <div class="wrap col">
-    <div class="contact-card">
+    <div class="card card--flat card--center contact-card">
       <div class="kicker">Contact</div>
       <h2>Questions, ideas, feedback?</h2>
       <p class="sub">Reach out directly — I'd love to hear your ideas for  you use Protocol&#8202;0.</p>

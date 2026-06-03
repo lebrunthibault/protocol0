@@ -11,7 +11,8 @@ for text, `JetBrains Mono` for keycaps/code, the `#4d9fff` blue accent.
 ```
 src/website/
 ├── index.html          Landing page
-├── shared.css          Design tokens + shared header/footer/card styles
+├── design-system.css   Design tokens + all shared components (source of truth)
+├── DESIGN.md           How to reuse the design system in another surface
 ├── vercel.json         Deployment config (headers, URL handling)
 ├── docs/
 │   ├── docs.css         Docs layout (sidebar + prose)
@@ -23,7 +24,7 @@ src/website/
 └── README.md           (this file)
 ```
 
-All internal links are root-absolute (`/`, `/docs/…`, `/shared.css`), so the site
+All internal links are root-absolute (`/`, `/docs/…`, `/design-system.css`), so the site
 must be served from the **root of the deployment** — which is exactly what
 pointing Vercel at this folder does.
 
@@ -40,7 +41,7 @@ npx serve .
 ```
 
 Opening `index.html` directly via `file://` mostly works, but the root-absolute
-links (`/docs/`, `/shared.css`) resolve against the filesystem root, so use a
+links (`/docs/`, `/design-system.css`) resolve against the filesystem root, so use a
 local server for an accurate preview.
 
 ## Deploy on Vercel
@@ -59,8 +60,10 @@ directory is set. Every push to the repo redeploys.
 
 ## Editing notes
 
-- **Copy & design** are driven by the design handoff. Tokens live in `shared.css`
-  (`:root`); change them there to retheme everything at once.
+- **Copy & design** are driven by the design handoff. Tokens and components live
+  in `design-system.css` (`:root` + component classes); change tokens there to
+  retheme everything at once. See `DESIGN.md` to reuse the system elsewhere (e.g.
+  the script's web UI).
 - **Docs content** is hand-written from the project's behavior. When the app
   changes (new actions, new endpoints, macOS support), update the relevant page
   in `docs/`.

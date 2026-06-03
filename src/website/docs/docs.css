@@ -1,126 +1,93 @@
 /* Protocol 0 — docs layout & prose styles.
-   Loaded on top of /shared.css. Two-column layout: sticky sidebar + article. */
+   Loaded on top of /design-system.css. Only the docs-specific layout and prose
+   live here; shared components (cards, callouts, tables, code…) come from the
+   design system. Two-column layout: sticky sidebar + article. */
 .docs-layout{
-  max-width:var(--maxw);margin:0 auto;padding:0 24px;
+  max-width:var(--maxw);margin:0 auto;padding:0 var(--space-5);
   display:grid;grid-template-columns:220px 1fr;gap:48px;
   align-items:start;
 }
 .docs-sidebar{
   position:sticky;top:88px;
-  padding:24px 0;
+  padding:var(--space-5) 0;
 }
 .docs-sidebar .group{margin-bottom:26px}
 .docs-sidebar .group-title{
-  font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  font-size:var(--fs-xs);font-weight:var(--fw-semibold);letter-spacing:.08em;text-transform:uppercase;
   color:var(--muted-2);margin-bottom:10px;
 }
 .docs-sidebar a{
-  display:block;font-size:14px;color:var(--muted);
-  padding:6px 12px;border-radius:8px;transition:all .15s;
+  display:block;font-size:var(--fs-base);color:var(--muted);
+  padding:6px var(--space-3);border-radius:var(--radius-sm);transition:all var(--t-fast);
   border-left:2px solid transparent;
 }
 .docs-sidebar a:hover{color:var(--text);background:rgba(255,255,255,0.03)}
 .docs-sidebar a.active{
-  color:var(--text);background:rgba(77,159,255,0.08);
+  color:var(--text);background:var(--accent-bg);
   border-left-color:var(--accent);
 }
 
+/* ---------- Article (prose) ---------- */
 .docs-article{
-  padding:40px 0 80px;max-width:760px;min-width:0;
-}
-.docs-article .eyebrow-doc{
-  font-size:13px;font-weight:500;letter-spacing:.04em;color:var(--accent);margin-bottom:10px;
+  padding:var(--space-7) 0 80px;max-width:760px;min-width:0;
 }
 .docs-article h1{
-  font-size:clamp(30px,4vw,42px);font-weight:600;letter-spacing:-0.025em;line-height:1.1;
+  font-size:var(--fs-doc-h1);font-weight:var(--fw-semibold);letter-spacing:var(--ls-tight);line-height:var(--lh-tight);
   margin-bottom:14px;
 }
 .docs-article .lead{
-  font-size:18px;color:var(--muted);line-height:1.55;margin-bottom:8px;
+  font-size:var(--fs-xl);color:var(--muted);line-height:1.55;margin-bottom:var(--space-2);
   max-width:60ch;
 }
 .docs-article h2{
-  text-align:left;font-size:24px;font-weight:600;letter-spacing:-0.02em;
+  text-align:left;font-size:var(--fs-2xl);font-weight:var(--fw-semibold);letter-spacing:-0.02em;
   margin:46px 0 14px;line-height:1.2;
   padding-top:14px;
 }
 .docs-article h3{
-  font-size:17px;font-weight:600;margin:28px 0 10px;letter-spacing:-0.01em;
+  font-size:var(--fs-lg);font-weight:var(--fw-semibold);margin:28px 0 10px;letter-spacing:var(--ls-snug);
 }
-.docs-article p{color:#c2c4ca;margin:12px 0;line-height:1.65}
-.docs-article a.link{color:var(--accent);transition:color .2s}
+.docs-article p{color:var(--text-soft);margin:var(--space-3) 0;line-height:var(--lh-relaxed)}
+.docs-article a.link{color:var(--accent);transition:color var(--t)}
 .docs-article a.link:hover{color:var(--accent-soft);text-decoration:underline}
-.docs-article ul,.docs-article ol{margin:12px 0 12px 22px;color:#c2c4ca;line-height:1.65}
+.docs-article ul,.docs-article ol{margin:var(--space-3) 0 var(--space-3) 22px;color:var(--text-soft);line-height:var(--lh-relaxed)}
 .docs-article li{margin:6px 0}
 .docs-article li::marker{color:var(--muted-2)}
-.docs-article strong{color:var(--text);font-weight:600}
+.docs-article strong{color:var(--text);font-weight:var(--fw-semibold)}
 
-.docs-article code{
-  font-family:'JetBrains Mono',monospace;font-size:13px;
-  color:var(--accent-soft);background:rgba(77,159,255,0.08);
-  padding:2px 6px;border-radius:5px;
-}
-.docs-article pre{
-  background:linear-gradient(180deg,var(--panel-2),var(--panel));
-  border:1px solid var(--line);border-radius:12px;
-  padding:18px 20px;margin:18px 0;overflow-x:auto;
-}
-.docs-article pre code{
-  background:none;padding:0;color:#d4d6dc;font-size:13px;line-height:1.6;display:block;
-}
-
-/* callouts */
-.note,.warn{
-  border:1px solid var(--line);border-radius:12px;
-  padding:14px 18px;margin:20px 0;font-size:14.5px;line-height:1.6;
-  display:flex;gap:12px;
-}
-.note{background:rgba(77,159,255,0.06);border-color:rgba(77,159,255,0.2)}
-.warn{background:rgba(255,176,77,0.05);border-color:rgba(255,176,77,0.22)}
-.note .ic,.warn .ic{flex:0 0 auto;width:18px;height:18px;margin-top:1px}
-.note .ic{color:var(--accent)}
-.warn .ic{color:#ffb04d}
-.note p,.warn p{margin:0;color:#d4d6dc}
-.note p:not(:first-child),.warn p:not(:first-child){margin-top:8px}
-
-/* tables */
+/* Article tables reuse the shared .table styling */
 .docs-article table{
-  width:100%;border-collapse:collapse;margin:18px 0;font-size:14px;
+  width:100%;border-collapse:collapse;margin:18px 0;font-size:var(--fs-base);
 }
 .docs-article th,.docs-article td{
   text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);
   vertical-align:top;
 }
-.docs-article th{color:var(--muted);font-weight:600;font-size:12.5px;letter-spacing:.03em;text-transform:uppercase}
-.docs-article td{color:#c2c4ca}
+.docs-article th{color:var(--muted);font-weight:var(--fw-semibold);font-size:12.5px;letter-spacing:.03em;text-transform:uppercase}
+.docs-article td{color:var(--text-soft)}
 .docs-article td code{white-space:nowrap}
 
-/* prev / next nav */
-.doc-nav{display:flex;justify-content:space-between;gap:16px;margin-top:60px;flex-wrap:wrap}
+/* ---------- Prev / next nav ---------- */
+.doc-nav{display:flex;justify-content:space-between;gap:var(--space-4);margin-top:60px;flex-wrap:wrap}
 .doc-nav a{
   flex:1 1 0;min-width:200px;
-  border:1px solid var(--line);border-radius:12px;padding:16px 18px;
-  transition:all .2s;background:rgba(255,255,255,0.02);
+  border:1px solid var(--line);border-radius:var(--radius-lg);padding:16px 18px;
+  transition:all var(--t);background:rgba(255,255,255,0.02);
 }
 .doc-nav a:hover{border-color:var(--line-strong);background:rgba(255,255,255,0.04)}
-.doc-nav .dir{font-size:12px;color:var(--muted-2);margin-bottom:4px}
-.doc-nav .ttl{font-size:15px;color:var(--text);font-weight:500}
+.doc-nav .dir{font-size:12px;color:var(--muted-2);margin-bottom:var(--space-1)}
+.doc-nav .ttl{font-size:var(--fs-md);color:var(--text);font-weight:var(--fw-medium)}
 .doc-nav .next{text-align:right}
 
-/* docs index cards */
+/* ---------- Docs index card grid ----------
+   Tiles use the shared .card .card--compact; this just lays them out. */
 .doc-cards{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:34px}
-.doc-cards a{
-  border:1px solid var(--line);border-radius:14px;padding:22px 24px;
-  background:linear-gradient(180deg,var(--panel-2),var(--panel));
-  transition:all .2s;
-}
-.doc-cards a:hover{border-color:rgba(77,159,255,0.3);transform:translateY(-2px)}
-.doc-cards h3{font-size:17px;font-weight:600;margin-bottom:6px}
-.doc-cards p{font-size:14px;color:var(--muted);line-height:1.5;margin:0}
+.doc-cards h3{font-size:var(--fs-lg);font-weight:var(--fw-semibold);margin-bottom:6px}
+.doc-cards p{font-size:var(--fs-base);color:var(--muted);line-height:var(--lh-snug);margin:0}
 
 @media (max-width:860px){
   .docs-layout{grid-template-columns:1fr}
-  .docs-sidebar{position:static;padding:16px 0;border-bottom:1px solid var(--line)}
-  .docs-sidebar .group{margin-bottom:14px}
+  .docs-sidebar{position:static;padding:var(--space-4) 0;border-bottom:1px solid var(--line)}
+  .docs-sidebar .group{margin-bottom:var(--space-4)}
   .doc-cards{grid-template-columns:1fr}
 }

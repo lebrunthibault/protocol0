@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/shared.css">
+<link rel="stylesheet" href="/design-system.css">
 <link rel="stylesheet" href="/docs/docs.css">
 </head>
 <body>
@@ -48,26 +48,26 @@
   </aside>
 
   <article class="docs-article">
-    <div class="eyebrow-doc">Documentation</div>
+    <div class="label-accent">Documentation</div>
     <h1>Protocol&#8202;0 docs</h1>
     <p class="lead">Protocol&#8202;0 is a companion app for Ableton Live. It runs a global keyboard-shortcut manager that works across all your sets, so you can keymap custom actions — load a device by name, select a track, or anything the Live API exposes.</p>
 
     <p>The system is two cooperating pieces: a background <strong>detector</strong> that watches the keyboard, and a <strong>remote script</strong> that lives inside Ableton and runs the actions. They talk to each other over a small localhost HTTP API. You don't have to think about any of that to use it — but it's all here if you want to script against it.</p>
 
     <div class="doc-cards">
-      <a href="/docs/installation.html">
+      <a class="card card--compact" href="/docs/installation.html">
         <h3>Installation →</h3>
         <p>Download the installer, what it sets up, and how to confirm it's running.</p>
       </a>
-      <a href="/docs/shortcuts.html">
+      <a class="card card--compact" href="/docs/shortcuts.html">
         <h3>Configuring shortcuts →</h3>
         <p>Map key combos to actions from the web UI, the combo format, and where your config lives.</p>
       </a>
-      <a href="/docs/http-api.html">
+      <a class="card card--compact" href="/docs/http-api.html">
         <h3>HTTP API →</h3>
         <p>The localhost API to drive Live from a Stream Deck or any external gear.</p>
       </a>
-      <a href="/docs/faq.html">
+      <a class="card card--compact" href="/docs/faq.html">
         <h3>FAQ &amp; troubleshooting →</h3>
         <p>Requirements, known limitations, and fixes for the common gotchas.</p>
       </a>
