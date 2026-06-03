@@ -31,6 +31,14 @@ kill-agent:
 	@$(PY) scripts/kill_agent.py
 .PHONY: kill-agent
 
+# Build and run the spike Ableton Extensions SDK extension (src/js-extension)
+# in Live's Extension Host. Requires Node >= 24.14.1, Live 12.4.x Beta with
+# Developer Mode ON, and an open Set. It serves an HTTP API (port 9005) and
+# publishes its URL to runtime.json, like the Python script does.
+extension:
+	@cd src/js-extension && npm start
+.PHONY: extension
+
 # Serve src/website with live-reload for editing the landing page.
 # Uses npx live-server (Node is already present in the repo); the first run
 # downloads it, then it's cached. Override the port with `make website PORT=3000`.
