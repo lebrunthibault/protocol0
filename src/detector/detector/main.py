@@ -57,11 +57,11 @@ def start() -> None:
         return
 
     settings = Settings()
-    client = ScriptClient(settings.p0_script_url)
+    client = ScriptClient(settings)
     config = ShortcutConfig()
 
     logger.info("config: %s", config_path())
-    logger.info("script: %s", settings.p0_script_url)
+    logger.info("script url override: %s", settings.override_url or "(dynamic via runtime.json)")
 
     listener = ShortcutListener(config, client.execute)
     listener.start()
