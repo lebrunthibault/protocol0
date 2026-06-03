@@ -112,6 +112,8 @@ body{
   overflow-x:hidden;
 }
 a{color:inherit;text-decoration:none}
+a.inline{color:var(--accent);transition:color var(--t)}
+a.inline:hover{color:var(--accent-soft);text-decoration:underline}
 ::selection{background:rgba(77,159,255,0.3)}
 
 .wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--space-5)}
