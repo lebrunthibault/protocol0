@@ -28,7 +28,7 @@ détection de conflit, pas de recherche). Éditer ses raccourcis impose donc de 
 | Découpage serveur | **L'agent sert tout** : home + keymapper + api-docs + **`/api`** (CRUD raccourcis). Le script garde son API d'actions interne (`/device/load`…), appelée par l'agent au keypress. |
 | Préfixe API | **`/api`** (pas de versioning — API non publique). |
 | Catalogue d'actions | **Statique, embarqué dans l'agent** (miroir de l'allowlist `load_device`), pour que le sélecteur marche Ableton fermé. |
-| Page api-docs | Page **écrite à la main, stylée au design system** (l'agent est stdlib `http.server`, pas de FastAPI/OpenAPI). Documente uniquement l'API de l'agent. |
+| Page api-docs | Page **écrite à la main, stylée au design system** (pas de FastAPI/OpenAPI). Documente l'**API du script** (les routes pilotant Ableton : `/device/load`, `/track/select`, `/song/toggle_follow`, `/clip/key_detected`, `/set/get_state`, `/health`) — c'est l'API intéressante ; le `/api` de l'agent est de la plomberie interne. Statique (le script a un port dynamique et meurt avec Ableton), à garder en phase avec `src/script/.../routes/*`. |
 | Reload | **Aucune plomberie** : le listener de l'agent recharge `shortcuts.json` par mtime, le script lit en live. |
 
 Étude OSS à l'appui : Navidrome (`ui/`, build gitignoré, `//go:embed`), Syncthing (`gui/`, build
