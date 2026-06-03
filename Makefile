@@ -17,3 +17,10 @@ install:
 detector:
 	@cd src/detector && poetry run detector
 .PHONY: detector
+
+# Serve src/website with live-reload for editing the landing page.
+# Uses npx live-server (Node is already present in the repo); the first run
+# downloads it, then it's cached. Override the port with `make website PORT=3000`.
+website:
+	npx --yes live-server src/website --port=$(or $(PORT),8000)
+.PHONY: website

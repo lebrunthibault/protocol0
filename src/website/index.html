@@ -106,9 +106,40 @@
   .mail:hover{border-color:rgba(77,159,255,0.5);color:#fff;box-shadow:var(--shadow-glow)}
   .mail svg{width:16px;height:16px;color:var(--accent)}
 
+  /* ---------- Comparison table ---------- */
+  .compare-intro{color:var(--muted);max-width:54ch;margin:18px 0 0;font-size:16px;line-height:var(--lh-relaxed)}
+  .compare-intro strong{color:var(--text)}
+  .compare-wrap{margin-top:32px;overflow-x:auto}
+  .compare{width:100%;border-collapse:collapse;font-size:var(--fs-md);min-width:520px}
+  .compare th,.compare td{padding:13px 18px;text-align:left;border-bottom:1px solid var(--line)}
+  .compare thead th{
+    font-family:var(--font-mono);font-size:12.5px;font-weight:var(--fw-semibold);
+    letter-spacing:.03em;text-transform:uppercase;color:var(--muted);
+    border-bottom:1px solid var(--line-strong);
+  }
+  .compare thead th.p0-col{color:var(--accent)}
+  .compare tbody tr:last-child td{border-bottom:none}
+  .compare td.cell{white-space:nowrap}
+  .compare .yes,.compare .no{display:inline-flex;align-items:baseline;gap:9px}
+  .compare .yes{color:var(--ok)}
+  .compare .no{color:var(--err)}
+  .compare .yes::before,.compare .no::before{
+    font-family:var(--font-mono);font-weight:var(--fw-semibold);font-size:13px;flex:0 0 auto;
+  }
+  .compare .yes::before{content:"✓"}
+  .compare .no::before{content:"✕"}
+  .compare td.feat{color:var(--text-soft)}
+
+  /* ---------- Background story ---------- */
+  .story-card{padding:var(--space-7) var(--space-7)}
+  .story-card .kicker{margin-bottom:10px}
+  .story-card p{color:var(--muted);max-width:60ch;margin:var(--space-4) auto 0;font-size:16px;line-height:var(--lh-relaxed)}
+  .story-card p:first-of-type{margin-top:var(--space-5)}
+
   @media (max-width:720px){
     .hero{padding:90px 0 64px}
     .keys{flex-wrap:wrap}
+    .compare th,.compare td{padding:11px 13px}
   }
 </style>
 </head>
@@ -204,6 +235,61 @@
   </div>
 </section>
 
+<!-- COMPARISON -->
+<section class="section-pad" id="comparison">
+  <div class="wrap">
+    <div class="kicker">Ableton vs Protocol&#8202;0</div>
+    <h2>Two different key mappers</h2>
+    <p class="compare-intro">
+      Ableton's keymapper is a basic, <strong>per-set</strong>, direct parameter mapping mode.
+      Protocol&#8202;0 is a <strong>global and smart</strong> keymapper.
+    </p>
+    <div class="compare-wrap">
+      <table class="compare">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Ableton keymapper</th>
+            <th class="p0-col">Protocol&#8202;0</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="feat">Scope</td>
+            <td class="cell"><span class="no">Mappings stored per set</span></td>
+            <td class="cell"><span class="yes">Mappings persist across all sets</span></td>
+          </tr>
+          <tr>
+            <td class="feat">Key combos</td>
+            <td class="cell"><span class="no">Single key mapping</span></td>
+            <td class="cell"><span class="yes">Mappings including modifiers</span></td>
+          </tr>
+          <tr>
+            <td class="feat">Actions</td>
+            <td class="cell"><span class="no">Direct parameter mapping</span></td>
+            <td class="cell"><span class="yes">Mappings include smart actions</span></td>
+          </tr>
+          <tr>
+            <td class="feat">Configuration</td>
+            <td class="cell"><span class="no">Configurable in Live</span></td>
+            <td class="cell"><span class="yes">Configurable via a web interface</span></td>
+          </tr>
+          <tr>
+            <td class="feat">Setup</td>
+            <td class="cell"><span class="yes">Native</span></td>
+            <td class="cell"><span class="yes">Activate it with the Protocol&#8202;0 remote script</span></td>
+          </tr>
+          <tr>
+            <td class="feat">Nature</td>
+            <td class="cell"><span class="no">Static</span></td>
+            <td class="cell"><span class="yes">Open source &amp; extensible</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
 <!-- INSTALLATION -->
 <section class="section-pad" id="installation">
   <div class="wrap col">
@@ -241,6 +327,18 @@
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="3" width="13" height="10" rx="2"/><path d="M2 4l6 4 6-4"/></svg>
         contact@thibaultlebrun.dev
       </a>
+    </div>
+  </div>
+</section>
+
+<!-- BACKGROUND STORY -->
+<section class="section-pad" id="story">
+  <div class="wrap col">
+    <div class="card story-card">
+      <div class="kicker">Background story</div>
+      <h2>Why Protocol&#8202;0 exists</h2>
+      <p>I've been an Ableton user for more than ten years. I started using it around the same time I started coding. I eventually found out you could script Ableton with Python — first by using ClyphX user actions, and then remote scripting. It's been hard, because there isn't a lot of documentation!</p>
+      <p>I love Ableton. It's a great piece of software, even though it has a few rough edges. One of them is the key mapper, which feels too basic and limited. I've been using custom shortcuts for a while now, and finally decided I wanted to share my work with the community!</p>
     </div>
   </div>
 </section>
