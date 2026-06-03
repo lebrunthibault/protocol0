@@ -9,6 +9,7 @@ import sys
 import time
 from logging.handlers import RotatingFileHandler
 
+from detector import launcher
 from detector.config import ShortcutConfig, config_path
 from detector.listener import ShortcutListener
 from detector.script_client import ScriptClient
@@ -65,6 +66,9 @@ def start() -> None:
 
     listener = ShortcutListener(config, client.execute)
     listener.start()
+    # Launcher web (diagnostic + redirection vers l'UI) sur son propre thread daemon :
+    # ne bloque ni la boucle ci-dessous ni le listener pynput.
+    launcher.start()
     # Interruptible wait on the main thread: joining the pynput listener thread
     # directly swallows Ctrl+C on Windows, so poll a short sleep instead.
     try:
@@ -73,6 +77,7 @@ def start() -> None:
     except KeyboardInterrupt:
         logger.info("stopping")
     finally:
+        launcher.stop()
         listener.stop()
 
 
