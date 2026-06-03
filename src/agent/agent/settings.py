@@ -10,11 +10,13 @@ court-circuite runtime.json (cas avancés / dev).
 import os
 from typing import Optional
 
-# Port fixe du serveur "launcher" servi par l'agent (page de diagnostic + redirection
-# vers l'UI du script). Câblé en dur car le raccourci Windows (.url) pointe dessus et doit
-# rester bookmarkable -> pas de fallback dynamique côté launcher. DOIT correspondre à l'URL
-# du raccourci dans installer/protocol0.iss.
-LAUNCHER_PORT = 9010
+# Port fixe du serveur web servi par l'agent (home + keymapper + api docs + /api + /status).
+# Câblé en dur car le raccourci Windows (.url) pointe dessus et doit rester bookmarkable
+# -> pas de fallback dynamique. DOIT correspondre à l'URL du raccourci dans
+# installer/protocol0.iss.
+WEB_PORT = 9010
+# Alias rétro-compat (l'ancien nom était LAUNCHER_PORT).
+LAUNCHER_PORT = WEB_PORT
 
 
 class Settings:

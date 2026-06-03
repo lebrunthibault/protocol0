@@ -9,7 +9,7 @@ import sys
 import time
 from logging.handlers import RotatingFileHandler
 
-from agent import launcher, single_instance
+from agent import single_instance, web
 from agent.config import ShortcutConfig, config_path
 from agent.listener import ShortcutListener
 from agent.script_client import ScriptClient
@@ -71,9 +71,9 @@ def start() -> None:
 
     listener = ShortcutListener(config, client.execute)
     listener.start()
-    # Launcher web (diagnostic + redirection vers l'UI) sur son propre thread daemon :
+    # Serveur web (SPA + /api + /status) sur son propre thread daemon :
     # ne bloque ni la boucle ci-dessous ni le listener pynput.
-    launcher.start()
+    web.start()
     # Interruptible wait on the main thread: joining the pynput listener thread
     # directly swallows Ctrl+C on Windows, so poll a short sleep instead.
     try:
@@ -82,7 +82,7 @@ def start() -> None:
     except KeyboardInterrupt:
         logger.info("stopping")
     finally:
-        launcher.stop()
+        web.stop()
         listener.stop()
 
 

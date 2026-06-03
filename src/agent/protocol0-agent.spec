@@ -5,10 +5,13 @@
 # Sortie : dist/protocol0-agent.exe (binaire autonome, sans Python ni Poetry requis sur la cible).
 #
 # Notes :
-# - L'exe ouvre désormais un socket d'écoute LOCAL (127.0.0.1:9010, page launcher) en plus de
-#   capturer le clavier. Aucun appel réseau sortant, aucun download/lancement d'exe : le profil
-#   antivirus reste proche du Jalon 1. http.server/json sont stdlib (statiquement visibles),
-#   requests est déjà embarqué -> pas de nouvel hiddenimport requis.
+# - L'exe sert un site web LOCAL (127.0.0.1:9010 : home + keymapper + api docs + /api + /status)
+#   en plus de capturer le clavier. Aucun appel réseau sortant, aucun download/lancement d'exe :
+#   le profil antivirus reste proche du Jalon 1. http.server/json sont stdlib (statiquement
+#   visibles), requests est déjà embarqué -> pas de nouvel hiddenimport requis.
+# - La SPA Vue 3 (build statique src/frontend/dist) est embarquée via datas (dossier "frontend")
+#   et lue via sys._MEIPASS par agent/web/static_files.py. Le build DOIT exister avant PyInstaller
+#   (cf. scripts/windows/build_installer.ps1, étape Vite).
 # - console=False : l'exe est lancé caché par la tâche planifiée au logon ; pas de flash de console.
 # - hiddenimports : pynput charge son backend plateforme paresseusement (pynput.keyboard._win32 /
 #   pynput.mouse._win32), que l'analyse statique de PyInstaller ne voit pas -> sans ça l'exe gelé
@@ -22,9 +25,12 @@ a = Analysis(
     ['agent\\main_entry.py'],
     pathex=[],
     binaries=[],
-    # VERSION (racine du repo) embarqué dans le bundle -> lu via sys._MEIPASS par
-    # agent/version.py, l'exe n'ayant pas d'arbre source pour remonter jusqu'à lui.
-    datas=[('..\\..\\VERSION', '.')],
+    # VERSION (racine du repo) -> lu via sys._MEIPASS par agent/version.py.
+    # frontend/dist (build Vite de la SPA) -> dossier "frontend", lu par agent/web/static_files.py.
+    datas=[
+        ('..\\..\\VERSION', '.'),
+        ('..\\..\\src\\frontend\\dist', 'frontend'),
+    ],
     hiddenimports=['pynput.keyboard._win32', 'pynput.mouse._win32'],
     hookspath=[],
     hooksconfig={},
