@@ -14,7 +14,10 @@ install:
 	@$(PY) scripts/install_remote_script.py
 .PHONY: install
 
-agent:
+# kill-agent first: a leftover agent (frozen exe from the scheduled task, or a stale
+# source run) coexisting with this one means a single shortcut fires twice
+# (cf. docs/debug-double-shortcut.md). Cleaning up before launch guarantees one agent.
+agent: kill-agent
 	@cd src/agent && poetry run agent
 .PHONY: agent
 
@@ -23,6 +26,13 @@ agent:
 frontend:
 	@cd src/frontend && npm run dev
 .PHONY: frontend
+
+# Rebuild the production SPA bundle (src/frontend/dist) that the agent serves on
+# :9010. Run this then refresh the browser to see your changes in the real agent
+# UI (no reinstall needed in dev — static_files reads dist/ from disk).
+frontend-build:
+	@cd src/frontend && npm run build
+.PHONY: frontend-build
 
 # Tail combine les logs Ableton (remote script, via Log.txt) et ceux de l'agent
 # (%APPDATA%\Protocol0\logs\agent.log) dans un seul terminal. Stdlib pur, Windows-only.

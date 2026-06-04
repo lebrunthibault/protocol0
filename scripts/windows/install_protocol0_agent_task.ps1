@@ -46,6 +46,13 @@ if (Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue) {
     Unregister-ScheduledTask -TaskName $taskName -Confirm:$false
 }
 
+# Kill any agent already running before we (re)start the task. Unregistering the task
+# does NOT stop a process it previously launched, and a manually-launched agent is
+# unknown to the task entirely -- either way a leftover means two agents in parallel,
+# which makes a single shortcut fire twice (cf. docs/debug-double-shortcut.md). After
+# this, the Start-ScheduledTask below leaves exactly one agent running.
+taskkill /F /IM protocol0-agent.exe 2>$null | Out-Null
+
 Register-ScheduledTask `
     -TaskName $taskName `
     -Action $action `

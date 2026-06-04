@@ -9,9 +9,7 @@ import { DOCS_URL } from "../config";
       <div class="kicker">Ableton 12 · Windows</div>
       <h1 class="home-title">Your Ableton, on muscle memory.</h1>
       <p class="home-sub">
-        Protocol 0 lets you drive Ableton Live from global keyboard shortcuts — load devices,
-        select tracks, and more — without ever leaving your hands on the keys. Configure
-        everything here; no need to have Ableton open.
+        Protocol 0 lets you drive Ableton Live from global keyboard shortcuts — remap Ableton shortcuts, use smart actions and add your own.
       </p>
 
       <RouterLink to="/shortcuts" class="card card--compact home-cta">
@@ -25,7 +23,6 @@ import { DOCS_URL } from "../config";
       </RouterLink>
 
       <div class="home-links">
-        <RouterLink to="/api-docs" class="btn btn-ghost">API docs</RouterLink>
         <a :href="DOCS_URL" target="_blank" rel="noopener" class="btn btn-ghost">Documentation</a>
       </div>
     </div>

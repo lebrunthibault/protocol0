@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Protocol 0 — script API</title>
+  <!-- Vendored Swagger UI (offline, no CDN), served by the agent on :9010 so the
+       API docs stay reachable even when Ableton (and the live script) is closed.
+       Assets + spec are siblings under /api-docs/. Mirror of the script's own
+       /docs page (src/script/.../http/swagger_ui/index.html); keep them in sync. -->
+  <link rel="stylesheet" href="/api-docs/swagger-ui.css">
+  <style>body { margin: 0; }</style>
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="/api-docs/swagger-ui-bundle.js"></script>
+  <script>
+    window.ui = SwaggerUIBundle({
+      url: "/api-docs/openapi.json",
+      dom_id: "#swagger-ui",
+      deepLinking: true,
+      presets: [SwaggerUIBundle.presets.apis],
+      layout: "BaseLayout",
+    });
+  </script>
+</body>
+</html>

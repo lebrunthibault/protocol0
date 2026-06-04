@@ -19,7 +19,10 @@ import webbrowser
 
 from agent.settings import WEB_PORT
 
-LAUNCHER_URL = "http://127.0.0.1:%d/" % WEB_PORT
+# Open straight on the keymapper (/shortcuts) rather than the landing page (/): the
+# shortcut is the thing the user came to manage. The SPA serves /shortcuts via the
+# history-mode catch-all, so a deep-link survives the cold open.
+LAUNCHER_URL = "http://127.0.0.1:%d/shortcuts" % WEB_PORT
 
 
 def main() -> None:

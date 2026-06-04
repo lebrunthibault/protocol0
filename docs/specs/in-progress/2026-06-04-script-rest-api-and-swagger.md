@@ -223,10 +223,36 @@ migration. C'est le coût assumé de la pureté REST (cf. décision 6).
 4. **Le spec plugin en cours** suppose la découverte sur `/` — coordonner les
    deux specs (celui-ci reformule cette promesse vers `/docs`).
 
+## Miroir Swagger côté agent (always-on, Ableton fermé)
+
+Le `/docs` du script ne vit que quand Ableton tourne (port dynamique, `build_spec()`
+introspecte le registre de routes chargé *dans* Live). Pour que la doc API reste
+consultable depuis l'UI de l'agent même Ableton fermé, on **vendore une copie
+statique** de la Swagger UI dans le front, servie par l'agent (toujours up sur
+`:9010`) :
+
+- `src/frontend/public/api-docs/` : `index.html` (miroir de la page Swagger du
+  script, assets + spec rebasés sous `/api-docs/`), `swagger-ui.css`,
+  `swagger-ui-bundle.js` (copiés depuis `src/script/.../swagger_ui/`), et
+  `openapi.json` — **snapshot figé** de `build_spec()`.
+- Vite copie `public/` verbatim dans `dist/`, que l'agent sert déjà en statique
+  (`agent/web/static_files.py`). Le menu **Help** du header pointe sur
+  `/api-docs/index.html`. La page web SPA `/api-docs` (l'ancien `ApiDocsView.vue`)
+  faisait doublon avec ce Swagger → **supprimée**.
+
+**Régénérer le snapshot** quand les routes changent (le `/docs` live du script
+reste la source de vérité ; ce snapshot est une copie hors-ligne) : relancer
+`build_spec()` et réécrire `public/api-docs/openapi.json`. Les handlers de routes
+importent `_Framework` (indisponible hors Live), donc on alimente `build_spec()`
+avec un registre reconstruit depuis les signatures réelles des routes (voir
+l'historique git de ce fichier pour le one-liner). Les assets Swagger se
+recopient tels quels depuis le package du script.
+
 ## Hors périmètre
 
-- L'agent (`:9010`) — déjà propre (`/api/*` + SPA), pas touché ; aligner
-  `/status` → `/api/status` reste une note future, pas ce lot.
+- L'agent (`:9010`) — déjà propre (`/api/*` + SPA) ; seul ajout de ce lot : le
+  miroir Swagger statique `/api-docs/` ci-dessus. Aligner `/status` →
+  `/api/status` reste une note future, pas ce lot.
 - Durcissement CSRF/Origin : la décision POST rend le sujet moins pressant (plus
   de GET-mutation) ; un check Origin reste possible plus tard mais hors scope.
 - Auth / API key : localhost-only, hors scope (comme aujourd'hui).

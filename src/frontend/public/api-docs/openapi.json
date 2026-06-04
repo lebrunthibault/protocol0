@@ -1,0 +1,136 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Protocol 0 — script API",
+    "description": "Localhost HTTP API exposed by the Protocol 0 remote script inside Ableton Live. Drives Live directly; the same calls a keyboard shortcut makes under the hood.",
+    "version": "0.13.0"
+  },
+  "servers": [
+    {
+      "url": "/api",
+      "description": "Action API"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Liveness probe (cible de ping non ambiguë pour la page web de l'agent).",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Liveness probe (cible de ping non ambiguë pour la page web de l'agent)."
+      }
+    },
+    "/set/get_state": {
+      "get": {
+        "summary": "Return the full serialized state of the current Ableton set as JSON.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Return the full serialized state of the current Ableton set as JSON."
+      }
+    },
+    "/clip/key_detected": {
+      "post": {
+        "summary": "Notify the script that a musical key (MIDI pitch) was detected for the current clip.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Notify the script that a musical key (MIDI pitch) was detected for the current clip.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "pitch": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "pitch"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/device/load": {
+      "post": {
+        "summary": "Load a device (instrument or audio effect) onto the selected track by name.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Load a device (instrument or audio effect) onto the selected track by name.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/song/toggle_follow": {
+      "post": {
+        "summary": "Stop following the playhead in the arrangement view.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Stop following the playhead in the arrangement view."
+      }
+    },
+    "/track/select": {
+      "post": {
+        "summary": "Select a track by name (use \"master\" to select the master track).",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Select a track by name (use \"master\" to select the master track).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
