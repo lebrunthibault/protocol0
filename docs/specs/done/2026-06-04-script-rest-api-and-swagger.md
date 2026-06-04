@@ -1,5 +1,15 @@
 # Script HTTP : vraie API REST sous `/api` + doc Swagger sous `/docs`
 
+> **Shipped as (écarts vs ce spec) :** le core est conforme (`/api` sans version,
+> POST en mutation, `GET /` → 302 `/docs`, `/openapi.json` généré, Swagger UI
+> vendorée, consommateurs migrés, tests). Deux écarts :
+> - **Pas de miroir Swagger statique côté agent** (`src/frontend/public/api-docs/`,
+>   §"Miroir Swagger côté agent") : le menu Help pointe directement sur la doc du
+>   site public (`https://www.protocol0.live/docs`). `ApiDocsView.vue` a bien été
+>   supprimée comme prévu, mais sans snapshot embarqué à maintenir.
+> - **Doc site** : pas de `http-api.html` dédié ; le contenu est dans
+>   `src/website/docs/extending.html`.
+
 ## Problème
 
 Le serveur HTTP du **remote script** (dans Ableton, `127.0.0.1:9000`,

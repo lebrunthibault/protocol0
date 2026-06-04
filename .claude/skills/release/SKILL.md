@@ -107,6 +107,26 @@ gh release view "v<VERSION>" --web                 # ouvre la release une fois p
 La release contiendra `Protocol0-Setup-<VERSION>.exe` + les « Source code (zip/tar.gz) »
 automatiques de GitHub.
 
+### Étape 7 — Si une release est flaggée (faux positif AV)
+
+L'agent est un hook clavier global, packagé PyInstaller **non signé** : profil de faux positif
+antivirus assumé (cf. `SECURITY.md`). Tant qu'on n'a pas de signature de code
+(`docs/specs/backlog/2026-06-02-installer-code-signing.md`) qui bâtit une réputation, **chaque
+release a un nouveau hash** et peut être re-flaggée — donc c'est une étape **manuelle, par
+release**, pas automatisable.
+
+Si Windows Defender (ou un autre éditeur) flagge l'installeur de cette release, soumettre le
+fichier comme faux positif :
+
+- **Microsoft / Defender** : <https://www.microsoft.com/wdsi/filesubmission> — choisir « Software
+  developer », joindre le `Protocol0-Setup-<VERSION>.exe` (ou son hash, déjà publié comme asset
+  `SHA256SUMS`), motif « incorrectly detected ».
+- **Autres AV** : la plupart ont un portail équivalent de soumission de faux positif (rechercher
+  « <vendor> false positive submission »).
+
+Le lien VirusTotal des notes de release aide à constater l'ampleur (quelques flags heuristiques
+parmi des dizaines de verdicts propres = faux positif).
+
 ## Garde-fous (non négociables)
 
 - **Ne jamais bumper** la version ici — `/release` lit `VERSION`, il ne l'écrit pas.

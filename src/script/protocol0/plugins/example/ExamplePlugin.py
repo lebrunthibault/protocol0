@@ -27,6 +27,11 @@ from protocol0.shared.logging.StatusBar import StatusBar
 class ExamplePlugin(PluginInterface):
     name = "example"
 
+    def should_start(self) -> bool:
+        # Disabled by default: this is a copy-me template, not a real plugin.
+        # Flip to True (or copy the file) to try it.
+        return False
+
     def register_listeners(self) -> Dict[Type, Callable]:
         return {SongStartedEvent: self._on_song_started}
 

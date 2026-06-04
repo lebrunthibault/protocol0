@@ -82,7 +82,7 @@ jobs:
       # buildé par ce workflow depuis ce commit. Substitut sans-certificat au code
       # signing. Vérif côté user : gh attestation verify <exe> -R lebrunthibault/protocol0.
       - name: Attest build provenance
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v4
         with:
           subject-path: 'dist-installer/Protocol0-Setup-*.exe'
 

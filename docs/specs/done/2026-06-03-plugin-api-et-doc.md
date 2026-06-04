@@ -1,5 +1,16 @@
 # API de plugins déclarative + documentation
 
+> **Shipped as (écarts vs ce spec) :** l'enregistrement des actions n'utilise pas
+> le hook `register_actions()` renvoyant des fonctions `@route` (décisions 1/3).
+> À la place : un décorateur **`@action`** sur les méthodes du plugin +
+> `iter_actions()`, et le `PluginLoader` génère une route
+> **`POST /api/action/<plugin>/<method>`** par méthode (instance liée au load,
+> donc l'introspection des params marche). Une seule façon d'ajouter une action.
+> La doc site n'a pas de page `plugins.html` dédiée : le contenu est dans
+> `src/website/docs/extending.html`. Le reste (interface déclarative, cleanup
+> auto des listeners, plugin exemple désactivé par défaut, `docs/plugins.md`,
+> migration `LiveSetPlugin`) est conforme.
+
 Le remote script a déjà un embryon de système de plugins
 (`src/script/protocol0/application/plugin/`) mais il est **minimal et
 sous-documenté** :

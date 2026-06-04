@@ -1,5 +1,12 @@
 # Install trust & AV friction (no-cert, do-first)
 
+> **Shipped (conforme).** Tous les items livrés : (1) `SECURITY.md` + lien README,
+> (2) `SHA256SUMS` en CI, (3) `attest-build-provenance`, (4) métadonnées PE sur les
+> deux exes (`version_info.py`), (5) scan VirusTotal, (6) note de soumission
+> faux-positif WDSI dans la skill `/release` (Étape 7). Tout sauf 1–5 a été fait
+> dans le commit `1beeb174` ; item 6 + bump `attest-build-provenance@v2→@v4`
+> ajoutés ensuite.
+
 Lower the friction and distrust at install time **without buying a certificate**. The
 agent is a global keyboard hook built with PyInstaller — the textbook
 keylogger/dropper profile — so an unsigned `.exe` draws AV false positives and
