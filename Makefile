@@ -21,6 +21,23 @@ agent: kill-agent
 	@cd src/agent && poetry run agent
 .PHONY: agent
 
+# One command for the whole dev stack: agent + frontend (Vue) + website (landing), all
+# detached in the background (no second terminal), then it prints the real URLs and tails the
+# combined Ableton+agent logs (i.e. `make logs`). Ctrl-C stops the tail; the services keep
+# running -> `make down` stops them. Ports aren't pinned (another project may hold 5173/8000)
+# so vite/live-server pick the first free port; the printed URLs reflect the actual ports.
+# PIDs go to %APPDATA%\Protocol0\dev-up.json; outputs to logs/{agent,frontend,website}.log.
+# Force the website port with `make up PORT=3000`.
+up:
+	@$(PY) scripts/up.py
+.PHONY: up
+
+# Stop the background stack started by `make up` (kills each process tree) and clean up
+# any leftover agent as a safety net.
+down:
+	@$(PY) scripts/down.py
+.PHONY: down
+
 # Run the Vue 3 front (src/frontend) with Vite live-reload. Proxies /api and
 # /status to the running agent on :9010. Run `make agent` in another terminal.
 frontend:
