@@ -115,8 +115,9 @@ with it; it now lives in the agent.)
 
 The remote script runs **inside Ableton** and exposes a REST HTTP API under
 `/api` — a `/api/health` check, a self-describing `/openapi.json`, a Swagger UI at
-`/docs`, and the **action routes** (`/api/device/load`, `/api/track/select`, …)
-that drive Live through the LOM. Reads are `GET`, mutations are `POST`. Its port is
+`/docs`, and the **action routes** (`/api/track/select`,
+`/api/action/load_device/load_device`, …) that drive Live through the LOM. Reads
+are `GET`, mutations are `POST`. Its port is
 **dynamic** (advertised via `runtime.json`), and it lives and dies with Ableton.
 The agent is its main caller: on a matched keypress, the agent looks up the
 script's URL and invokes the action.
@@ -133,9 +134,9 @@ value over the native manager: *the same shortcuts everywhere*.
 
 An **action** is a named, parameterizable, self-described unit (name, label,
 expected parameters). The script exposes this catalog through its OpenAPI document
-(`/openapi.json`, rendered at `/docs`); existing routes (`/api/device/load`,
-`/api/track/select`, …) prefigure the catalog — each action builds on a Live-API
-capability.
+(`/openapi.json`, rendered at `/docs`); existing routes (`/api/track/select`,
+`/api/action/load_device/load_device`, …) prefigure the catalog — each action
+builds on a Live-API capability.
 
 ### Plugins extend the script
 
@@ -147,11 +148,13 @@ discovers it, wires it up, and tears it down cleanly. This keeps the action set
 hard-coded*): the way to grow Protocol0's vocabulary is to drop in a plugin, not
 to edit a central list. The *how* lives in [`docs/plugins.md`](docs/plugins.md).
 
-When the goal is simply to *add one action* — no event listening, no lifecycle —
-a **smart action** is the lighter path: a single class with a configurable name
-and a `run` method, discovered the same way and bindable to a shortcut just like
-any other action. It is a one-action plugin with the ceremony removed; the *how*
-lives in [`docs/smart-actions.md`](docs/smart-actions.md).
+There is a single mechanism — a plugin — and a plugin exposes an action by
+decorating a method with `@action`: the method name is the action, its typed
+parameters are the inputs, and the script generates the route. When the goal is
+simply to *add one action* — no event listening, no lifecycle — a **smart action**
+is just that minimal shape: one class with one `@action` method, discovered the
+same way and bindable to a shortcut like any other. The *how* lives in
+[`docs/plugins.md`](docs/plugins.md).
 
 ### Windows-first
 
