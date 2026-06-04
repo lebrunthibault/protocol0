@@ -16,10 +16,22 @@ def clamp(val: float, min_v: float, max_v: float) -> float:
 
 
 def import_package(package: types.ModuleType) -> None:
-    """import all modules in a package"""
+    """Recursively import every module of a package so all classes are defined.
+
+    Recurses into subpackages, which lets plugins live either as a single drop-in
+    file (``plugins/Foo.py``) or as a multi-file package (``plugins/live_set/``).
+    A module that fails to import is logged and skipped rather than aborting the
+    whole load — a broken drop-in must not take the others down.
+    """
     prefix = package.__name__ + "."
-    for _, mod_name, _ in pkgutil.iter_modules(package.__path__, prefix):
-        __import__(mod_name)
+    for _, mod_name, is_pkg in pkgutil.iter_modules(package.__path__, prefix):
+        try:
+            module = __import__(mod_name, fromlist=["_"])
+        except Exception as e:
+            Logger.warning("Failed to import %s: %s" % (mod_name, e))
+            continue
+        if is_pkg:
+            import_package(module)
 
 
 def locate(name: str) -> Any:

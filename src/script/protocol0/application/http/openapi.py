@@ -2,9 +2,10 @@
 
 Pas de YAML statique à maintenir (contrairement à Jupyter) : on introspecte
 ``get_routes()`` — method, path, signature, docstring — comme le faisait l'ancienne
-page d'index HTML. Les routes de plugins (déclarées via ``@api_route`` dans
-``register_actions``) apparaissent donc automatiquement dans /openapi.json et donc
-dans la Swagger UI.
+page d'index HTML. Les routes de plugins (générées par le loader depuis les méthodes
+``@action``) apparaissent donc automatiquement dans /openapi.json et donc dans la
+Swagger UI : leur bound method garde une signature typée, introspectée comme une
+route core.
 
 Stdlib-only (Ableton) : juste ``inspect`` + des dicts. La fidélité des schémas est
 volontairement minimale (une API d'actions n'a pas besoin de schémas riches) :

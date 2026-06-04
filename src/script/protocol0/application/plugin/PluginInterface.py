@@ -1,14 +1,16 @@
-from typing import Callable, ClassVar, Dict, List, Type
+from typing import Callable, ClassVar, Dict, Type
 
 
 class PluginInterface(object):
     """Base class for remote-script plugins.
 
     A plugin extends the script declaratively: it can react to domain events
-    (``register_listeners``) and expose new actions to the HTTP catalog
-    (``register_actions``). The ``PluginLoader`` wires both up at startup and
-    tears the listeners down on disconnect — a plugin never calls
-    ``DomainEventBus.subscribe``/``un_subscribe`` itself.
+    (``register_listeners``) and expose new actions by decorating methods with
+    ``@action`` (see ``protocol0.application.plugin.action``). The
+    ``PluginLoader`` wires both up at startup — subscribing listeners and
+    generating one ``POST /api/action/<plugin>/<method>`` route per ``@action``
+    method — and tears the listeners down on disconnect. A plugin never calls
+    ``DomainEventBus.subscribe``/``un_subscribe`` nor ``@api_route`` itself.
 
     See ``docs/plugins.md`` for the full guide.
     """
@@ -39,14 +41,3 @@ class PluginInterface(object):
                 return {SongStartedEvent: self._on_song_started}
         """
         return {}
-
-    def register_actions(self) -> List[Callable]:
-        """Return ``@api_route``-decorated functions to expose as catalog actions.
-
-        Returning a route makes it assignable to a keyboard shortcut, exactly
-        like the core actions under ``application/http/routes/``::
-
-            def register_actions(self):
-                return [say_hello]  # say_hello is decorated with @api_route(...)
-        """
-        return []

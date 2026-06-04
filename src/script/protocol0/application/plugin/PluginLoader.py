@@ -2,7 +2,9 @@ import types
 from typing import Callable, Dict, List, Tuple, Type, TypeVar
 
 from protocol0.application.ScriptDisconnectedEvent import ScriptDisconnectedEvent
+from protocol0.application.http.Router import API_PREFIX, get_routes
 from protocol0.application.plugin.PluginInterface import PluginInterface
+from protocol0.application.plugin.action import iter_actions
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.domain.shared.utils.utils import import_package
 from protocol0.shared.logging.Logger import Logger
@@ -46,12 +48,23 @@ class PluginLoader(object):
 
     @classmethod
     def _register_actions(cls, plugin: PluginInterface) -> None:
-        # The @api_route decorator already registered each action in the global
-        # route table at import time, so it shows up in the Swagger UI ("/docs")
-        # and /openapi.json, and is callable over HTTP. We just surface what the
-        # plugin exposes.
-        for fn in plugin.register_actions():
-            Logger.info("Plugin %s exposes action %s" % (plugin.name, fn.__name__))
+        # Generate one HTTP route per @action method, bound to this started
+        # instance. We register the bound method directly in the global route
+        # table (not via @api_route) because the instance only exists now, at
+        # load time. Bound methods hide ``self``, so inspect.signature still
+        # shows the typed params — the OpenAPI generator and the router pick them
+        # up unchanged, so the action appears in the Swagger UI ("/docs") and
+        # /openapi.json. This runs before HttpServer.start(), and _ROUTES is a
+        # module global, so the routes are live for both dispatch and OpenAPI.
+        routes = get_routes()
+        for name, bound in iter_actions(plugin):
+            path = "%s/action/%s/%s" % (API_PREFIX, plugin.name, name)
+            key = ("POST", path)
+            if key in routes:
+                Logger.warning("Action %s/%s already registered, skipping" % (plugin.name, name))
+                continue
+            routes[key] = bound
+            Logger.info("Plugin %s exposes action %s -> POST %s" % (plugin.name, name, path))
 
     @classmethod
     def get(cls, plugin_class: Type[P]) -> P:

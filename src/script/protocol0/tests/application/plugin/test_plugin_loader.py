@@ -1,7 +1,9 @@
 from typing import Callable, Dict, List, Type
 
+from protocol0.application.http.Router import get_routes
 from protocol0.application.plugin.PluginInterface import PluginInterface
 from protocol0.application.plugin.PluginLoader import PluginLoader
+from protocol0.application.plugin.action import action
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.tests.application.plugin import stub_plugins
 
@@ -58,6 +60,15 @@ class _StubListenerPlugin(PluginInterface):
         return {_StubEvent: self._on_event}
 
 
+class _StubActionPlugin(PluginInterface):
+    name = "stub_action"
+    calls: List[tuple] = []
+
+    @action
+    def do_thing(self, name: str, count: int) -> None:
+        _StubActionPlugin.calls.append((name, count))
+
+
 def _reset_loader() -> None:
     PluginLoader._started = []
     PluginLoader._by_class = {}
@@ -112,3 +123,27 @@ def test_listeners_are_subscribed_and_cleaned_up() -> None:
     PluginLoader._stop_all()
     DomainEventBus.emit(_StubEvent())
     assert len(_StubListenerPlugin.received) == 1
+
+
+def test_action_method_registers_a_post_route() -> None:
+    _reset_loader()
+    _StubActionPlugin.calls = []
+    key = ("POST", "/api/action/stub_action/do_thing")
+    get_routes().pop(key, None)
+
+    PluginLoader.load_and_start(stub_plugins)
+
+    # The loader generated a POST route bound to the started instance.
+    routes = get_routes()
+    assert key in routes
+
+    # The registered handler is the bound method: calling it runs the action, and
+    # its signature exposes the typed params (self already applied) for OpenAPI.
+    import inspect
+
+    bound = routes[key]
+    assert list(inspect.signature(bound).parameters) == ["name", "count"]
+    bound(name="Serum", count=2)
+    assert _StubActionPlugin.calls == [("Serum", 2)]
+
+    get_routes().pop(key, None)

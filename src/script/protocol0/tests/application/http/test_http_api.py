@@ -46,7 +46,6 @@ def test_action_routes_live_under_api_and_use_post() -> None:
     _import_routes()
     routes = get_routes()
     # Mutations -> POST sous /api.
-    assert ("POST", "/api/device/load") in routes
     assert ("POST", "/api/track/select") in routes
     assert ("POST", "/api/song/toggle_follow") in routes
     assert ("POST", "/api/clip/key_detected") in routes
@@ -54,7 +53,6 @@ def test_action_routes_live_under_api_and_use_post() -> None:
     assert ("GET", "/api/set/get_state") in routes
     assert ("GET", "/api/health") in routes
     # Plus aucune action en GET à la racine (l'ancienne forme a disparu).
-    assert ("GET", "/device/load") not in routes
     assert ("GET", "/track/select") not in routes
 
 
@@ -118,17 +116,17 @@ def test_openapi_lists_actions_without_double_prefix() -> None:
     spec = openapi.build_spec()
     paths = spec["paths"]
     # Le préfixe /api est porté par servers[].url -> il est retiré des paths.
-    assert "/device/load" in paths
-    assert "/api/device/load" not in paths
-    assert "post" in paths["/device/load"]
+    assert "/track/select" in paths
+    assert "/api/track/select" not in paths
+    assert "post" in paths["/track/select"]
 
 
 def test_openapi_post_uses_request_body_get_uses_params() -> None:
     _import_routes()
     paths = openapi.build_spec()["paths"]
-    # device/load (POST, param name) -> requestBody JSON requis.
-    load = paths["/device/load"]["post"]
-    schema = load["requestBody"]["content"]["application/json"]["schema"]
+    # track/select (POST, param name) -> requestBody JSON requis.
+    select = paths["/track/select"]["post"]
+    schema = select["requestBody"]["content"]["application/json"]["schema"]
     assert schema["properties"]["name"]["type"] == "string"
     assert "name" in schema["required"]
     # set/get_state (GET, sans param) -> pas de parameters.
