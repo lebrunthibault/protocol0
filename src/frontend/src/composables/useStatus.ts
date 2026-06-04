@@ -1,5 +1,5 @@
-// Poll de /status (les 3 états calculés par l'agent). Partagé entre les composants
-// via un singleton module-level : un seul interval pour toute l'app.
+// Poll of /status (the 3 states computed by the agent). Shared between components
+// via a module-level singleton: a single interval for the whole app.
 import { onMounted, onUnmounted, readonly, ref } from "vue";
 import { api } from "../api/client";
 import type { AgentState } from "../api/types";
@@ -16,7 +16,7 @@ async function poll(): Promise<void> {
     state.value = s.state;
     scriptUrl.value = s.script_url;
   } catch {
-    // Agent momentanément indispo : on retentera au prochain tick.
+    // Agent momentarily unavailable: we'll retry on the next tick.
   }
 }
 

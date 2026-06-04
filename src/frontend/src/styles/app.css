@@ -1,17 +1,17 @@
-/* Styles propres à l'app (le design system fournit tokens + composants de base).
-   Tout passe par les tokens var(--…) — jamais de hex/px en dur (règle d'or DESIGN.md). */
+/* App-specific styles (the design system provides tokens + base components).
+   Everything goes through var(--…) tokens — never hardcoded hex/px (DESIGN.md golden rule). */
 
 .app-main {
   padding-top: var(--space-8);
   padding-bottom: var(--space-9);
 }
 
-/* RouterLink actif dans la nav (vue-router pose .router-link-active). */
+/* Active RouterLink in the nav (vue-router sets .router-link-active). */
 .nav-links a.router-link-active {
   color: var(--text);
 }
 
-/* Espacement vertical générique entre blocs d'une vue. */
+/* Generic vertical spacing between a view's blocks. */
 .stack > * + * {
   margin-top: var(--space-5);
 }

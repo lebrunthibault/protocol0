@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-// Rend une combo canonique (ex: "ctrl+shift+f5") en segments <kbd> lisibles.
+// Renders a canonical combo (e.g. "ctrl+shift+f5") into readable <kbd> segments.
 const props = defineProps<{ combo: string }>();
 
 const LABELS: Record<string, string> = {
@@ -9,6 +9,20 @@ const LABELS: Record<string, string> = {
   alt: "Alt",
   shift: "Shift",
   win: "Win",
+  space: "Space",
+  tab: "Tab",
+  enter: "Enter",
+  esc: "Esc",
+  backspace: "Backspace",
+  delete: "Delete",
+  up: "↑",
+  down: "↓",
+  left: "←",
+  right: "→",
+  home: "Home",
+  end: "End",
+  pageup: "Page Up",
+  pagedown: "Page Down",
 };
 
 const segments = computed(() =>
@@ -21,10 +35,7 @@ const segments = computed(() =>
 
 <template>
   <span class="kbd-combo">
-    <template v-for="(seg, i) in segments" :key="i">
-      <kbd class="kbd">{{ seg }}</kbd>
-      <span v-if="i < segments.length - 1" class="kbd-plus">+</span>
-    </template>
+    <kbd v-for="(seg, i) in segments" :key="i" class="kbd">{{ seg }}</kbd>
   </span>
 </template>
 
@@ -32,7 +43,7 @@ const segments = computed(() =>
 .kbd-combo {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: 2px;
 }
 .kbd {
   font-family: var(--font-mono);
@@ -45,9 +56,5 @@ const segments = computed(() =>
   padding: 2px 7px;
   min-width: 1.6em;
   text-align: center;
-}
-.kbd-plus {
-  color: var(--muted-2);
-  font-size: var(--fs-xs);
 }
 </style>

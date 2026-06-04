@@ -66,6 +66,29 @@ def test_get_mutation_with_query_params():
     assert data[0] == {"combo": "ctrl+k", "action": "load_device", "params": {"name": "Reverb"}}
 
 
+def test_ableton_shortcuts_catalog():
+    code, data = _json(api.handle("GET", "/api/ableton-shortcuts", "", b""))
+    assert code == 200
+    assert "doc_url" in data and data["doc_url"].startswith("https://www.ableton.com")
+    assert isinstance(data["shortcuts"], list) and data["shortcuts"]
+    entry = data["shortcuts"][0]
+    assert {"name", "label", "category", "keys"} <= set(entry)
+
+
+def test_send_keys_binding_roundtrip():
+    payload = json.dumps(
+        {
+            "combo": "ctrl+alt+q",
+            "action": "send_keys",
+            "params": {"keys": "ctrl+n", "label": "New Live Set"},
+        }
+    ).encode()
+    code, data = _json(api.handle("POST", "/api/shortcuts/add", "", payload))
+    assert code == 200
+    assert data[0]["action"] == "send_keys"
+    assert data[0]["params"]["keys"] == "ctrl+n"
+
+
 def test_health_reports_version():
     code, data = _json(api.handle("GET", "/api/health", "", b""))
     assert code == 200 and data["ok"] is True and "version" in data

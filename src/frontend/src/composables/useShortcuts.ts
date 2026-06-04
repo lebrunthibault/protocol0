@@ -1,13 +1,15 @@
-// État du keymapper : charge bindings + catalogue d'actions, et expose les mutations
-// (auto-save par binding, style Raycast). La détection de conflit se fait par égalité
-// exacte de la chaîne combo (la canonicalisation étant identique partout).
+// Keymapper state: loads bindings + action catalog, and exposes the mutations
+// (auto-save per binding, Raycast style). Conflict detection is done by exact
+// equality of the combo string (canonicalization being identical everywhere).
 import { computed, ref } from "vue";
 import type { Ref } from "vue";
 import { api } from "../api/client";
-import type { ActionDef, Binding } from "../api/types";
+import type { AbletonShortcut, ActionDef, Binding } from "../api/types";
 
 const bindings = ref<Binding[]>([]);
 const actions = ref<ActionDef[]>([]);
+const abletonShortcuts = ref<AbletonShortcut[]>([]);
+const abletonDocUrl = ref<string>("");
 const loading = ref(false);
 const error = ref<string>("");
 
@@ -15,9 +17,15 @@ async function load(): Promise<void> {
   loading.value = true;
   error.value = "";
   try {
-    const [b, a] = await Promise.all([api.listShortcuts(), api.getActions()]);
+    const [b, a, ableton] = await Promise.all([
+      api.listShortcuts(),
+      api.getActions(),
+      api.getAbletonShortcuts(),
+    ]);
     bindings.value = b;
     actions.value = a;
+    abletonShortcuts.value = ableton.shortcuts;
+    abletonDocUrl.value = ableton.doc_url;
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e);
   } finally {
@@ -25,13 +33,13 @@ async function load(): Promise<void> {
   }
 }
 
-// Le binding (autre que celui édité) qui occupe déjà cette combo, le cas échéant.
+// The binding (other than the one being edited) that already occupies this combo, if any.
 function conflictFor(combo: string, exceptCombo?: string): Binding | undefined {
   return bindings.value.find((b) => b.combo === combo && b.combo !== exceptCombo);
 }
 
-// Upsert par combo. Si l'édition change la combo d'un binding existant, on supprime
-// l'ancienne pour ne pas laisser de doublon (la clé de persistance est la combo).
+// Upsert by combo. If the edit changes the combo of an existing binding, we delete
+// the old one to avoid leaving a duplicate (the persistence key is the combo).
 async function save(binding: Binding, previousCombo?: string): Promise<void> {
   if (previousCombo && previousCombo !== binding.combo) {
     await api.deleteShortcut(previousCombo);
@@ -43,13 +51,15 @@ async function remove(combo: string): Promise<void> {
   bindings.value = await api.deleteShortcut(combo);
 }
 
-// Singleton module-level : un seul état de keymapper partagé par toutes les vues.
-// On expose les refs telles quelles (lecture only par convention ; les mutations
-// passent par load/save/remove).
+// Module-level singleton: a single keymapper state shared by all views.
+// We expose the refs as-is (read-only by convention; mutations go through
+// load/save/remove).
 export function useShortcuts() {
   return {
     bindings: bindings as Ref<Binding[]>,
     actions: actions as Ref<ActionDef[]>,
+    abletonShortcuts: abletonShortcuts as Ref<AbletonShortcut[]>,
+    abletonDocUrl,
     loading,
     error,
     actionCount: computed(() => bindings.value.length),

@@ -1,85 +1,137 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from "vue";
-import hotkeys from "hotkeys-js";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useComboCapture } from "../composables/useComboCapture";
 import { useShortcuts } from "../composables/useShortcuts";
-import type { ActionDef, Binding } from "../api/types";
+import { SEND_KEYS_ACTION, type Binding, type EditTarget } from "../api/types";
 import Kbd from "./Kbd.vue";
 
-// EditDialog : crée un binding (mode "new") ou édite un binding existant.
-const props = defineProps<{
-  open: boolean;
-  binding: Binding | null; // null = création
-}>();
+// EditDialog assigns/edits a trigger combo for ONE target already chosen in the unified
+// list (KeymapperView). The target is either an existing binding (edit: pre-filled, with
+// Delete) or a not-yet-mapped catalog entry — a native Ableton shortcut or a smart action.
+// The catalog itself lives in the list, not here.
+const props = defineProps<{ target: EditTarget }>();
 const emit = defineEmits<{ close: []; saved: [] }>();
 
 const { actions, conflictFor, save, remove } = useShortcuts();
 const capture = useComboCapture();
 
+const open = computed(() => props.target != null);
+const isEdit = computed(() => props.target?.kind === "binding");
+
+// The binding being edited, if any (its previous combo is the persistence key to replace).
+const editedBinding = computed<Binding | null>(() =>
+  props.target?.kind === "binding" ? props.target.binding : null,
+);
+
+// load_device exposes a single editable param ("name"); we surface it first, above the
+// trigger combo. Generic over the action's params so a future smart action just works.
+const smartParams = ref<Record<string, string>>({});
 const previousCombo = ref<string | undefined>(undefined);
-const selectedAction = ref<string>("");
-const params = ref<Record<string, string>>({});
-const livePreview = ref<string>(""); // touches enfoncées (confort visuel uniquement)
 const saving = ref(false);
 const saveError = ref<string>("");
 
-const currentAction = computed<ActionDef | undefined>(() =>
-  actions.value.find((a) => a.name === selectedAction.value),
-);
-
-// Conflit : un autre binding occupe déjà la combo capturée.
-const conflict = computed(() =>
-  capture.combo.value ? conflictFor(capture.combo.value, previousCombo.value) : undefined,
-);
-
-// (Ré)initialise le formulaire à l'ouverture.
-watch(
-  () => props.open,
-  (open) => {
-    if (!open) {
-      teardownLivePreview();
-      return;
-    }
-    saveError.value = "";
-    if (props.binding) {
-      previousCombo.value = props.binding.combo;
-      selectedAction.value = props.binding.action;
-      params.value = { ...props.binding.params };
-      // pré-remplit la combo affichée sans repasser en "recording"
-      capture.clear();
-    } else {
-      previousCombo.value = undefined;
-      selectedAction.value = actions.value[0]?.name ?? "";
-      params.value = {};
-      capture.clear();
-    }
+// The action + the params baseline come straight from the target — no picking needed here.
+const resolved = computed<{ action: string; baseParams: Record<string, string> } | null>(
+  () => {
+    const t = props.target;
+    if (!t) return null;
+    if (t.kind === "binding")
+      return { action: t.binding.action, baseParams: { ...t.binding.params } };
+    if (t.kind === "ableton")
+      return {
+        action: SEND_KEYS_ACTION,
+        baseParams: { keys: t.shortcut.keys, label: t.shortcut.label },
+      };
+    return { action: t.action.name, baseParams: {} };
   },
 );
 
-const displayedCombo = computed(
-  () => capture.combo.value || props.binding?.combo || "",
+// The smart action definition (load_device…) when the target is a smart one, edit or create.
+const smartAction = computed(() => {
+  const t = props.target;
+  if (!t) return undefined;
+  if (t.kind === "smart") return t.action;
+  if (t.kind === "binding" && t.binding.action !== SEND_KEYS_ACTION)
+    return actions.value.find((a) => a.name === t.binding.action);
+  return undefined;
+});
+
+// Readable header label for the target (native label for an Ableton shortcut, action label
+// otherwise). Used in the summary line at the top of the modal.
+function targetLabel(): string {
+  const t = props.target;
+  if (!t) return "";
+  if (t.kind === "ableton") return t.shortcut.label;
+  if (t.kind === "smart") return t.action.label;
+  if (t.binding.action === SEND_KEYS_ACTION)
+    return t.binding.params.label || t.binding.params.keys || t.binding.action;
+  return smartAction.value?.label ?? t.binding.action;
+}
+// The emitted Ableton combo to show as "emits <Kbd>", if the target is a send_keys one.
+const emittedKeys = computed<string>(() => {
+  const t = props.target;
+  if (!t) return "";
+  if (t.kind === "ableton") return t.shortcut.keys;
+  if (t.kind === "binding" && t.binding.action === SEND_KEYS_ACTION)
+    return t.binding.params.keys;
+  return "";
+});
+
+// Conflict: another binding already occupies the captured combo.
+function bindingLabel(b: Binding): string {
+  if (b.action === SEND_KEYS_ACTION) return b.params.label || b.params.keys || b.action;
+  return b.action;
+}
+const conflict = computed(() =>
+  capture.combo.value ? conflictFor(capture.combo.value, previousCombo.value) : undefined,
+);
+const conflictLabel = computed(() => (conflict.value ? bindingLabel(conflict.value) : ""));
+
+// (Re)initialise the form when a target is set (modal opens).
+watch(
+  () => props.target,
+  (t) => {
+    if (!t) return;
+    saveError.value = "";
+    capture.clear();
+    if (t.kind === "binding") {
+      previousCombo.value = t.binding.combo;
+      smartParams.value = { ...t.binding.params };
+    } else {
+      previousCombo.value = undefined;
+      smartParams.value = {};
+    }
+  },
+  { immediate: true },
 );
 
-// --- Capture ---
+const displayedCombo = computed(
+  () => capture.combo.value || editedBinding.value?.combo || "",
+);
+
+// --- Trigger combo capture ---
 function onCaptureKeydown(e: KeyboardEvent) {
   capture.onKeydown(e);
 }
 function startRecording() {
   capture.start();
-  setupLivePreview();
 }
 
-// --- Live preview (hotkeys-js) : purement visuel, n'influe PAS sur la valeur enregistrée. ---
-function setupLivePreview() {
-  hotkeys("*", { keyup: true }, () => {
-    livePreview.value = hotkeys.getPressedKeyString().join(" + ");
-  });
+// Browser-reserved shortcuts (Ctrl+N/T/W) never fire a capturable keydown in a tab, so we
+// offer them through a small dropdown to still be able to assign them.
+const RESERVED_COMBOS = ["ctrl+n", "ctrl+t", "ctrl+w"];
+const reservedMenuOpen = ref(false);
+const reservedWrap = ref<HTMLElement | null>(null);
+
+function pickReserved(combo: string) {
+  capture.set(combo);
+  reservedMenuOpen.value = false;
 }
-function teardownLivePreview() {
-  hotkeys.unbind("*");
-  livePreview.value = "";
+function onReservedDocClick(e: MouseEvent) {
+  if (reservedWrap.value && !reservedWrap.value.contains(e.target as Node)) {
+    reservedMenuOpen.value = false;
+  }
 }
-onBeforeUnmount(teardownLivePreview);
 
 // --- Save / delete ---
 async function onSave() {
@@ -88,24 +140,25 @@ async function onSave() {
     saveError.value = "Capture a combo first.";
     return;
   }
-  if (!selectedAction.value) {
-    saveError.value = "Pick an action.";
-    return;
-  }
-  // Nettoie les params vides.
-  const cleanedParams: Record<string, string> = {};
-  for (const p of currentAction.value?.params ?? []) {
-    const v = (params.value[p.name] ?? "").trim();
+  const base = resolved.value;
+  if (!base) return;
+
+  const action = base.action;
+  const cleanedParams: Record<string, string> = { ...base.baseParams };
+  // For smart actions, take the editable param values (trimmed; drop empties).
+  for (const p of smartAction.value?.params ?? []) {
+    const v = (smartParams.value[p.name] ?? "").trim();
     if (v !== "") cleanedParams[p.name] = v;
+    else delete cleanedParams[p.name];
   }
+
   saving.value = true;
   saveError.value = "";
   try {
-    // Sur conflit, "Replace" : on supprime d'abord le binding en conflit.
     if (conflict.value) {
       await remove(conflict.value.combo);
     }
-    await save({ combo, action: selectedAction.value, params: cleanedParams }, previousCombo.value);
+    await save({ combo, action, params: cleanedParams }, previousCombo.value);
     emit("saved");
     emit("close");
   } catch (e) {
@@ -116,10 +169,11 @@ async function onSave() {
 }
 
 async function onDelete() {
-  if (!props.binding) return;
+  const b = editedBinding.value;
+  if (!b) return;
   saving.value = true;
   try {
-    await remove(props.binding.combo);
+    await remove(b.combo);
     emit("saved");
     emit("close");
   } catch (e) {
@@ -128,62 +182,124 @@ async function onDelete() {
     saving.value = false;
   }
 }
+
+// Esc closes the reserved menu if open, else the modal. When a capture zone has focus its
+// onKeydown stopPropagation-s (Esc becomes an assignable key) so this handler won't see it.
+function onKey(e: KeyboardEvent) {
+  if (e.key !== "Escape" || !open.value) return;
+  if (reservedMenuOpen.value) {
+    reservedMenuOpen.value = false;
+    return;
+  }
+  emit("close");
+}
+onMounted(() => {
+  document.addEventListener("keydown", onKey);
+  document.addEventListener("click", onReservedDocClick);
+});
+onBeforeUnmount(() => {
+  document.removeEventListener("keydown", onKey);
+  document.removeEventListener("click", onReservedDocClick);
+});
 </script>
 
 <template>
-  <div v-if="open" class="dialog-backdrop" @click.self="emit('close')">
+  <div v-if="open && target" class="dialog-backdrop" @click.self="emit('close')">
     <div class="dialog card" role="dialog" aria-modal="true">
-      <h2 class="dialog-title">{{ binding ? "Edit shortcut" : "New shortcut" }}</h2>
+      <h2 class="dialog-title">{{ isEdit ? "Edit shortcut" : "Add shortcut" }}</h2>
 
+      <!-- Target summary: what this combo will trigger. -->
       <div class="field">
-        <label class="field-label" for="action">Action</label>
-        <select id="action" class="select" v-model="selectedAction">
-          <option v-for="a in actions" :key="a.name" :value="a.name">
-            {{ a.label }} ({{ a.name }})
-          </option>
-        </select>
+        <div class="edit-summary">
+          <span class="edit-summary-label">{{ targetLabel() }}</span>
+          <span v-if="emittedKeys" class="edit-summary-emits">
+            emits <Kbd :combo="emittedKeys" />
+          </span>
+        </div>
       </div>
 
-      <div v-if="currentAction && currentAction.params.length" class="field">
+      <!-- Smart action params first (e.g. load_device's name). -->
+      <div v-if="smartAction && smartAction.params.length" class="field">
         <label
-          v-for="p in currentAction.params"
+          v-for="p in smartAction.params"
           :key="p.name"
           class="field-label dialog-param"
         >
           {{ p.name }}<span v-if="!p.required"> (optional)</span>
-          <input class="input" v-model="params[p.name]" :placeholder="p.name" />
+          <input class="input" v-model="smartParams[p.name]" :placeholder="p.name" />
         </label>
       </div>
 
-      <div class="field">
-        <label class="field-label">Combo</label>
-        <span
-          class="capture dialog-capture"
-          tabindex="0"
-          @keydown="onCaptureKeydown"
-          @focus="startRecording"
-        >
-          <Kbd v-if="displayedCombo" :combo="displayedCombo" />
-          <span v-else class="dialog-capture-hint">click &amp; press…</span>
-        </span>
-        <span v-if="livePreview" class="dialog-live">pressed: {{ livePreview }}</span>
+      <div class="field trigger-field">
+        <span class="field-label trigger-label">Trigger combo</span>
+        <div class="trigger-row">
+          <span
+            class="capture dialog-capture"
+            tabindex="0"
+            @keydown="onCaptureKeydown"
+            @focus="startRecording"
+          >
+            <Kbd v-if="displayedCombo" :combo="displayedCombo" />
+          </span>
+          <!-- Browser-reserved shortcuts (Ctrl+N/T/W): not capturable, picked here. -->
+          <div ref="reservedWrap" class="reserved">
+            <button
+              type="button"
+              class="reserved-btn"
+              tabindex="-1"
+              title="Reserved shortcuts — the browser blocks these, pick one here"
+              aria-label="Reserved shortcuts"
+              @click="reservedMenuOpen = !reservedMenuOpen"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="16" x2="12" y2="12" />
+                <line x1="12" y1="8" x2="12.01" y2="8" />
+              </svg>
+            </button>
+            <div v-if="reservedMenuOpen" class="reserved-menu" role="menu">
+              <button
+                v-for="rc in RESERVED_COMBOS"
+                :key="rc"
+                type="button"
+                class="reserved-item"
+                role="menuitem"
+                tabindex="-1"
+                @click="pickReserved(rc)"
+              >
+                <Kbd :combo="rc" />
+              </button>
+            </div>
+          </div>
+          <!-- Conflict warning in the free space on the right (keeps the modal from growing). -->
+          <span
+            v-if="conflict"
+            class="trigger-warn"
+            :title="`Already used by ${conflictLabel} (${conflict.combo}). Saving will replace it.`"
+          >
+            <span class="trigger-warn-icon" aria-hidden="true">⚠</span>
+            Already used by <strong>{{ conflictLabel }}</strong> — saving replaces it.
+          </span>
+        </div>
         <span v-if="capture.status.value === 'unsupported'" class="msg msg--err">
-          Unsupported key — use letters, digits or F1–F12.
+          Unsupported key — use letters, digits, F1–F12, or keys like Space, Tab,
+          Enter, Esc, arrows.
         </span>
-      </div>
-
-      <div v-if="conflict" class="warn dialog-conflict">
-        <p>
-          ⚠ Already used by <strong>{{ conflict.action }}</strong> ({{ conflict.combo }}).
-          Saving will <strong>replace</strong> it.
-        </p>
       </div>
 
       <div v-if="saveError" class="msg msg--err">{{ saveError }}</div>
 
       <div class="dialog-actions">
         <button
-          v-if="binding"
+          v-if="isEdit"
           type="button"
           class="btn btn-ghost dialog-delete"
           :disabled="saving"
@@ -217,32 +333,137 @@ async function onDelete() {
 }
 .dialog {
   width: 100%;
-  max-width: 480px;
+  max-width: 560px;
+  max-height: calc(100vh - 2 * var(--space-6));
+  overflow-y: auto;
+}
+.dialog :deep(.field) {
+  margin-bottom: var(--space-4);
 }
 .dialog-title {
-  font-size: var(--fs-xl);
-  font-weight: var(--fw-semibold);
+  font-size: var(--fs-2xl);
+  font-weight: 600;
   text-align: left;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-5);
 }
 .dialog-param {
   margin-top: var(--space-3);
 }
-.dialog-capture {
-  min-width: 12em;
+/* Target summary */
+.edit-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
 }
-.dialog-capture-hint {
-  color: var(--muted-2);
+.edit-summary-label {
+  font-size: var(--fs-base);
 }
-.dialog-live {
-  display: block;
-  margin-top: var(--space-2);
-  font-family: var(--font-mono);
+.edit-summary-emits {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
   font-size: var(--fs-xs);
-  color: var(--muted-2);
+  color: var(--muted);
 }
-.dialog-conflict {
-  margin: var(--space-4) 0 0;
+.trigger-field {
+  margin-top: var(--space-5);
+}
+.trigger-label {
+  display: block;
+  margin-bottom: var(--space-3);
+}
+/* Capture field + warning side by side. */
+.trigger-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.dialog-capture {
+  /* Comfortable width + stable height even when empty (otherwise the field
+     shrinks to its padding until a combo is captured). */
+  flex: none;
+  width: 16em;
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+}
+/* Reserved shortcuts menu (Ctrl+N/T/W). */
+.reserved {
+  position: relative;
+  flex: none;
+}
+.reserved-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: color var(--t), background var(--t);
+}
+.reserved-btn:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.06);
+}
+.reserved-btn svg {
+  width: 16px;
+  height: 16px;
+}
+.reserved-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2);
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+.reserved-item {
+  display: flex;
+  align-items: center;
+  padding: var(--space-2);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background var(--t);
+}
+.reserved-item:hover {
+  background: var(--accent-bg);
+}
+/* Conflict warning, in the free space on the right (keeps the modal from growing). */
+.trigger-warn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  font-size: var(--fs-xs);
+  color: var(--warn);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.trigger-warn strong {
+  font-weight: 600;
+}
+.trigger-warn-icon {
+  flex: none;
+  font-size: var(--fs-base);
 }
 .dialog-actions {
   display: flex;

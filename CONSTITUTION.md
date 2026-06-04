@@ -99,7 +99,7 @@ process. It owns two things:
    agent watches the keyboard and — **only when Ableton is the foreground
    window** — resolves the binding and calls the script's action API. It stays
    neutral toward keys it doesn't handle.
-2. **The configuration frontend and its API.** The agent serves a web app (the
+2. **The configuration frontend.** The agent serves a web app (the
    keymapper UI) and the `/api` that reads and writes the bindings, on a fixed
    `127.0.0.1:9010`. Because the agent is **always up — independent of Ableton** —
    you can edit your shortcuts without Live even running. Configuration stays

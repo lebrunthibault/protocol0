@@ -283,14 +283,71 @@ pre code{background:none;padding:0;color:#d4d6dc;font-size:var(--fs-sm);line-hei
   outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg);
 }
 .select{appearance:none;cursor:pointer}
-/* .capture = the "click & press…" combo box; monospace + accent focus */
+/* .capture = the "click & press…" combo box; monospace + accent focus.
+   It looks like an input but is never editable (we record keydowns), so it
+   shows no text caret and can't be selected — done here so every capture zone
+   inherits it, no per-component override needed. */
 .capture{
-  display:inline-block;width:auto;min-width:8em;cursor:text;
+  display:inline-block;width:auto;min-width:8em;
+  cursor:default;caret-color:transparent;user-select:none;
   font-family:var(--font-mono);color:var(--accent-soft);
 }
 .msg{font-size:var(--fs-base);min-height:1.2em;color:var(--muted)}
 .msg--ok{color:var(--ok)}
 .msg--err{color:var(--err)}
+
+/* ---------- Keymapper catalog (frontend app only) ----------
+   Shared by the unified shortcut list (KeymapperView) and the edit modal
+   (EditDialog): the segmented pills, the grouped/foldable catalog, and its
+   rows. Kept here (not scoped) because both components render the same shapes. */
+
+/* Segmented pills (filter All / Ableton / Smart). */
+.mode-tabs{
+  display:inline-flex;gap:var(--space-1);
+  background:var(--panel-2);border:1px solid var(--line-strong);
+  border-radius:var(--radius-md);padding:3px;
+}
+.mode-tab{
+  border:none;background:transparent;color:var(--muted);
+  font-size:var(--fs-sm);padding:6px 16px;
+  border-radius:calc(var(--radius-md) - 2px);cursor:pointer;
+  transition:background var(--t),color var(--t);
+}
+.mode-tab--on{background:var(--accent-bg);color:var(--accent-soft)}
+
+/* Grouped/foldable catalog: scrollable panel replacing a native <select>. */
+.ableton-list{
+  overflow-y:auto;border:1px solid var(--line);
+  border-radius:var(--radius-md);background:var(--panel-2);
+}
+.ableton-list::-webkit-scrollbar{width:10px}
+.ableton-list::-webkit-scrollbar-thumb{
+  background:var(--line-strong);border-radius:var(--radius-pill);
+  border:2px solid var(--panel-2);
+}
+.ableton-list::-webkit-scrollbar-track{background:transparent}
+.ableton-group{border-bottom:1px solid var(--line)}
+.ableton-group:last-child{border-bottom:none}
+.ableton-group-head{
+  display:flex;align-items:center;gap:var(--space-2);width:100%;
+  padding:var(--space-3) var(--space-4);border:none;background:transparent;
+  color:var(--text);text-align:left;cursor:pointer;font-size:var(--fs-sm);
+}
+.ableton-group-head:hover{background:rgba(255,255,255,0.03)}
+.ableton-caret{color:var(--muted);transition:transform var(--t)}
+.ableton-caret--open{transform:rotate(90deg)}
+.ableton-group-name{font-weight:500}
+.ableton-group-count{margin-left:auto;font-size:var(--fs-xs);color:var(--muted-2)}
+.ableton-item{
+  display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);
+  width:100%;padding:var(--space-2) var(--space-4) var(--space-2) var(--space-7);
+  border:none;background:transparent;color:var(--text);text-align:left;
+  cursor:pointer;transition:background var(--t);
+}
+.ableton-item:hover{background:rgba(255,255,255,0.03)}
+.ableton-item--on{background:var(--accent-bg)}
+.ableton-item-label{font-size:var(--fs-base);min-width:0}
+.ableton-empty{padding:var(--space-4);color:var(--muted);font-size:var(--fs-sm)}
 
 /* ---------- Footer ---------- */
 footer{border-top:1px solid var(--line);margin-top:var(--space-6);padding:var(--space-7) 0}

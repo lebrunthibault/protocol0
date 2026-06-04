@@ -10,7 +10,7 @@ import json
 from typing import Dict, Optional, Tuple
 from urllib.parse import parse_qs
 
-from agent import action_catalog, shortcut_store
+from agent import ableton_shortcuts, action_catalog, shortcut_store
 from agent.version import __version__
 from agent.web import status
 
@@ -46,6 +46,12 @@ def handle(method: str, path: str, query: str, body: bytes) -> Optional[Response
 
     if path == "/api/actions" and method == "GET":
         return _json(action_catalog.get_catalog())
+
+    if path == "/api/ableton-shortcuts" and method == "GET":
+        # Curated native Live shortcuts the UI offers as remap targets (send_keys).
+        return _json(
+            {"doc_url": ableton_shortcuts.DOC_URL, "shortcuts": ableton_shortcuts.get_all()}
+        )
 
     if path == "/api/shortcuts" and method == "GET":
         return _json(shortcut_store.list_bindings())

@@ -17,7 +17,7 @@ const label = computed(() => {
   }
 });
 
-// Classe de couleur du point (ok / warn / muted).
+// Color class of the dot (ok / warn / muted).
 const tone = computed(() => {
   switch (state.value) {
     case "ready":
@@ -29,11 +29,16 @@ const tone = computed(() => {
   }
 });
 
-const title = computed(() =>
-  state.value === "ready"
-    ? "Le script Protocol 0 est joignable : les raccourcis déclenchent des actions."
-    : "Vous pouvez éditer vos raccourcis ; lancez Ableton (et activez le remote script) pour les déclencher.",
-);
+const title = computed(() => {
+  switch (state.value) {
+    case "ready":
+      return "The Protocol 0 script is reachable: shortcuts trigger actions.";
+    case "script_inactive":
+      return 'Please add the Protocol0 remote script to your Control Surface in the "Tempo & Midi" Preferences Section';
+    default:
+      return "You can edit your shortcuts; launch Ableton (and activate the remote script) to trigger them.";
+  }
+});
 </script>
 
 <template>

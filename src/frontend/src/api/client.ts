@@ -1,6 +1,6 @@
-// Client de l'API servie par l'agent (sous /api) + l'endpoint /status.
-// Même origine en prod (l'agent sert la SPA et l'API) ; en dev Vite proxifie vers :9010.
-import type { ActionDef, Binding, StatusResponse } from "./types";
+// Client for the API served by the agent (under /api) + the /status endpoint.
+// Same origin in prod (the agent serves the SPA and the API); in dev Vite proxies to :9010.
+import type { AbletonShortcutCatalog, ActionDef, Binding, StatusResponse } from "./types";
 
 async function getJson<T>(url: string): Promise<T> {
   const r = await fetch(url, { headers: { Accept: "application/json" } });
@@ -23,18 +23,23 @@ export const api = {
     return getJson<Binding[]>("/api/shortcuts");
   },
 
-  // Upsert par combo : ajoute, ou remplace le binding de même combo. Renvoie la liste résultante.
+  // Upsert by combo: adds, or replaces the binding with the same combo. Returns the resulting list.
   addShortcut(binding: Binding): Promise<Binding[]> {
     return postJson<Binding[]>("/api/shortcuts/add", binding);
   },
 
-  // Supprime le binding d'une combo (reset-ligne / remplacement sur conflit).
+  // Deletes the binding of a combo (row reset / replacement on conflict).
   deleteShortcut(combo: string): Promise<Binding[]> {
     return postJson<Binding[]>("/api/shortcuts/delete", { combo });
   },
 
   getActions(): Promise<ActionDef[]> {
     return getJson<ActionDef[]>("/api/actions");
+  },
+
+  // Curated native Live shortcuts offered as remap targets (send_keys).
+  getAbletonShortcuts(): Promise<AbletonShortcutCatalog> {
+    return getJson<AbletonShortcutCatalog>("/api/ableton-shortcuts");
   },
 
   getStatus(): Promise<StatusResponse> {

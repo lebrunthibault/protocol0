@@ -1,7 +1,7 @@
-// Contrat partagé avec l'agent (src/agent). Le schéma `shortcuts.json` est versionné
-// (version 1) : un binding = { combo, action, params }. La combo est canonique
-// (ctrl, alt, shift, win + touche, minuscules, jointes par '+') — identique à ce que
-// le listener de l'agent matche.
+// Contract shared with the agent (src/agent). The `shortcuts.json` schema is versioned
+// (version 1): a binding = { combo, action, params }. The combo is canonical
+// (ctrl, alt, shift, win + key, lowercase, joined by '+') — identical to what
+// the agent's listener matches.
 
 export interface Binding {
   combo: string;
@@ -23,7 +23,33 @@ export interface ActionDef {
   method: string;
 }
 
-// /status : 3 états calculés par l'agent (Ableton absent / script inactif / prêt).
+// A native Ableton Live shortcut, offered as a remap target. `keys` is the canonical
+// combo the agent replays when the user's combo fires (action "send_keys").
+export interface AbletonShortcut {
+  name: string;
+  label: string;
+  category: string;
+  keys: string;
+}
+
+export interface AbletonShortcutCatalog {
+  doc_url: string;
+  shortcuts: AbletonShortcut[];
+}
+
+// The action name behind every Ableton-shortcut remap (vs. smart actions like load_device).
+export const SEND_KEYS_ACTION = "send_keys";
+
+// What the edit modal operates on: either an existing binding (edit), or a not-yet-mapped
+// catalog target picked from the unified list — a native Ableton shortcut (send_keys) or a
+// smart action (load_device…). null = modal closed.
+export type EditTarget =
+  | { kind: "binding"; binding: Binding }
+  | { kind: "ableton"; shortcut: AbletonShortcut }
+  | { kind: "smart"; action: ActionDef }
+  | null;
+
+// /status: 3 states computed by the agent (Ableton absent / script inactive / ready).
 export type AgentState = "no_ableton" | "script_inactive" | "ready";
 
 export interface StatusResponse {
