@@ -13,7 +13,7 @@ from typing import Optional
 
 import requests
 
-from agent import runtime_state
+from agent import action_catalog, runtime_state
 from agent.config import Binding
 from agent.settings import Settings
 
@@ -33,21 +33,34 @@ class ScriptClient:
         return rt["script_url"] if rt else None
 
     def execute(self, binding: Binding) -> None:
-        """Mappe un binding vers une route du script. Proto : load_device seul."""
+        """Dispatch générique : on résout l'action dans le catalogue exposé par le script
+        (son /openapi.json) au moment du déclenchement, puis on POST sur sa route. Aucune
+        action n'est codée en dur — déposer un plugin @action suffit à la rendre exécutable.
+        (`send_keys` n'arrive pas ici : il est injecté localement en amont, cf. main.py.)"""
         base_url = self._resolve_base_url()
         if base_url is None:
             logger.info("script not running, ignoring %s" % binding.combo)
             return
-        if binding.action == "load_device":
-            name = binding.params.get("name")
-            if not name:
-                logger.warning("load_device binding without 'name' param")
-                return
-            # Mutation -> POST sous /api (l'API du script est une vraie API REST :
-            # GET en lecture, POST en mutation). Les args passent en body JSON.
-            self._post(base_url, "/api/device/load", {"name": name})
-        else:
+
+        action = next(
+            (a for a in action_catalog.fetch(base_url, self._session)
+             if a["name"] == binding.action),
+            None,
+        )
+        if action is None:
             logger.warning("unknown action: %s" % binding.action)
+            return
+
+        # Body = les params déclarés par l'action, pris dans le binding (manquant -> omis ;
+        # le script renvoie 400 si un required manque, ce que _post logge).
+        body = {
+            p["name"]: binding.params[p["name"]]
+            for p in action["params"]
+            if p["name"] in binding.params
+        }
+        # Mutation -> POST sous /api (API REST : GET en lecture, POST en mutation), args en
+        # body JSON. La route /action/<plugin>/<method> est générée par le plugin via @action.
+        self._post(base_url, "/api" + action["path"], body)
 
     def _post(self, base_url: str, path: str, body: dict) -> None:
         url = base_url + path

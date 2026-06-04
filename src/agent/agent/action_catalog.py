@@ -1,33 +1,84 @@
-"""Catalogue statique des actions assignables, servi à la SPA (/api/actions).
+"""Catalogue d'actions dérivé de l'API REST du script (son /openapi.json).
 
-Statique (et non plus dérivé des @route du script) pour que le sélecteur d'action du
-keymapper fonctionne SANS Ableton. Même forme JSON que l'ex-get_catalog() du script :
-    { name, label, params: [{name, type, required}], path, method }
+Plus de liste statique : déposer un plugin `@action` dans le script le fait apparaître
+ici automatiquement. L'agent proxie le catalogue (le frontend, servi sur :9010, ne peut
+pas fetch le script sur un autre port — CORS), le transforme dans la forme attendue par
+la SPA, et le sert sur /api/actions :
 
-COUPLAGE : garder en phase avec agent.script_client.ScriptClient.execute — une action
-listée ici doit être dispatchable là-bas. Le namespace est volontairement petit tant que
-l'agent ne sait mapper que load_device ; on l'élargit au fur et à mesure.
+    { name, label, description, params: [{name, type, required}], path, method }
+
+- `name`   : nom de la méthode @action (ex. "load_device").
+- `label`  : `name` en Title Case (ex. "Load Device").
+- `description` : le summary OpenAPI (1re ligne de docstring de la méthode).
+- `params` : depuis le requestBody JSON (type JSON Schema: string/integer/number/boolean).
+- `path`   : "/action/<plugin>/<method>" (sans le préfixe /api, porté par servers[].url).
+
+Script injoignable / erreur réseau -> liste vide (l'UI keymapper est de toute façon
+verrouillée quand le script n'est pas "ready").
 """
-from typing import Any, Dict, List
+import logging
+from typing import Any, Dict, List, Optional
 
-# Smart actions: high-level Protocol0 commands dispatched to the script over HTTP.
-_CATALOG: List[Dict[str, Any]] = [
-    {
-        "name": "load_device",
-        "label": "Load a device (instrument or audio effect) onto the selected track by name.",
-        "params": [{"name": "name", "type": "str", "required": True}],
-        "path": "/device/load",
-        "method": "GET",
-    },
-]
+import requests
 
-# `send_keys` is the action behind every Ableton-shortcut remap: pressing the user's
-# combo replays a native Live shortcut (params.keys), injected locally by the agent
-# (no HTTP). It's a separate family from smart actions and the UI offers it via the
-# searchable Ableton catalog (ableton_shortcuts), not as a free-text param — so it is
-# deliberately NOT in _CATALOG. Kept here as documentation of the contract.
-SEND_KEYS_ACTION = "send_keys"
+logger = logging.getLogger("agent")
+
+# Timeout court : /openapi.json est local et rapide ; on ne veut jamais bloquer l'UI.
+_TIMEOUT_S = 2
 
 
-def get_catalog() -> List[Dict[str, Any]]:
-    return _CATALOG
+def _title_case(name: str) -> str:
+    """"load_device" -> "Load Device"."""
+    return " ".join(word.capitalize() for word in name.split("_"))
+
+
+def _params_from_request_body(operation: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Extrait [{name, type, required}] du requestBody JSON d'une opération OpenAPI."""
+    schema = (
+        operation.get("requestBody", {})
+        .get("content", {})
+        .get("application/json", {})
+        .get("schema", {})
+    )
+    properties = schema.get("properties", {})
+    required = set(schema.get("required", []))
+    return [
+        {"name": name, "type": prop.get("type", "string"), "required": name in required}
+        for name, prop in properties.items()
+    ]
+
+
+def _to_action_def(path: str, method: str, operation: Dict[str, Any]) -> Dict[str, Any]:
+    name = path.rsplit("/", 1)[-1]  # /action/<plugin>/<method> -> <method>
+    return {
+        "name": name,
+        "label": _title_case(name),
+        "description": operation.get("summary", ""),
+        "params": _params_from_request_body(operation),
+        "path": path,
+        "method": method.upper(),
+    }
+
+
+def fetch(script_url: str, session: Optional[requests.Session] = None) -> List[Dict[str, Any]]:
+    """Catalogue des actions exposées par le script, ou [] si injoignable.
+
+    Ne lit que les routes /action/* du /openapi.json (les actions de plugins) ; les routes
+    techniques (/track/select…) ne sont pas des actions assignables côté keymapper.
+    """
+    getter = session.get if session is not None else requests.get
+    try:
+        r = getter(script_url + "/openapi.json", timeout=_TIMEOUT_S)
+        r.raise_for_status()
+        spec = r.json()
+    except (requests.RequestException, ValueError) as e:
+        logger.info("action catalog unavailable: %s" % e)
+        return []
+
+    catalog: List[Dict[str, Any]] = []
+    for path, item in spec.get("paths", {}).items():
+        if not path.startswith("/action/"):
+            continue
+        for method, operation in item.items():
+            catalog.append(_to_action_def(path, method, operation))
+    return catalog

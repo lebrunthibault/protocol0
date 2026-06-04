@@ -18,11 +18,26 @@ def _json(resp):
     return code, json.loads(body)
 
 
-def test_actions_catalog_lists_load_device():
+def test_actions_catalog_empty_when_script_down(monkeypatch):
+    # Script injoignable (pas de runtime.json) -> catalogue vide, jamais d'exception.
+    monkeypatch.setattr("agent.web.api.runtime_state.read", lambda: None)
+    code, data = _json(api.handle("GET", "/api/actions", "", b""))
+    assert code == 200 and data == []
+
+
+def test_actions_catalog_proxies_script(monkeypatch):
+    # Script up -> /api/actions dérive le catalogue du /openapi.json du script.
+    monkeypatch.setattr(
+        "agent.web.api.runtime_state.read", lambda: {"script_url": "http://x"}
+    )
+    monkeypatch.setattr(
+        "agent.web.api.action_catalog.fetch",
+        lambda url: [{"name": "load_device", "label": "Load Device", "params": []}],
+    )
     code, data = _json(api.handle("GET", "/api/actions", "", b""))
     assert code == 200
     assert data[0]["name"] == "load_device"
-    assert data[0]["params"][0]["name"] == "name"
+    assert data[0]["label"] == "Load Device"
 
 
 def test_add_list_delete_roundtrip():

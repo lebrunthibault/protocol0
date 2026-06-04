@@ -10,7 +10,7 @@ runtime.json (advanced / dev cases).
 import os
 from typing import Optional
 
-# Fixed port of the web server served by the agent (home + keymapper + api docs + /api + /status).
+# Fixed port of the web server served by the agent (home + keymapper + /api + /status).
 # Hardwired: the launcher (agent/launcher_entry.py, packaged as protocol0-launcher.exe) opens
 # http://127.0.0.1:9010/ and imports this constant -> single source of truth for the port, no
 # dynamic fallback on the launcher side. The URL must also stay bookmarkable.
