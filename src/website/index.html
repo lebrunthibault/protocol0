@@ -48,36 +48,6 @@
   .hero-actions{display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:38px;flex-wrap:wrap}
   .hero-actions .btn{padding:12px 22px;font-size:var(--fs-md)}
 
-  /* keycaps motif */
-  .keys{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:60px}
-  .keycap{
-    font-family:var(--font-mono);font-size:var(--fs-md);font-weight:var(--fw-medium);color:var(--text-soft);
-    min-width:48px;height:48px;padding:0 14px;
-    display:flex;align-items:center;justify-content:center;
-    border-radius:11px;
-    background:linear-gradient(180deg,#191b1f,#0c0d10);
-    border:1px solid var(--line-strong);
-    box-shadow:var(--shadow-key);
-  }
-  .keycap.lit{color:#fff;border-color:rgba(77,159,255,0.5);box-shadow:var(--shadow-key-lit)}
-  .keys .plus{color:var(--muted-2);font-size:var(--fs-xl)}
-
-  /* ---------- Feature list (inside a .card) ---------- */
-  .feature{
-    display:flex;gap:var(--space-4);align-items:flex-start;
-    padding:17px 0;border-bottom:1px solid var(--line);position:relative;
-  }
-  .feature:last-child{border-bottom:none;padding-bottom:2px}
-  .feature .ic{
-    flex:0 0 auto;width:34px;height:34px;border-radius:var(--radius-md);
-    display:flex;align-items:center;justify-content:center;
-    background:var(--accent-bg);border:1px solid var(--accent-line);
-    color:var(--accent-soft);
-  }
-  .feature .ic svg{width:17px;height:17px}
-  .feature .txt h3{font-size:15.5px;font-weight:var(--fw-medium);color:var(--text);letter-spacing:var(--ls-snug)}
-  .feature .txt p{font-size:var(--fs-base);color:var(--muted);margin-top:3px;line-height:var(--lh-snug)}
-
   /* ---------- Section-card local tweaks ---------- */
   .info-card{padding:var(--space-7) var(--space-7)}
   .contact-card{padding:42px var(--space-7)}
@@ -106,29 +76,45 @@
   .mail:hover{border-color:rgba(77,159,255,0.5);color:#fff;box-shadow:var(--shadow-glow)}
   .mail svg{width:16px;height:16px;color:var(--accent)}
 
-  /* ---------- Comparison table ---------- */
-  .compare-intro{color:var(--muted);max-width:54ch;margin:18px 0 0;font-size:16px;line-height:var(--lh-relaxed)}
+  /* ---------- Comparison (card + grid rows) ---------- */
+  .compare-intro{color:var(--muted);max-width:60ch;margin:18px auto 0;font-size:16px;line-height:var(--lh-relaxed);text-align:center}
   .compare-intro strong{color:var(--text)}
-  .compare-wrap{margin-top:32px;overflow-x:auto}
-  .compare{width:100%;border-collapse:collapse;font-size:var(--fs-md);min-width:520px}
-  .compare th,.compare td{padding:13px 18px;text-align:left;border-bottom:1px solid var(--line)}
-  .compare thead th{
+
+  .compare-card{padding:6px var(--space-7);text-align:left}
+  .compare-row{
+    display:grid;grid-template-columns:200px 1fr 1.25fr;align-items:center;gap:var(--space-4);
+    padding:17px 0;border-bottom:1px solid var(--line);
+  }
+  .compare-row:last-child{border-bottom:none}
+
+  /* header row */
+  .compare-row--head{padding:16px 0 14px;border-bottom:1px solid var(--line-strong)}
+  .compare-row--head .col-ableton,.compare-row--head .col-p0{
     font-family:var(--font-mono);font-size:12.5px;font-weight:var(--fw-semibold);
     letter-spacing:.03em;text-transform:uppercase;color:var(--muted);
-    border-bottom:1px solid var(--line-strong);
   }
-  .compare thead th.p0-col{color:var(--accent)}
-  .compare tbody tr:last-child td{border-bottom:none}
-  .compare td.cell{white-space:nowrap}
-  .compare .yes,.compare .no{display:inline-flex;align-items:baseline;gap:9px}
-  .compare .yes{color:var(--ok)}
-  .compare .no{color:var(--err)}
-  .compare .yes::before,.compare .no::before{
+  .compare-row--head .col-p0{color:var(--accent)}
+
+  /* feature label cell (icon + name), styled like the old feature list */
+  .compare-row .feat{display:flex;align-items:center;gap:var(--space-3)}
+  .compare-row .ic{
+    flex:0 0 auto;width:34px;height:34px;border-radius:var(--radius-md);
+    display:flex;align-items:center;justify-content:center;
+    background:var(--accent-bg);border:1px solid var(--accent-line);color:var(--accent-soft);
+  }
+  .compare-row .ic svg{width:17px;height:17px}
+  .feat-name{font-size:15.5px;font-weight:var(--fw-medium);color:var(--text);letter-spacing:var(--ls-snug)}
+
+  .compare-row .col-ableton,.compare-row .col-p0{font-size:var(--fs-base);line-height:var(--lh-snug)}
+  .compare-row code{font-size:var(--fs-sm);white-space:nowrap}
+  .yes,.no{display:inline-flex;align-items:baseline;gap:9px}
+  .yes{color:var(--text-soft)}
+  .no{color:var(--muted-2)}
+  .yes::before,.no::before{
     font-family:var(--font-mono);font-weight:var(--fw-semibold);font-size:13px;flex:0 0 auto;
   }
-  .compare .yes::before{content:"✓"}
-  .compare .no::before{content:"✕"}
-  .compare td.feat{color:var(--text-soft)}
+  .yes::before{content:"✓";color:var(--ok)}
+  .no::before{content:"✕";color:var(--err)}
 
   /* ---------- Background story ---------- */
   .story-card{padding:var(--space-7) var(--space-7)}
@@ -138,8 +124,11 @@
 
   @media (max-width:720px){
     .hero{padding:90px 0 64px}
-    .keys{flex-wrap:wrap}
-    .compare th,.compare td{padding:11px 13px}
+    .compare-card{padding:4px var(--space-5)}
+    .compare-row{grid-template-columns:1fr;gap:8px;padding:18px 0}
+    .compare-row--head{display:none}
+    .compare-row .col-ableton::before{content:"Ableton — ";color:var(--muted-2);font-weight:var(--fw-medium)}
+    .compare-row .col-p0::before{content:"Protocol 0 — ";color:var(--accent);font-weight:var(--fw-medium)}
   }
 </style>
 </head>
@@ -185,109 +174,69 @@
         View on GitHub
       </a>
     </div>
-    <div class="keys">
-      <span class="keycap">Ctrl</span>
-      <span class="plus">+</span>
-      <span class="keycap">Shift</span>
-      <span class="plus">+</span>
-      <span class="keycap lit">P</span>
-    </div>
-  </div>
-</section>
-
-<!-- FEATURES -->
-<section class="section-pad" id="features">
-  <div class="wrap">
-    <div class="kicker">What it does</div>
-    <h2>A super flex keymapper&hellip; and more</h2>
-    <div class="col" style="margin-top:42px">
-      <div class="card">
-        <div class="feature">
-          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
-          <div class="txt"><h3>Persistent hotkey mapping</h3><p>Your shortcuts survive across sets — set them once, keep them forever.</p></div>
-        </div>
-
-        <div class="feature">
-          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M7 14h10"/></svg></span>
-          <div class="txt"><h3>Modifier support</h3><p>Build real key combos with <code>Ctrl</code>, <code>Alt</code> and <code>Shift</code>.</p></div>
-        </div>
-
-        <div class="feature">
-          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.4L12 3z"/><path d="M19 14l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8.8-2z"/></svg></span>
-          <div class="txt"><h3>Additional smart actions</h3><p>Beyond basic mappings, use smart actions like loading a device or selecting a track by name — not by counting clicks.</p></div>
-        </div>
-
-        <div class="feature">
-          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg></span>
-          <div class="txt"><h3>Web UI to configure shortcuts</h3><p>Map, edit and review everything from a clean browser interface.</p></div>
-        </div>
-
-        <div class="feature">
-          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 7l3-3a3 3 0 0 1 4 4l-3 3"/><path d="M10 17l-3 3a3 3 0 0 1-4-4l3-3"/><path d="M8 12h8"/></svg></span>
-          <div class="txt"><h3>HTTP API to control Live</h3><p>Plug your own tools to trigger actions (Stream Deck, custom scripts)</p></div>
-        </div>
-
-        <div class="feature">
-          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7L4 12l5 5"/><path d="M15 7l5 5-5 5"/></svg></span>
-          <div class="txt"><h3>Free, open source &amp; extensible</h3><p>MIT-spirited and built to be forked, scripted and extended (See Github repository for details).</p></div>
-        </div>
-
-      </div>
-    </div>
   </div>
 </section>
 
 <!-- COMPARISON -->
 <section class="section-pad" id="comparison">
-  <div class="wrap">
+  <div class="wrap" style="text-align:center">
     <div class="kicker">Ableton vs Protocol&#8202;0</div>
-    <h2>Two different key mappers</h2>
+    <h2>A super flex keymapper&hellip; and more</h2>
     <p class="compare-intro">
-      Ableton's keymapper is a basic, <strong>per-set</strong>, direct parameter mapper.
-      Protocol&#8202;0 is a <strong>global and smart</strong> keymapper.
+      Ableton's keymapper is <strong>per-set</strong> and maps a single key to one parameter.<br>
+      Protocol&#8202;0 is <strong>global, smart and extensible</strong>.
     </p>
-    <div class="compare-wrap">
-      <table class="compare">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Ableton keymapper</th>
-            <th class="p0-col">Protocol&#8202;0</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="feat">Scope</td>
-            <td class="cell"><span class="no">Mappings stored per set</span></td>
-            <td class="cell"><span class="yes">Mappings persist across all sets</span></td>
-          </tr>
-          <tr>
-            <td class="feat">Key combos</td>
-            <td class="cell"><span class="no">Single key mapping</span></td>
-            <td class="cell"><span class="yes">Mappings including modifiers</span></td>
-          </tr>
-          <tr>
-            <td class="feat">Actions</td>
-            <td class="cell"><span class="no">Direct parameter mapping</span></td>
-            <td class="cell"><span class="yes">Mappings include smart actions</span></td>
-          </tr>
-          <tr>
-            <td class="feat">Configuration</td>
-            <td class="cell"><span class="yes">Configurable in Live</span></td>
-            <td class="cell"><span class="yes">Configurable via a web interface</span></td>
-          </tr>
-          <tr>
-            <td class="feat">Setup</td>
-            <td class="cell"><span class="yes">Native</span></td>
-            <td class="cell"><span class="yes">Activate it with the Protocol&#8202;0 remote script</span></td>
-          </tr>
-          <tr>
-            <td class="feat">Nature</td>
-            <td class="cell"><span class="no">Static</span></td>
-            <td class="cell"><span class="yes">Open source &amp; extensible</span></td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="card compare-card" style="margin-top:42px">
+      <div class="compare-row compare-row--head">
+        <div class="feat"></div>
+        <div class="col-ableton">Ableton</div>
+        <div class="col-p0">Protocol&#8202;0</div>
+      </div>
+
+      <div class="compare-row">
+        <div class="feat">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+          <span class="feat-name">Persistence</span>
+        </div>
+        <div class="col-ableton"><span class="no">Mappings live inside each set</span></div>
+        <div class="col-p0"><span class="yes">Set your shortcuts once, keep them across every set</span></div>
+      </div>
+
+      <div class="compare-row">
+        <div class="feat">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M7 14h10"/></svg></span>
+          <span class="feat-name">Key combos</span>
+        </div>
+        <div class="col-ableton"><span class="no">Single key only</span></div>
+        <div class="col-p0"><span class="yes">Real combos with <code>Ctrl</code>, <code>Alt</code> and <code>Shift</code></span></div>
+      </div>
+
+      <div class="compare-row">
+        <div class="feat">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.4L12 3z"/><path d="M19 14l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8.8-2z"/></svg></span>
+          <span class="feat-name">Smart actions</span>
+        </div>
+        <div class="col-ableton"><span class="no">Maps to one parameter</span></div>
+        <div class="col-p0"><span class="yes">Load a device or select a track by name — not by counting clicks</span></div>
+      </div>
+
+      <div class="compare-row">
+        <div class="feat">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg></span>
+          <span class="feat-name">Configuration</span>
+        </div>
+        <div class="col-ableton"><span class="yes">Inside Live</span></div>
+        <div class="col-p0"><span class="yes">A clean web UI to map, edit and review everything</span></div>
+      </div>
+
+      <div class="compare-row">
+        <div class="feat">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7L4 12l5 5"/><path d="M15 7l5 5-5 5"/></svg></span>
+          <span class="feat-name">Nature</span>
+        </div>
+        <div class="col-ableton"><span class="no">Closed and static</span></div>
+        <div class="col-p0"><span class="yes">Open source and extensible</span></div>
+      </div>
     </div>
   </div>
 </section>
