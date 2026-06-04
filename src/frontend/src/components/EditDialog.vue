@@ -56,6 +56,28 @@ const smartAction = computed(() => {
   return undefined;
 });
 
+// Map a param's declared type (str/int/float/bool, from the script's @action signature)
+// to an HTML input. Numbers get a number field (int steps by 1, float by any); bools get a
+// checkbox; everything else is free text. Unknown types fall back to text.
+function inputKind(type: string): "text" | "number" | "checkbox" {
+  if (type === "int" || type === "float" || type === "number" || type === "integer")
+    return "number";
+  if (type === "bool" || type === "boolean") return "checkbox";
+  return "text";
+}
+function numberStep(type: string): string {
+  return type === "int" || type === "integer" ? "1" : "any";
+}
+// Params persist as strings (Binding.params is Record<string,string>). A checkbox maps to
+// "true"/"false"; reading back a stored value treats "true"/"1" as checked.
+function paramChecked(name: string): boolean {
+  const v = smartParams.value[name];
+  return v === "true" || v === "1";
+}
+function setParamChecked(name: string, checked: boolean): void {
+  smartParams.value[name] = checked ? "true" : "false";
+}
+
 // Readable header label for the target (native label for an Ableton shortcut, action label
 // otherwise). Used in the summary line at the top of the modal.
 function targetLabel(): string {
@@ -67,6 +89,9 @@ function targetLabel(): string {
     return t.binding.params.label || t.binding.params.keys || t.binding.action;
   return smartAction.value?.label ?? t.binding.action;
 }
+// The action's description (its @action summary), shown under the title as a hint.
+const actionDescription = computed<string>(() => smartAction.value?.description ?? "");
+
 // The emitted Ableton combo to show as "emits <Kbd>", if the target is a send_keys one.
 const emittedKeys = computed<string>(() => {
   const t = props.target;
@@ -145,8 +170,13 @@ async function onSave() {
 
   const action = base.action;
   const cleanedParams: Record<string, string> = { ...base.baseParams };
-  // For smart actions, take the editable param values (trimmed; drop empties).
+  // For smart actions, take the editable param values. A bool always has a value
+  // ("true"/"false") so it's kept as-is; text/number params are trimmed and dropped if empty.
   for (const p of smartAction.value?.params ?? []) {
+    if (inputKind(p.type) === "checkbox") {
+      cleanedParams[p.name] = paramChecked(p.name) ? "true" : "false";
+      continue;
+    }
     const v = (smartParams.value[p.name] ?? "").trim();
     if (v !== "") cleanedParams[p.name] = v;
     else delete cleanedParams[p.name];
@@ -216,17 +246,34 @@ onBeforeUnmount(() => {
             emits <Kbd :combo="emittedKeys" />
           </span>
         </div>
+        <p v-if="actionDescription" class="edit-summary-desc">{{ actionDescription }}</p>
       </div>
 
-      <!-- Smart action params first (e.g. load_device's name). -->
+      <!-- Smart action params first (e.g. load_device's name). Input type follows the
+           param's declared type: number for int/float, checkbox for bool, text otherwise. -->
       <div v-if="smartAction && smartAction.params.length" class="field">
         <label
           v-for="p in smartAction.params"
           :key="p.name"
           class="field-label dialog-param"
+          :class="{ 'dialog-param-bool': inputKind(p.type) === 'checkbox' }"
         >
           {{ p.name }}<span v-if="!p.required"> (optional)</span>
-          <input class="input" v-model="smartParams[p.name]" :placeholder="p.name" />
+          <input
+            v-if="inputKind(p.type) === 'checkbox'"
+            type="checkbox"
+            :checked="paramChecked(p.name)"
+            @change="setParamChecked(p.name, ($event.target as HTMLInputElement).checked)"
+          />
+          <input
+            v-else-if="inputKind(p.type) === 'number'"
+            class="input"
+            type="number"
+            :step="numberStep(p.type)"
+            v-model="smartParams[p.name]"
+            :placeholder="p.name"
+          />
+          <input v-else class="input" v-model="smartParams[p.name]" :placeholder="p.name" />
         </label>
       </div>
 
@@ -361,6 +408,11 @@ onBeforeUnmount(() => {
 }
 .edit-summary-label {
   font-size: var(--fs-base);
+}
+.edit-summary-desc {
+  margin: var(--space-2) 0 0;
+  font-size: var(--fs-xs);
+  color: var(--muted);
 }
 .edit-summary-emits {
   display: inline-flex;

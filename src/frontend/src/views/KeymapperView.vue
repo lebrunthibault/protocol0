@@ -71,10 +71,6 @@ const smartBindings = computed(() =>
   bindings.value.filter((b) => b.action !== SEND_KEYS_ACTION),
 );
 
-const loadDeviceAction = computed<ActionDef | undefined>(() =>
-  actions.value.find((a) => a.name === "load_device"),
-);
-
 function matchesSearch(label: string, combo: string, keys: string): boolean {
   const h = searchHotkey.value.trim().toLowerCase();
   if (h && !combo.toLowerCase().includes(h) && !keys.toLowerCase().includes(h)) return false;
@@ -88,6 +84,14 @@ function humanizeAction(name: string): string {
   return name
     .replace(/_/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+// A binding's param values appended to its action name, e.g. "Load Device: Reverb".
+// Generic over any action — joins the (non-empty) param values the binding carries.
+function bindingLabel(b: Binding): string {
+  const values = Object.values(b.params).filter((v) => v !== "");
+  const base = humanizeAction(b.action);
+  return values.length ? `${base}: ${values.join(", ")}` : base;
 }
 
 // Ableton groups: the catalog grouped by category, in catalog order, each entry annotated
@@ -118,29 +122,29 @@ const abletonGroups = computed<Group[]>(() => {
   return groups;
 });
 
-// Smart actions group: a "Load device — new mapping" template first, then one row per
-// existing load_device binding. Filtered by search + mapped-only.
+// Smart actions group: for every catalog action, a "<Action> — new mapping" template,
+// then one row per existing binding of that action. Generic over the whole catalog (drop
+// a plugin @action in the script and it shows up here). Filtered by search + mapped-only.
 const smartGroup = computed<Group | null>(() => {
   if (filter.value === "ableton") return null;
-  const action = loadDeviceAction.value;
-  if (!action) return null;
   const rows: Row[] = [];
-  if (!mappedOnly.value && matchesSearch(humanizeAction(action.name), "", "")) {
-    rows.push({
-      kind: "smart",
-      key: "load_device:new",
-      label: `${humanizeAction(action.name)} — new mapping`,
-      combo: "",
-      action,
-      binding: null,
-    });
-  }
-  for (const b of smartBindings.value) {
-    if (b.action !== action.name) continue;
-    const name = b.params.name ?? "";
-    const label = name ? `${humanizeAction(b.action)}: ${name}` : humanizeAction(b.action);
-    if (!matchesSearch(label, b.combo, "")) continue;
-    rows.push({ kind: "smart", key: `b:${b.combo}`, label, combo: b.combo, action, binding: b });
+  for (const action of actions.value) {
+    if (!mappedOnly.value && matchesSearch(humanizeAction(action.name), "", "")) {
+      rows.push({
+        kind: "smart",
+        key: `${action.name}:new`,
+        label: `${humanizeAction(action.name)} — new mapping`,
+        combo: "",
+        action,
+        binding: null,
+      });
+    }
+    for (const b of smartBindings.value) {
+      if (b.action !== action.name) continue;
+      const label = bindingLabel(b);
+      if (!matchesSearch(label, b.combo, "")) continue;
+      rows.push({ kind: "smart", key: `b:${b.combo}`, label, combo: b.combo, action, binding: b });
+    }
   }
   if (!rows.length) return null;
   return { category: "Smart actions", rows };

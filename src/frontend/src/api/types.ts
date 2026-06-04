@@ -17,7 +17,8 @@ export interface ActionParam {
 
 export interface ActionDef {
   name: string;
-  label: string;
+  label: string; // the action name in Title Case (e.g. "Load Device")
+  description: string; // the @action method's summary (first docstring line)
   params: ActionParam[];
   path: string;
   method: string;

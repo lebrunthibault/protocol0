@@ -4,9 +4,9 @@ import { RouterLink } from "vue-router";
 import { DOCS_URL } from "../config";
 import StatusPill from "./StatusPill.vue";
 
-// "API docs" + "Docs" live behind a help (?) menu on the right of the header so the
-// nav stays focused on the one thing you act on (the keymapper). API docs points to
-// the vendored Swagger UI the agent serves on /api-docs/.
+// "Docs" lives behind a help (?) menu on the right of the header so the nav stays
+// focused on the one thing you act on (the keymapper). The script's REST API is the
+// source of truth for endpoints — its Swagger lives at <script>/docs (port 9000), not here.
 const open = ref(false);
 const root = ref<HTMLElement | null>(null);
 
@@ -61,8 +61,6 @@ onBeforeUnmount(() => {
               </svg>
             </button>
             <div v-if="open" class="help-menu" role="menu">
-              <a class="help-item" href="/api-docs/index.html" target="_blank"
-                rel="noopener" role="menuitem" @click="close">API docs</a>
               <a class="help-item" :href="DOCS_URL" target="_blank" rel="noopener"
                 role="menuitem" @click="close">Docs</a>
             </div>
