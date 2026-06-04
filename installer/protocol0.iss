@@ -90,6 +90,13 @@ Filename: "powershell.exe"; \
   Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\scripts\install_protocol0_agent_task.ps1"" -ExePath ""{app}\protocol0-agent.exe"""; \
   StatusMsg: "Registering startup task..."; \
   Flags: runhidden waituntilterminated
+; Final wizard page: a checkbox (ticked by default) to open Protocol 0. The launcher
+; deep-links to /shortcuts (see launcher_entry.py), so this lands the user straight on
+; the keymapper. nowait: don't block the wizard from closing; skipifsilent: no UI in
+; silent installs.
+Filename: "{app}\protocol0-launcher.exe"; \
+  Description: "Open Protocol 0"; \
+  Flags: postinstall nowait skipifsilent
 
 [Icons]
 ; Shortcuts pointing to protocol0-launcher.exe (no longer a .url): it carries the "P" icon
