@@ -51,7 +51,14 @@ if (Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue) {
 # unknown to the task entirely -- either way a leftover means two agents in parallel,
 # which makes a single shortcut fire twice (cf. docs/debug-double-shortcut.md). After
 # this, the Start-ScheduledTask below leaves exactly one agent running.
-taskkill /F /IM protocol0-agent.exe 2>$null | Out-Null
+#
+# When NO agent is running, taskkill exits 128 ("process not found"). With
+# $ErrorActionPreference = "Stop" and the installer running this hidden, that non-zero
+# exit must not abort the script before Register-ScheduledTask -- a fresh install (no
+# prior agent) is the common case. Stop-Process is a cmdlet: -ErrorAction
+# SilentlyContinue makes the "no such process" case a true no-op.
+Get-Process -Name protocol0-agent -ErrorAction SilentlyContinue |
+    Stop-Process -Force -ErrorAction SilentlyContinue
 
 Register-ScheduledTask `
     -TaskName $taskName `

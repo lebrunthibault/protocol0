@@ -15,5 +15,7 @@ if (Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue) {
 
 # Kill the process if it is still running: otherwise the uninstaller cannot delete the
 # locked exe in Program Files. The task being already removed, it will not restart.
-taskkill /F /IM protocol0-agent.exe 2>$null
+# No agent running -> a true no-op (no spurious non-zero exit from taskkill).
+Get-Process -Name protocol0-agent -ErrorAction SilentlyContinue |
+    Stop-Process -Force -ErrorAction SilentlyContinue
 exit 0

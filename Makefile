@@ -61,3 +61,11 @@ extension:
 website:
 	npx --yes live-server src/website --port=$(or $(PORT),8000)
 .PHONY: website
+
+# Build the full Windows installer locally (same script CI runs on a tag):
+# front Vue 3 -> agent exe (PyInstaller) -> stage remote script -> ISCC.
+# Output: dist-installer/Protocol0-Setup-<version>.exe. Windows-only; needs
+# Node, Poetry, and Inno Setup 6 (ISCC.exe). See scripts/windows/build_installer.ps1.
+installer:
+	@powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/build_installer.ps1
+.PHONY: installer

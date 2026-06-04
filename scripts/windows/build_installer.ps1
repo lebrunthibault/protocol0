@@ -67,5 +67,11 @@ if ($isccExit -ne 0) { throw "ISCC a échoué (exit $isccExit)." }
 $outDir = Join-Path $repoRoot "dist-installer"
 Write-Host ""
 Write-Host "OK -> installeur dans $outDir"
-Get-ChildItem $outDir -Filter "Protocol0-Setup-*.exe" -ErrorAction SilentlyContinue |
-    Format-Table -AutoSize Name, Length, LastWriteTime
+$exe = Get-ChildItem $outDir -Filter "Protocol0-Setup-*.exe" -ErrorAction SilentlyContinue |
+    Sort-Object LastWriteTime -Descending | Select-Object -First 1
+$exe | Format-Table -AutoSize Name, Length, LastWriteTime
+if ($exe) {
+    Write-Host ""
+    Write-Host "Run the installer with:"
+    Write-Host "  dist-installer/$($exe.Name)"
+}
