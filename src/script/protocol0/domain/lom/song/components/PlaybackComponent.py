@@ -23,7 +23,7 @@ class PlaybackComponent(SlotManager):
         self._is_playing = (
             False  # caching this because _is_playing_listener activates multiple times
         )
-        # self._is_playing_listener.subject = self._live_song
+        self._is_playing_listener.subject = self._live_song
         DomainEventBus.subscribe(RecordEndedEvent, self._on_record_ended_event)
         DomainEventBus.subscribe(RecordCancelledEvent, self._on_record_cancelled_event)
         DomainEventBus.subscribe(SongStoppedEvent, self._on_song_stopped_event)
