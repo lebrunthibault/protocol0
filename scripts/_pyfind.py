@@ -77,53 +77,68 @@ def _resolve_abs_cmd(cmd):
 SUPPORTED_LIVE_VERSION = "12"
 
 
-def _pick_remote_scripts_dir(roots_glob, suffix):
-    """The 'MIDI Remote Scripts' dir among supported-version installs, or None.
+def _platform_roots_and_suffix():
+    """(install-root glob, remote-scripts suffix) for the current OS.
 
-    roots_glob yields candidate install roots already filtered to the supported
-    Live version (e.g. 'Live 12 *' folders or 'Ableton Live 12 *.app' bundles);
-    suffix is appended to each to reach the remote scripts folder. Edition-agnostic
-    (Intro / Standard / Suite). When both a stable and a Beta build are present, the
-    Beta is preferred (mirrors the installer).
+    The glob yields candidate install roots filtered to the supported Live
+    version (e.g. 'Live 12 *' folders or 'Ableton Live 12 *.app' bundles), and
+    suffix is appended to each to reach its 'MIDI Remote Scripts' folder.
+    Edition-agnostic (Intro / Standard / Suite). Raises on unsupported OSes.
     """
-    stable = None
-    beta = None
+    if sys.platform == "win32":
+        root = Path(r"C:\ProgramData\Ableton")
+        return (root.glob("Live %s*" % SUPPORTED_LIVE_VERSION),
+                Path("Resources") / "MIDI Remote Scripts")
+    if sys.platform == "darwin":
+        apps = Path("/Applications")
+        return (apps.glob("Ableton Live %s*.app" % SUPPORTED_LIVE_VERSION),
+                Path("Contents") / "App-Resources" / "MIDI Remote Scripts")
+    raise SystemExit(
+        "Unsupported platform %r: the remote-script install targets Windows or "
+        "macOS Ableton only." % sys.platform
+    )
+
+
+def _default_remote_scripts_dir():
+    """Where to install when no Live install is detected (fresh box).
+
+    A sensible '<version> Suite' default so bootstrap still works before Live
+    is even installed.
+    """
+    if sys.platform == "win32":
+        return (Path(r"C:\ProgramData\Ableton")
+                / ("Live %s Suite" % SUPPORTED_LIVE_VERSION)
+                / "Resources" / "MIDI Remote Scripts")
+    return (Path("/Applications")
+            / ("Ableton Live %s Suite.app" % SUPPORTED_LIVE_VERSION)
+            / "Contents" / "App-Resources" / "MIDI Remote Scripts")
+
+
+def ableton_remote_scripts_dirs():
+    """Every detected Live 'MIDI Remote Scripts' dir for the supported version.
+
+    Returns one entry per install found (any edition, stable and/or Beta), so
+    the DEV deploy can wire up *all* the user's Live installs at once. Stable
+    is listed before Beta. Empty when nothing is detected.
+    """
+    roots_glob, suffix = _platform_roots_and_suffix()
+    stable, beta = [], []
     for root in roots_glob:
         candidate = root / suffix
         if not candidate.is_dir():
             continue
-        if "beta" in root.name.lower():
-            beta = candidate
-        else:
-            stable = candidate
-    return beta or stable
+        (beta if "beta" in root.name.lower() else stable).append(candidate)
+    return stable + beta
 
 
 def ableton_remote_scripts_dir():
-    """The Ableton 'MIDI Remote Scripts' directory for the current OS.
+    """The single Ableton 'MIDI Remote Scripts' directory for the current OS.
 
     Detects the installed supported Live version (SUPPORTED_LIVE_VERSION, any
     edition: Intro / Standard / Suite), mirroring the installer's auto-detect;
     prefers a Beta build when present. Falls back to '<version> Suite' when
     nothing is found, so bootstrap on a fresh box still has a sensible default.
     """
-    if sys.platform == "win32":
-        ableton_root = Path(r"C:\ProgramData\Ableton")
-        found = _pick_remote_scripts_dir(
-            ableton_root.glob("Live %s*" % SUPPORTED_LIVE_VERSION),
-            Path("Resources") / "MIDI Remote Scripts",
-        )
-        return found or (ableton_root / ("Live %s Suite" % SUPPORTED_LIVE_VERSION)
-                         / "Resources" / "MIDI Remote Scripts")
-    if sys.platform == "darwin":
-        apps = Path("/Applications")
-        found = _pick_remote_scripts_dir(
-            apps.glob("Ableton Live %s*.app" % SUPPORTED_LIVE_VERSION),
-            Path("Contents") / "App-Resources" / "MIDI Remote Scripts",
-        )
-        return found or (apps / ("Ableton Live %s Suite.app" % SUPPORTED_LIVE_VERSION)
-                         / "Contents" / "App-Resources" / "MIDI Remote Scripts")
-    raise SystemExit(
-        "Unsupported platform %r: the remote-script install targets Windows or "
-        "macOS Ableton only." % sys.platform
-    )
+    found = ableton_remote_scripts_dirs()
+    # Mirror the installer: prefer Beta when present (it sorts last).
+    return found[-1] if found else _default_remote_scripts_dir()
