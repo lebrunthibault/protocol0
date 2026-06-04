@@ -6,7 +6,7 @@ import StatusPill from "./StatusPill.vue";
 
 // "API docs" + "Docs" live behind a help (?) menu on the right of the header so the
 // nav stays focused on the one thing you act on (the keymapper). API docs points to
-// the vendored Swagger UI the agent serves on /api-docs/ (reachable even Ableton-closed).
+// the vendored Swagger UI the agent serves on /api-docs/.
 const open = ref(false);
 const root = ref<HTMLElement | null>(null);
 

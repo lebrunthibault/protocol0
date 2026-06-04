@@ -113,7 +113,7 @@
         <rect class="box-accent" x="95" y="168" width="240" height="80" rx="12"/>
         <text class="ttl" x="215" y="200" text-anchor="middle">Agent</text>
         <text class="sub" x="215" y="220" text-anchor="middle">always-on local process</text>
-        <text class="sub" x="215" y="236" text-anchor="middle">autostarts at logon · :9010</text>
+        <text class="sub" x="215" y="236" text-anchor="middle">autostarts at logon</text>
 
         <!-- Remote script -->
         <rect class="box-live" x="525" y="188" width="190" height="70" rx="12"/>
@@ -132,8 +132,8 @@
 
         <!-- Web UI -->
         <rect class="box" x="262" y="350" width="180" height="80" rx="12"/>
-        <text class="ttl" x="352" y="382" text-anchor="middle">Web UI + /api</text>
-        <text class="sub" x="352" y="402" text-anchor="middle">Javascript web interface</text>
+        <text class="ttl" x="352" y="382" text-anchor="middle">Web UI</text>
+        <text class="sub" x="352" y="402" text-anchor="middle">on port 9010</text>
 
         <!-- REST API -->
         <rect class="box-live" x="525" y="350" width="190" height="80" rx="12"/>
@@ -152,7 +152,7 @@
         <!-- Path B — plain remap: re-emit a substituted key, never touches Live -->
         <path class="edge-accent" d="M110 430 C 110 470, 110 480, 110 500" marker-end="url(#arrow-accent)"/>
         <rect class="box" x="40" y="500" width="180" height="40" rx="10"/>
-        <text class="sub" x="130" y="524" text-anchor="middle">substituted key, e.g. Caps → Esc</text>
+        <text class="sub" x="130" y="524" text-anchor="middle">substituted keystroke</text>
         <text class="elabel-accent" x="120" y="465" text-anchor="start">②  re-emits a key</text>
 
         <!-- shortcuts.json: written by the Web UI, read by the detector -->
@@ -168,9 +168,8 @@
         <text class="elabel" x="240" y="482" text-anchor="start">reads</text>
 
         <!-- Ableton Live — where both paths land -->
-        <rect class="box-live" x="255" y="600" width="365" height="55" rx="12"/>
+        <rect class="box-live" x="255" y="600" width="365" height="40" rx="12"/>
         <text class="ttl" x="437" y="626" text-anchor="middle">Ableton Live</text>
-        <text class="sub" x="437" y="644" text-anchor="middle">the host both paths ultimately reach</text>
 
         <!-- Substituted key -> Ableton: a normal OS keyboard shortcut -->
         <path class="edge-accent" d="M130 540 C 130 590, 200 600, 270 605" marker-end="url(#arrow-accent)"/>
@@ -188,7 +187,7 @@
       <div class="card card--compact card--flat">
         <div class="role">Outside Ableton</div>
         <h3>The agent</h3>
-        <p>A single standalone process, registered to autostart at logon. It owns the <strong>global keyboard hook</strong> and serves the <strong>keymapper web UI</strong></code> at <code>127.0.0.1:9010</code>. Because it's running in the background you can edit shortcuts even with Live closed.</p>
+        <p>A single standalone process, registered to autostart at logon. It owns the <strong>global keyboard hook</strong> and serves the <strong>keymapper web UI</strong></code> at <code>127.0.0.1:9010</code>. The keymapper unlocks once Ableton is running with the remote script active.</p>
       </div>
       <div class="card card--compact card--flat">
         <div class="role">Inside Ableton</div>

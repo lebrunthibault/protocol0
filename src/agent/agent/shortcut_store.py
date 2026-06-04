@@ -1,9 +1,8 @@
 """Lecture/écriture de shortcuts.json côté agent (CRUD pour l'API web).
 
-L'agent POSSÈDE désormais l'écriture de la config (avant, c'était le script dans Ableton) :
-c'est ce qui permet d'éditer ses raccourcis SANS Ableton. Le listener de l'agent
-(agent/config.py) relit le fichier par mtime, donc une écriture ici est prise en compte
-au prochain keypress sans plomberie de reload.
+L'agent POSSÈDE l'écriture de la config (avant, c'était le script dans Ableton).
+Le listener de l'agent (agent/config.py) relit le fichier par mtime, donc une écriture
+ici est prise en compte au prochain keypress sans plomberie de reload.
 
 Même contrat que l'ex-ShortcutConfigService du script :
     %APPDATA%\\Protocol0\\shortcuts.json

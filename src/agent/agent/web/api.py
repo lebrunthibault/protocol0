@@ -2,7 +2,7 @@
 
 Renvoient tous (status_code, body_bytes, content_type). Le serveur (server.py) dispatch
 les chemins et écrit la réponse. Stdlib only. L'agent écrit shortcuts.json directement
-(agent.shortcut_store) -> édition sans Ableton ; le listener relit par mtime.
+(agent.shortcut_store) ; le listener relit par mtime.
 
 Mutations acceptées en GET (query) ET POST (body JSON) : la SPA utilise POST.
 """

@@ -33,8 +33,8 @@ Visit the website: <https://www.protocol0.live/>.
    the agent autostarts at logon.
    - Windows SmartScreen warns on first run (the installer is currently unsigned):
      *More info → Run anyway*.
-3. Configure shortcuts at <http://127.0.0.1:9010/shortcuts> (works even with
-   Ableton closed).
+3. With Ableton open and the remote script active, configure shortcuts at
+   <http://127.0.0.1:9010/shortcuts>.
 
 ### From source (developers)
 
@@ -75,8 +75,9 @@ keyboard ─► agent ──────────────────► 
   global keyboard hook and, when Ableton is focused, calls the script's action API.
   It also serves the **keymapper web UI** (a Vue 3 SPA, source in
   [`src/frontend/`](src/frontend/)) and the **`/api`** that reads/writes bindings,
-  on a fixed `:9010` — so you can edit shortcuts even with Ableton closed. The hook
-  can't live inside the script (Ableton's embedded Python can't host one).
+  on a fixed `:9010`. The keymapper unlocks only when Ableton is running and the
+  remote script is active. The hook can't live inside the script (Ableton's
+  embedded Python can't host one).
 - **Remote script** — runs inside Ableton, exposes the **action API** on a dynamic
   port, and executes actions via the Live API. Stdlib-only.
 

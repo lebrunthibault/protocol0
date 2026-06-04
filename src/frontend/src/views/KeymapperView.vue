@@ -1,13 +1,20 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useShortcuts } from "../composables/useShortcuts";
+import { useStatus } from "../composables/useStatus";
 import { SEND_KEYS_ACTION, type ActionDef, type Binding, type EditTarget } from "../api/types";
 import SearchBar from "../components/SearchBar.vue";
 import EditDialog from "../components/EditDialog.vue";
+import GateOverlay from "../components/GateOverlay.vue";
 import Kbd from "../components/Kbd.vue";
 
 const { bindings, actions, abletonShortcuts, loading, error, actionCount, abletonDocUrl, load } =
   useShortcuts();
+
+// Editing only makes sense when Ableton is connected and the remote script is live.
+// Any other state locks the UI behind a blocking GateOverlay.
+const { state } = useStatus();
+const locked = computed(() => state.value !== "ready");
 
 const searchText = ref("");
 const searchHotkey = ref("");
@@ -19,6 +26,11 @@ const mappedOnly = ref(false);
 
 // The target handed to the modal (an existing binding, or a catalog entry to map). null = closed.
 const target = ref<EditTarget>(null);
+
+// If the connection drops mid-edit, close the open dialog so the gate can take over.
+watch(locked, (isLocked) => {
+  if (isLocked) target.value = null;
+});
 
 onMounted(load);
 
@@ -71,10 +83,11 @@ function matchesSearch(label: string, combo: string, keys: string): boolean {
   return true;
 }
 
-// "load_device" -> "Load device".
+// "load_device" -> "Load Device" (underscores to spaces, then title-case every word).
 function humanizeAction(name: string): string {
-  const s = name.replace(/_/g, " ");
-  return s.charAt(0).toUpperCase() + s.slice(1);
+  return name
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 // Ableton groups: the catalog grouped by category, in catalog order, each entry annotated
@@ -186,9 +199,10 @@ function openRow(row: Row) {
       </p>
     </div>
 
-    <div class="keymapper-controls">
-      <SearchBar v-model:text="searchText" v-model:hotkey="searchHotkey" />
-    </div>
+    <div class="keymapper-body" :class="{ 'is-locked': locked }">
+      <div class="keymapper-controls">
+        <SearchBar v-model:text="searchText" v-model:hotkey="searchHotkey" />
+      </div>
 
     <div class="keymapper-bar">
       <div class="mode-tabs" role="tablist">
@@ -265,11 +279,22 @@ function openRow(row: Row) {
       </div>
     </div>
 
+    </div>
+
     <EditDialog :target="target" @close="target = null" @saved="load" />
+    <GateOverlay v-if="locked" :state="state" />
   </section>
 </template>
 
 <style scoped>
+/* When not connected to Ableton, the editable area is blurred and inert behind
+   the GateOverlay; pointer-events: none is defence-in-depth so no click lands. */
+.keymapper-body.is-locked {
+  filter: blur(2px);
+  pointer-events: none;
+  user-select: none;
+}
+
 /* Soft doc link, woven into the description sentence (grey -> visible on hover). */
 .doc-link-soft {
   color: var(--muted);

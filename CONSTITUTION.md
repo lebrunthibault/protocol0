@@ -101,13 +101,14 @@ process. It owns two things:
    neutral toward keys it doesn't handle.
 2. **The configuration frontend.** The agent serves a web app (the
    keymapper UI) and the `/api` that reads and writes the bindings, on a fixed
-   `127.0.0.1:9010`. Because the agent is **always up — independent of Ableton** —
-   you can edit your shortcuts without Live even running. Configuration stays
-   **local and offline**, with no dependency on the cloud.
+   `127.0.0.1:9010`. The keymapper is unlocked only when Ableton is running and
+   the remote script is active — editing a shortcut for Live should happen with
+   Live in front of you. Configuration stays **local and offline**, with no
+   dependency on the cloud.
 
-This is a deliberate shift: detection *and* configuration sit in the same
-always-on process, and Ableton is needed only to *trigger* actions, never to
-*edit* them. (The frontend used to be served by the script inside Live and died
+Detection *and* configuration sit in the same process; the agent owns the
+bindings file so a saved change is picked up on the next keypress with no reload
+plumbing. (The frontend used to be served by the script inside Live and died
 with it; it now lives in the agent.)
 
 ### The remote script exposes an action API inside Live
@@ -202,8 +203,8 @@ Two ways to install and run Protocol0.
    Task** so the agent autostarts at logon.
    - Windows SmartScreen will warn on first run — the installer is **currently
      unsigned** (code signing is on the backlog). Choose *More info → Run anyway*.
-3. Configure shortcuts at **`http://127.0.0.1:9010/shortcuts`** (works even with
-   Ableton closed — the agent is always up).
+3. With Ableton open and the remote script active, configure shortcuts at
+   **`http://127.0.0.1:9010/shortcuts`**.
 
 ### Local / from source (developers)
 

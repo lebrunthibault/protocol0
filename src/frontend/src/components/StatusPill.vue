@@ -36,7 +36,7 @@ const title = computed(() => {
     case "script_inactive":
       return 'Please add the Protocol0 remote script to your Control Surface in the "Tempo & Midi" Preferences Section';
     default:
-      return "You can edit your shortcuts; launch Ableton (and activate the remote script) to trigger them.";
+      return "Launch Ableton and activate the remote script to edit and trigger your shortcuts.";
   }
 });
 </script>
