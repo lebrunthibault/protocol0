@@ -1,3 +1,8 @@
+# Language
+
+This is an open-source repository. Everything must be written in English: docs,
+comments, file names, variable/function names, commit messages, identifiers — all of it.
+
 # Spec-driven workflow
 
 Before any dev task, read `docs/specs/in-progress/` for current context.
