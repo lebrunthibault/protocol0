@@ -41,7 +41,7 @@
       <div class="group-title">Documentation</div>
       <a href="/docs/" class="active">Overview</a>
       <a href="/docs/installation.html">Installation</a>
-      <a href="/docs/shortcuts.html">Configuring shortcuts</a>
+      <a href="/docs/architecture.html">Architecture</a>
       <a href="/docs/extending.html">Extending Protocol 0</a>
       <a href="/docs/faq.html">FAQ &amp; troubleshooting</a>
     </div>
@@ -52,18 +52,14 @@
     <h1>Protocol&#8202;0 docs</h1>
     <p class="lead">Protocol&#8202;0 is a companion app for Ableton Live. It runs a global keyboard-shortcut manager that works across all your sets.</p>
 
-    <p>Ableton's keymapper is a basic, per-set, direct parameter mapping.<br>Protocol&#8202;0 is a global and smart keymapper.</p>
-
-    <p>The system is two cooperating pieces: a background <strong>agent</strong> that watches the keyboard and serves the configuration web UI, and a <a class="link" href="https://midiremotescripts.structure-void.com/" target="_blank" rel="noopener"><strong>remote script</strong></a> that lives inside Ableton and runs the actions. They talk to each other over a small localhost HTTP API. You don't have to think about any of that to use it — but it's all here if you want to script against it.</p>
-
     <div class="doc-cards">
       <a class="card card--compact" href="/docs/installation.html">
         <h3>Installation →</h3>
         <p>Run the installer and activate Protocol 0 remote script.</p>
       </a>
-      <a class="card card--compact" href="/docs/shortcuts.html">
-        <h3>Configuring shortcuts →</h3>
-        <p>Map key combos to actions from the web UI, the combo format, and where your config lives.</p>
+      <a class="card card--compact" href="/docs/architecture.html">
+        <h3>Architecture →</h3>
+        <p>How it fits together: the always-on agent, the remote script in Live, and the local HTTP boundary between them.</p>
       </a>
       <a class="card card--compact" href="/docs/extending.html">
         <h3>Extending Protocol 0 →</h3>
@@ -85,11 +81,6 @@
       <tr><td>License</td><td>MIT</td></tr>
       <tr><td>Source</td><td><a class="link" href="https://github.com/lebrunthibault/protocol0" target="_blank" rel="noopener">github.com/lebrunthibault/protocol0</a></td></tr>
     </table>
-
-    <div class="note">
-      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-      <p>New here? Start with <a class="link" href="/docs/installation.html">Installation</a>, then jump to <a class="link" href="/docs/shortcuts.html">Configuring shortcuts</a>.</p>
-    </div>
 
     <div class="doc-nav">
       <span></span>

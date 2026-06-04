@@ -11,6 +11,34 @@
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/design-system.css">
 <link rel="stylesheet" href="/docs/docs.css">
+<style>
+  /* Troubleshooting: collapse each fix into an accordion so every title is
+     visible at a glance and clicking one expands only that section. */
+  .accordion{margin:var(--space-4) 0}
+  .accordion details{
+    border:1px solid var(--line);border-radius:var(--radius-md);
+    background:rgba(255,255,255,0.02);margin:10px 0;overflow:hidden;
+    transition:border-color var(--t);
+  }
+  .accordion details[open]{border-color:var(--line-strong)}
+  .accordion summary{
+    cursor:pointer;list-style:none;padding:14px 18px;
+    display:flex;align-items:center;gap:12px;
+    font-size:var(--fs-md);font-weight:var(--fw-medium);color:var(--text);
+    transition:background var(--t);
+  }
+  .accordion summary:hover{background:rgba(255,255,255,0.03)}
+  .accordion summary::-webkit-details-marker{display:none}
+  .accordion summary .chev{
+    flex:none;width:16px;height:16px;color:var(--muted-2);
+    transition:transform var(--t);
+  }
+  .accordion details[open] summary .chev{transform:rotate(90deg)}
+  /* Body: drop the default top margin on the first child so the padding controls it. */
+  .accordion .body{padding:0 18px 16px}
+  .accordion .body > :first-child{margin-top:0}
+  .accordion .body > :last-child{margin-bottom:0}
+</style>
 </head>
 <body>
 
@@ -41,7 +69,7 @@
       <div class="group-title">Documentation</div>
       <a href="/docs/">Overview</a>
       <a href="/docs/installation.html">Installation</a>
-      <a href="/docs/shortcuts.html">Configuring shortcuts</a>
+      <a href="/docs/architecture.html">Architecture</a>
       <a href="/docs/extending.html">Extending Protocol 0</a>
       <a href="/docs/faq.html" class="active">FAQ &amp; troubleshooting</a>
     </div>
@@ -50,58 +78,79 @@
   <article class="docs-article">
     <div class="label-accent">Help</div>
     <h1>FAQ &amp; troubleshooting</h1>
-    <p class="lead">The common questions, the known limitations, and fixes for the gotchas you're most likely to hit.</p>
 
     <h2>Requirements &amp; support</h2>
     <table>
       <tr><th>Question</th><th>Answer</th></tr>
-      <tr><td>Which Ableton versions?</td><td>Live 12 only (any edition: Intro, Standard, Suite, Beta).</td></tr>
-      <tr><td>Which OS?</td><td>Windows today. macOS is planned but not yet available.</td></tr>
+      <tr><td>Which Ableton versions?</td><td>Live 12 only (any edition).</td></tr>
+      <tr><td>Which OS?</td><td>Windows today. macOS coming soon.</td></tr>
       <tr><td>Is it free?</td><td>Yes — free and open source under the MIT license.</td></tr>
-      <tr><td>Does Protocol 0 connects to the internet?</td><td>No. Protocol 0 is running 100% locally. No data is transmitted outside whatsoever.</td></tr>
+      <tr><td>Does Protocol 0 sells my data?</td><td>No. Protocol 0 is running 100% locally. No data is transmitted outside whatsoever.</td></tr>
     </table>
-
-    <h2>Known limitations</h2>
-    <ul>
-      <li><strong>Windows only</strong> for now — macOS support is on the roadmap.</li>
-      <li><strong>Unsigned installer</strong> — Windows SmartScreen warns on first run until code signing lands.</li>
-      <li><strong>Some <code>Win</code> combos are reserved</strong> by Windows and never reach the app.</li>
-      <li><strong>Smart action catalog is growing</strong> — smart actions will be added over time but you can already add your own.</li>
-    </ul>
 
     <h2>Troubleshooting</h2>
 
-    <h3>SmartScreen blocks the installer</h3>
-    <p>Expected — the installer isn't code-signed yet. Click <strong>More info → Run anyway</strong>. Code signing is planned.</p>
+    <div class="accordion">
+      <details>
+        <summary><svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>SmartScreen blocks the installer</summary>
+        <div class="body">
+          <p>Expected — the installer isn't code-signed yet. Click <strong>More info → Run anyway</strong>. Code signing is planned.</p>
+        </div>
+      </details>
 
-    <h3>Shortcuts aren't firing</h3>
-    <ol>
-      <li>Check the control surface is loaded in Ableton: <strong>Preferences → Tempo & MIDI → Control Surface → Protocol 0</strong>.</li>
-      <li>Confirm the binding exists in the web UI at <a class="link" href="http://127.0.0.1:9010/shortcuts" target="_blank" rel="noopener"><code>http://127.0.0.1:9010/shortcuts</code></a> — it should be in the bindings table.</li>
-      <li>Make sure <strong>Ableton is the foreground window</strong>. Shortcuts are intentionally ignored everywhere else.</li>
-    </ol>
+      <details>
+        <summary><svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>Shortcuts aren't firing</summary>
+        <div class="body">
+          <ol>
+            <li>Check the control surface is loaded in Ableton: <strong>Preferences → Tempo & MIDI → Control Surface → Protocol 0</strong>.</li>
+            <li>Confirm the binding exists in the web UI at <a class="link" href="http://127.0.0.1:9010/shortcuts" target="_blank" rel="noopener"><code>http://127.0.0.1:9010/shortcuts</code></a> — it should be in the bindings table.</li>
+            <li>Make sure <strong>Ableton is the foreground window</strong>. Shortcuts are intentionally ignored everywhere else.</li>
+          </ol>
+        </div>
+      </details>
 
-    <h3>The web UI won't load</h3>
-    <p>The UI is served by the <strong>agent</strong> — the background app on your machine, not Ableton — so it works even with Live closed. If <a class="link" href="http://127.0.0.1:9010/shortcuts" target="_blank" rel="noopener"><code>http://127.0.0.1:9010/shortcuts</code></a> doesn't load:</p>
-    <ul>
-      <li>Make sure the agent is running — its autostart task <code>Protocol0</code> should be in Task Scheduler. Reinstalling re-creates it.</li>
-      <li>Check the agent log at <code>%APPDATA%\Protocol0\logs\agent.log</code> for a startup error (e.g. port <code>9010</code> already in use).</li>
-    </ul>
+      <details>
+        <summary><svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>The web UI won't load</summary>
+        <div class="body">
+          <p>The UI is served by the <strong>agent</strong> — the background app on your machine, not Ableton — so it works even with Live closed. If <a class="link" href="http://127.0.0.1:9010/shortcuts" target="_blank" rel="noopener"><code>http://127.0.0.1:9010/shortcuts</code></a> doesn't load:</p>
+          <ul>
+            <li>Make sure the agent is running — its autostart task <code>Protocol0</code> should be in Task Scheduler. Reinstalling re-creates it.</li>
+            <li>Check the agent log at <code>%APPDATA%\Protocol0\logs\agent.log</code> for a startup error (e.g. port <code>9010</code> already in use).</li>
+          </ul>
+        </div>
+      </details>
 
-    <h3>"Script HTTP failed" in the agent log</h3>
-    <p>The agent couldn't reach the in-Ableton action API. Make sure Ableton is open and the control surface is enabled; then check the agent log for details.</p>
+      <details>
+        <summary><svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>"Script HTTP failed" in the agent log</summary>
+        <div class="body">
+          <p>The agent couldn't reach the in-Ableton action API. Make sure Ableton is open and the control surface is enabled; then check the agent log for details.</p>
+        </div>
+      </details>
 
-    <h3>The installer can't find Ableton</h3>
-    <p>If your Live install is in a non-standard location, the wizard offers a step to point at the <em>MIDI Remote Scripts</em> folder manually — typically:</p>
-    <pre><code>C:\ProgramData\Ableton\Live 12 Suite\Resources\MIDI Remote Scripts</code></pre>
+      <details>
+        <summary><svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>The installer can't find Ableton</summary>
+        <div class="body">
+          <p>If your Live install is in a non-standard location, the wizard offers a step to point at the <em>MIDI Remote Scripts</em> folder manually — typically:</p>
+          <pre><code>C:\ProgramData\Ableton\Live 12 Suite\Resources\MIDI Remote Scripts</code></pre>
+        </div>
+      </details>
 
-    <h3>It doesn't start automatically after login</h3>
-    <p>Autostart is a Windows scheduled task named <code>Protocol0</code>. Check it exists:</p>
-    <pre><code>Get-ScheduledTask -TaskName Protocol0</code></pre>
-    <p>If it's missing, reinstalling re-creates it.</p>
+      <details>
+        <summary><svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>It doesn't start automatically after login</summary>
+        <div class="body">
+          <p>Autostart is a Windows scheduled task named <code>Protocol0</code>. Check it exists:</p>
+          <pre><code>Get-ScheduledTask -TaskName Protocol0</code></pre>
+          <p>If it's missing, reinstalling re-creates it.</p>
+        </div>
+      </details>
 
-    <h3>My bindings disappeared after reinstalling</h3>
-    <p>They shouldn't — bindings live in <code>%APPDATA%\Protocol0\shortcuts.json</code>, which installs and uninstalls leave alone. If the file got hand-edited into invalid JSON, the agent treats it as empty (no shortcuts) rather than crashing. Open the web UI and re-add the binding, or fix the JSON.</p>
+      <details>
+        <summary><svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>My bindings disappeared after reinstalling</summary>
+        <div class="body">
+          <p>They shouldn't — bindings live in <code>%APPDATA%\Protocol0\shortcuts.json</code>, which installs and uninstalls leave alone. If the file got hand-edited into invalid JSON, the agent treats it as empty (no shortcuts) rather than crashing. Open the web UI and re-add the binding, or fix the JSON.</p>
+        </div>
+      </details>
+    </div>
 
     <h2>Still stuck?</h2>
     <p>Open an issue on <a class="link" href="https://github.com/lebrunthibault/protocol0/issues" target="_blank" rel="noopener">GitHub</a> or get in touch on <a class="link" href="https://discord.gg/p2qYMQeru" target="_blank" rel="noopener">Discord</a>. Including the relevant lines from <code>%APPDATA%\Protocol0\logs\agent.log</code> helps a lot.</p>

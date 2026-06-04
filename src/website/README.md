@@ -18,7 +18,7 @@ src/website/
 │   ├── docs.css         Docs layout (sidebar + prose)
 │   ├── index.html       Docs overview
 │   ├── installation.html
-│   ├── shortcuts.html
+│   ├── architecture.html
 │   ├── extending.html
 │   └── faq.html
 └── README.md           (this file)

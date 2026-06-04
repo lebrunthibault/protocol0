@@ -11,6 +11,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/design-system.css">
 <link rel="stylesheet" href="/docs/docs.css">
+<style>
+  /* This page packs three topics into one article — give the sections,
+     code blocks and callout extra breathing room so it reads less dense. */
+  .docs-article h2{margin-top:64px}
+  .docs-article pre{margin:20px 0}
+  .docs-article .note{margin:24px 0}
+  .docs-article .lead{margin-bottom:var(--space-4)}
+  .docs-article ul,.docs-article ol{margin-top:var(--space-4)}
+  .docs-article li{margin:10px 0}
+</style>
 </head>
 <body>
 
@@ -41,7 +51,7 @@
       <div class="group-title">Documentation</div>
       <a href="/docs/">Overview</a>
       <a href="/docs/installation.html">Installation</a>
-      <a href="/docs/shortcuts.html">Configuring shortcuts</a>
+      <a href="/docs/architecture.html">Architecture</a>
       <a href="/docs/extending.html" class="active">Extending Protocol 0</a>
       <a href="/docs/faq.html">FAQ &amp; troubleshooting</a>
     </div>
@@ -50,11 +60,11 @@
   <article class="docs-article">
     <div class="label-accent">Extending</div>
     <h1>Extending Protocol 0</h1>
-    <p class="lead">Protocol&#8202;0 is built to be extended. There are three ways to add your own behavior, from the simplest to the most open-ended:</p>
+    <p class="lead">Protocol&#8202;0 is built to be extended. There are three ways to add your own behavior:</p>
     <ul>
       <li><strong><a class="link" href="#smart-actions">Add a smart action</a></strong> — drop in a small file and get a new action you can bind to a shortcut. The simplest path.</li>
-      <li><strong><a class="link" href="#plugins">Write a plugin</a></strong> — for behavior that also reacts to what happens in Live (a clip recorded, playback started).</li>
       <li><strong><a class="link" href="#http-api">Call the HTTP API</a></strong> — drive Protocol&#8202;0 from your own tools over a REST API.</li>
+        <li><strong><a class="link" href="#plugins">Write a plugin</a></strong> — full control over Ableton UI - for the brave.</li>
     </ul>
 
     <h2 id="smart-actions">Add a smart action</h2>
@@ -78,13 +88,8 @@ class HelloSmartAction(SmartActionInterface):
 
     def run(self) -> None:       # what happens when the shortcut fires
         StatusBar.show_message("Hello from a smart action!")</code></pre>
-    <p>Save the file, restart Ableton, and <code>hello</code> appears in the <a class="link" href="/docs/shortcuts.html">shortcut UI</a> — bind it to any combo.</p>
+    <p>Save the file, restart Ableton, and <code>hello</code> appears in the shortcut UI at <a class="link" href="http://127.0.0.1:9010/shortcuts" target="_blank" rel="noopener"><code>http://127.0.0.1:9010/shortcuts</code></a> — bind it to any combo.</p>
     <p class="muted">Full reference on <a class="link" href="https://github.com/lebrunthibault/protocol0/blob/main/docs/smart-actions.md" target="_blank" rel="noopener">GitHub</a>.</p>
-
-    <h2 id="plugins">Write a plugin</h2>
-    <p>If you want full flexibility you write a <strong>plugin</strong>. Coding a plugin is like coding a remote script, except you can use methods and classes from Protocol&#8202;0 — so it might be simpler than starting from scratch :)</p>
-    <p>Like smart actions, plugins are Python files and are discovered automatically — you subclass <code>PluginInterface</code>, declare what you listen to and what you expose, and the script wires it all up.</p>
-    <p class="muted">Full reference on <a class="link" href="https://github.com/lebrunthibault/protocol0/blob/main/docs/plugins.md" target="_blank" rel="noopener">GitHub</a>.</p>
 
     <h2 id="http-api">Call the HTTP API</h2>
     <p>When Ableton is open, Protocol&#8202;0 exposes a <strong>REST API</strong> on your machine — the same calls a keyboard shortcut makes under the hood. Any tool that can send an HTTP request (a script, a Stream Deck, your own app) can drive Live through it.</p>
@@ -94,10 +99,15 @@ class HelloSmartAction(SmartActionInterface):
       <li><strong>Localhost only</strong> — the server binds to <code>127.0.0.1</code>, so it's never reachable from the network.</li>
     </ul>
 
+    <h2 id="plugins">Write a plugin</h2>
+    <p>If you want full flexibility you write a <strong>plugin</strong>. Coding a plugin is like coding a remote script, except you can use methods and classes from Protocol&#8202;0 — so it might be simpler than starting from scratch :)</p>
+    <p>Like smart actions, plugins are Python files and are discovered automatically — you subclass <code>PluginInterface</code>, declare what you listen to and what you expose, and the script wires it all up.</p>
+    <p class="muted">Full reference on <a class="link" href="https://github.com/lebrunthibault/protocol0/blob/main/docs/plugins.md" target="_blank" rel="noopener">GitHub</a>.</p>
+
     <div class="doc-nav">
-      <a href="/docs/shortcuts.html">
+      <a href="/docs/architecture.html">
         <div class="dir">← Previous</div>
-        <div class="ttl">Configuring shortcuts</div>
+        <div class="ttl">Architecture</div>
       </a>
       <a class="next" href="/docs/faq.html">
         <div class="dir">Next</div>
