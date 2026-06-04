@@ -26,6 +26,10 @@
   #error VERSION file not found at repo root
 #endif
 #define MyAppPublisher "Thibault Lebrun"
+; Major Ableton Live version Protocol 0 supports. Auto-detection only matches
+; "Live <this>*" folders. Bump here when moving to a new Live (e.g. "13").
+; Keep in sync with scripts/_pyfind.py SUPPORTED_LIVE_VERSION.
+#define SupportedLiveVersion "12"
 
 [Setup]
 AppId={{E7A2C3D4-5B6F-4A1E-9C8D-0F1A2B3C4D5E}
@@ -127,22 +131,36 @@ Type: files; Name: "{autodesktop}\Protocol 0.url"
 [Code]
 var
   RemoteScriptsPage: TInputDirWizardPage;
+  { Set by DetectRemoteScripts: True when the pre-filled path is a Beta build, so the
+    wizard can tell the user it picked a Beta and let them switch. }
+  DetectedBeta: Boolean;
+  { Inline notice shown on the folder page (instead of a pop-up) when a Beta was picked. }
+  BetaNotice: TNewStaticText;
 
-{ Returns the "MIDI Remote Scripts" folder of the most recent Live version found under
-  %ProgramData%\Ableton\Live*, or '' if none. Descending sort on the folder name ->
-  "Live 12 Suite" comes before "Live 11 ...". }
+{ True if a Live folder name denotes a Beta build, e.g. "Live 12 Beta". }
+function IsBetaName(Name: String): Boolean;
+begin
+  Result := Pos('beta', Lowercase(Name)) > 0;
+end;
+
+{ Returns the "MIDI Remote Scripts" folder of the supported Live version found under
+  %ProgramData%\Ableton (only "Live {#SupportedLiveVersion}*" folders, any edition).
+  When both a stable and a Beta build of that version are present, the Beta is
+  preferred (and DetectedBeta is set). Returns '' if none found. }
 function DetectRemoteScripts(): String;
 var
-  AbletonRoot, Best, Candidate: String;
+  AbletonRoot, Candidate, StableMatch, BetaMatch: String;
   FindRec: TFindRec;
 begin
   Result := '';
-  Best := '';
+  StableMatch := '';
+  BetaMatch := '';
+  DetectedBeta := False;
   AbletonRoot := ExpandConstant('{commonappdata}\Ableton');
   if not DirExists(AbletonRoot) then
     Exit;
 
-  if FindFirst(AbletonRoot + '\Live*', FindRec) then
+  if FindFirst(AbletonRoot + '\Live {#SupportedLiveVersion}*', FindRec) then
   begin
     try
       repeat
@@ -151,12 +169,10 @@ begin
           Candidate := AbletonRoot + '\' + FindRec.Name + '\Resources\MIDI Remote Scripts';
           if DirExists(Candidate) then
           begin
-            { Compare on the version name (FindRec.Name) to keep the most recent. }
-            if (Best = '') or (FindRec.Name > Best) then
-            begin
-              Best := FindRec.Name;
-              Result := Candidate;
-            end;
+            if IsBetaName(FindRec.Name) then
+              BetaMatch := Candidate
+            else
+              StableMatch := Candidate;
           end;
         end;
       until not FindNext(FindRec);
@@ -164,6 +180,15 @@ begin
       FindClose(FindRec);
     end;
   end;
+
+  { Prefer Beta when present, then flag it so the wizard can warn the user. }
+  if BetaMatch <> '' then
+  begin
+    Result := BetaMatch;
+    DetectedBeta := True;
+  end
+  else
+    Result := StableMatch;
 end;
 
 procedure InitializeWizard();
@@ -172,10 +197,33 @@ begin
     wpSelectDir,
     'Ableton MIDI Remote Scripts',
     'Where should the Protocol 0 control surface be installed?',
-    'Select your Ableton MIDI Remote Scripts folder. The detected path is pre-filled with the latest Ableton version found; correct it if needed.',
+    'Select your Ableton Live {#SupportedLiveVersion} MIDI Remote Scripts folder. ' +
+    'The detected path is pre-filled (any edition: Intro, Standard, Suite); correct it if needed.',
     False, '');
   RemoteScriptsPage.Add('');
   RemoteScriptsPage.Values[0] := DetectRemoteScripts();
+
+  { A discreet inline notice (no pop-up): created hidden, sits below the folder field
+    and only appears on this page when a Beta build was pre-filled. }
+  BetaNotice := TNewStaticText.Create(RemoteScriptsPage);
+  BetaNotice.Parent := RemoteScriptsPage.Surface;
+  BetaNotice.Left := 0;
+  BetaNotice.Top := RemoteScriptsPage.Edits[0].Top + RemoteScriptsPage.Edits[0].Height + ScaleY(12);
+  BetaNotice.Width := RemoteScriptsPage.SurfaceWidth;
+  BetaNotice.AutoSize := False;
+  BetaNotice.WordWrap := True;
+  BetaNotice.Height := ScaleY(40);
+  BetaNotice.Font.Color := clMaroon;
+  BetaNotice.Caption :=
+    'A Beta build of Ableton Live {#SupportedLiveVersion} was detected and pre-filled above. '
+    + 'If you prefer a stable Live {#SupportedLiveVersion}, change the folder before clicking Next.';
+  BetaNotice.Visible := False;
+end;
+
+{ Reveal the Beta notice on the folder page only; hide it everywhere else. No pop-up. }
+procedure CurPageChanged(CurPageID: Integer);
+begin
+  BetaNotice.Visible := (CurPageID = RemoteScriptsPage.ID) and DetectedBeta;
 end;
 
 function GetRemoteScriptsDir(Param: String): String;
