@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Extending Protocol 0 — Protocol 0 docs</title>
+<meta name="description" content="Three ways to extend Protocol 0: add a simple smart action, write a plugin, or call the REST HTTP API that the remote script exposes inside Ableton.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/design-system.css">
+<link rel="stylesheet" href="/docs/docs.css">
+</head>
+<body>
+
+<header id="hdr">
+  <div class="wrap nav">
+    <a href="/" class="brand"><span class="dot">P0</span> Protocol 0</a>
+    <nav class="nav-links">
+      <a href="/">Home</a>
+      <a href="/docs/" class="active">Docs</a>
+      <a href="https://github.com/lebrunthibault/protocol0" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </nav>
+    <div class="nav-right">
+      <a href="/#contact" class="contact">Contact</a>
+      <a href="https://github.com/lebrunthibault/protocol0/releases" target="_blank" rel="noopener" class="btn btn-primary">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v9m0 0L4.5 6.5M8 10l3.5-3.5M2 13.5h12"/></svg>
+        Download
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="docs-layout">
+  <aside class="docs-sidebar">
+    <div class="group">
+      <div class="group-title">Documentation</div>
+      <a href="/docs/">Overview</a>
+      <a href="/docs/installation.html">Installation</a>
+      <a href="/docs/shortcuts.html">Configuring shortcuts</a>
+      <a href="/docs/extending.html" class="active">Extending Protocol 0</a>
+      <a href="/docs/faq.html">FAQ &amp; troubleshooting</a>
+    </div>
+  </aside>
+
+  <article class="docs-article">
+    <div class="label-accent">Extending</div>
+    <h1>Extending Protocol 0</h1>
+    <p class="lead">Protocol&#8202;0 is built to be extended. There are three ways to add your own behavior, from the simplest to the most open-ended:</p>
+    <ul>
+      <li><strong><a class="link" href="#smart-actions">Add a smart action</a></strong> — drop in a small file and get a new action you can bind to a shortcut. The simplest path.</li>
+      <li><strong><a class="link" href="#plugins">Write a plugin</a></strong> — for behavior that also reacts to what happens in Live (a clip recorded, playback started).</li>
+      <li><strong><a class="link" href="#http-api">Call the HTTP API</a></strong> — drive Protocol&#8202;0 from your own tools over a REST API.</li>
+    </ul>
+
+    <h2 id="smart-actions">Add a smart action</h2>
+    <p>A <strong>smart action</strong> is the easiest way to add a new action. It's a tiny <code>.py</code> file that you drop into Protocol&#8202;0's smart-actions folder. On Windows that's:</p>
+    <pre><code>C:\ProgramData\Ableton\Live 12 Suite\Resources\MIDI Remote Scripts\Protocol_0\protocol0\smart_actions\</code></pre>
+
+    <div class="note">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <p>Smart actions are written in <strong>Python</strong>. If you're not a programmer, you don't have to learn it: describe what you want to an AI coding assistant (ChatGPT, Claude, Cursor…), point it at the example file below, and it can write the action for you.</p>
+    </div>
+
+    <p>Start from the example, which includes comments and a working action you can copy and adapt: <a class="link" href="https://github.com/lebrunthibault/protocol0/blob/main/src/script/protocol0/plugins/example/ExamplePlugin.py" target="_blank" rel="noopener">the example action on GitHub</a>. A smart action looks like this:</p>
+    <pre><code>from protocol0.application.smart_action.SmartActionInterface import (
+    SmartActionInterface,
+)
+from protocol0.shared.logging.StatusBar import StatusBar
+
+
+class HelloSmartAction(SmartActionInterface):
+    name = "hello"               # the name shown in the shortcut UI
+
+    def run(self) -> None:       # what happens when the shortcut fires
+        StatusBar.show_message("Hello from a smart action!")</code></pre>
+    <p>Save the file, restart Ableton, and <code>hello</code> appears in the <a class="link" href="/docs/shortcuts.html">shortcut UI</a> — bind it to any combo.</p>
+    <p class="muted">Full reference on <a class="link" href="https://github.com/lebrunthibault/protocol0/blob/main/docs/smart-actions.md" target="_blank" rel="noopener">GitHub</a>.</p>
+
+    <h2 id="plugins">Write a plugin</h2>
+    <p>If you want full flexibility you write a <strong>plugin</strong>. Coding a plugin is like coding a remote script, except you can use methods and classes from Protocol&#8202;0 — so it might be simpler than starting from scratch :)</p>
+    <p>Like smart actions, plugins are Python files and are discovered automatically — you subclass <code>PluginInterface</code>, declare what you listen to and what you expose, and the script wires it all up.</p>
+    <p class="muted">Full reference on <a class="link" href="https://github.com/lebrunthibault/protocol0/blob/main/docs/plugins.md" target="_blank" rel="noopener">GitHub</a>.</p>
+
+    <h2 id="http-api">Call the HTTP API</h2>
+    <p>When Ableton is open, Protocol&#8202;0 exposes a <strong>REST API</strong> on your machine — the same calls a keyboard shortcut makes under the hood. Any tool that can send an HTTP request (a script, a Stream Deck, your own app) can drive Live through it.</p>
+    <p>The full, always-up-to-date list of endpoints — with parameters and a try-it-out button — is in the interactive <strong>Swagger UI</strong>:</p>
+    <pre><code>http://127.0.0.1:9010/api-docs/index.html</code></pre>
+    <ul>
+      <li><strong>Localhost only</strong> — the server binds to <code>127.0.0.1</code>, so it's never reachable from the network.</li>
+    </ul>
+
+    <div class="doc-nav">
+      <a href="/docs/shortcuts.html">
+        <div class="dir">← Previous</div>
+        <div class="ttl">Configuring shortcuts</div>
+      </a>
+      <a class="next" href="/docs/faq.html">
+        <div class="dir">Next</div>
+        <div class="ttl">FAQ &amp; troubleshooting →</div>
+      </a>
+    </div>
+  </article>
+</div>
+
+<footer>
+  <div class="wrap foot">
+    <a href="/" class="brand"><span class="dot">P0</span> Protocol 0</a>
+    <div class="flinks">
+      <a href="/">Home</a>
+      <a href="/docs/">Docs</a>
+      <a href="https://github.com/lebrunthibault/protocol0" target="_blank" rel="noopener">GitHub</a>
+      <a href="/#contact">Contact</a>
+    </div>
+    <div class="copy">© Thibault Lebrun 2026</div>
+  </div>
+</footer>
+
+<script>
+  const hdr=document.getElementById('hdr');
+  const onScroll=()=>hdr.classList.toggle('scrolled',window.scrollY>10);
+  onScroll();window.addEventListener('scroll',onScroll,{passive:true});
+</script>
+</body>
+</html>

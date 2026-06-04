@@ -146,6 +146,12 @@ discovers it, wires it up, and tears it down cleanly. This keeps the action set
 hard-coded*): the way to grow Protocol0's vocabulary is to drop in a plugin, not
 to edit a central list. The *how* lives in [`docs/plugins.md`](docs/plugins.md).
 
+When the goal is simply to *add one action* — no event listening, no lifecycle —
+a **smart action** is the lighter path: a single class with a configurable name
+and a `run` method, discovered the same way and bindable to a shortcut just like
+any other action. It is a one-action plugin with the ceremony removed; the *how*
+lives in [`docs/smart-actions.md`](docs/smart-actions.md).
+
 ### Windows-first
 
 The project is built and run **on Windows**, and the packaging reflects that. The

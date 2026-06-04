@@ -42,8 +42,7 @@
       <a href="/docs/">Overview</a>
       <a href="/docs/installation.html">Installation</a>
       <a href="/docs/shortcuts.html">Configuring shortcuts</a>
-      <a href="/docs/http-api.html">HTTP API</a>
-      <a href="/docs/plugins.html">Creating plugins</a>
+      <a href="/docs/extending.html">Extending Protocol 0</a>
       <a href="/docs/faq.html" class="active">FAQ &amp; troubleshooting</a>
     </div>
   </aside>
@@ -56,20 +55,18 @@
     <h2>Requirements &amp; support</h2>
     <table>
       <tr><th>Question</th><th>Answer</th></tr>
-      <tr><td>Which Ableton versions?</td><td>Live 12 only (any edition: Intro, Standard, Suite).</td></tr>
+      <tr><td>Which Ableton versions?</td><td>Live 12 only (any edition: Intro, Standard, Suite, Beta).</td></tr>
       <tr><td>Which OS?</td><td>Windows today. macOS is planned but not yet available.</td></tr>
-      <tr><td>Do I need Python?</td><td>No. The installer bundles everything.</td></tr>
       <tr><td>Is it free?</td><td>Yes — free and open source under the MIT license.</td></tr>
-      <tr><td>Does my config leave my machine?</td><td>No. The API is localhost-only and bindings are stored locally.</td></tr>
+      <tr><td>Does Protocol 0 connects to the internet?</td><td>No. Protocol 0 is running 100% locally. No data is transmitted outside whatsoever.</td></tr>
     </table>
 
     <h2>Known limitations</h2>
     <ul>
       <li><strong>Windows only</strong> for now — macOS support is on the roadmap.</li>
       <li><strong>Unsigned installer</strong> — Windows SmartScreen warns on first run until code signing lands.</li>
-      <li><strong>Foreground only</strong> — shortcuts fire only while Ableton is the active window, by design.</li>
       <li><strong>Some <code>Win</code> combos are reserved</strong> by Windows and never reach the app.</li>
-      <li><strong>Action catalog is growing</strong> — more of the underlying API is exposed to shortcuts over time.</li>
+      <li><strong>Smart action catalog is growing</strong> — smart actions will be added over time but you can already add your own.</li>
     </ul>
 
     <h2>Troubleshooting</h2>
@@ -79,10 +76,9 @@
 
     <h3>Shortcuts aren't firing</h3>
     <ol>
-      <li>Make sure <strong>Ableton is the foreground window</strong>. Shortcuts are intentionally ignored everywhere else.</li>
+      <li>Check the control surface is loaded in Ableton: <strong>Preferences → Tempo & MIDI → Control Surface → Protocol 0</strong>.</li>
       <li>Confirm the binding exists in the web UI at <a class="link" href="http://127.0.0.1:9010/shortcuts" target="_blank" rel="noopener"><code>http://127.0.0.1:9010/shortcuts</code></a> — it should be in the bindings table.</li>
-      <li>Check the control surface is loaded: <strong>Preferences → MIDI → Control Surface → Protocol 0</strong>.</li>
-      <li>Check the agent log at <code>%APPDATA%\Protocol0\logs\agent.log</code> for the combo being recognized and the action call.</li>
+      <li>Make sure <strong>Ableton is the foreground window</strong>. Shortcuts are intentionally ignored everywhere else.</li>
     </ol>
 
     <h3>The web UI won't load</h3>
@@ -108,12 +104,12 @@
     <p>They shouldn't — bindings live in <code>%APPDATA%\Protocol0\shortcuts.json</code>, which installs and uninstalls leave alone. If the file got hand-edited into invalid JSON, the agent treats it as empty (no shortcuts) rather than crashing. Open the web UI and re-add the binding, or fix the JSON.</p>
 
     <h2>Still stuck?</h2>
-    <p>Open an issue on <a class="link" href="https://github.com/lebrunthibault/protocol0/issues" target="_blank" rel="noopener">GitHub</a> or <a class="link" href="/#contact">get in touch</a>. Including the relevant lines from <code>%APPDATA%\Protocol0\logs\agent.log</code> helps a lot.</p>
+    <p>Open an issue on <a class="link" href="https://github.com/lebrunthibault/protocol0/issues" target="_blank" rel="noopener">GitHub</a> or get in touch on <a class="link" href="https://discord.gg/p2qYMQeru" target="_blank" rel="noopener">Discord</a>. Including the relevant lines from <code>%APPDATA%\Protocol0\logs\agent.log</code> helps a lot.</p>
 
     <div class="doc-nav">
-      <a href="/docs/plugins.html">
+      <a href="/docs/extending.html">
         <div class="dir">← Previous</div>
-        <div class="ttl">Creating plugins</div>
+        <div class="ttl">Extending Protocol 0</div>
       </a>
       <a class="next" href="/docs/">
         <div class="dir">Next</div>

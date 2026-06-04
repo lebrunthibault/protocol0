@@ -42,8 +42,7 @@
       <a href="/docs/">Overview</a>
       <a href="/docs/installation.html">Installation</a>
       <a href="/docs/shortcuts.html" class="active">Configuring shortcuts</a>
-      <a href="/docs/http-api.html">HTTP API</a>
-      <a href="/docs/plugins.html">Creating plugins</a>
+      <a href="/docs/extending.html">Extending Protocol 0</a>
       <a href="/docs/faq.html">FAQ &amp; troubleshooting</a>
     </div>
   </aside>
@@ -64,78 +63,25 @@
       <li>Save the binding — it takes effect immediately (the agent reloads the config on change).</li>
     </ul>
 
-    <h2>Combo format</h2>
-    <p>Combos are written lowercase, modifiers first in a fixed order (<code>ctrl</code>, <code>alt</code>, <code>shift</code>, <code>win</code>), then the key, joined by <code>+</code>:</p>
-    <pre><code>ctrl+alt+e
-ctrl+shift+f5
-alt+l</code></pre>
-    <p>Allowed keys:</p>
-    <table>
-      <tr><th>Group</th><th>Keys</th></tr>
-      <tr><td>Letters</td><td><code>a</code>–<code>z</code></td></tr>
-      <tr><td>Digits</td><td><code>0</code>–<code>9</code> (top row and numpad both map to the digit)</td></tr>
-      <tr><td>Function keys</td><td><code>f1</code>–<code>f12</code></td></tr>
-    </table>
-    <p>Matching is by <strong>physical key position</strong>, not the character produced — so a binding behaves the same on QWERTY, AZERTY, or any other layout.</p>
-
-    <h2>Modifiers</h2>
-    <table>
-      <tr><th>Modifier</th><th>Key</th></tr>
-      <tr><td><code>ctrl</code></td><td>Control (left or right)</td></tr>
-      <tr><td><code>alt</code></td><td>Alt / Option (including AltGr on AZERTY)</td></tr>
-      <tr><td><code>shift</code></td><td>Shift (left or right)</td></tr>
-      <tr><td><code>win</code></td><td>Windows key (Command on macOS, when supported)</td></tr>
-    </table>
-
-    <div class="warn">
+      <div class="warn">
       <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
       <p>Windows intercepts some <code>Win</code> combos (like <code>Win+X</code>) before any app sees them. For reliable combos, prefer <code>Ctrl+Alt+&lt;key&gt;</code>.</p>
     </div>
 
-    <h2>Where the config lives</h2>
-    <p>All bindings are stored in a single JSON file, owned by the agent (written from the web UI, read by its keyboard listener):</p>
-    <pre><code>%APPDATA%\Protocol0\shortcuts.json</code></pre>
-    <p>The web UI writes it for you, but it's plain JSON if you want to inspect it. The shape is a versioned envelope:</p>
-    <pre><code>{
-  "version": 1,
-  "bindings": [
-    {
-      "combo": "ctrl+alt+e",
-      "action": "load_device",
-      "params": { "name": "EQ Eight" }
-    },
-    {
-      "combo": "ctrl+alt+u",
-      "action": "load_device",
-      "params": { "name": "Utility" }
-    }
-  ]
-}</code></pre>
-
-    <div class="note">
-      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-      <p>The UI writes the file atomically and validates as you go. If you hand-edit it, keep it valid JSON — a corrupted file is treated as "no shortcuts" rather than crashing, but your bindings won't fire.</p>
-    </div>
-
     <h2>Actions</h2>
-    <p>Each binding triggers an action. Actions are discoverable — the web UI lists what's available and the parameters each one takes. The current built-in action is:</p>
-    <table>
-      <tr><th>Action</th><th>Params</th><th>What it does</th></tr>
-      <tr><td><code>load_device</code></td><td><code>name</code> (string)</td><td>Loads a device (instrument or audio effect) by name onto the selected track.</td></tr>
-    </table>
-    <p>More actions — track selection, playback, clip and scene control — are wired into the underlying <a class="link" href="/docs/http-api.html">HTTP API</a> and will be added to the shortcut catalog over time.</p>
+    <p>The catalog of smart actions is growing — and you can add your own. See <a class="link" href="/docs/extending.html#smart-actions">Adding a smart action</a>.</p>
 
     <h2>When do shortcuts fire?</h2>
-    <p>Shortcuts only trigger while <strong>Ableton is the foreground window</strong>. This is deliberate: it keeps Protocol&#8202;0 from stealing your key combos while you're working in other apps.</p>
+    <p>Shortcuts only trigger while <strong>Ableton is the foreground window</strong>.
 
     <div class="doc-nav">
       <a href="/docs/installation.html">
         <div class="dir">← Previous</div>
         <div class="ttl">Installation</div>
       </a>
-      <a class="next" href="/docs/http-api.html">
+      <a class="next" href="/docs/extending.html">
         <div class="dir">Next</div>
-        <div class="ttl">HTTP API →</div>
+        <div class="ttl">Extending Protocol 0 →</div>
       </a>
     </div>
   </article>

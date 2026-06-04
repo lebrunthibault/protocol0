@@ -4,7 +4,7 @@ Protocol 0 is a companion software for Ableton Live.
 It provides a global keyboard shortcut manager that works across all sets, letting you keymap usual parameters as well as custom actions (load a device by name, select a track, or anything else the Live API (LOM) exposes).
 Configure it all from a small web UI.
 Protocol 0 is free, open-source, and extensible : 
-- you can add new actions by [creating a plugin](docs/plugins.md)
+- you can add new actions — the quick way with a [smart action](docs/smart-actions.md), or the full way by [creating a plugin](docs/plugins.md) (which also reacts to events in Live)
 - the remote script exposes an HTTP API inside Live, so you can call its actions from your own tools (e.g. a Stream Deck plugin, or a custom frontend).
 
 The project is in early development. Feedback and contributions are very welcome.

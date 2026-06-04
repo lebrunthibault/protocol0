@@ -19,7 +19,7 @@ src/website/
 │   ├── index.html       Docs overview
 │   ├── installation.html
 │   ├── shortcuts.html
-│   ├── http-api.html
+│   ├── extending.html
 │   └── faq.html
 └── README.md           (this file)
 ```

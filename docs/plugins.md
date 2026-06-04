@@ -12,6 +12,12 @@ You write a plugin by subclassing `PluginInterface` and declaring what it
 listens to and what it exposes. The loader wires everything up at startup and
 tears it down cleanly on disconnect — you never manage subscriptions by hand.
 
+> **Just want to add one action?** If you only need to *do something* on a
+> keypress — without reacting to Live events — you don't need a plugin. Write a
+> [smart action](smart-actions.md) instead: one tiny class with a `name` and a
+> `run` method. A smart action is, in effect, a one-action plugin with the
+> boilerplate removed.
+
 > The remote script runs under Ableton's **restricted, stdlib-only** embedded
 > Python. Plugins must stay stdlib-only too (no third-party packages), and must
 > **never block** Live's thread — see [Constraints](#constraints) below.
@@ -111,6 +117,10 @@ event type, not to a string name.
 
 ## Adding an action
 
+> For a single action with no event listening, a [smart
+> action](smart-actions.md) is simpler than the `@api_route` route below — see
+> the comparison table there.
+
 An **action** is a function decorated with `@api_route` — exactly like the
 script's built-in actions (`/api/device/load`, `/api/track/select`, …). It becomes
 an HTTP endpoint under `/api`, shown in the Swagger UI at
@@ -161,10 +171,7 @@ Notes on routes (handled by `application/http/Router.py`, unchanged by plugins):
 
 ## Configuration
 
-Per-plugin configuration is **not yet available**. When it lands it will read
-from `%APPDATA%\Protocol0\settings.json` — tracked in
-[`docs/specs/backlog/2026-06-02-script-settings-json.md`](specs/backlog/2026-06-02-script-settings-json.md).
-For now, keep plugin behavior self-contained or driven by the set itself.
+Per-plugin configuration is **not yet available**. For now, keep plugin behavior self-contained or driven by the set itself.
 
 ## Trying it out
 
