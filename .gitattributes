@@ -1,0 +1,7 @@
+# The PowerShell scripts invoked by the Inno Setup installer carry accented (French)
+# comments. Windows PowerShell 5.1 reads a BOM-less .ps1 as ANSI, so the multi-byte UTF-8
+# sequences (é, à, —) are mis-decoded and break parsing ("string missing terminator") —
+# which silently failed the scheduled-task creation at install time. These files MUST keep
+# their UTF-8 BOM and exact bytes: treat them as binary so Git applies no EOL conversion or
+# re-normalization that could strip the BOM.
+scripts/windows/*.ps1 -text

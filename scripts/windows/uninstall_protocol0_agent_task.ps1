@@ -1,5 +1,5 @@
-# Retire la tâche planifiée Protocol0.
-# Appelé par l'uninstaller Inno Setup (avant suppression des fichiers).
+﻿# Removes the Protocol0 scheduled task.
+# Called by the Inno Setup uninstaller (before the files are deleted).
 
 $ErrorActionPreference = "Stop"
 
@@ -13,7 +13,7 @@ if (Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue) {
     Write-Host "No scheduled task named $taskName found."
 }
 
-# Tuer le process s'il tourne encore : sans ça l'uninstaller ne peut pas supprimer
-# l'exe verrouillé dans Program Files. La tâche étant déjà retirée, il ne redémarre pas.
+# Kill the process if it is still running: otherwise the uninstaller cannot delete the
+# locked exe in Program Files. The task being already removed, it will not restart.
 taskkill /F /IM protocol0-agent.exe 2>$null
 exit 0

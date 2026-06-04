@@ -23,6 +23,9 @@ agent = "agent.main:start"
 flake8 = "*"
 pytest = "*"
 pyinstaller = "^6.6"
+# Generates the Windows icon (installer/assets/protocol0.ico) via
+# scripts/windows/generate_icon.py. Build-time only, not embedded in the exe.
+pillow = "^10.0"
 
 [tool.black]
 line-length = 100

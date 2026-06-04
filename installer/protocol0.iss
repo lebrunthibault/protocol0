@@ -1,19 +1,23 @@
-; Installeur Windows de Protocol0 (install + autostart).
-; Inspiré de SyncthingWindowsSetup. Build : ISCC.exe installer\protocol0.iss
+; Protocol0 Windows installer (install + autostart).
+; Inspired by SyncthingWindowsSetup. Build: ISCC.exe installer\protocol0.iss
 ;
-; Dépose :
-;   - protocol0-agent.exe     -> {app} (Program Files\Protocol0)
-;   - Protocol_0\             -> <Ableton>\MIDI Remote Scripts\Protocol_0 (copie pure)
-;   - scripts de tâche        -> {app}\scripts (pour que l'uninstaller appelle sa copie)
-; Puis crée la tâche planifiée au logon. À la désinstallation : retire la tâche, supprime
-; les fichiers, MAIS préserve %APPDATA%\Protocol0\shortcuts.json (jamais référencé).
+; Lays down:
+;   - protocol0-agent.exe     -> {app} (Program Files\Protocol0): resident agent (autostart)
+;   - protocol0-launcher.exe  -> {app}: the clicked "shortcut" (opens the web page). Carries
+;                                the "P" icon -> Start Menu + desktop shortcuts point to it.
+;   - Protocol_0\             -> <Ableton>\MIDI Remote Scripts\Protocol_0 (pure copy)
+;   - task scripts            -> {app}\scripts (so the uninstaller calls its own copy)
+; Then creates the scheduled task at logon. The desktop shortcut is OPTIONAL (checkbox).
+; On uninstall: removes the task, deletes the files ([Icons] are removed automatically),
+; BUT preserves %APPDATA%\Protocol0\shortcuts.json (never referenced).
 ;
-; Prérequis de build : src\agent\dist\protocol0-agent.exe (qui embarque src\frontend\dist)
-; et build\stage\Protocol_0\ doivent exister (cf. scripts\windows\build_installer.ps1).
+; Build prerequisites: src\agent\dist\protocol0-agent.exe (which embeds src\frontend\dist),
+; src\agent\dist\protocol0-launcher.exe and build\stage\Protocol_0\ must exist
+; (see scripts\windows\build_installer.ps1).
 
 #define MyAppName "Protocol 0"
-; Version lue depuis le fichier VERSION racine (source de vérité unique, bumpée par /commit)
-; au moment de la compilation ISCC. Évite une version hardcodée qui dériverait.
+; Version read from the root VERSION file (single source of truth, bumped by /commit)
+; at ISCC compile time. Avoids a hardcoded version that would drift.
 #define VersionFile = FileOpen(SourcePath + "..\VERSION")
 #if VersionFile
   #define MyAppVersion = Trim(FileRead(VersionFile))
@@ -31,7 +35,7 @@ AppPublisher={#MyAppPublisher}
 DefaultDirName={autopf}\Protocol0
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
-; Admin requis : écriture dans Program Files + dans %ProgramData%\Ableton\...
+; Admin required: writes to Program Files + to %ProgramData%\Ableton\...
 PrivilegesRequired=admin
 OutputDir=..\dist-installer
 OutputBaseFilename=Protocol0-Setup-{#MyAppVersion}
@@ -40,60 +44,76 @@ SolidCompression=yes
 WizardStyle=modern
 ArchitecturesInstallIn64BitMode=x64compatible
 
+[Languages]
+; Required so the standard messages {cm:CreateDesktopIcon} / {cm:AdditionalIcons}
+; (used by [Tasks]) resolve. Default.isl = English, consistent with the rest of the wizard.
+Name: "english"; MessagesFile: "compiler:Default.isl"
+
+[Tasks]
+; Optional desktop shortcut: the user chooses (it used to be created unconditionally).
+; The Start Menu shortcut ([Icons] without Tasks) is always created.
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
+
 [InstallDelete]
-; Vide le dossier cible AVANT la copie pour effacer les résidus d'une ancienne install dev
-; (make install_script laisse .venv\, __pycache__\, poetry.toml, poetry.lock, pyproject.toml,
-; .python-version). Sans ça, un __pycache__\__init__.cpython-311.pyc périmé peut masquer le
-; nouveau __init__.py prod. On supprime le contenu (\*), pas le dossier ; shortcuts.json est
-; en %APPDATA%, jamais touché.
+; Empty the target folder BEFORE the copy to wipe residue from an old dev install
+; (make install_script leaves .venv\, __pycache__\, poetry.toml, poetry.lock, pyproject.toml,
+; .python-version). Without this, a stale __pycache__\__init__.cpython-311.pyc can mask the
+; new prod __init__.py. We delete the contents (\*), not the folder; shortcuts.json lives
+; in %APPDATA%, never touched.
 Type: filesandordirs; Name: "{code:GetRemoteScriptsDir}\Protocol_0\*"
+; Upgrade from a version that laid down an Internet shortcut (.url): remove it BEFORE
+; creating the new .lnk, otherwise both coexist (duplicate "Protocol 0").
+Type: files; Name: "{group}\Protocol 0.url"
+Type: files; Name: "{autodesktop}\Protocol 0.url"
 
 [Dirs]
-; Donne aux Users le droit Modify sur le dossier du remote script (et héritage vers
-; le contenu). Sans ça, l'installeur (process élevé) pose des fichiers en ACL
-; Administrators-only : une réinstall dev par `make install` (non élevée) ne peut alors
-; ni écraser ni supprimer __init__.py -> "Access denied". Avec users-modify, le dossier
-; reste géré par une install dev sans admin.
+; Grant Users the Modify right on the remote script folder (and inherit to its contents).
+; Without this, the installer (elevated process) lays down files with Administrators-only
+; ACLs: a dev reinstall via `make install` (not elevated) can then neither overwrite nor
+; delete __init__.py -> "Access denied". With users-modify, the folder stays manageable by
+; a dev install without admin.
 Name: "{code:GetRemoteScriptsDir}\Protocol_0"; Permissions: users-modify
-; Garantit l'existence du dossier du menu Démarrer avant que [INI] n'y écrive le raccourci .url.
-; Sans [Icons] ni cette ligne (DisableProgramGroupPage=yes), {group} pourrait ne pas être créé.
-Name: "{group}"
 
 [Files]
 Source: "..\src\agent\dist\protocol0-agent.exe"; DestDir: "{app}"; Flags: ignoreversion
-; users-modify : chaque fichier déposé hérite du droit Modify pour les Users (cf. [Dirs]),
-; pour que `make install` en dev puisse les remplacer sans élévation.
+; The clickable launcher, with its embedded "P" icon. The [Icons] point to it.
+Source: "..\src\agent\dist\protocol0-launcher.exe"; DestDir: "{app}"; Flags: ignoreversion
+; users-modify: each laid-down file inherits the Modify right for Users (see [Dirs]),
+; so `make install` in dev can replace them without elevation.
 Source: "..\build\stage\Protocol_0\*"; DestDir: "{code:GetRemoteScriptsDir}\Protocol_0"; Permissions: users-modify; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\scripts\windows\install_protocol0_agent_task.ps1"; DestDir: "{app}\scripts"; Flags: ignoreversion
 Source: "..\scripts\windows\uninstall_protocol0_agent_task.ps1"; DestDir: "{app}\scripts"; Flags: ignoreversion
 
 [Run]
-; Crée + démarre la tâche planifiée au logon. runhidden : pas de fenêtre PowerShell.
+; Create + start the scheduled task at logon. runhidden: no PowerShell window.
 Filename: "powershell.exe"; \
   Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\scripts\install_protocol0_agent_task.ps1"" -ExePath ""{app}\protocol0-agent.exe"""; \
   StatusMsg: "Registering startup task..."; \
   Flags: runhidden waituntilterminated
 
-[INI]
-; Raccourci web (Internet Shortcut .url) vers la page servie par l'agent.
-; Ouvre dans le navigateur par défaut, sans flash de console (contrairement à un .lnk
-; pointant sur cmd /c start). Port 9010 câblé = LAUNCHER_PORT dans src/agent/.../settings.py :
-; le raccourci doit rester bookmarkable, donc l'agent n'a PAS de fallback de port.
-Filename: "{group}\Protocol 0.url"; Section: "InternetShortcut"; Key: "URL"; String: "http://127.0.0.1:9010/"
-Filename: "{autodesktop}\Protocol 0.url"; Section: "InternetShortcut"; Key: "URL"; String: "http://127.0.0.1:9010/"
+[Icons]
+; Shortcuts pointing to protocol0-launcher.exe (no longer a .url): it carries the "P" icon
+; and opens the web page served by the agent (port 9010). Advantage over .url: a real app
+; icon instead of the browser icon, and no console flash. The icon comes from the exe itself
+; (embedded by protocol0-launcher.spec).
+; Start Menu: always created. Desktop: gated on the "desktopicon" task.
+Name: "{group}\Protocol 0"; Filename: "{app}\protocol0-launcher.exe"; Comment: "Open Protocol 0"
+Name: "{autodesktop}\Protocol 0"; Filename: "{app}\protocol0-launcher.exe"; Comment: "Open Protocol 0"; Tasks: desktopicon
 
 [UninstallRun]
-; Retire la tâche AVANT que les fichiers ne soient supprimés.
+; Remove the task BEFORE the files are deleted.
 Filename: "powershell.exe"; \
   Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\scripts\uninstall_protocol0_agent_task.ps1"""; \
   RunOnceId: "RemoveAgentTask"; \
   Flags: runhidden waituntilterminated
 
 [UninstallDelete]
-; Le dossier Protocol_0 vit hors de {app} (dans le dossier Ableton) : à supprimer
-; explicitement. shortcuts.json (dans %APPDATA%) n'est jamais touché -> préservé.
+; The Protocol_0 folder lives outside {app} (in the Ableton folder): delete it explicitly.
+; shortcuts.json (in %APPDATA%) is never touched -> preserved.
 Type: filesandordirs; Name: "{code:GetRemoteScriptsDir}\Protocol_0"
-; Les raccourcis .url (créés via [INI], donc non suivis par le mécanisme [Icons]).
+; The .lnk shortcuts created via [Icons] are removed automatically by the uninstaller.
+; We additionally clean up the old .url shortcuts (created via [INI] before this change),
+; so an upgrade from an earlier version does not leave a duplicate.
 Type: files; Name: "{group}\Protocol 0.url"
 Type: files; Name: "{autodesktop}\Protocol 0.url"
 
@@ -101,9 +121,9 @@ Type: files; Name: "{autodesktop}\Protocol 0.url"
 var
   RemoteScriptsPage: TInputDirWizardPage;
 
-{ Renvoie le dossier "MIDI Remote Scripts" de la version de Live la plus récente
-  trouvée sous %ProgramData%\Ableton\Live*, ou '' si rien. Tri décroissant sur le
-  nom de dossier -> "Live 12 Suite" passe avant "Live 11 ...". }
+{ Returns the "MIDI Remote Scripts" folder of the most recent Live version found under
+  %ProgramData%\Ableton\Live*, or '' if none. Descending sort on the folder name ->
+  "Live 12 Suite" comes before "Live 11 ...". }
 function DetectRemoteScripts(): String;
 var
   AbletonRoot, Best, Candidate: String;
@@ -124,7 +144,7 @@ begin
           Candidate := AbletonRoot + '\' + FindRec.Name + '\Resources\MIDI Remote Scripts';
           if DirExists(Candidate) then
           begin
-            { Compare sur le nom de version (FindRec.Name) pour garder le plus récent. }
+            { Compare on the version name (FindRec.Name) to keep the most recent. }
             if (Best = '') or (FindRec.Name > Best) then
             begin
               Best := FindRec.Name;
@@ -169,11 +189,11 @@ begin
   end;
 end;
 
-{ Avant la copie : arrêter la tâche planifiée PUIS tuer le process. Sans l'arrêt
-  de la tâche, le scheduler relancerait l'exe aussitôt tué (RestartCount) et Setup
-  retomberait sur un fichier verrouillé ("unable to close all the applications").
-  L'ordre compte : Stop-ScheduledTask d'abord (coupe le relancement automatique),
-  taskkill ensuite (libère le .exe). La tâche est recréée par [Run] en fin d'install. }
+{ Before the copy: stop the scheduled task THEN kill the process. Without stopping the
+  task, the scheduler would relaunch the just-killed exe (RestartCount) and Setup would
+  hit a locked file ("unable to close all the applications"). Order matters:
+  Stop-ScheduledTask first (cuts the automatic relaunch), taskkill next (frees the .exe).
+  The task is recreated by [Run] at the end of install. }
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 var
   ResultCode: Integer;

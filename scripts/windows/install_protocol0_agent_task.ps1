@@ -1,15 +1,14 @@
-# Enregistre l'agent Protocol0 comme tâche planifiée Windows qui :
-#   - démarre à l'ouverture de session (session interactive : requis pour la capture
-#     clavier globale + le check de fenêtre au premier plan ; un service en session 0
-#     ne verrait pas le clavier ni le focus)
-#   - redémarre sur crash détecté par le Task Scheduler (jusqu'à 999x, intervalle 1 min)
-#   - tourne fenêtre cachée (l'exe est no-console, donc aucun flash — pas de shim VBS)
+﻿# Registers the Protocol0 agent as a Windows scheduled task that:
+#   - starts at user logon (interactive session: required for global keyboard capture +
+#     the foreground-window check; a service in session 0 would see neither keyboard nor focus)
+#   - restarts on a crash detected by the Task Scheduler (up to 999x, 1 min interval)
+#   - runs with a hidden window (the exe is no-console, so no flash -- no VBS shim)
 #
-# L'agent logge lui-même dans %APPDATA%\Protocol0\logs\agent.log : pas de
-# redirection stderr ici (qui réintroduirait une console).
+# The agent logs to %APPDATA%\Protocol0\logs\agent.log itself: no stderr redirection
+# here (which would reintroduce a console).
 #
-# Appelé par l'installeur Inno Setup avec -ExePath. Idempotent. Voir
-# uninstall_protocol0_agent_task.ps1 pour le retrait.
+# Called by the Inno Setup installer with -ExePath. Idempotent. See
+# uninstall_protocol0_agent_task.ps1 for removal.
 
 param(
     [Parameter(Mandatory = $true)]
@@ -26,7 +25,7 @@ if (-not (Test-Path $ExePath)) {
 
 $action = New-ScheduledTaskAction -Execute $ExePath
 
-# Au logon de l'utilisateur courant. Crash recovery via RestartCount ci-dessous.
+# At the current user's logon. Crash recovery via RestartCount below.
 $trigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
 
 $settings = New-ScheduledTaskSettingsSet `
@@ -53,7 +52,7 @@ Register-ScheduledTask `
     -Trigger $trigger `
     -Settings $settings `
     -Principal $principal `
-    -Description "Protocol0 agent — keyboard shortcuts + local web UI (auto-start at logon, restart on crash)." | Out-Null
+    -Description "Protocol0 agent -- keyboard shortcuts + local web UI (auto-start at logon, restart on crash)." | Out-Null
 
 Write-Host "Starting $taskName..."
 Start-ScheduledTask -TaskName $taskName
