@@ -64,11 +64,16 @@ class _Handler(BaseHTTPRequestHandler):
         self._send(404, b"not found", "text/plain; charset=utf-8")
 
     def _send(self, code: int, body: bytes, content_type: str) -> None:
-        self.send_response(code)
-        self.send_header("Content-Type", content_type)
-        self.send_header("Content-Length", str(len(body)))
-        self.end_headers()
-        self.wfile.write(body)
+        try:
+            self.send_response(code)
+            self.send_header("Content-Type", content_type)
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+        except (ConnectionError, BrokenPipeError) as e:
+            # Client closed the socket before we finished writing (page reload,
+            # cancelled poll). Benign — don't dump a stack trace.
+            logger.debug("client aborted connection: %s" % e)
 
 
 def _try_bind() -> bool:
