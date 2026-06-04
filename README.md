@@ -1,7 +1,7 @@
 # Protocol0
 
 Protocol 0 is a companion software for Ableton Live.
-It provides a global keyboard shortcut manager that works across all sets, letting you keymap usual parameters as well as custom actions (load a device by name, select a track, or anything else the Live API (LOM) exposes).
+It provides a global keyboard shortcut manager that works across all sets, letting you keymap usual parameters as well as custom actions.
 Configure it all from a small web UI.
 Protocol 0 is free, open-source, and extensible : 
 - you can add new actions by writing a small plugin — see [creating a plugin](docs/plugins.md) (a plugin can also react to events in Live)
@@ -32,7 +32,10 @@ Visit the website: <https://www.protocol0.live/>.
    into Ableton's MIDI Remote Scripts folder, and registers a Scheduled Task so
    the agent autostarts at logon.
    - Windows SmartScreen warns on first run (the installer is currently unsigned):
-     *More info → Run anyway*.
+     *More info → Run anyway*. Worried about security, or did your antivirus flag
+     it? See [SECURITY.md](SECURITY.md) for why a shortcut tool needs a keyboard
+     hook, what it does (and doesn't) do with your keystrokes, and how to verify the
+     download.
 3. With Ableton open and the remote script active, configure shortcuts at
    <http://127.0.0.1:9010/shortcuts>.
 
@@ -47,13 +50,10 @@ make bootstrap
 
 # Then run the agent (live logs, Ctrl+C to stop)
 make agent
-```
 
-`make bootstrap` is cross-platform (Windows + macOS): it finds a Python `>=3.11`,
-sets up both poetry envs (remote script + agent), and copies the remote script
-into Ableton. Re-run `make install` alone to redeploy just the remote script after
-editing it. (On macOS the env setup completes, but the agent itself is still
-Windows-only for now — see `docs/specs/backlog/`.)
+# or to run agent, frontend and website
+make up
+```
 
 To work on the configuration frontend with live-reload, run `make frontend`
 (Vite dev server, proxies `/api` to the agent) alongside `make agent`.

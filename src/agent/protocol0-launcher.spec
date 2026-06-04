@@ -18,6 +18,10 @@
 
 block_cipher = None
 
+# PE version metadata (read from the root VERSION file -> never drifts). Populated
+# metadata is a positive trust signal for AV heuristics on an unsigned exe.
+from version_info import version_resource
+
 a = Analysis(
     ['agent\\launcher_entry.py'],
     pathex=[],
@@ -56,4 +60,5 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     icon='..\\..\\installer\\assets\\protocol0.ico',
+    version=version_resource("Protocol 0 Launcher", "protocol0-launcher.exe"),
 )

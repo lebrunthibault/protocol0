@@ -1,54 +1,113 @@
-# Signature de l'installeur (code signing commercial)
+# Installer code signing (Authenticode)
 
-## Problème
+## Problem
 
-`Protocol0-Setup-<version>.exe` n'est signé par aucun certificat Authenticode. À
-l'exécution, la boîte UAC affiche **« Éditeur : Inconnu »** en jaune (warning), et
-Windows SmartScreen peut bloquer le premier lancement (« Windows a protégé votre
-PC »). C'est purement cosmétique aujourd'hui — l'install fonctionne — mais ça donne
-une impression peu fiable, surtout si l'installeur est distribué hors du cercle perso.
+`Protocol0-Setup-<version>.exe` (and the `protocol0-agent.exe` / `protocol0-launcher.exe`
+it carries) is signed by no Authenticode certificate. At runtime the UAC box shows
+**"Publisher: Unknown"** in yellow, and Windows SmartScreen warns on first launch
+("Windows protected your PC"). Combined with the fact that the agent is a global
+**keyboard hook** built with **PyInstaller** — the textbook keylogger/dropper profile —
+this reads as untrustworthy, especially when distributed beyond the personal circle.
 
-À noter : le champ `MyAppPublisher "Thibault Lebrun"` du `.iss` n'a **aucun** effet
-sur la boîte UAC (elle ne lit que la signature cryptographique) ; il n'apparaît que
-dans « Programmes et fonctionnalités » après install. L'installeur reste de toute
-façon admin (écriture dans `C:\ProgramData\Ableton` + Program Files), donc le prompt
-UAC apparaîtra toujours — la signature en change seulement la couleur/texte.
+Note: the `.iss` field `MyAppPublisher "Thibault Lebrun"` has **no** effect on the UAC
+box (which reads only the cryptographic signature); it only shows up in "Programs and
+Features" after install. The installer is admin-required anyway (it writes to Program
+Files + `C:\ProgramData\Ableton`), so the UAC prompt always appears — signing only
+changes its colour/text.
 
-## But
+## What changed since the first draft (correction)
 
-Signer l'exe (et idéalement aussi `protocol0-detector.exe`) avec un certificat de
-**code signing commercial** pour que :
-- la boîte UAC affiche « Éditeur : Thibault Lebrun » en bleu (plus de warning jaune),
-- SmartScreen ne bloque plus (immédiat avec un certificat **EV** ; progressif avec un
-  **OV** le temps de bâtir la réputation).
+The original version of this backlog claimed an **EV certificate removes the SmartScreen
+warning on the first signature**. **This is no longer true** (verified against current
+Microsoft docs, 2026-05). Microsoft, *"SmartScreen reputation for Windows app developers"*:
 
-## Périmètre
+> "EV certificates no longer bypass SmartScreen. Years ago, signing files with an
+> Extended Validation (EV) code signing certificate would result in positive SmartScreen
+> reputation by default, but this behavior no longer exists. … Paying a premium for EV
+> solely to avoid SmartScreen warnings is no longer justified."
 
-- **Choisir/acheter un certificat** de code signing (OV ~75-200 €/an, EV ~250-400 €/an,
-  chez DigiCert, Sectigo, SSL.com, etc.). Décision + coût à la charge de l'utilisateur ;
-  ne peut pas être automatisé. EV supprime le warning SmartScreen dès la 1re signature.
-- **Câbler la signature dans le build** : Inno Setup supporte la directive `SignTool`
-  dans `installer/protocol0.iss` + définition de l'outil via `ISCC /Ssigntool=...`.
-  Signer à la fois le Setup et, en amont (`build_detector_exe.ps1`), l'exe détecteur
-  avec `signtool.exe sign /fd SHA256 /tr <timestamp-url> ...`.
-- **Horodatage (timestamp)** obligatoire (`/tr` + serveur RFC 3161) pour que les
-  binaires restent valides après expiration du certificat.
-- **Documenter** la procédure (où vit le certificat/clé, comment ne pas le committer)
-  dans le README de l'installeur ou ce dossier.
+**No certificate, at any price, clears SmartScreen instantly** for non-Store
+distribution. SmartScreen is purely reputation-based — keyed on **file hash** and
+**publisher certificate** — and accrues over weeks of clean downloads. Only the
+Microsoft Store (which re-signs apps) is never subject to SmartScreen.
 
-## Hors périmètre
+Consequences for our choice:
+- **Do not buy an EV cert with a hardware dongle.** It no longer buys the one thing it
+  used to (instant SmartScreen pass) and is the most expensive/awkward option.
+- Signing still matters — but for a **different** reason than this backlog first stated.
 
-- Certificat auto-signé : n'enlève le warning que sur les machines où le certif est
-  importé dans le magasin de confiance ; inutile pour distribuer. Non retenu.
-- Rendre l'installeur non-admin : impossible tant que le remote script vit sous
-  `C:\ProgramData\Ableton` (imposé par Ableton). Sans rapport avec la signature.
+## What signing actually buys us
 
-## Notes
+- Removes the **"Unknown Publisher"** UAC warning and displays the verified publisher
+  name (this is immediate).
+- Builds **reputation against a stable signing identity**: SmartScreen reputation cannot
+  transfer between releases *unless they share the same publisher identity*. So a stable
+  cert lets each new release inherit the publisher's accumulated reputation — the warning
+  fades organically over weeks. **Never rotate the cert.**
 
-- Ne **jamais** committer le certificat (.pfx) ni son mot de passe. Le passer au build
-  via variable d'environnement / magasin de certificats Windows, pas en clair dans le
-  `.iss`.
-- Lié au Jalon 2 (systray + updates, cf. `docs/specs/todo/`) : un updater qui télécharge
-  des binaires a d'autant plus besoin que ceux-ci soient signés et vérifiables.
-- Priorité basse tant que l'usage reste perso / petit cercle — le warning jaune est
-  acceptable à ce stade.
+It does **not** make SmartScreen disappear on day one. That only comes with time (or the
+Store).
+
+## Recommended path: SignPath Foundation (free, for OSS)
+
+[SignPath Foundation](https://signpath.org/) gives **free OV-level Authenticode signing**
+to open-source projects (OSI license, no proprietary components, actively maintained,
+every release manually approved). It is the right fit for Protocol0 as an OSS project,
+and it is proven by directly comparable repos:
+
+- **OptiKey** (on-screen keyboard / accessibility, i.e. keyboard-adjacent) —
+  `.github/workflows/release_all.yml` uses `signpath/github-action-submit-signing-request`.
+- **novelWriter** (solo-dev PyInstaller desktop app) — same action.
+- **sabnzbd** (desktop daemon) — same action.
+
+Pattern: CI builds → `actions/upload-artifact` → `signpath/github-action-submit-signing-request`
+submits the artifact and downloads the signed binary back. Sign **both** exes (agent +
+launcher) and the Setup. Timestamping (`/tr <rfc3161>` `/td SHA256`) is handled by the
+signing toolchain and is essential so binaries stay valid after the cert expires.
+
+## Fallback: Azure Trusted Signing (~$10/mo) — with an eligibility gotcha
+
+Azure "Trusted Signing" (now "Artifact Signing") is the modern cheap alternative (no
+hardware token, CI-friendly, defaults its timestamp to `http://timestamp.acs.microsoft.com`).
+**But the individual-developer validation path is USA/Canada only.** Per Microsoft's
+Artifact Signing FAQ, the individual path is available only to developers in the USA and
+Canada; the EU/UK are covered only for **organizations**. As an individual EU/UK developer,
+the publisher (Thibault Lebrun) is **not eligible** for the individual path — this rules
+Trusted Signing out unless a qualifying organization is set up. **→ SignPath is therefore
+the clear choice here.** It also does not issue EV (by design), consistent with the
+correction above.
+
+## Scope (if/when this is picked up)
+
+- **Apply to SignPath Foundation** as an OSS project (one-time; manual per-release
+  approval thereafter). No purchase.
+- **Wire signing into `release.yml`**: add the SignPath submit-signing-request step after
+  the build, signing `protocol0-agent.exe`, `protocol0-launcher.exe` and
+  `Protocol0-Setup-<version>.exe`. Inno Setup also supports a `SignTool` directive in
+  `installer/protocol0.iss` if signing the Setup at compile time is preferred.
+- **Keep the signing identity stable across releases** (so publisher reputation
+  compounds). Document this constraint.
+- **Document** the procedure (where the SignPath project lives, that nothing secret is
+  committed — SignPath holds the key, CI only holds an API token in a repo secret).
+
+## Out of scope
+
+- **EV certificate / hardware dongle** — no longer justified (see correction above).
+- **Self-signed certificate** — only removes the warning on machines where the cert is
+  imported into the trust store; useless for distribution.
+- **Making the installer non-admin** — impossible while the remote script lives under
+  `C:\ProgramData\Ableton` (imposed by Ableton). Unrelated to signing.
+
+## Relationship to install-trust
+
+The cheap, no-cert trust/AV moves (README "is this a keylogger?" section, SHA256SUMS,
+build-provenance attestations, VirusTotal links, PE version metadata) are split into a
+separate, higher-priority spec — see `2026-06-04-install-trust-and-av.md`. Those land
+first and carry most of the friction reduction at near-zero cost. Code signing is the
+durable structural fix layered on top, once the per-release VirusTotal/WDSI submission
+tax becomes painful.
+
+## Priority
+
+Low while usage stays personal / small-circle — the yellow UAC warning is tolerable.
+The install-trust spec is the higher-leverage, do-first work.

@@ -17,11 +17,17 @@ on:
       - 'v*'
 
 permissions:
-  contents: write   # créer la release + uploader l'asset
+  contents: write       # créer la release + uploader les assets
+  id-token: write       # OIDC pour attest-build-provenance (signature Sigstore)
+  attestations: write   # écrire l'attestation de provenance du build
 
 jobs:
   build-and-release:
     runs-on: windows-latest
+    # Hissé au niveau job pour que l'étape VirusTotal puisse se gater dessus dans son
+    # `if` (un secret n'est pas lisible directement dans une expression `if`).
+    env:
+      VT_API_KEY: ${{ secrets.VT_API_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -60,6 +66,26 @@ jobs:
           if (-not $exe) { throw "Aucun installeur produit dans dist-installer/." }
           Write-Host "OK -> $($exe.FullName) ($([math]::Round($exe.Length/1MB,1)) MB)"
 
+      # Checksum publié à côté de l'installeur : l'utilisateur vérifie le download
+      # avec Get-FileHash et le compare à ce fichier (cf. section README anti-keylogger).
+      # Nom de fichier sans version -> un asset stable "SHA256SUMS" par release.
+      - name: Generate SHA256SUMS
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem dist-installer -Filter 'Protocol0-Setup-*.exe' | Select-Object -First 1
+          $hash = (Get-FileHash $exe.FullName -Algorithm SHA256).Hash.ToLower()
+          # Format compatible `sha256sum -c` : "<hash>  <filename>".
+          "$hash  $($exe.Name)" | Out-File -FilePath dist-installer/SHA256SUMS -Encoding ascii -NoNewline
+          Write-Host "SHA256  $($exe.Name) = $hash"
+
+      # Provenance de build (Sigstore, gratuit) : preuve vérifiable que cet exe a été
+      # buildé par ce workflow depuis ce commit. Substitut sans-certificat au code
+      # signing. Vérif côté user : gh attestation verify <exe> -R lebrunthibault/protocol0.
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: 'dist-installer/Protocol0-Setup-*.exe'
+
       # Notes = message d'annotation du tag (le changelog que /release y a mis).
       # On l'extrait explicitement plutôt que via --notes-from-tag : ce dernier
       # retombe sur le message du COMMIT pointé quand le tag annoté est poussé
@@ -76,4 +102,17 @@ jobs:
           gh release create "$env:GITHUB_REF_NAME" `
             --title "$env:GITHUB_REF_NAME" `
             --notes-file notes.md `
-            "$exe"
+            "$exe" `
+            "dist-installer/SHA256SUMS"
+
+      # Scan VirusTotal de l'installeur, lien ajouté aux notes de release. Permet à
+      # l'utilisateur de constater qu'un éventuel flag est un faux positif (cf. README).
+      # Nécessite le secret VT_API_KEY (clé gratuite : virustotal.com/gui/my-apikey).
+      # No-op silencieux si le secret est absent, pour ne pas casser la release.
+      - name: VirusTotal scan
+        if: ${{ env.VT_API_KEY != '' }}
+        uses: cssnr/virustotal-action@v2
+        with:
+          vt_api_key: ${{ secrets.VT_API_KEY }}
+          file_globs: dist-installer/Protocol0-Setup-*.exe
+          update_release: true
