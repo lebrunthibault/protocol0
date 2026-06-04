@@ -9,8 +9,8 @@ import sys
 import time
 from logging.handlers import RotatingFileHandler
 
-from agent import single_instance, web
-from agent.config import ShortcutConfig, config_path
+from agent import key_emitter, single_instance, web
+from agent.config import Binding, ShortcutConfig, config_path
 from agent.listener import ShortcutListener
 from agent.script_client import ScriptClient
 from agent.settings import Settings
@@ -69,7 +69,23 @@ def start() -> None:
     logger.info("config: %s", config_path())
     logger.info("script url override: %s", settings.override_url or "(dynamic via runtime.json)")
 
-    listener = ShortcutListener(config, client.execute)
+    def dispatch(binding: Binding, held_modifiers) -> None:
+        # Two action families: `send_keys` is replayed locally (native Live shortcut,
+        # no HTTP), everything else goes through the script's HTTP API unchanged.
+        # `held_modifiers` is the snapshot the listener took at decision time.
+        if binding.action == "send_keys":
+            keys = binding.params.get("keys")
+            if not keys:
+                logger.warning("send_keys binding without 'keys' param")
+                return
+            # Lift the user's currently-held modifiers so the target chord lands clean
+            # (e.g. holding ctrl+alt and tapping the trigger key still sends ctrl+n). The
+            # trigger's main key is suppressed by the listener hook, so it can't leak.
+            key_emitter.send(keys, held_modifiers=held_modifiers)
+        else:
+            client.execute(binding)
+
+    listener = ShortcutListener(config, dispatch)
     listener.start()
     # Serveur web (SPA + /api + /status) sur son propre thread daemon :
     # ne bloque ni la boucle ci-dessous ni le listener pynput.
