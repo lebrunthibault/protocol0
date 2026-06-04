@@ -93,6 +93,7 @@ jobs:
       # du tag annoté de façon déterministe. dist-installer/ est vierge en CI ->
       # le glob de l'exe est sans ambiguïté.
       - name: Create GitHub Release
+        id: create_release
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
@@ -104,11 +105,17 @@ jobs:
             --notes-file notes.md `
             "$exe" `
             "dist-installer/SHA256SUMS"
+          # Expose the numeric release id so the VirusTotal step can patch the notes.
+          # On a push:tags trigger there is no github.event.release.id, so we fetch it.
+          $id = gh release view "$env:GITHUB_REF_NAME" --json databaseId --jq '.databaseId'
+          "release_id=$id" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
 
       # Scan VirusTotal de l'installeur, lien ajouté aux notes de release. Permet à
       # l'utilisateur de constater qu'un éventuel flag est un faux positif (cf. README).
       # Nécessite le secret VT_API_KEY (clé gratuite : virustotal.com/gui/my-apikey).
       # No-op silencieux si le secret est absent, pour ne pas casser la release.
+      # release_id explicite : ce workflow se déclenche sur push:tags (pas sur l'event
+      # `release`), donc l'action n'a pas github.event.release.id pour patcher les notes.
       - name: VirusTotal scan
         if: ${{ env.VT_API_KEY != '' }}
         uses: cssnr/virustotal-action@v2
@@ -116,3 +123,4 @@ jobs:
           vt_api_key: ${{ secrets.VT_API_KEY }}
           file_globs: dist-installer/Protocol0-Setup-*.exe
           update_release: true
+          release_id: ${{ steps.create_release.outputs.release_id }}
