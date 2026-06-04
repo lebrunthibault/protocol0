@@ -10,7 +10,7 @@ The fastest way to help. A good report includes:
 - **Your environment** — OS version, Ableton Live version, and the Protocol0
   version (see [`VERSION`](VERSION)).
 - **Logs** — Protocol0 writes rotating logs to `%APPDATA%\Protocol0\logs\`
-  (e.g. `detector.log`). Attach the relevant tail, ideally captured right after
+  (e.g. `agent.log`). Attach the relevant tail, ideally captured right after
   you reproduced the issue.
 - **Steps to reproduce** — what you did, what you expected, what happened
   instead. A precise sequence beats a paragraph of description.
@@ -20,7 +20,7 @@ Open an issue with that and we have something to work from.
 ## Running it locally
 
 Protocol0 is a monorepo with two surfaces under `src/`: the **remote
-script** (runs inside Ableton) and the **detector**.
+script** (runs inside Ableton) and the **agent**.
 
 Prerequisites (install once): `make`, [`poetry`](https://python-poetry.org/docs/#installation),
 and a Python `>=3.11`. Then, from the repo root:
@@ -30,7 +30,7 @@ and a Python `>=3.11`. Then, from the repo root:
   script into Ableton's MIDI Remote Scripts folder (wiring up the source dir so
   edits are picked up live). Re-run `make install` alone to redeploy just the
   remote script after editing it.
-- **Detector** — `make detector`.
+- **Agent** — `make agent`.
 
   After `make bootstrap`, (re)start Ableton Live and select Protocol_0 as a
   Control Surface.
@@ -45,7 +45,7 @@ Commit messages should follow the [Conventional Commits](https://www.conventiona
 specification and be in lower case.
 
 Use a **scope** in the subject — the part of Protocol0 the commit affects.
-Typically this is one of the two surfaces (`script`, `detector`),
+Typically this is one of the two surfaces (`script`, `agent`),
 but it can be finer-grained (`shortcut`, `http`, `installer`, …). Omit the scope
 for changes that don't target a specific component, such as build-system or
 documentation changes, or sweeping changes that would be cumbersome to list.
