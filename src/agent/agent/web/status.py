@@ -24,7 +24,7 @@ def compute() -> dict:
 
 def _ping(script_url: str) -> bool:
     try:
-        r = requests.get(script_url + "/health", timeout=1)
+        r = requests.get(script_url + "/api/health", timeout=1)
         return r.status_code == 200
     except requests.RequestException:
         return False
