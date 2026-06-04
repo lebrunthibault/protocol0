@@ -144,8 +144,9 @@ header.scrolled{border-bottom-color:var(--line);background:rgba(0,0,0,0.8)}
 .nav-links a:hover{color:var(--text)}
 .nav-links a.active{color:var(--text)}
 .nav-right{display:flex;align-items:center;gap:var(--space-4)}
-.nav-right .contact{font-size:var(--fs-base);color:var(--muted);transition:color var(--t)}
-.nav-right .contact:hover{color:var(--text)}
+.nav-right .discord{display:flex;align-items:center;justify-content:center;color:var(--muted);transition:color var(--t)}
+.nav-right .discord:hover{color:#5865f2}
+.nav-right .discord svg{width:20px;height:20px}
 
 /* ---------- Buttons ---------- */
 .btn{

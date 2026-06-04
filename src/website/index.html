@@ -92,8 +92,8 @@
   }
   .info-card .doclink:hover{border-color:rgba(77,159,255,0.6);background:rgba(77,159,255,0.1);color:var(--accent-soft)}
   .info-card .doclink svg{width:14px;height:14px}
-  .info-card p a.inline{color:var(--accent);transition:color var(--t)}
-  .info-card p a.inline:hover{color:var(--accent-soft);text-decoration:underline}
+  .info-card p a.inline,.story-card p a.inline{color:var(--accent);transition:color var(--t)}
+  .info-card p a.inline:hover,.story-card p a.inline:hover{color:var(--accent-soft);text-decoration:underline}
   .info-card p code{font-size:var(--fs-base);white-space:nowrap}
 
   /* ---------- Contact ---------- */
@@ -157,7 +157,9 @@
       </a>
     </nav>
     <div class="nav-right">
-      <a href="#contact" class="contact">Contact</a>
+      <a href="https://discord.gg/p2qYMQeru" target="_blank" rel="noopener" class="discord" aria-label="Join the Discord">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032q.003.022.021.037a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019q.463-.63.818-1.329a.05.05 0 0 0-.01-.059l-.018-.011a9 9 0 0 1-1.248-.595.05.05 0 0 1-.02-.066l.015-.019q.127-.095.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .053.007q.121.1.248.195a.05.05 0 0 1-.004.085 8 8 0 0 1-1.249.594.05.05 0 0 0-.03.03.05.05 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.2 13.2 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019m-8.198 7.307c-.789 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612m5.316 0c-.788 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612"/></svg>
+      </a>
       <a href="https://github.com/lebrunthibault/protocol0/releases" target="_blank" rel="noopener" class="btn btn-primary">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v9m0 0L4.5 6.5M8 10l3.5-3.5M2 13.5h12"/></svg>
         Download
@@ -241,7 +243,7 @@
     <div class="kicker">Ableton vs Protocol&#8202;0</div>
     <h2>Two different key mappers</h2>
     <p class="compare-intro">
-      Ableton's keymapper is a basic, <strong>per-set</strong>, direct parameter mapping mode.
+      Ableton's keymapper is a basic, <strong>per-set</strong>, direct parameter mapper.
       Protocol&#8202;0 is a <strong>global and smart</strong> keymapper.
     </p>
     <div class="compare-wrap">
@@ -295,7 +297,7 @@
   <div class="wrap col">
     <div class="card card--center info-card">
       <div class="kicker">Installation</div>
-      <h2>Up and running in minutes</h2>
+      <h2>Up and running in seconds</h2>
       <p>Launch the <a href="https://github.com/lebrunthibault/protocol0/releases" target="_blank" rel="noopener" class="inline">installer</a>, activate the Protocol 0 remote script in Ableton and configure your shortcuts at <code>http://localhost:9010</code></p>
       <a href="/docs/installation.html" class="doclink">
         Read the installation guide
@@ -322,10 +324,10 @@
     <div class="card card--flat card--center contact-card">
       <div class="kicker">Contact</div>
       <h2>Questions, ideas, feedback?</h2>
-      <p class="sub">Reach out directly — I'd love to hear your ideas for  you use Protocol&#8202;0.</p>
-      <a href="mailto:contact@thibaultlebrun.dev" class="mail">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="3" width="13" height="10" rx="2"/><path d="M2 4l6 4 6-4"/></svg>
-        contact@thibaultlebrun.dev
+      <p class="sub">Join the Discord server — I'd love to hear how you use Protocol&#8202;0.</p>
+      <a href="https://discord.gg/p2qYMQeru" target="_blank" rel="noopener" class="mail">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032q.003.022.021.037a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019q.463-.63.818-1.329a.05.05 0 0 0-.01-.059l-.018-.011a9 9 0 0 1-1.248-.595.05.05 0 0 1-.02-.066l.015-.019q.127-.095.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .053.007q.121.1.248.195a.05.05 0 0 1-.004.085 8 8 0 0 1-1.249.594.05.05 0 0 0-.03.03.05.05 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.2 13.2 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019m-8.198 7.307c-.789 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612m5.316 0c-.788 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612"/></svg>
+        Join our Discord
       </a>
     </div>
   </div>
@@ -337,8 +339,15 @@
     <div class="card story-card">
       <div class="kicker">Background story</div>
       <h2>Why Protocol&#8202;0 exists</h2>
-      <p>I've been an Ableton user for more than ten years. I started using it around the same time I started coding. I eventually found out you could script Ableton with Python — first by using ClyphX user actions, and then remote scripting. It's been hard, because there isn't a lot of documentation! (The best reference I've found since is <a href="https://midiremotescripts.structure-void.com/" target="_blank" rel="noopener" class="inline">Structure Void's unofficial MIDI Remote Scripts docs</a>.)</p>
-      <p>I love Ableton. It's a great piece of software, even though it has a few rough edges. One of them is the key mapper, which feels too basic and limited. I've been using custom shortcuts for a while now, and finally decided I wanted to share my work with the community!</p>
+      <p>
+        Hey, my name is Thibault and I work in software as well as <a href="https://soundcloud.com/tib-groove" target="_blank" rel="noopener" class="inline">produce music</a>.
+        I love Ableton even though it has a few rough edges, like its limited keymapping abilities.
+
+      </p>
+      <p>
+        I've been working around this by using custom remote scripts and shortcuts for a while and wanted to share this project with you guys.
+        I hope you find it helpful.
+      </p>
     </div>
   </div>
 </section>
