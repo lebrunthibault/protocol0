@@ -1,4 +1,6 @@
-# Protocol0
+<p align="center">
+  <img src="docs/assets/banner.svg" alt="Protocol 0 — the forgotten Ableton key mapper" width="100%">
+</p>
 
 Protocol 0 is a companion software for Ableton Live.
 It provides a global keyboard shortcut manager that works across all sets, letting you keymap usual parameters as well as custom actions.

@@ -122,7 +122,25 @@
   .story-card p{color:var(--muted);max-width:60ch;margin:var(--space-4) auto 0;font-size:16px;line-height:var(--lh-relaxed)}
   .story-card p:first-of-type{margin-top:var(--space-5)}
 
+  /* ---------- "In beta" corner ribbon ---------- */
+  .beta-ribbon{
+    position:fixed;top:0;right:0;width:150px;height:150px;
+    z-index:100;pointer-events:none;overflow:hidden;
+  }
+  .beta-ribbon span{
+    position:absolute;top:30px;right:-42px;
+    display:block;width:200px;padding:7px 0;
+    transform:rotate(45deg);
+    text-align:center;
+    font-family:var(--font-mono);font-size:12px;font-weight:var(--fw-semibold);
+    letter-spacing:.14em;text-transform:uppercase;color:#fff;
+    background:linear-gradient(135deg,var(--accent),#2f7fe0);
+    box-shadow:0 6px 16px rgba(0,0,0,.45);
+  }
+
   @media (max-width:720px){
+    .beta-ribbon{width:120px;height:120px}
+    .beta-ribbon span{top:22px;right:-50px;font-size:11px;letter-spacing:.1em}
     .hero{padding:90px 0 64px}
     .compare-card{padding:4px var(--space-5)}
     .compare-row{grid-template-columns:1fr;gap:8px;padding:18px 0}
@@ -133,6 +151,8 @@
 </style>
 </head>
 <body>
+
+<div class="beta-ribbon" aria-hidden="true"><span>In beta</span></div>
 
 <header id="hdr">
   <div class="wrap nav">

@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320" font-family="'JetBrains Mono','Courier New',monospace">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0c0d10"/>
+      <stop offset="1" stop-color="#000000"/>
+    </linearGradient>
+    <linearGradient id="logoFill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b1d22"/>
+      <stop offset="1" stop-color="#0a0b0d"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="0%" r="75%">
+      <stop offset="0" stop-color="#4d9fff" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#4d9fff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="wave" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4d9fff" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#4d9fff" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#4d9fff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- background -->
+  <rect width="1280" height="320" rx="20" fill="url(#bg)"/>
+  <rect width="1280" height="320" rx="20" fill="url(#glow)"/>
+  <rect x="1" y="1" width="1278" height="318" rx="19" fill="none" stroke="rgba(255,255,255,0.08)"/>
+
+  <!-- decorative waveform on the right -->
+  <g opacity="0.6">
+    <rect x="900"  y="150" width="3" height="20"  rx="1.5" fill="url(#wave)"/>
+    <rect x="916"  y="120" width="3" height="80"  rx="1.5" fill="url(#wave)"/>
+    <rect x="932"  y="135" width="3" height="50"  rx="1.5" fill="url(#wave)"/>
+    <rect x="948"  y="95"  width="3" height="130" rx="1.5" fill="url(#wave)"/>
+    <rect x="964"  y="140" width="3" height="40"  rx="1.5" fill="url(#wave)"/>
+    <rect x="980"  y="110" width="3" height="100" rx="1.5" fill="url(#wave)"/>
+    <rect x="996"  y="80"  width="3" height="160" rx="1.5" fill="url(#wave)"/>
+    <rect x="1012" y="130" width="3" height="60"  rx="1.5" fill="url(#wave)"/>
+    <rect x="1028" y="105" width="3" height="110" rx="1.5" fill="url(#wave)"/>
+    <rect x="1044" y="145" width="3" height="30"  rx="1.5" fill="url(#wave)"/>
+    <rect x="1060" y="90"  width="3" height="140" rx="1.5" fill="url(#wave)"/>
+    <rect x="1076" y="125" width="3" height="70"  rx="1.5" fill="url(#wave)"/>
+    <rect x="1092" y="100" width="3" height="120" rx="1.5" fill="url(#wave)"/>
+    <rect x="1108" y="138" width="3" height="44"  rx="1.5" fill="url(#wave)"/>
+    <rect x="1124" y="115" width="3" height="90"  rx="1.5" fill="url(#wave)"/>
+    <rect x="1140" y="148" width="3" height="24"  rx="1.5" fill="url(#wave)"/>
+    <rect x="1156" y="128" width="3" height="64"  rx="1.5" fill="url(#wave)"/>
+    <rect x="1172" y="155" width="3" height="10"  rx="1.5" fill="url(#wave)"/>
+  </g>
+
+  <!-- logo tile -->
+  <g transform="translate(96 96)">
+    <rect width="128" height="128" rx="28" fill="url(#logoFill)" stroke="rgba(255,255,255,0.14)"/>
+    <text x="64" y="68" font-size="82" font-weight="700" fill="#4d9fff"
+          text-anchor="middle" dominant-baseline="central">P</text>
+  </g>
+
+  <!-- title + tagline -->
+  <g transform="translate(264 0)">
+    <text x="0" y="150" font-size="62" font-weight="700" fill="#f4f6fa" letter-spacing="-1">
+      Protocol<tspan fill="#4d9fff"> 0</tspan>
+    </text>
+    <text x="2" y="196" font-size="23" font-weight="500" fill="#9aa3b2" letter-spacing="0.2">
+      the forgotten Ableton <tspan fill="#9cc8ff">key mapper</tspan>
+    </text>
+    <text x="2" y="234" font-size="15" font-weight="400" fill="#6b7280" letter-spacing="0.6">
+      Global shortcuts · smart actions · HTTP API · web UI — free &amp; open source
+    </text>
+  </g>
+</svg>
