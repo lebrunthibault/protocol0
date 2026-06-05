@@ -14,7 +14,6 @@ python = ">=3.11"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "*"
-vulture = "*"
 pytest = "*"
 
 [tool.black]
@@ -24,7 +23,6 @@ line-length = 100
 python_version = "3.11"
 exclude = [
     'tests',
-    'vulture_whitelist.py',
 ]
 pretty = false
 ignore_missing_imports = true
@@ -41,21 +39,4 @@ disallow_incomplete_defs = true
 disallow_untyped_decorators = true
 warn_redundant_casts=true
 warn_unused_ignores=true
-
-[tool.vulture]
-make_whitelist = true
-min_confidence = 60
-sort_by_size = true
-verbose = false
-exclude = [
-    'venv/',
-    'build/',
-    'command/',
-    'command_handler/',
-    'RecordingBarLengthEnum.py',
-]
-ignore_names = [
-    "subject",
-]
-
 

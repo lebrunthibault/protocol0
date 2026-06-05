@@ -1,7 +1,7 @@
 """One-command local dev setup, cross-platform (Windows + macOS).
 
-Sets up the remote script's poetry env (lint/test tooling — flake8, vulture,
-pytest; the script itself is stdlib-only) and deploys the remote script into
+Sets up the remote script's poetry env (lint/test tooling — flake8, pytest;
+the script itself is stdlib-only) and deploys the remote script into
 Ableton. The agent is Rust (`make agent` builds it with cargo) and needs no
 poetry. After this, `make agent` is all you need.
 
