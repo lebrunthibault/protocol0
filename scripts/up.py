@@ -165,17 +165,14 @@ def main() -> int:
     _state_file().write_text(json.dumps(pids), encoding="utf-8")
 
     # On ne fixe pas les ports (un autre projet peut tenir 5173/8000) -> vite et live-server
-    # choisissent le premier port libre. On poll leur log jusqu'a y lire le port EFFECTIF
-    # (vite peut bufferiser sa ligne "Local:" qq secondes via npm->cmd sans TTY).
+    # choisissent le premier port libre. On poll leur log jusqu'a y lire le port EFFECTIF.
+    # Poll COURT et NON bloquant : vite peut mettre plusieurs secondes a ecrire sa ligne
+    # "Local:" (demarrage + buffering npm->cmd sans TTY). On n'attend pas qu'il soit pret pour
+    # rendre la main -- au pire le banner montre "(starting...)" et l'URL est dans le log. Un
+    # petit spinner anime evite l'impression de fige pendant ces ~3s.
     front_re = r"Local:\s*https?://[^:]+:(\d+)"
     site_re = r"Serving .* at https?://[^:]+:(\d+)"
-    front_url = site_url = None
-    for _ in range(30):  # ~15s max (30 * 0.5s)
-        front_url = front_url or _effective_url("frontend", front_re)
-        site_url = site_url or _effective_url("website", site_re)
-        if front_url and site_url:
-            break
-        time.sleep(0.5)
+    front_url, site_url = _poll_urls(front_re, site_re, timeout_s=3.0)
 
     banner = "\n".join([
         "",
@@ -192,6 +189,34 @@ def main() -> int:
     # PAS sur le tail -- l'utilisateur fait `make logs` quand il veut suivre Ableton + agent,
     # et `make down` pour tout couper. (make up doit retourner, pas bloquer.)
     return 0
+
+
+def _poll_urls(front_re: str, site_re: str, timeout_s: float):
+    """Poll les logs frontend/website jusqu'a `timeout_s` pour y lire les URLs effectives, en
+    affichant un petit spinner anime (in-place) pour ne pas paraitre fige. Retourne
+    (front_url, site_url), l'un ou l'autre pouvant etre None si pas pret a temps.
+
+    Non bloquant au-dela de timeout_s : on rend la main meme si le frontend traine (vite est
+    lent a demarrer). Le spinner s'efface avant que le banner ne s'affiche."""
+    frames = "|/-\\"
+    front_url = site_url = None
+    interval = 0.2
+    steps = max(1, int(timeout_s / interval))
+    spinner_on = sys.stdout.isatty()  # pas de spinner si la sortie est redirigee (vers un fichier)
+    for i in range(steps):
+        front_url = front_url or _effective_url("frontend", front_re)
+        site_url = site_url or _effective_url("website", site_re)
+        if front_url and site_url:
+            break
+        if spinner_on:
+            # \r ramene en debut de ligne ; on reecrit par-dessus a chaque frame.
+            sys.stdout.write("\r  %s waiting for dev servers... " % frames[i % len(frames)])
+            sys.stdout.flush()
+        time.sleep(interval)
+    if spinner_on:
+        sys.stdout.write("\r" + " " * 36 + "\r")  # efface la ligne du spinner
+        sys.stdout.flush()
+    return front_url, site_url
 
 
 def _effective_url(name: str, pattern: str):
