@@ -3,35 +3,33 @@
 </p>
 
 Protocol 0 is a third party keyboard shortcut manager for Ableton Live.
-It handles classic Ableton [keyboard shortcuts](https://www.ableton.com/en/manual/live-keyboard-shortcuts/) as well as custom actions (called smart actions).
+
+It handles classic Ableton [keyboard shortcuts](https://www.ableton.com/en/manual/live-keyboard-shortcuts/) as well as custom actions.
 
 Check out the [docs](https://www.protocol0.live/docs) for more details.
 
 It's built with:
 - A Rust agent
 - A Javascript web UI
-- A Python MIDI Remote Script 
+- A Python MIDI Remote Script that exposes an HTTP API from inside Live
 
 It's extensible
-- You can add your own smart actions by writing a plugin (see [creating a plugin](docs/plugins.md))
-- The remote script exposes an HTTP API inside Live, so you can use only the remote script and handle the shortcuts from your own tools (AHK, a Stream Deck..).
-
-The project is in early development. Feedback and contributions are very welcome.
+- Add your own actions by [writing a plugin](docs/plugins.md)
+- Trigger actions with your own tools by calling the script's HTTP API (e.g. AHK, a Stream Deck..)
 
 > **Platform: Windows.** Protocol0 Windows-only for now; macOS support is on the roadmap.
 
 See [`CONSTITUTION.md`](CONSTITUTION.md) for the vision and the design decisions
 behind it.
 
-## Documentation & installation
-
+The project is in early development. Feedback and contributions are very welcome.
 
 ## Installation
 
 Download the latest release from the [Releases](https://github.com/lebrunthibault/protocol0/releases)
 and check out the [docs](http://localhost:8080/docs/installation.html) for more details
 
-### From source (developers)
+### From source
 
 Requires [Rust](https://rustup.rs/), [Node](https://nodejs.org/en), and [Python 3.11+](https://www.python.org/).
 
@@ -44,9 +42,9 @@ make agent      # build (cargo) and run the agent, with live logs
 make up         # or: run the agent + frontend (live reload) + website
 ```
 
-Config UI: <http://127.0.0.1:9010/shortcuts>.
-Logs: `%APPDATA%\Protocol0\logs\`.
-Bindings config file: (`%APPDATA%\Protocol0\shortcuts.json`)
+- Config UI: <http://127.0.0.1:9010>.
+- Logs: `%APPDATA%\Protocol0\logs\`.
+- Config file: (`%APPDATA%\Protocol0\shortcuts.json`)
 
 ## Architecture
 
