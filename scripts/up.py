@@ -13,7 +13,9 @@ en background (`make down` les coupe). Les logs frontend/website sont aussi dans
 dossier (frontend.log, website.log) si besoin.
 
 On tue d'abord les agents qui trainent (cf. kill_agent.py / docs/debug-double-shortcut.md)
-pour garantir un seul agent. Stdlib uniquement, Windows-only (chemins APPDATA, npx, poetry).
+pour garantir un seul agent. L'agent lance est le binaire Rust (src/agent-rust), build a la
+volee avant le spawn -- meme binaire que `make agent` et l'installeur. Stdlib uniquement,
+Windows-only (chemins APPDATA, npx, cargo).
 """
 import json
 import os
@@ -67,6 +69,36 @@ def _kill_stale_web() -> None:
             )
 
 
+def _rust_agent_exe() -> Path:
+    """Chemin du binaire Rust produit par cargo (le meme que `make agent` lance)."""
+    return _REPO / "src" / "agent-rust" / "target" / "release" / "Protocol0.exe"
+
+
+def _build_rust_agent() -> bool:
+    """`cargo build --release` du crate src/agent-rust. True si l'exe est pret, False sinon.
+
+    cargo ecrit sa progression sur stderr ; on juge le succes sur le returncode (pas sur la
+    presence de stderr). On herite stdout/stderr du terminal pour que l'utilisateur voie la
+    compilation (premier run ~20s, incremental quasi instantane)."""
+    print("Building Rust agent (cargo build --release)...", flush=True)
+    try:
+        rc = subprocess.run(
+            ["cargo", "build", "--release"],
+            cwd=str(_REPO / "src" / "agent-rust"),
+            shell=True,  # cargo est sur le PATH via un .cmd shim sous Windows
+        ).returncode
+    except OSError as e:
+        print("  cargo introuvable (%s). Installe Rust (rustup) + VS C++ Build Tools." % e)
+        return False
+    if rc != 0:
+        print("  cargo build a echoue (exit %d)." % rc)
+        return False
+    if not _rust_agent_exe().exists():
+        print("  build OK mais %s introuvable." % _rust_agent_exe())
+        return False
+    return True
+
+
 def _spawn(name: str, args, cwd: Path) -> int:
     """Lance `args` detache, stdout+stderr -> logs/<name>.log. Retourne le PID."""
     # Mode "w" : on repart d'un log vierge a chaque `make up` (sinon on relit le run
@@ -96,6 +128,13 @@ def main() -> int:
     kill_agent.main()
     _kill_stale_web()
 
+    # L'agent lance par `make up` est le binaire Rust (src/agent-rust), comme `make agent` et
+    # comme l'installeur. On le build AVANT de le spawn : sinon l'exe peut etre absent (premier
+    # run) ou perime. Build bloquant (cargo est rapide en incremental) ; si le build echoue, on
+    # s'arrete plutot que de lancer un vieux binaire.
+    if not _build_rust_agent():
+        return 1
+
     # Pas de port fixe : un autre projet peut occuper 5173/8000. vite et live-server prennent
     # le premier port libre ; on lit l'URL effective dans leur log pour l'afficher (cf.
     # _effective_url). `make up PORT=3000` force quand meme le website sur un port precis.
@@ -105,7 +144,7 @@ def main() -> int:
         website_cmd.append("--port=%s" % port)
     services = [
         # (label, command, cwd)
-        ("agent", ["poetry", "run", "agent"], _REPO / "src" / "agent"),
+        ("agent", [str(_rust_agent_exe())], _REPO / "src" / "agent-rust"),
         ("frontend", ["npm", "run", "dev"], _REPO / "src" / "frontend"),
         ("website", website_cmd, _REPO),
     ]
