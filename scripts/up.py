@@ -7,10 +7,10 @@ sorties vers %APPDATA%\\Protocol0\\logs\\*.log, et memorise les PID dans
 
 Apres avoir lance les trois, `make up` affiche les URLs effectives (les ports ne sont pas
 fixes : un autre projet peut tenir 5173/8000, donc vite/live-server prennent le premier port
-libre) puis enchaine direct sur le tail combine Ableton + agent (la logique de `make logs`).
-Resultat : une seule commande, un seul terminal. Ctrl-C arrete le tail ; les services restent
-en background (`make down` les coupe). Les logs frontend/website sont aussi dans le meme
-dossier (frontend.log, website.log) si besoin.
+libre) puis REND LA MAIN : les services tournent en background (detaches). On n'enchaine pas
+sur le tail -- l'utilisateur lance `make logs` quand il veut suivre Ableton + agent, et
+`make down` pour tout couper. Les logs des trois services sont dans %APPDATA%\\Protocol0\\logs\\
+(agent.log, frontend.log, website.log).
 
 On tue d'abord les agents qui trainent (cf. kill_agent.py / docs/debug-double-shortcut.md)
 pour garantir un seul agent. L'agent lance est le binaire Rust (src/agent-rust), build a la
@@ -99,11 +99,11 @@ def _build_rust_agent() -> bool:
     return True
 
 
-def _spawn(name: str, args, cwd: Path) -> int:
-    """Lance `args` detache, stdout+stderr -> logs/<name>.log. Retourne le PID."""
+def _spawn(log_name: str, args, cwd: Path) -> int:
+    """Lance `args` detache, stdout+stderr -> logs/<log_name>.log. Retourne le PID."""
     # Mode "w" : on repart d'un log vierge a chaque `make up` (sinon on relit le run
     # precedent et on se croit sur le mauvais port).
-    log_path = _state_dir() / "logs" / ("%s.log" % name)
+    log_path = _state_dir() / "logs" / ("%s.log" % log_name)
     log = open(log_path, "w", encoding="utf-8", errors="replace")
     proc = subprocess.Popen(
         args,
@@ -112,7 +112,8 @@ def _spawn(name: str, args, cwd: Path) -> int:
         stderr=subprocess.STDOUT,
         stdin=subprocess.DEVNULL,
         creationflags=_DETACHED,
-        # shell=True : npx/poetry sont des .cmd sous Windows, introuvables sans le shell.
+        # shell=True : npx/live-server sont des .cmd sous Windows, introuvables sans le shell.
+        # L'exe agent (chemin absolu) marche aussi via le shell.
         shell=True,
     )
     return proc.pid
@@ -142,19 +143,24 @@ def main() -> int:
     website_cmd = ["npx", "--yes", "live-server", "src/website", "--no-browser"]
     if port:
         website_cmd.append("--port=%s" % port)
+    # NB: le sink stdout du service agent est "agent-stdout" (pas "agent.log") pour ne PAS
+    # entrer en collision avec le vrai log de l'agent Rust, qui ecrit lui-meme dans
+    # %APPDATA%\Protocol0\logs\agent.log.<date> via tracing-appender. Le stdout de l'exe est de
+    # toute facon vide (tout passe par le fichier date) ; on le garde juste au cas ou (panic au
+    # tout demarrage avant l'init du logger). `make logs` lit le fichier date, pas celui-ci.
     services = [
-        # (label, command, cwd)
-        ("agent", [str(_rust_agent_exe())], _REPO / "src" / "agent-rust"),
-        ("frontend", ["npm", "run", "dev"], _REPO / "src" / "frontend"),
-        ("website", website_cmd, _REPO),
+        # (label, command, cwd, log_name)
+        ("agent", [str(_rust_agent_exe())], _REPO / "src" / "agent-rust", "agent-stdout"),
+        ("frontend", ["npm", "run", "dev"], _REPO / "src" / "frontend", "frontend"),
+        ("website", website_cmd, _REPO, "website"),
     ]
 
     pids = {}
     print("Starting dev stack in background:")
-    for label, args, cwd in services:
-        pid = _spawn(label, args, cwd)
+    for label, args, cwd, log_name in services:
+        pid = _spawn(log_name, args, cwd)
         pids[label] = pid
-        print("  %-9s PID %d  -> logs/%s.log" % (label, pid, label))
+        print("  %-9s PID %d  -> logs/%s.log" % (label, pid, log_name))
 
     _state_file().write_text(json.dumps(pids), encoding="utf-8")
 
@@ -180,13 +186,12 @@ def main() -> int:
         "  (make down to stop everything)",
         "",
     ])
-    print(banner, flush=True)  # flush: visible avant que le tail (logs.main) prenne la main
+    print(banner, flush=True)
 
-    # On enchaine direct sur le tail combine Ableton + agent : un seul terminal, une seule
-    # commande. Ctrl-C arrete le tail (les services restent up en background ; `make down`
-    # les coupe). C'est `make logs` sans avoir a la taper.
-    import logs as _logs  # noqa: E402  (import tardif: meme dossier, deja sur sys.path)
-    return _logs.main()
+    # On REND la main ici : les 3 services tournent en background (detaches). On n'enchaine
+    # PAS sur le tail -- l'utilisateur fait `make logs` quand il veut suivre Ableton + agent,
+    # et `make down` pour tout couper. (make up doit retourner, pas bloquer.)
+    return 0
 
 
 def _effective_url(name: str, pattern: str):

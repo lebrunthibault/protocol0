@@ -9,8 +9,9 @@ Deux sources, interleavees ligne a ligne :
   1. [ableton] : %APPDATA%\\Ableton\\Live */Preferences/Log.txt. On ne garde que les lignes
      P0/Protocol0 (le Log.txt est tres bavard), on retire le prefixe "Protocol 0 - " et on
      colore en vert (rouge si erreur).
-  2. [agent]   : %APPDATA%\\Protocol0\\logs\\agent.log (cf. agent/main.py:_log_dir). On retire
-     le prefixe stdlib "2026-... INFO agent: " (redondant) et on colore en magenta.
+  2. [agent]   : %APPDATA%\\Protocol0\\logs\\agent.log.<date> -- l'agent Rust ecrit via
+     tracing-appender en rotation par jour (on prend le plus recent, cf. _agent_log_path). On
+     retire le prefixe "2026-...Z INFO Protocol0::<module>: " (redondant) et on colore en magenta.
 
 Chaque fichier est suivi dans un thread daemon ; les lignes existantes ne sont PAS rejouees
 (on seek a la fin), on n'affiche que ce qui arrive apres le lancement. Stdlib uniquement,
@@ -38,8 +39,13 @@ _COLORS = {
 _SCRIPT_PREFIX_RE = re.compile(r"^.*?Protocol 0 - ")
 # Toute ligne Log.txt mentionnant P0/Protocol0 nous interesse (le reste est du bruit Live).
 _SCRIPT_KEEP_RE = re.compile(r"Protocol ?0|P0 -")
-# Prefixe stdlib de l'agent : "2026-06-02 01:54:10,066 INFO agent: ".
-_AGENT_PREFIX_RE = re.compile(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3} \w+ [\w.]+: ")
+# Prefixe a retirer en tete de ligne agent. Deux formats supportes :
+#   - Rust (tracing, agent actuel) : "2026-06-05T10:02:02.411246Z  INFO Protocol0::web: msg"
+#     (ISO-8601 avec T/Z, microsecondes, 2 espaces, niveau, "Protocol0::<module>: ").
+#   - Python stdlib (ancien agent) : "2026-06-02 01:54:10,066 INFO agent: msg".
+_AGENT_PREFIX_RE = re.compile(
+    r"^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}(?:[.,]\d+)?Z?\s+\w+\s+[\w:.]+: "
+)
 # Heuristique d'erreur (colore en rouge).
 _ERROR_RE = re.compile(
     r"error|traceback|exception|RemoteScriptError", re.IGNORECASE
@@ -92,7 +98,20 @@ def _ableton_log_path():
 
 
 def _agent_log_path():
-    return Path(os.environ.get("APPDATA", "")) / "Protocol0" / "logs" / "agent.log"
+    """Le fichier de log de l'agent le plus recent.
+
+    L'agent Rust ecrit via tracing-appender en rotation par jour : le nom reel est
+    `agent.log.YYYY-MM-DD` (PAS `agent.log` tout court, qui peut exister mais vide -- p.ex. le
+    sink stdout du service sous `make up`). On prend donc le `agent.log*` non vide le plus
+    recemment modifie. None si aucun (l'agent n'a pas encore tourne) -> _follow attend sa
+    creation, mais comme le nom contient la date, on resout au lancement de `make logs`.
+    """
+    logs_dir = Path(os.environ.get("APPDATA", "")) / "Protocol0" / "logs"
+    candidates = [p for p in logs_dir.glob("agent.log*") if p.is_file() and p.stat().st_size > 0]
+    if not candidates:
+        # Rien encore : on renvoie le nom du fichier date du jour pour que _follow l'attende.
+        return logs_dir / ("agent.log.%s" % time.strftime("%Y-%m-%d"))
+    return max(candidates, key=lambda p: p.stat().st_mtime)
 
 
 def _follow(path: Path):
