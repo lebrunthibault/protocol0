@@ -13,7 +13,7 @@ The fastest way to help. A good report includes:
 - **Steps to reproduce** — what you did, what you expected, what happened
   instead. A precise sequence beats a paragraph of description.
 
-You can open an issue or GitHub or reach me on Discord.
+You can open an issue or GitHub or reach me on [Discord](https://discord.gg/p2qYMQeru).
 
 ## Running it locally
 

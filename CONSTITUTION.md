@@ -64,7 +64,7 @@ The triggering use case is letting knobs drive the **first N parameters of the
 selected device** (up to 16, to match an Ableton Rack's macros) — the
 [*map encoders to the selected device*](https://midiremotescripts.structure-void.com/guides/cookbook/#map-encoders-to-the-selected-device)
 pattern. The script already does a fixed version of this (hard-coded encoder
-groups, e.g. the LaunchKey Mini → instrument-rack macros); the goal is to make it
+groups); the goal is to make it
 **configurable from the web UI**, like the keyboard — and more generally to map any
 catalog action to a MIDI control.
 
@@ -90,8 +90,8 @@ details live in `docs/specs/`.
 ### A standalone agent owns key detection and the configuration frontend
 
 Everything outside Live lives in a **single standalone process — the *agent***,
-which runs under a normal system Python and survives logon as a background
-process. It owns two things:
+a **native Rust binary** that runs outside Ableton and survives logon as a
+background process. It owns two things:
 
 1. **Key detection.** The agent hosts the global keyboard hook. This **cannot** be
    script-only: Ableton's embedded Python is a restricted runtime that cannot host
@@ -108,16 +108,15 @@ process. It owns two things:
 
 Detection *and* configuration sit in the same process; the agent owns the
 bindings file so a saved change is picked up on the next keypress with no reload
-plumbing. (The frontend used to be served by the script inside Live and died
-with it; it now lives in the agent.)
+plumbing.
 
 ### The remote script exposes an action API inside Live
 
 The remote script runs **inside Ableton** and exposes a REST HTTP API under
 `/api` — a `/api/health` check, a self-describing `/openapi.json`, a Swagger UI at
-`/docs`, and the **action routes** (`/api/track/select`,
-`/api/action/load_device/load_device`, …) that drive Live through the LOM. Reads
-are `GET`, mutations are `POST`. Its port is
+`/docs`, and the **action routes** — core routes like `/api/track/select` plus
+plugin actions under `/api/action/<plugin>/<method>` — that drive Live through the
+LOM. Reads are `GET`, mutations are `POST`. Its port is
 **dynamic** (advertised via `runtime.json`), and it lives and dies with Ableton.
 The agent is its main caller: on a matched keypress, the agent looks up the
 script's URL and invokes the action.
@@ -134,9 +133,7 @@ value over the native manager: *the same shortcuts everywhere*.
 
 An **action** is a named, parameterizable, self-described unit (name, label,
 expected parameters). The script exposes this catalog through its OpenAPI document
-(`/openapi.json`, rendered at `/docs`); existing routes (`/api/track/select`,
-`/api/action/load_device/load_device`, …) prefigure the catalog — each action
-builds on a Live-API capability.
+(`/openapi.json`, rendered at `/docs`).
 
 ### Plugins extend the script
 
@@ -153,20 +150,16 @@ decorating a method with `@action`: the method name is the action, its typed
 parameters are the inputs, and the script generates the route. When the goal is
 simply to *add one action* — no event listening, no lifecycle — a **smart action**
 is just that minimal shape: one class with one `@action` method, discovered the
-same way and bindable to a shortcut like any other. The *how* lives in
-[`docs/plugins.md`](docs/plugins.md).
+same way and bindable to a shortcut like any other.
 
 ### Windows-first
 
 The project is built and run **on Windows**, and the packaging reflects that. The
 agent ships as a Windows executable, autostarts through a **Startup-folder shortcut**
 (visible and removable by the user, like AutoHotkey/Espanso), shows a systray icon,
-and is packaged by a Windows installer — the PowerShell that does this lives under
-`scripts/windows/`. Day-to-day developer setup is deliberately kept off that path:
+and is packaged by a Windows installer. Day-to-day developer setup is deliberately kept off that path:
 the dev entry points (`make bootstrap`/`install`) dispatch to **stdlib-only,
-cross-platform Python**, so a fresh checkout sets up on Windows *or* macOS. This is
-a practical consequence of the environment Protocol0 lives in — Ableton Live on the
-author's machine — not a rejection of other platforms. The architecture itself
+cross-platform Python**, so a fresh checkout sets up on Windows *or* macOS. The architecture itself
 (HTTP boundary, global config, agent/script split) is portable; macOS support
 is tracked in `docs/specs/backlog/` and would replace the platform-specific
 packaging and autostart layer, not the core design.
@@ -177,57 +170,11 @@ The architecture settles into two distinct pieces, each with a different home:
 
 1. **The agent** — an always-on process on the user's machine. It owns the keyboard
    hook, serves the configuration frontend and its `/api` on a fixed `:9010`, and
-   calls the script's action API on a matched keypress. Normal system Python.
+   calls the script's action API on a matched keypress. A native Rust binary.
 2. **The remote script** — runs inside Ableton; exposes the action API and executes
    actions via the Live API on a dynamic port. Constrained Python: **stdlib-only**.
 
-### Guiding principles
-
-- **Never block the Live thread.** Captured events cross into the Live thread
-  through a tick-drained boundary; no direct Live-API call from a daemon thread.
-- **Discoverable over hard-coded.** The frontend discovers actions from the
-  catalog.
-- **Decoupled capture / execution.** The HTTP boundary between *what detects* and
-  *what acts* stays clean — that's what made moving detection out of the script
-  cheap.
-- **The set does not own the shortcuts.** Config is global by default.
-- **Iterate behind specs.** Every evolution goes through `docs/specs/`; this
-  document only describes the durable intent.
-
-## 3. Usage
-
-Two ways to install and run Protocol0.
-
-### End users (installer)
-
-1. Download `Protocol0-Setup-<version>.exe` from the project's **GitHub
-   Releases**.
-2. Run it. The installer deploys the **agent** executable, copies the **remote
-   script** into Ableton's MIDI Remote Scripts folder, and registers a **Scheduled
-   Task** so the agent autostarts at logon.
-   - Windows SmartScreen will warn on first run — the installer is **currently
-     unsigned** (code signing is on the backlog). Choose *More info → Run anyway*.
-3. With Ableton open and the remote script active, configure shortcuts at
-   **`http://127.0.0.1:9010/shortcuts`**.
-
-### Local / from source (developers)
-
-- Run the agent in a terminal (live logs, Ctrl+C to stop):
-
-  ```sh
-  make agent
-  ```
-
-- First-time setup (remote script's poetry tooling + install the remote script into Ableton):
-
-  ```sh
-  make bootstrap   # finds Python >=3.11, sets up the script env, deploys Protocol_0 (Win + macOS)
-  make install     # redeploy just the remote script after editing it
-  ```
-
-- Config UI: `http://127.0.0.1:9010/shortcuts`. Logs: `%APPDATA%\Protocol0\logs\`.
-
-## 4. Roadmap
+## 3. Roadmap
 
 The roadmap lives in `docs/specs/`. To see what's planned and in flight:
 

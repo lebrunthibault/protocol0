@@ -53,4 +53,16 @@ See the [docs](https://www.protocol0.live/docs/architecture.html)
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+- Join [Discord](https://discord.gg/p2qYMQeru) to chat and get help.
+- See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Roadmap
+
+- Fix any bugs
+- Mac version
+- More smart actions
+- make it easier for users to add plugins (add actions from a chat interface)
+- MIDI mapping
+
+for much later (maybe another project)
+- Add features for managing your Live sets (take notes, tag)
