@@ -32,7 +32,7 @@ try {
     Pop-Location
 }
 
-Write-Host "== 2/4 Build agent + launcher exes =="  # also generates the launcher icon
+Write-Host "== 2/4 Build agent exe =="  # also generates the icon (embedded for the systray)
 & (Join-Path $PSScriptRoot "build_agent_exe.ps1")
 
 Write-Host "== 3/4 Stage remote script =="

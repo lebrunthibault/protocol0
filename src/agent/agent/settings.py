@@ -11,12 +11,10 @@ import os
 from typing import Optional
 
 # Fixed port of the web server served by the agent (home + keymapper + /api + /status).
-# Hardwired: the launcher (agent/launcher_entry.py, packaged as protocol0-launcher.exe) opens
-# http://127.0.0.1:9010/ and imports this constant -> single source of truth for the port, no
-# dynamic fallback on the launcher side. The URL must also stay bookmarkable.
+# Hardwired: the agent's --open path (agent/main.py) and the systray (agent/tray.py) open
+# http://127.0.0.1:9010/shortcuts and import this constant -> single source of truth for the
+# port, no dynamic fallback. The URL must also stay bookmarkable.
 WEB_PORT = 9010
-# Back-compat alias (the old name was LAUNCHER_PORT).
-LAUNCHER_PORT = WEB_PORT
 
 
 class Settings:

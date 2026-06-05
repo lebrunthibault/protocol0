@@ -159,7 +159,8 @@ same way and bindable to a shortcut like any other. The *how* lives in
 ### Windows-first
 
 The project is built and run **on Windows**, and the packaging reflects that. The
-agent ships as a Windows executable, autostarts through a **Scheduled Task**,
+agent ships as a Windows executable, autostarts through a **Startup-folder shortcut**
+(visible and removable by the user, like AutoHotkey/Espanso), shows a systray icon,
 and is packaged by a Windows installer — the PowerShell that does this lives under
 `scripts/windows/`. Day-to-day developer setup is deliberately kept off that path:
 the dev entry points (`make bootstrap`/`install`) dispatch to **stdlib-only,

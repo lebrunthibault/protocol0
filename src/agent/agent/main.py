@@ -1,19 +1,20 @@
 """Point d'entrée de l'agent (`poetry run agent`).
 
-Charge la config, démarre l'écoute clavier, sert la page web (launcher), et tourne
-jusqu'à interruption. Tourne sous Python système (pynput/ctypes dispo), hors d'Ableton.
+Charge la config, démarre l'écoute clavier, sert la page web, affiche l'icône systray, et
+tourne jusqu'à interruption. Tourne sous Python système (pynput/ctypes dispo), hors d'Ableton.
 """
 import logging
 import os
 import sys
-import time
+import threading
+import webbrowser
 from logging.handlers import RotatingFileHandler
 
-from agent import key_emitter, single_instance, web
+from agent import key_emitter, single_instance, tray, web
 from agent.config import Binding, ShortcutConfig, config_path
 from agent.listener import ShortcutListener
 from agent.script_client import ScriptClient
-from agent.settings import Settings
+from agent.settings import Settings, WEB_PORT
 from agent.version import __version__
 
 
@@ -26,8 +27,8 @@ def _log_dir() -> str:
 def _configure_logging() -> None:
     """Logge vers fichier rotatif (%APPDATA%\\Protocol0\\logs\\agent.log) ET console.
 
-    Le fichier est l'unique diagnostic quand l'agent tourne en tâche planifiée
-    sans console (exe no-console). Le handler console reste utile en dev terminal et
+    Le fichier est l'unique diagnostic quand l'agent tourne au logon (raccourci Startup
+    folder) sans console (exe no-console). Le handler console reste utile en dev terminal et
     devient un no-op silencieux sous l'exe gelé sans console attachée.
     """
     fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -56,6 +57,14 @@ def start() -> None:
     if sys.platform != "win32":
         logger.error("agent is Windows-only (foreground check is Win32)")
         return
+
+    # `--open` : passé par le raccourci Menu Démarrer / bureau (« on clique pour lancer »,
+    # modèle AHK). On ouvre la page config dans le navigateur ; puis le flux normal
+    # ci-dessous démarre l'agent s'il ne tourne pas encore, ou sort via le mutex s'il
+    # tourne déjà (le résident garde la main). Le raccourci Startup au logon, lui, lance
+    # l'exe SANS --open : pas d'ouverture intempestive du navigateur à chaque session.
+    if "--open" in sys.argv[1:]:
+        webbrowser.open("http://127.0.0.1:%d/shortcuts" % WEB_PORT, new=2)
 
     # Un seul agent à la fois : deux instances = deux hooks clavier = raccourci en double.
     if not single_instance.acquire():
@@ -90,14 +99,22 @@ def start() -> None:
     # Serveur web (SPA + /api + /status) sur son propre thread daemon :
     # ne bloque ni la boucle ci-dessous ni le listener pynput.
     web.start()
+
+    # Le tray (icône systray) tourne sur son propre thread. Son « Quit » set cet Event,
+    # ce qui débloque la boucle principale ci-dessous -> arrêt propre dans le finally.
+    shutdown = threading.Event()
+    tray.start(on_quit=shutdown.set)
+
     # Interruptible wait on the main thread: joining the pynput listener thread
-    # directly swallows Ctrl+C on Windows, so poll a short sleep instead.
+    # directly swallows Ctrl+C on Windows, so wait on the shutdown Event instead
+    # (woken either by the tray's Quit or by Ctrl+C en dev terminal).
     try:
-        while True:
-            time.sleep(0.2)
+        while not shutdown.wait(0.2):
+            pass
     except KeyboardInterrupt:
         logger.info("stopping")
     finally:
+        tray.stop()
         web.stop()
         listener.stop()
 

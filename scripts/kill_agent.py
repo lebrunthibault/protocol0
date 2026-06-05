@@ -6,7 +6,8 @@ planifiee, mais des lancements manuels en mode source (`poetry run agent` / `mak
 laisses en arriere-plan peuvent coexister. Cette cible nettoie tout d'un coup.
 
 Couvre les deux formes de l'agent :
-  1. l'exe gele packagee : `protocol0-agent.exe` ;
+  1. l'exe gele packagee : `Protocol0.exe` (et l'ancien nom `protocol0-agent.exe` d'avant
+     le renommage, au cas ou un vieux build tourne encore) ;
   2. le mode source : `python.exe` dont la ligne de commande lance `agent.main`
      (via `poetry run agent` -> console-script -> `import_module('agent.main')`).
 
@@ -23,7 +24,7 @@ import sys
 # CREATE_NO_WINDOW : pas de flash de console quand on spawn powershell/taskkill.
 _CREATE_NO_WINDOW = 0x08000000
 
-_FROZEN_EXE = "protocol0-agent.exe"
+_FROZEN_EXES = ("protocol0.exe", "protocol0-agent.exe")
 # Marqueur de la forme "mode source" : la console-script poetry re-exec dans
 # `import_module('agent.main')`. On matche cette signature precise plutot que le simple
 # mot "agent" (qui matcherait ce script lui-meme, ou un editeur ouvert sur le repo).
@@ -70,7 +71,7 @@ def _find_agents():
         if pid == me:
             continue
         low_name = name.lower()
-        if low_name == _FROZEN_EXE:
+        if low_name in _FROZEN_EXES:
             found.append((pid, "%s (frozen exe)" % name))
         elif _SOURCE_MARKER in cmd and "kill_agent" not in cmd:
             found.append((pid, "%s (source: %s)" % (name, _SOURCE_MARKER)))

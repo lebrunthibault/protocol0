@@ -210,7 +210,7 @@
     </div>
 
     <h2>Packaging &amp; platform</h2>
-    <p>An <strong>installer</strong> deploys both surfaces in one step: it installs the agent executable, copies the remote script into Ableton's <em>MIDI Remote Scripts</em> folder, and registers a <strong>Scheduled Task</strong> so the agent autostarts at logon. Protocol&#8202;0 is <strong>Windows-first</strong> today — the installer, autostart, and PyInstaller packaging are Windows-specific — but the architecture itself (HTTP boundary, global config, agent/script split) is portable. macOS support would replace the packaging and autostart layer, not the core design.</p>
+    <p>An <strong>installer</strong> deploys both surfaces in one step: it installs the agent executable, copies the remote script into Ableton's <em>MIDI Remote Scripts</em> folder, and adds a <strong>Startup-folder shortcut</strong> so the agent autostarts at logon (visible and removable from Task Manager → Startup). Protocol&#8202;0 is <strong>Windows-first</strong> today — the installer, autostart, and PyInstaller packaging are Windows-specific — but the architecture itself (HTTP boundary, global config, agent/script split) is portable. macOS support would replace the packaging and autostart layer, not the core design.</p>
     <p class="muted">The full rationale and durable design intent live in <a class="link" href="https://github.com/lebrunthibault/protocol0/blob/main/CONSTITUTION.md" target="_blank" rel="noopener">CONSTITUTION.md</a>.</p>
 
     <div class="doc-nav">

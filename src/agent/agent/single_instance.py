@@ -2,11 +2,12 @@
 
 Deux agents en parallèle = deux hooks clavier WH_KEYBOARD_LL, donc chaque frappe
 est traitée deux fois (raccourci déclenché en double). Ça arrive notamment à l'install :
-le [Run] de l'installeur lance l'agent pendant que la tâche planifiée le lance aussi.
+le [Run] postinstall lance l'agent (--open), et un raccourci Startup au logon peut chevaucher
+un lancement manuel via le raccourci Menu Démarrer.
 
 Un named mutex est le verrou idiomatique Windows : l'OS le relâche à la mort du process
 (pas d'orphelin après crash, contrairement à un lockfile), et c'est plus fiable que de se
-fier au bind du port launcher (qui part en retry s'il échoue).
+fier au bind du port web (qui part en retry s'il échoue).
 
 ctypes/Win32, cohérent avec foreground.py.
 """

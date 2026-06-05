@@ -2,8 +2,8 @@
 
 ## Problem
 
-`Protocol0-Setup-<version>.exe` (and the `protocol0-agent.exe` / `protocol0-launcher.exe`
-it carries) is signed by no Authenticode certificate. At runtime the UAC box shows
+`Protocol0-Setup-<version>.exe` (and the `protocol0-agent.exe` it carries) is signed by no
+Authenticode certificate. At runtime the UAC box shows
 **"Publisher: Unknown"** in yellow, and Windows SmartScreen warns on first launch
 ("Windows protected your PC"). Combined with the fact that the agent is a global
 **keyboard hook** built with **PyInstaller** — the textbook keylogger/dropper profile —
@@ -82,7 +82,7 @@ correction above.
 - **Apply to SignPath Foundation** as an OSS project (one-time; manual per-release
   approval thereafter). No purchase.
 - **Wire signing into `release.yml`**: add the SignPath submit-signing-request step after
-  the build, signing `protocol0-agent.exe`, `protocol0-launcher.exe` and
+  the build, signing `protocol0-agent.exe` and
   `Protocol0-Setup-<version>.exe`. Inno Setup also supports a `SignTool` directive in
   `installer/protocol0.iss` if signing the Setup at compile time is preferred.
 - **Keep the signing identity stable across releases** (so publisher reputation

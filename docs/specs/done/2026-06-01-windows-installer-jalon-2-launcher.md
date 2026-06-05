@@ -17,6 +17,13 @@ Toujours **Windows uniquement**, pas de portage Mac (les helpers sont isolés po
 
 ## Décision d'architecture — pas de systray
 
+> **Révisé (2026-06-05)** — décision inversée par
+> `docs/specs/in-progress/2026-06-05-systray-and-startup-folder-autostart.md`. L'objection ci-dessous
+> (« le systray pointe vers une page qui meurt avec Ableton ») ne tient plus : c'est désormais
+> **l'agent** — process survivant — qui sert la page launcher sur `9010` et calcule `/status`, donc un
+> tray porté par l'agent a toujours une page vivante derrière lui. L'autostart bascule aussi du
+> scheduled task vers un raccourci Startup folder.
+
 La première version de cette spec prévoyait une **icône systray** (pystray). Abandonnée :
 
 - **Le systray ne couvre pas le cas d'échec principal.** Le serveur de la page de config est servi

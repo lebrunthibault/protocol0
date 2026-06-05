@@ -1,7 +1,7 @@
 """Détecte si un process Ableton Live tourne (n'importe où, pas seulement au premier plan).
 
-Sert au launcher à distinguer "Ableton pas lancé" de "Ableton lancé mais control surface
-pas activée". Spécifique Windows ; stub macOS à venir (équivalent : NSWorkspace
+Sert à /status (page web + systray) à distinguer "Ableton pas lancé" de "Ableton lancé mais
+control surface pas activée". Spécifique Windows ; stub macOS à venir (équivalent : NSWorkspace
 .runningApplications filtré sur le bundle id com.ableton.live).
 
 Règle de match critique : l'exe Ableton est `Ableton Live <N> <Edition>.exe` (varie par

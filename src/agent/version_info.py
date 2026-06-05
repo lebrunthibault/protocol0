@@ -1,6 +1,6 @@
 """Build a PyInstaller PE version resource from the root VERSION file.
 
-Imported by protocol0-agent.spec and protocol0-launcher.spec at build time. Populated
+Imported by protocol0-agent.spec at build time. Populated
 PE metadata (ProductName, version, CompanyName, ...) is a positive trust signal for AV
 heuristics and makes the exe look like "a real app" in Windows Explorer -> Properties
 -> Details, instead of a blank unsigned binary. Read from VERSION so it never drifts
@@ -8,7 +8,7 @@ heuristics and makes the exe look like "a real app" in Windows Explorer -> Prope
 
 Usage in a .spec (which runs as Python):
     from version_info import version_resource
-    exe = EXE(..., version=version_resource("Protocol 0 Agent", "protocol0-agent.exe"))
+    exe = EXE(..., version=version_resource("Protocol0", "Protocol0.exe"))
 """
 import os
 

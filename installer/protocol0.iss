@@ -2,17 +2,18 @@
 ; Inspired by SyncthingWindowsSetup. Build: ISCC.exe installer\protocol0.iss
 ;
 ; Lays down:
-;   - protocol0-agent.exe     -> {app} (Program Files\Protocol0): resident agent (autostart)
-;   - protocol0-launcher.exe  -> {app}: the clicked "shortcut" (opens the web page). Carries
-;                                the "P" icon -> Start Menu + desktop shortcuts point to it.
+;   - Protocol0.exe           -> {app} (Program Files\Protocol0): resident agent (keyboard
+;                                hook + web UI on :9010 + systray). Carries the "P" icon.
 ;   - Protocol_0\             -> <Ableton>\MIDI Remote Scripts\Protocol_0 (pure copy)
-;   - task scripts            -> {app}\scripts (so the uninstaller calls its own copy)
-; Then creates the scheduled task at logon. The desktop shortcut is OPTIONAL (checkbox).
-; On uninstall: removes the task, deletes the files ([Icons] are removed automatically),
-; BUT preserves %APPDATA%\Protocol0\shortcuts.json (never referenced).
+; Autostart = a shortcut in the user's Startup folder ([Icons] -> {userstartup}, NOT a
+; scheduled task), created when the "Start at login" checkbox is ticked. The Start Menu /
+; desktop shortcuts launch the agent with --open (start-on-click, AutoHotkey style); the
+; desktop one is OPTIONAL. All shortcuts are [Icons], so the uninstaller removes them
+; automatically. On uninstall: kills the agent, deletes the files, BUT preserves
+; %APPDATA%\Protocol0\shortcuts.json.
 ;
-; Build prerequisites: src\agent\dist\protocol0-agent.exe (which embeds src\frontend\dist),
-; src\agent\dist\protocol0-launcher.exe and build\stage\Protocol_0\ must exist
+; Build prerequisites: src\agent\dist\protocol0-agent.exe (which embeds src\frontend\dist
+; AND installer\assets\protocol0.ico) and build\stage\Protocol_0\ must exist
 ; (see scripts\windows\build_installer.ps1).
 
 #define MyAppName "Protocol 0"
@@ -35,12 +36,23 @@
 AppId={{E7A2C3D4-5B6F-4A1E-9C8D-0F1A2B3C4D5E}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
+; AppVerName drives the name shown in Settings -> Apps / Add-Remove Programs. Without it,
+; Windows shows "Protocol 0 version 0.18.3"; pin it to the bare name. (AppVersion is still
+; recorded and shown in the separate Version column.)
+AppVerName={#MyAppName}
 AppPublisher={#MyAppPublisher}
+; Icon shown next to the app in Settings -> Apps / Add-Remove Programs (the "P" badge).
+; Points at the installed agent exe, which carries the icon as a PE resource.
+UninstallDisplayIcon={app}\Protocol0.exe
 DefaultDirName={autopf}\Protocol0
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 ; Admin required: writes to Program Files + to %ProgramData%\Ableton\...
 PrivilegesRequired=admin
+; We intentionally create a per-user shortcut in {userstartup} (the autostart) and start the
+; agent as the original user (runasoriginaluser) while the install itself is elevated. This is
+; deliberate for a single-user desktop tool, so silence Inno's generic per-user-area warning.
+UsedUserAreasWarning=no
 OutputDir=..\dist-installer
 OutputBaseFilename=Protocol0-Setup-{#MyAppVersion}
 Compression=lzma
@@ -54,6 +66,10 @@ ArchitecturesInstallIn64BitMode=x64compatible
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
+; Start at login: creates the Startup-folder shortcut (the autostart). Ticked by default,
+; but the user explicitly consents (espanso-style) -- and can untick it, or later remove it
+; from Task Manager -> Startup. GroupDescription left blank -> its own group at the top.
+Name: "startuplogin"; Description: "Start Protocol 0 at login"
 ; Optional desktop shortcut: the user chooses (it used to be created unconditionally).
 ; The Start Menu shortcut ([Icons] without Tasks) is always created.
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
@@ -79,43 +95,44 @@ Type: files; Name: "{autodesktop}\Protocol 0.url"
 Name: "{code:GetRemoteScriptsDir}\Protocol_0"; Permissions: users-modify
 
 [Files]
-Source: "..\src\agent\dist\protocol0-agent.exe"; DestDir: "{app}"; Flags: ignoreversion
-; The clickable launcher, with its embedded "P" icon. The [Icons] point to it.
-Source: "..\src\agent\dist\protocol0-launcher.exe"; DestDir: "{app}"; Flags: ignoreversion
+; The resident agent, with its embedded "P" icon. The [Icons] point to it (with --open).
+Source: "..\src\agent\dist\Protocol0.exe"; DestDir: "{app}"; Flags: ignoreversion
 ; users-modify: each laid-down file inherits the Modify right for Users (see [Dirs]),
 ; so `make install` in dev can replace them without elevation.
 Source: "..\build\stage\Protocol_0\*"; DestDir: "{code:GetRemoteScriptsDir}\Protocol_0"; Permissions: users-modify; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\scripts\windows\install_protocol0_agent_task.ps1"; DestDir: "{app}\scripts"; Flags: ignoreversion
-Source: "..\scripts\windows\uninstall_protocol0_agent_task.ps1"; DestDir: "{app}\scripts"; Flags: ignoreversion
 
 [Run]
-; Create + start the scheduled task at logon. runhidden: no PowerShell window.
-Filename: "powershell.exe"; \
-  Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\scripts\install_protocol0_agent_task.ps1"" -ExePath ""{app}\protocol0-agent.exe"""; \
-  StatusMsg: "Registering startup task..."; \
-  Flags: runhidden waituntilterminated
-; Final wizard page: a checkbox (ticked by default) to open Protocol 0. The launcher
-; deep-links to /shortcuts (see launcher_entry.py), so this lands the user straight on
-; the keymapper. nowait: don't block the wizard from closing; skipifsilent: no UI in
-; silent installs.
-Filename: "{app}\protocol0-launcher.exe"; \
-  Description: "Open Protocol 0"; \
-  Flags: postinstall nowait skipifsilent
+; Start the agent now (resident: keyboard hook + web UI + systray) and open the config page.
+; runasoriginaluser: the installer is elevated, but the agent must run as the LOGGED-ON user
+; (a low-level keyboard hook + the foreground check live in the user's interactive session,
+; not the elevated/admin context). It also needs no admin rights. --open lands on /shortcuts.
+; nowait: don't block the wizard; skipifsilent: no UI in silent installs.
+Filename: "{app}\Protocol0.exe"; Parameters: "--open"; \
+  Description: "Launch Protocol 0"; \
+  Flags: postinstall nowait skipifsilent runasoriginaluser
 
 [Icons]
-; Shortcuts pointing to protocol0-launcher.exe (no longer a .url): it carries the "P" icon
-; and opens the web page served by the agent (port 9010). Advantage over .url: a real app
-; icon instead of the browser icon, and no console flash. The icon comes from the exe itself
-; (embedded by protocol0-launcher.spec).
+; Clickable shortcuts launch the agent with --open (start-on-click, AutoHotkey style): if the
+; agent is not running, this starts it (resident: keyboard hook + web UI + systray); either way
+; it opens the config page (/shortcuts) in the browser. The "P" icon comes from the agent exe
+; itself (embedded by protocol0-agent.spec); IconFilename pins it explicitly on the .lnk too.
 ; Start Menu: always created. Desktop: gated on the "desktopicon" task.
-Name: "{group}\Protocol 0"; Filename: "{app}\protocol0-launcher.exe"; Comment: "Open Protocol 0"
-Name: "{autodesktop}\Protocol 0"; Filename: "{app}\protocol0-launcher.exe"; Comment: "Open Protocol 0"; Tasks: desktopicon
+Name: "{group}\Protocol 0"; Filename: "{app}\Protocol0.exe"; Parameters: "--open"; Comment: "Launch Protocol 0"; IconFilename: "{app}\Protocol0.exe"
+Name: "{autodesktop}\Protocol 0"; Filename: "{app}\Protocol0.exe"; Parameters: "--open"; Comment: "Launch Protocol 0"; IconFilename: "{app}\Protocol0.exe"; Tasks: desktopicon
+; Autostart shortcut in the user's Startup folder (NO --open: the logon launch must be silent,
+; not pop a browser tab every session). Gated on the "Start at login" task. Inno creates it
+; under {userstartup} and removes it automatically at uninstall -- no PowerShell, no elevation
+; gymnastics. IconFilename pins the "P" icon so the .lnk (and Task Manager -> Startup, which
+; reads the shortcut's target exe) shows it. (Under admin install mode {userstartup} targets the
+; installing user's profile; for the single-user desktop case this is the intended user.)
+Name: "{userstartup}\Protocol 0"; Filename: "{app}\Protocol0.exe"; Comment: "Protocol 0 (auto-start at logon)"; IconFilename: "{app}\Protocol0.exe"; Tasks: startuplogin
 
 [UninstallRun]
-; Remove the task BEFORE the files are deleted.
-Filename: "powershell.exe"; \
-  Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\scripts\uninstall_protocol0_agent_task.ps1"""; \
-  RunOnceId: "RemoveAgentTask"; \
+; Kill the running agent BEFORE the files are deleted, otherwise its locked exe in {app}
+; cannot be removed. The Startup + Start-Menu + desktop shortcuts are [Icons] -> Inno removes
+; them automatically. taskkill on a not-running agent just exits non-zero -> harmless.
+Filename: "taskkill.exe"; Parameters: "/F /IM Protocol0.exe"; \
+  RunOnceId: "KillAgent"; \
   Flags: runhidden waituntilterminated
 
 [UninstallDelete]
@@ -244,18 +261,37 @@ begin
   end;
 end;
 
-{ Before the copy: stop the scheduled task THEN kill the process. Without stopping the
-  task, the scheduler would relaunch the just-killed exe (RestartCount) and Setup would
-  hit a locked file ("unable to close all the applications"). Order matters:
-  Stop-ScheduledTask first (cuts the automatic relaunch), taskkill next (frees the .exe).
-  The task is recreated by [Run] at the end of install. }
+{ Before the copy: clear any prior autostart and free the .exe so the copy never hits a
+  locked file.
+  1. Upgrade from a version that used a SCHEDULED TASK: delete it (and end it first, so its
+     RestartCount policy does not relaunch the exe we are about to kill). Otherwise the old
+     task AND the new Startup shortcut would both launch the agent -> two keyboard hooks.
+  2. Remove an existing Startup shortcut: [Icons] recreates it only if the box is ticked, so
+     re-installing with the box unticked must not leave a stale one.
+  3. Kill the running agent: frees the exe in the app dir for overwrite. We kill BOTH the new
+     image name ("Protocol0.exe") and the OLD one ("protocol0-agent.exe"), so upgrading from a
+     pre-rename version stops the old resident agent too.
+  4. Delete the OLD exe ("protocol0-agent.exe") left in the app dir by a pre-rename version: the
+     new build no longer ships it, so [Files] would not overwrite it and it would linger.
+  schtasks/taskkill on a non-existent target just exit non-zero -> harmless (ResultCode ignored). }
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 var
   ResultCode: Integer;
+  OldLink, OldExe: String;
 begin
   Result := '';
   Exec('schtasks.exe', '/End /TN "Protocol0"',
        '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Exec('schtasks.exe', '/Delete /TN "Protocol0" /F',
+       '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  OldLink := ExpandConstant('{userstartup}\Protocol 0.lnk');
+  if FileExists(OldLink) then
+    DeleteFile(OldLink);
+  Exec('taskkill.exe', '/F /IM Protocol0.exe',
+       '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   Exec('taskkill.exe', '/F /IM protocol0-agent.exe',
        '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  OldExe := ExpandConstant('{app}\protocol0-agent.exe');
+  if FileExists(OldExe) then
+    DeleteFile(OldExe);
 end;

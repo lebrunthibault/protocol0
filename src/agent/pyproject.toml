@@ -15,6 +15,11 @@ packages = [{include = "agent"}]
 python = ">=3.11,<3.15"
 pynput = "^1.7.6"
 requests = "^2.31.0"
+# Systray icon (agent/tray.py) : la surface visible « cet outil tourne, voici Quit ».
+# pystray porte l'icône, Pillow la charge (protocol0.ico). Runtime (embarqués dans l'exe),
+# pas seulement build : Pillow était dev-only pour generate_icon.py, le tray le rend runtime.
+pystray = "^0.19.5"
+pillow = "^10.0"
 
 [tool.poetry.scripts]
 agent = "agent.main:start"
@@ -23,9 +28,8 @@ agent = "agent.main:start"
 flake8 = "*"
 pytest = "*"
 pyinstaller = "^6.6"
-# Generates the Windows icon (installer/assets/protocol0.ico) via
-# scripts/windows/generate_icon.py. Build-time only, not embedded in the exe.
-pillow = "^10.0"
+# Pillow est désormais une dépendance runtime (agent/tray.py charge protocol0.ico) :
+# elle couvre aussi l'usage build-time de scripts/windows/generate_icon.py.
 
 [tool.black]
 line-length = 100

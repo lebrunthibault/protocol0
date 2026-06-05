@@ -291,7 +291,7 @@ version = "10.4.0"
 description = "Python Imaging Library (Fork)"
 optional = false
 python-versions = ">=3.8"
-groups = ["dev"]
+groups = ["main"]
 files = [
     {file = "pillow-10.4.0-cp310-cp310-macosx_10_10_x86_64.whl", hash = "sha256:4d9667937cfa347525b319ae34375c37b9ee6b525440f3ef48542fcf66f2731e"},
     {file = "pillow-10.4.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:543f3dc61c18dafb755773efc89aae60d06b6596a63914107f75459cf984164d"},
@@ -622,6 +622,23 @@ pyobjc-core = ">=12.1"
 pyobjc-framework-Cocoa = ">=12.1"
 
 [[package]]
+name = "pystray"
+version = "0.19.5"
+description = "Provides systray integration"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "pystray-0.19.5-py2.py3-none-any.whl", hash = "sha256:a0c2229d02cf87207297c22d86ffc57c86c227517b038c0d3c59df79295ac617"},
+]
+
+[package.dependencies]
+Pillow = "*"
+pyobjc-framework-Quartz = {version = ">=7.0", markers = "sys_platform == \"darwin\""}
+python-xlib = {version = ">=0.17", markers = "sys_platform == \"linux\""}
+six = "*"
+
+[[package]]
 name = "pytest"
 version = "9.0.3"
 description = "pytest: simple powerful testing with Python"
@@ -748,4 +765,4 @@ zstd = ["backports-zstd (>=1.0.0) ; python_version < \"3.14\""]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.15"
-content-hash = "124194f97b06b95397fc7a5e1b24bdd266530657599742bba7fb2db5f9431eed"
+content-hash = "576679321956fd4430663f2bd163608dd02e729e911f4e62aa94b11c2df4ad4f"

@@ -10,7 +10,7 @@ Protocol 0 is free, open-source, and extensible :
 The project is in early development. Feedback and contributions are very welcome.
 
 > **Platform: Windows.** Protocol0 is developed and run on Windows. The installer,
-> the autostart mechanism (a Scheduled Task), and the packaging tooling under
+> the autostart mechanism (a Startup-folder shortcut), and the packaging tooling under
 > [`scripts/windows/`](scripts/windows/) are PowerShell and Windows-specific. Dev
 > setup (`make bootstrap`) is cross-platform, but the agent itself is
 > Windows-only for now; macOS support is on the backlog (see `docs/specs/backlog/`).
@@ -29,8 +29,10 @@ Visit the website: <https://www.protocol0.live/>.
 1. Download `Protocol0-Setup-<version>.exe` from the
    [GitHub Releases](https://github.com/lebrunthibault/protocol0/releases).
 2. Run it. The installer deploys the **agent**, copies the **remote script**
-   into Ableton's MIDI Remote Scripts folder, and registers a Scheduled Task so
-   the agent autostarts at logon.
+   into Ableton's MIDI Remote Scripts folder, and (if you keep "Start at login"
+   ticked) adds a Startup-folder shortcut so the agent autostarts at logon. Once
+   running, the agent shows a **"P" systray icon** — click it to open the config,
+   right-click for status and **Quit**.
    - Windows SmartScreen warns on first run (the installer is currently unsigned):
      *More info → Run anyway*. Worried about security, or did your antivirus flag
      it? See [SECURITY.md](SECURITY.md) for why a shortcut tool needs a keyboard
@@ -91,7 +93,7 @@ documentation in [`src/website/`](src/website/) — a static page deployed to
 
 Cross-platform setup lives in stdlib-only [`scripts/`](scripts/) Python (`make
 bootstrap`/`install` dispatch to them); the genuinely Windows-only tooling
-(installer, PyInstaller, Scheduled Tasks) sits under
+(installer, PyInstaller, Startup-folder autostart) sits under
 [`scripts/windows/`](scripts/windows/).
 
 ## Contributing

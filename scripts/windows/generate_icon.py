@@ -5,11 +5,11 @@ thin border, bold blue "P" centered. We draw the badge with Pillow rather than r
 the SVG, to avoid any system binary dependency (cairosvg/inkscape) on the CI side: Pillow
 installs everywhere as a pure wheel.
 
-Output: a multi-resolution .ico (16/32/48/64/128/256) consumed by protocol0-launcher.spec
-(icon of the exe and of the shortcut).
+Output: a multi-resolution .ico (16/32/48/64/128/256) embedded by protocol0-agent.spec
+(icon of the exe and of the shortcuts, and the systray icon loaded by agent/tray.py).
 
 Usage: python scripts/windows/generate_icon.py
-       (Pillow required; declared as a dev dependency of src/agent.)
+       (Pillow required; a runtime dependency of src/agent.)
 """
 from __future__ import annotations
 

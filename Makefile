@@ -14,8 +14,8 @@ install:
 	@$(PY) scripts/install_remote_script.py
 .PHONY: install
 
-# kill-agent first: a leftover agent (frozen exe from the scheduled task, or a stale
-# source run) coexisting with this one means a single shortcut fires twice
+# kill-agent first: a leftover agent (frozen exe from the Startup-folder autostart, or a
+# stale source run) coexisting with this one means a single shortcut fires twice
 # (cf. docs/debug-double-shortcut.md). Cleaning up before launch guarantees one agent.
 agent: kill-agent
 	@cd src/agent && poetry run agent

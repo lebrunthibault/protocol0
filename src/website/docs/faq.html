@@ -114,7 +114,7 @@
         <div class="body">
           <p>The UI is served by the <strong>agent</strong> — the background app on your machine, not Ableton. If <a class="link" href="http://127.0.0.1:9010/shortcuts" target="_blank" rel="noopener"><code>http://127.0.0.1:9010/shortcuts</code></a> doesn't load:</p>
           <ul>
-            <li>Make sure the agent is running — its autostart task <code>Protocol0</code> should be in Task Scheduler. Reinstalling re-creates it.</li>
+            <li>Make sure the agent is running — look for the <strong>"P" icon in the system tray</strong> (left-click it to open the UI). If it's gone, launch Protocol 0 from the Start Menu.</li>
             <li>Check the agent log at <code>%APPDATA%\Protocol0\logs\agent.log</code> for a startup error (e.g. port <code>9010</code> already in use).</li>
           </ul>
         </div>
@@ -138,9 +138,9 @@
       <details>
         <summary><svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>It doesn't start automatically after login</summary>
         <div class="body">
-          <p>Autostart is a Windows scheduled task named <code>Protocol0</code>. Check it exists:</p>
-          <pre><code>Get-ScheduledTask -TaskName Protocol0</code></pre>
-          <p>If it's missing, reinstalling re-creates it.</p>
+          <p>Autostart is a shortcut in your Startup folder (only created if you kept "Start at login" ticked during install). You can see and toggle it in <strong>Task Manager → Startup apps</strong> (look for "Protocol 0"), or open the folder directly:</p>
+          <pre><code>%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup</code></pre>
+          <p>If it's missing, reinstall with "Start at login" ticked, or launch Protocol 0 from the Start Menu whenever you need it.</p>
         </div>
       </details>
 

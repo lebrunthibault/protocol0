@@ -2,20 +2,24 @@
 # Spec PyInstaller de l'agent Protocol0.
 #
 # Build : depuis src/agent,  poetry run pyinstaller --clean --noconfirm protocol0-agent.spec
-# Sortie : dist/protocol0-agent.exe (binaire autonome, sans Python ni Poetry requis sur la cible).
+# Sortie : dist/Protocol0.exe (binaire autonome, sans Python ni Poetry requis sur la cible).
 #
 # Notes :
-# - L'exe sert un site web LOCAL (127.0.0.1:9010 : home + keymapper + api docs + /api + /status)
-#   en plus de capturer le clavier. Aucun appel réseau sortant, aucun download/lancement d'exe :
-#   le profil antivirus reste proche du Jalon 1. http.server/json sont stdlib (statiquement
-#   visibles), requests est déjà embarqué -> pas de nouvel hiddenimport requis.
+# - L'exe sert un site web LOCAL (127.0.0.1:9010 : home + keymapper + api docs + /api + /status),
+#   capture le clavier ET porte l'icône systray (agent/tray.py). Aucun appel réseau sortant, aucun
+#   download/lancement d'exe : le profil antivirus reste proche du Jalon 1. http.server/json sont
+#   stdlib (statiquement visibles), requests est déjà embarqué.
 # - La SPA Vue 3 (build statique src/frontend/dist) est embarquée via datas (dossier "frontend")
 #   et lue via sys._MEIPASS par agent/web/static_files.py. Le build DOIT exister avant PyInstaller
 #   (cf. scripts/windows/build_installer.ps1, étape Vite).
-# - console=False : l'exe est lancé caché par la tâche planifiée au logon ; pas de flash de console.
+# - protocol0.ico est embarqué via datas (lu via sys._MEIPASS par agent/tray.py pour le systray).
+#   Il est généré par scripts/windows/generate_icon.py AVANT ce build (cf. build_agent_exe.ps1).
+# - console=False : l'exe est lancé caché au logon (raccourci Startup folder) ; pas de flash console.
+#   Lancé à la main (raccourci Menu Démarrer) il reçoit --open : ouvre la page config, puis devient
+#   résident ou sort via le mutex single-instance.
 # - hiddenimports : pynput charge son backend plateforme paresseusement (pynput.keyboard._win32 /
-#   pynput.mouse._win32), que l'analyse statique de PyInstaller ne voit pas -> sans ça l'exe gelé
-#   lèverait un ImportError au runtime.
+#   pynput.mouse._win32) ; pystray choisit son backend plateforme au runtime (pystray._win32). Ni
+#   l'un ni l'autre n'est vu par l'analyse statique -> sans ça l'exe gelé lèverait un ImportError.
 # - upx=False : la compression UPX déclenche des faux positifs antivirus, d'autant qu'un agent
 #   à hook clavier est déjà un profil sensible.
 
@@ -34,8 +38,9 @@ a = Analysis(
     datas=[
         ('..\\..\\VERSION', '.'),
         ('..\\..\\src\\frontend\\dist', 'frontend'),
+        ('..\\..\\installer\\assets\\protocol0.ico', '.'),
     ],
-    hiddenimports=['pynput.keyboard._win32', 'pynput.mouse._win32'],
+    hiddenimports=['pynput.keyboard._win32', 'pynput.mouse._win32', 'pystray._win32'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -55,7 +60,10 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='protocol0-agent',
+    # name='Protocol0' -> l'exe est "Protocol0.exe" (sans espace). C'est ce nom que Windows
+    # affiche dans l'Explorateur et dans Gestionnaire des tâches -> Démarrage (qui prend le nom
+    # du fichier cible du raccourci, pas le nom du .lnk).
+    name='Protocol0',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -64,8 +72,12 @@ exe = EXE(
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
+    # icon : l'icône "P" en RESSOURCE PE de l'exe -> affichée par l'Explorateur, les raccourcis
+    # et Gestionnaire des tâches. (Le même .ico est AUSSI embarqué en datas ci-dessus pour que
+    # le systray le charge au runtime via _MEIPASS ; les deux usages sont distincts.)
+    icon='..\\..\\installer\\assets\\protocol0.ico',
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    version=version_resource("Protocol 0 Agent", "protocol0-agent.exe"),
+    version=version_resource("Protocol0", "Protocol0.exe"),
 )

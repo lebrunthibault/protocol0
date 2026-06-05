@@ -1,13 +1,16 @@
-# Builds the Protocol0 Windows exes (PyInstaller): the resident agent AND the launcher.
+# Builds the Protocol0 Windows exe (PyInstaller): the resident agent.
 #
-# Outputs:
-#   - src/agent/dist/protocol0-agent.exe    (resident agent, keyboard hook + web server)
-#   - src/agent/dist/protocol0-launcher.exe (the clicked "shortcut": opens the web page)
-# Also generates installer/assets/protocol0.ico (the launcher icon) before its build.
+# Output:
+#   - src/agent/dist/Protocol0.exe   (resident agent: keyboard hook + web server + systray)
+# Also generates installer/assets/protocol0.ico BEFORE the build, because the agent now
+# embeds it (the systray icon, agent/tray.py loads it via _MEIPASS).
+#
+# There is no longer a separate protocol0-launcher.exe: the Start-Menu/desktop shortcut
+# launches `Protocol0.exe --open` (start-on-click, AutoHotkey style), which opens the
+# config page and then either becomes resident or exits via the single-instance mutex.
 #
 # Prerequisites (build machine only): Poetry + Python 3.11+.
 # The agent embeds src/frontend/dist (the Vue 3 SPA) -> it must be built FIRST (npm run build).
-# The launcher embeds installer/assets/protocol0.ico -> generated here just before its build.
 
 # PS 5.1 note: poetry/pyinstaller write their logs to stderr. With
 # $ErrorActionPreference="Stop", PowerShell turns that stderr into a terminating error
@@ -31,31 +34,22 @@ try {
     & poetry install
     if ($LASTEXITCODE -ne 0) { throw "poetry install failed (exit $LASTEXITCODE)." }
 
+    # Icon: regenerated on every build to stay in sync with the source badge
+    # (src/website/favicon.svg). Must come BEFORE the agent build, which embeds it
+    # (datas in protocol0-agent.spec) for the systray.
+    Write-Host "Generating icon (protocol0.ico)..."
+    & poetry run python (Join-Path $repoRoot "scripts\windows\generate_icon.py")
+    if ($LASTEXITCODE -ne 0) { throw "generate_icon.py failed (exit $LASTEXITCODE)." }
+
     Write-Host "Building protocol0-agent.exe..."
     & poetry run pyinstaller --clean --noconfirm protocol0-agent.spec
     if ($LASTEXITCODE -ne 0) { throw "pyinstaller (agent) failed (exit $LASTEXITCODE)." }
 
-    $exe = Join-Path $agentDir "dist\protocol0-agent.exe"
+    $exe = Join-Path $agentDir "dist\Protocol0.exe"
     if (-not (Test-Path $exe)) {
         throw "Build finished but $exe not found."
     }
     Write-Host "OK -> $exe"
-
-    # Launcher icon: regenerated on every build to stay in sync with the source badge
-    # (src/website/favicon.svg). Pillow is a dev dependency (poetry install above).
-    Write-Host "Generating launcher icon (protocol0.ico)..."
-    & poetry run python (Join-Path $repoRoot "scripts\windows\generate_icon.py")
-    if ($LASTEXITCODE -ne 0) { throw "generate_icon.py failed (exit $LASTEXITCODE)." }
-
-    Write-Host "Building protocol0-launcher.exe..."
-    & poetry run pyinstaller --clean --noconfirm protocol0-launcher.spec
-    if ($LASTEXITCODE -ne 0) { throw "pyinstaller (launcher) failed (exit $LASTEXITCODE)." }
-
-    $launcherExe = Join-Path $agentDir "dist\protocol0-launcher.exe"
-    if (-not (Test-Path $launcherExe)) {
-        throw "Build finished but $launcherExe not found."
-    }
-    Write-Host "OK -> $launcherExe"
 } finally {
     Pop-Location
 }
