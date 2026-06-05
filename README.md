@@ -53,8 +53,8 @@ See the [docs](https://www.protocol0.live/docs/architecture.html)
 
 ## Contributing
 
-- Join [Discord](https://discord.gg/p2qYMQeru) to chat and get help.
-- See [CONTRIBUTING.md](CONTRIBUTING.md).
+- Join [Discord](https://discord.gg/p2qYMQeru) to chat and get help
+- See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Roadmap
 
