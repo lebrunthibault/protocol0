@@ -17,7 +17,7 @@ import install_remote_script
 from _pyfind import REPO_ROOT, find_python311
 
 # Projects that each get their own poetry env.
-POETRY_PROJECTS = ["src/script", "src/agent"]
+POETRY_PROJECTS = ["src/script", "src/agent-python"]
 
 
 def _require_poetry():

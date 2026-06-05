@@ -1,4 +1,4 @@
-// Contract shared with the agent (src/agent). The `shortcuts.json` schema is versioned
+// Contract shared with the agent (src/agent, Rust). The `shortcuts.json` schema is versioned
 // (version 1): a binding = { combo, action, params }. The combo is canonical
 // (ctrl, alt, shift, win + key, lowercase, joined by '+') — identical to what
 // the agent's listener matches.

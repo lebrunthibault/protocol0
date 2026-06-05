@@ -1,4 +1,4 @@
-"""Lance l'agent + le frontend Vue + la landing website en arriere-plan (target `make up`).
+﻿"""Lance l'agent + le frontend Vue + la landing website en arriere-plan (target `make up`).
 
 Pourquoi : en dev on jonglait avec deux/trois terminaux (`make agent`, `make frontend`,
 `make website`). `make up` demarre les trois d'un coup en process detaches, redirige leurs
@@ -13,7 +13,7 @@ sur le tail -- l'utilisateur lance `make logs` quand il veut suivre Ableton + ag
 (agent.log, frontend.log, website.log).
 
 On tue d'abord les agents qui trainent (cf. kill_agent.py / docs/debug-double-shortcut.md)
-pour garantir un seul agent. L'agent lance est le binaire Rust (src/agent-rust), build a la
+pour garantir un seul agent. L'agent lance est le binaire Rust (src/agent), build a la
 volee avant le spawn -- meme binaire que `make agent` et l'installeur. Stdlib uniquement,
 Windows-only (chemins APPDATA, npx, cargo).
 """
@@ -26,6 +26,18 @@ import time
 from pathlib import Path
 
 import kill_agent
+
+_DEFAULT_FRONTEND_PORT = 5173
+
+
+def _frontend_port() -> int:
+    """Port du dev server vite, lu dans l'environnement (FRONTEND_PORT), defaut 5173 (le defaut
+    Vue). Le Makefile charge le .env de la racine (`-include .env` + `export`) avant d'appeler ce
+    script, donc on lit juste os.environ ici -- pas de parsing de fichier cote Python. .env est
+    gitignore : chaque dev fixe son port s'il a un conflit (autre projet Vue tenant deja 5173).
+    Voir .env.example. Une valeur non numerique retombe sur le defaut."""
+    value = os.environ.get("FRONTEND_PORT", "")
+    return int(value) if value.isdigit() else _DEFAULT_FRONTEND_PORT
 
 # CREATE_NO_WINDOW : aucune fenetre console (sinon shell=True ouvre un cmd.exe visible par
 # service). La sortie est deja redirigee vers un fichier, donc rien a afficher.
@@ -71,11 +83,11 @@ def _kill_stale_web() -> None:
 
 def _rust_agent_exe() -> Path:
     """Chemin du binaire Rust produit par cargo (le meme que `make agent` lance)."""
-    return _REPO / "src" / "agent-rust" / "target" / "release" / "Protocol0.exe"
+    return _REPO / "src" / "agent" / "target" / "release" / "Protocol0.exe"
 
 
 def _build_rust_agent() -> bool:
-    """`cargo build --release` du crate src/agent-rust. True si l'exe est pret, False sinon.
+    """`cargo build --release` du crate src/agent. True si l'exe est pret, False sinon.
 
     cargo ecrit sa progression sur stderr ; on juge le succes sur le returncode (pas sur la
     presence de stderr). On herite stdout/stderr du terminal pour que l'utilisateur voie la
@@ -84,7 +96,7 @@ def _build_rust_agent() -> bool:
     try:
         rc = subprocess.run(
             ["cargo", "build", "--release"],
-            cwd=str(_REPO / "src" / "agent-rust"),
+            cwd=str(_REPO / "src" / "agent"),
             shell=True,  # cargo est sur le PATH via un .cmd shim sous Windows
         ).returncode
     except OSError as e:
@@ -129,16 +141,27 @@ def main() -> int:
     kill_agent.main()
     _kill_stale_web()
 
-    # L'agent lance par `make up` est le binaire Rust (src/agent-rust), comme `make agent` et
+    # L'agent lance par `make up` est le binaire Rust (src/agent), comme `make agent` et
     # comme l'installeur. On le build AVANT de le spawn : sinon l'exe peut etre absent (premier
     # run) ou perime. Build bloquant (cargo est rapide en incremental) ; si le build echoue, on
     # s'arrete plutot que de lancer un vieux binaire.
     if not _build_rust_agent():
         return 1
 
-    # Pas de port fixe : un autre projet peut occuper 5173/8000. vite et live-server prennent
-    # le premier port libre ; on lit l'URL effective dans leur log pour l'afficher (cf.
-    # _effective_url). `make up PORT=3000` force quand meme le website sur un port precis.
+    # Frontend : on choisit NOUS-MEMES le port (5173 s'il est libre, sinon 5174, 5175...) puis on
+    # Frontend : port lu dans l'env (FRONTEND_PORT, defaut 5173 ; le Makefile charge .env. Cf.
+    # _frontend_port / .env.example).
+    # On le passe a vite en --strictPort -> vite prend CE port ou echoue clairement, jamais un
+    # co-bind silencieux. Si 5173 est deja pris par un autre projet Vue, le dev met FRONTEND_PORT=5174
+    # (ou autre) dans son .env. On connait le port AVANT de lancer vite -> banner direct, sans
+    # parser le log.
+    front_port = _frontend_port()
+    frontend_cmd = ["npm", "run", "dev", "--", "--port", str(front_port), "--strictPort"]
+    front_url = "http://localhost:%d" % front_port
+
+    # Website : un autre projet peut occuper 8080. live-server prend le premier port libre ; on lit
+    # l'URL effective dans son log pour l'afficher (cf. _effective_url). `make up PORT=3000` force
+    # quand meme le website sur un port precis.
     port = os.environ.get("PORT")
     website_cmd = ["npx", "--yes", "live-server", "src/website", "--no-browser"]
     if port:
@@ -150,8 +173,8 @@ def main() -> int:
     # tout demarrage avant l'init du logger). `make logs` lit le fichier date, pas celui-ci.
     services = [
         # (label, command, cwd, log_name)
-        ("agent", [str(_rust_agent_exe())], _REPO / "src" / "agent-rust", "agent-stdout"),
-        ("frontend", ["npm", "run", "dev"], _REPO / "src" / "frontend", "frontend"),
+        ("agent", [str(_rust_agent_exe())], _REPO / "src" / "agent", "agent-stdout"),
+        ("frontend", frontend_cmd, _REPO / "src" / "frontend", "frontend"),
         ("website", website_cmd, _REPO, "website"),
     ]
 
@@ -164,22 +187,21 @@ def main() -> int:
 
     _state_file().write_text(json.dumps(pids), encoding="utf-8")
 
-    # On ne fixe pas les ports (un autre projet peut tenir 5173/8000) -> vite et live-server
-    # choisissent le premier port libre. On poll leur log jusqu'a y lire le port EFFECTIF.
-    # Poll COURT et NON bloquant : vite peut mettre plusieurs secondes a ecrire sa ligne
-    # "Local:" (demarrage + buffering npm->cmd sans TTY). On n'attend pas qu'il soit pret pour
-    # rendre la main -- au pire le banner montre "(starting...)" et l'URL est dans le log. Un
-    # petit spinner anime evite l'impression de fige pendant ces ~3s.
-    front_re = r"Local:\s*https?://[^:]+:(\d+)"
+    # Le port frontend est deja connu (lu dans .env, defaut 5173 ; force a vite en --strictPort),
+    # donc rien a attendre cote vite. Seul le website peut deriver (live-server choisit son port) :
+    # on poll son log un court instant pour l'URL effective. Non bloquant -- au-dela, "(starting)".
     site_re = r"Serving .* at https?://[^:]+:(\d+)"
-    front_url, site_url = _poll_urls(front_re, site_re, timeout_s=3.0)
+    site_url = _poll_site_url(site_re, timeout_s=3.0)
 
+    # front_url est exact (port choisi par nous, vite force dessus en --strictPort) -> on l'affiche
+    # tel quel, jamais "(starting...)". Le frontend (live-reload) est ce que l'utilisateur ouvre
+    # pour voir ses changes ; l'agent :9010 sert le dist/ builde (fige).
     banner = "\n".join([
         "",
         "Dev stack up:",
-        "  frontend: %s" % (front_url or "(starting... see logs/frontend.log)"),
+        "  frontend: %s  (live-reload — open this to see your changes)" % front_url,
+        "  agent:    http://127.0.0.1:9010  (serves the built dist/)",
         "  website:  %s" % (site_url or "(starting... see logs/website.log)"),
-        "  agent:    http://127.0.0.1:9010",
         "  (make down to stop everything)",
         "",
     ])
@@ -191,42 +213,52 @@ def main() -> int:
     return 0
 
 
-def _poll_urls(front_re: str, site_re: str, timeout_s: float):
-    """Poll les logs frontend/website jusqu'a `timeout_s` pour y lire les URLs effectives, en
-    affichant un petit spinner anime (in-place) pour ne pas paraitre fige. Retourne
-    (front_url, site_url), l'un ou l'autre pouvant etre None si pas pret a temps.
+def _poll_site_url(site_re: str, timeout_s: float):
+    """Poll le log du website jusqu'a `timeout_s` pour y lire son URL effective (live-server peut
+    deriver de :8080), en affichant un petit spinner anime (in-place) pour ne pas paraitre fige.
+    Retourne l'URL ou None si pas prete a temps (le banner affiche alors un fallback). Non
+    bloquant au-dela de timeout_s. Le spinner s'efface avant le banner.
 
-    Non bloquant au-dela de timeout_s : on rend la main meme si le frontend traine (vite est
-    lent a demarrer). Le spinner s'efface avant que le banner ne s'affiche."""
+    Le frontend n'est PAS poll ici : son port est deja connu (lu dans .env, force a vite en
+    --strictPort), donc rien a attendre de ce cote."""
     frames = "|/-\\"
-    front_url = site_url = None
+    site_url = None
     interval = 0.2
     steps = max(1, int(timeout_s / interval))
     spinner_on = sys.stdout.isatty()  # pas de spinner si la sortie est redirigee (vers un fichier)
     for i in range(steps):
-        front_url = front_url or _effective_url("frontend", front_re)
-        site_url = site_url or _effective_url("website", site_re)
-        if front_url and site_url:
+        site_url = _effective_url("website", site_re)
+        if site_url:
             break
         if spinner_on:
             # \r ramene en debut de ligne ; on reecrit par-dessus a chaque frame.
-            sys.stdout.write("\r  %s waiting for dev servers... " % frames[i % len(frames)])
+            sys.stdout.write("\r  %s waiting for website... " % frames[i % len(frames)])
             sys.stdout.flush()
         time.sleep(interval)
     if spinner_on:
         sys.stdout.write("\r" + " " * 36 + "\r")  # efface la ligne du spinner
         sys.stdout.flush()
-    return front_url, site_url
+    return site_url
+
+
+_ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 
 
 def _effective_url(name: str, pattern: str):
     """Lit le port reel dans logs/<name>.log (vite/live-server l'annoncent). None tant que la
-    ligne n'est pas encore ecrite (la boucle d'appel re-essaie)."""
+    ligne n'est pas encore ecrite (la boucle d'appel re-essaie).
+
+    On STRIP d'abord les codes couleur ANSI : vite colore sa ligne "Local:" et insere des
+    sequences (\x1b[22m, \x1b[1m...) entre "Local" et ":", et juste avant le port. Sans ce strip,
+    le pattern (qui attend "Local:" contigu et le port colle au "://...:") ne matche jamais et on
+    reste bloque sur "(starting...)" alors que vite tourne. live-server n'emet pas de couleurs,
+    donc ca ne change rien pour lui."""
     log_path = _state_dir() / "logs" / ("%s.log" % name)
     try:
         text = log_path.read_text(encoding="utf-8", errors="replace")
     except OSError:
         return None
+    text = _ANSI_RE.sub("", text)
     matches = re.findall(pattern, text)
     return ("http://localhost:%s" % matches[-1]) if matches else None
 

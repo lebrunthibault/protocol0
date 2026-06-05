@@ -6,7 +6,7 @@
 #
 # Prérequis (machine de build seulement) :
 #   - Node 20+ (npm)              (build de la SPA src/frontend)
-#   - Rust (rustup, MSVC) + VS C++ Build Tools  (exe agent natif, src/agent-rust)
+#   - Rust (rustup, MSVC) + VS C++ Build Tools  (exe agent natif, src/agent)
 #   - Python 3                    (icône de l'agent + staging du remote script, stdlib-only)
 #   - Inno Setup 6 (ISCC.exe) sur le PATH, ou à un emplacement standard.
 

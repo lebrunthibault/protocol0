@@ -38,7 +38,7 @@ jobs:
           python-version: '3.11'
 
       # Node pour builder la SPA Vue 3 (src/frontend) — étape 1/4 de build_installer.ps1,
-      # embarquée dans l'exe agent via PyInstaller datas.
+      # embarquée dans l'exe agent via rust-embed.
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -46,13 +46,14 @@ jobs:
           cache: 'npm'
           cache-dependency-path: src/frontend/package-lock.json
 
-      - name: Install Poetry
-        run: pip install poetry
+      # Rust (cargo) est préinstallé sur l'image windows-latest : il build l'exe agent natif
+      # (src/agent). Python (stdlib) ci-dessus suffit au staging du remote script — plus
+      # besoin de Poetry depuis le passage de l'agent en Rust.
 
       - name: Install Inno Setup 6
         run: choco install innosetup -y --no-progress
 
-      # Enchaîne front Vue 3 (Vite) -> agent exe (PyInstaller) -> stage remote script -> ISCC.
+      # Enchaîne front Vue 3 (Vite) -> agent exe (Cargo/Rust) -> stage remote script -> ISCC.
       # Sort dist-installer/Protocol0-Setup-<version>.exe.
       - name: Build installer
         run: pwsh scripts/windows/build_installer.ps1

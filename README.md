@@ -53,48 +53,18 @@ make bootstrap
 # Then run the agent (live logs, Ctrl+C to stop)
 make agent
 
-# or to run agent, frontend and website
+# or to run agent, frontend (live reload) and website
 make up
 ```
 
-To work on the configuration frontend with live-reload, run `make frontend`
-(Vite dev server, proxies `/api` to the agent) alongside `make agent`.
-
-Config UI: <http://127.0.0.1:9010/shortcuts>. Logs: `%APPDATA%\Protocol0\logs\`.
+Config UI: <http://127.0.0.1:9010/shortcuts>.
+Logs: `%APPDATA%\Protocol0\logs\`.
+Bindings config file: (`%APPDATA%\Protocol0\shortcuts.json`)
 
 ## Architecture
 
-Two surfaces cooperate over local HTTP:
+See the [docs](https://www.protocol0.live/docs/architecture.html)
 
-```
-keyboard ─► agent ──────────────────► remote script (in Ableton) ─► Live API (LOM)
-            (local process,           (action HTTP API,
-             :9010 web UI + /api)       dynamic port)
-            └─ serves the keymapper web UI + /api (config CRUD)
-```
-
-- **Agent** ([`src/agent/`](src/agent/)) — an always-on local process. It owns the
-  global keyboard hook and, when Ableton is focused, calls the script's action API.
-  It also serves the **keymapper web UI** (a Vue 3 SPA, source in
-  [`src/frontend/`](src/frontend/)) and the **`/api`** that reads/writes bindings,
-  on a fixed `:9010`. The keymapper unlocks only when Ableton is running and the
-  remote script is active. The hook can't live inside the script (Ableton's
-  embedded Python can't host one).
-- **Remote script** — runs inside Ableton, exposes the **action API** on a dynamic
-  port, and executes actions via the Live API. Stdlib-only.
-
-Bindings are stored globally (`%APPDATA%\Protocol0\shortcuts.json`), owned by the
-agent (written from its UI, read by its keyboard listener). Full rationale in
-[`CONSTITUTION.md`](CONSTITUTION.md).
-
-The repo also carries a non-runtime surface: the marketing site and user
-documentation in [`src/website/`](src/website/) — a static page deployed to
-<https://www.protocol0.live/> with no build step.
-
-Cross-platform setup lives in stdlib-only [`scripts/`](scripts/) Python (`make
-bootstrap`/`install` dispatch to them); the genuinely Windows-only tooling
-(installer, PyInstaller, Startup-folder autostart) sits under
-[`scripts/windows/`](scripts/windows/).
 
 ## Contributing
 

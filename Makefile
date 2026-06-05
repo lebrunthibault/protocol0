@@ -3,6 +3,13 @@
 # `python` isn't a 3.x, e.g. `make PY=python3 bootstrap`.
 PY ?= python
 
+# Local dev overrides, gitignored. `-include` (leading dash) = no error if absent.
+# `export` pushes these into the environment of the recipes' child processes, so the
+# stdlib-only scripts just read os.environ -- no shell `source`, no .env parsing in Python,
+# works the same on Windows (cmd.exe) and Unix. Currently only FRONTEND_PORT (see .env.example).
+-include .env
+export FRONTEND_PORT
+
 # One-command local setup for a fresh checkout: both poetry envs + deploy the
 # remote script into Ableton. After this, `make agent` is all you need.
 bootstrap:
@@ -18,18 +25,18 @@ install:
 # stale source run) coexisting with this one means a single shortcut fires twice
 # (cf. docs/debug-double-shortcut.md). Cleaning up before launch guarantees one agent.
 #
-# `make agent` runs the REAL agent: the native Rust binary (src/agent-rust), the one shipped
+# `make agent` runs the REAL agent: the native Rust binary (src/agent), the one shipped
 # by the installer. It builds it (cargo) then launches the produced Protocol0.exe, so dev
 # exercises the same binary users get. `make agent-py` runs the legacy Python agent (kept for
 # reference / quick Python iteration). kill_agent.py already targets both forms (the frozen
 # Protocol0.exe and the `agent.main` source run), so the cleanup covers either.
 agent: kill-agent
-	@cd src/agent-rust && cargo build --release && "target/release/Protocol0.exe"
+	@cd src/agent && cargo build --release && "target/release/Protocol0.exe"
 .PHONY: agent
 
-# Legacy Python agent (src/agent), kept for reference and fast Python-side iteration.
+# Legacy Python agent (src/agent-python), kept for reference and fast Python-side iteration.
 agent-py: kill-agent
-	@cd src/agent && poetry run agent
+	@cd src/agent-python && poetry run agent
 .PHONY: agent-py
 
 # One command for the whole dev stack: agent + frontend (Vue) + website (landing), all
@@ -91,9 +98,9 @@ website:
 .PHONY: website
 
 # Build the full Windows installer locally (same script CI runs on a tag):
-# front Vue 3 -> agent exe (PyInstaller) -> stage remote script -> ISCC.
-# Output: dist-installer/Protocol0-Setup-<version>.exe. Windows-only; needs
-# Node, Poetry, and Inno Setup 6 (ISCC.exe). See scripts/windows/build_installer.ps1.
+# front Vue 3 -> agent exe (Cargo/Rust) -> stage remote script -> ISCC.
+# Output: dist-installer/Protocol0-Setup-<version>.exe. Windows-only; needs Node,
+# Rust (cargo), Python 3, and Inno Setup 6 (ISCC.exe). See scripts/windows/build_installer.ps1.
 installer:
 	@powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/build_installer.ps1
 .PHONY: installer

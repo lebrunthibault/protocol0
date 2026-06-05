@@ -138,7 +138,7 @@ context-free actions for keyboard binding.
 
 - The agent endpoints: `POST /api/extensions/register`, `POST /api/extensions/unregister`.
 - The catalog parser Protocol0 uses to read your `/openapi.json`:
-  `src/agent/agent/action_catalog.py`.
+  `src/agent/src/action_catalog.rs`.
 - The validated proof-of-concept extension: `src/js-extension/`.
 - Design rationale and milestones:
   `docs/specs/todo/2026-06-04-third-party-extension-integration.md`.

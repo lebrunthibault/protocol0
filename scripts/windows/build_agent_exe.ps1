@@ -1,17 +1,17 @@
 # Builds the Protocol0 Windows exe (Rust): the resident agent.
 #
 # Output:
-#   - src/agent-rust/target/release/Protocol0.exe   (resident agent: keyboard hook + web
-#                                                     server + systray)
+#   - src/agent/target/release/Protocol0.exe   (resident agent: keyboard hook + web
+#                                                server + systray)
 #
-# The agent is now a native Rust binary (crate src/agent-rust), NOT a PyInstaller bundle:
+# The agent is now a native Rust binary (crate src/agent), NOT a PyInstaller bundle:
 #   - no bundled CPython -> ~2-3 MB instead of ~14-15 MB, instant start, and the PyInstaller
 #     shared-bootloader AV false-positive class disappears;
 #   - the Vue SPA (src/frontend/dist) is baked in via rust-embed at compile time;
 #   - the "P" icon (installer/assets/protocol0.ico) is a versioned asset in the repo, embedded
 #     as a PE resource by build.rs AND loaded by the systray via include_bytes!.
 #
-# The Python agent (src/agent) is kept for dev/reference but is NO LONGER packaged by the
+# The Python agent (src/agent-python) is kept for dev/reference but is NO LONGER packaged by the
 # installer: this build produces the Rust exe only, with zero Python shipped. The build itself
 # needs NO Python at all: the icon is the committed installer/assets/protocol0.ico, not
 # regenerated here (regenerate it manually with scripts/windows/generate_icon.py only when the
@@ -32,7 +32,7 @@ $ErrorActionPreference = "Continue"
 
 # This script lives in scripts/windows/, so the repo root is two levels up.
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..").Path
-$crateDir = Join-Path $repoRoot "src\agent-rust"
+$crateDir = Join-Path $repoRoot "src\agent"
 
 # The SPA must be built first: rust-embed bakes src/frontend/dist into the binary.
 $frontendIndex = Join-Path $repoRoot "src\frontend\dist\index.html"

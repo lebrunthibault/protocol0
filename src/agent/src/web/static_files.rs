@@ -11,7 +11,7 @@
 use rust_embed::RustEmbed;
 
 /// The Vue SPA build, embedded at compile time. The path is relative to this crate's root
-/// (src/agent-rust/), so ../frontend/dist reaches src/frontend/dist. The build script
+/// (src/agent/), so ../frontend/dist reaches src/frontend/dist. The build script
 /// (build_agent_exe.ps1) guarantees `npm run build` ran first.
 #[derive(RustEmbed)]
 #[folder = "../frontend/dist"]

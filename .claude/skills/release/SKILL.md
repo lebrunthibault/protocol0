@@ -109,7 +109,7 @@ automatiques de GitHub.
 
 ### Étape 7 — Si une release est flaggée (faux positif AV)
 
-L'agent est un hook clavier global, packagé PyInstaller **non signé** : profil de faux positif
+L'agent est un hook clavier global, binaire natif (Rust) **non signé** : profil de faux positif
 antivirus assumé (cf. `SECURITY.md`). Tant qu'on n'a pas de signature de code
 (`docs/specs/backlog/2026-06-02-installer-code-signing.md`) qui bâtit une réputation, **chaque
 release a un nouveau hash** et peut être re-flaggée — donc c'est une étape **manuelle, par

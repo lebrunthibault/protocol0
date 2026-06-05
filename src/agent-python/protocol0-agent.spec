@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 # Spec PyInstaller de l'agent Protocol0.
 #
-# Build : depuis src/agent,  poetry run pyinstaller --clean --noconfirm protocol0-agent.spec
+# Build : depuis src/agent-python,  poetry run pyinstaller --clean --noconfirm protocol0-agent.spec
 # Sortie : dist/Protocol0.exe (binaire autonome, sans Python ni Poetry requis sur la cible).
 #
 # Notes :

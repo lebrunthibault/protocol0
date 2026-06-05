@@ -12,7 +12,7 @@
 ; automatically. On uninstall: kills the agent, deletes the files, BUT preserves
 ; %APPDATA%\Protocol0\shortcuts.json.
 ;
-; Build prerequisites: src\agent-rust\target\release\Protocol0.exe (the native Rust agent,
+; Build prerequisites: src\agent\target\release\Protocol0.exe (the native Rust agent,
 ; which embeds src\frontend\dist AND installer\assets\protocol0.ico) and build\stage\Protocol_0\
 ; must exist (see scripts\windows\build_installer.ps1). The agent is a Rust binary now; no Python
 ; is shipped.
@@ -98,7 +98,7 @@ Name: "{code:GetRemoteScriptsDir}\Protocol_0"; Permissions: users-modify
 [Files]
 ; The resident agent (native Rust exe), with its embedded "P" icon. The [Icons] point to it
 ; (with --open). Built by scripts\windows\build_agent_exe.ps1 (cargo build --release).
-Source: "..\src\agent-rust\target\release\Protocol0.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\src\agent\target\release\Protocol0.exe"; DestDir: "{app}"; Flags: ignoreversion
 ; users-modify: each laid-down file inherits the Modify right for Users (see [Dirs]),
 ; so `make install` in dev can replace them without elevation.
 Source: "..\build\stage\Protocol_0\*"; DestDir: "{code:GetRemoteScriptsDir}\Protocol_0"; Permissions: users-modify; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -117,7 +117,7 @@ Filename: "{app}\Protocol0.exe"; Parameters: "--open"; \
 ; Clickable shortcuts launch the agent with --open (start-on-click, AutoHotkey style): if the
 ; agent is not running, this starts it (resident: keyboard hook + web UI + systray); either way
 ; it opens the config page (/shortcuts) in the browser. The "P" icon comes from the agent exe
-; itself (embedded by protocol0-agent.spec); IconFilename pins it explicitly on the .lnk too.
+; itself (embedded as a PE resource by src\agent\build.rs); IconFilename pins it explicitly on the .lnk too.
 ; Start Menu: always created. Desktop: gated on the "desktopicon" task.
 Name: "{group}\Protocol 0"; Filename: "{app}\Protocol0.exe"; Parameters: "--open"; Comment: "Launch Protocol 0"; IconFilename: "{app}\Protocol0.exe"
 Name: "{autodesktop}\Protocol 0"; Filename: "{app}\Protocol0.exe"; Parameters: "--open"; Comment: "Launch Protocol 0"; IconFilename: "{app}\Protocol0.exe"; Tasks: desktopicon

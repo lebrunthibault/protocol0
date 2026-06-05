@@ -7,7 +7,7 @@
 //! the binary and shows everywhere.
 //!
 //! The icon lives at repo-root: installer/assets/protocol0.ico. This crate is at
-//! src/agent-rust/, so the path back to it is ../../installer/assets/protocol0.ico.
+//! src/agent/, so the path back to it is ../../installer/assets/protocol0.ico.
 
 fn main() {
     // Inject the repo-root VERSION as a compile-time env var (P0_VERSION) that version.rs reads

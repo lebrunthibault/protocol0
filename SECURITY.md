@@ -15,7 +15,7 @@ of anything malicious.
 What the agent actually does with your keystrokes:
 
 - It installs a low-level Windows keyboard hook (`SetWindowsHookExW` /
-  `WH_KEYBOARD_LL` — see [`src/agent/agent/listener.py`](src/agent/agent/listener.py)).
+  `WH_KEYBOARD_LL` — see [`src/agent/src/listener.rs`](src/agent/src/listener.rs)).
 - For every key, it checks **only** whether the current combination matches one of
   *your* configured shortcuts, **and** whether Ableton is the focused window. If
   not, the key is passed straight through, untouched.
@@ -32,10 +32,11 @@ What the agent actually does with your keystrokes:
 
 Why your antivirus may still warn:
 
-- The agent is built with **PyInstaller**, whose bootloader is byte-identical across
-  every tool built with it — so it shares a hash that some antivirus ML models have
-  learned to distrust. Combined with the keyboard hook, an **unsigned** PyInstaller
-  exe is a textbook false-positive trigger. This is heuristics, not detection.
+- The agent installs a **global keyboard hook** in an **unsigned** executable — the
+  exact pair of traits antivirus ML models and SmartScreen are trained to distrust,
+  because that's what real keyloggers also look like. An unsigned binary that hooks the
+  keyboard is a textbook false-positive trigger. This is heuristics about the *shape* of
+  the program, not detection of anything malicious.
 - The installer is **not yet code-signed** (signing is on the roadmap — see
   [`docs/specs/backlog/2026-06-02-installer-code-signing.md`](docs/specs/backlog/2026-06-02-installer-code-signing.md)),
   so SmartScreen shows "unknown publisher" until reputation builds up.
@@ -43,7 +44,7 @@ Why your antivirus may still warn:
 How to verify the download yourself, without trusting us:
 
 - **Read the source.** It's all here. The entire keyboard path is one small file:
-  [`listener.py`](src/agent/agent/listener.py).
+  [`listener.rs`](src/agent/src/listener.rs).
 - **Check the hash.** Every release ships a `SHA256SUMS` asset; compare it against
   the `.exe` you downloaded (`Get-FileHash Protocol0-Setup-<version>.exe`).
 - **Verify the build provenance.** Every release binary carries a signed
