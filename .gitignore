@@ -10,8 +10,6 @@ node_modules/
 # Artefacts de packaging (installeur Windows)
 /build/
 /dist-installer/
-/src/agent-python/build/
-/src/agent-python/dist/
 
 # Front Vue 3 (src/frontend) : build buildé en CI, jamais committé.
 /src/frontend/dist/

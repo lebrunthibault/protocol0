@@ -3,10 +3,10 @@
 A **plugin** extends the remote script: it can register new **actions** (bindable to a
 shortcut) and/or **reacts to events** in Live.
 
-To create a plugin, just drop a `.py` file in `src/script/protocol0/plugins/`, subclass `PluginInterface`, done.
+To create a plugin, just drop a `.py` file in `src/remote-script/protocol0/plugins/`, subclass `PluginInterface`, done.
 
 ```
-src/script/protocol0/plugins/
+src/remote-script/protocol0/plugins/
 ├── LoadDevicePlugin.py   ← single-file plugin
 ├── example/              ← copy this to start your own
 │   └── ExamplePlugin.py
@@ -16,7 +16,7 @@ src/script/protocol0/plugins/
 ## Adding an action
 
 Decorate a method with
-[`@action`](../src/script/protocol0/application/plugin/action.py) — no argument. The
+[`@action`](../src/remote-script/protocol0/application/plugin/action.py) — no argument. The
 **method name** is the action name; its **typed parameters** (`str`/`int`/`float`/
 `bool`) become the inputs, shown as typed fields in the keymapper UI and in the
 script's Swagger UI at <http://127.0.0.1:9000/docs> (the script's REST API is the
@@ -37,9 +37,9 @@ class MyPlugin(PluginInterface):
 The loader generates the route `POST /api/action/<plugin>/<method>` (here
 `/api/action/my_plugin/do_thing`); args go in the JSON body. You never write a
 route — see
-[`Router.py`](../src/script/protocol0/application/http/Router.py) for how it's
+[`Router.py`](../src/remote-script/protocol0/application/http/Router.py) for how it's
 dispatched. Real example:
-[`LoadDevicePlugin.py`](../src/script/protocol0/plugins/LoadDevicePlugin.py).
+[`LoadDevicePlugin.py`](../src/remote-script/protocol0/plugins/LoadDevicePlugin.py).
 
 ## Reacting to events
 
@@ -63,11 +63,11 @@ class MyPlugin(PluginInterface):
 
 Events are the `*Event.py` classes under `protocol0/domain/` — subscribe to the
 type, not a name. See
-[`PluginInterface.register_listeners`](../src/script/protocol0/application/plugin/PluginInterface.py)
+[`PluginInterface.register_listeners`](../src/remote-script/protocol0/application/plugin/PluginInterface.py)
 for the contract.
 
 ## Lifecycle
 
 `should_start()` opts out (return `False` to skip the plugin); `start()` runs once
 for setup; `stop()` for teardown. All optional — see the docstrings in
-[`PluginInterface.py`](../src/script/protocol0/application/plugin/PluginInterface.py).
+[`PluginInterface.py`](../src/remote-script/protocol0/application/plugin/PluginInterface.py).

@@ -19,8 +19,8 @@ from _pyfind import REPO_ROOT
 
 
 def main():
-    script_src = REPO_ROOT / "src" / "script" / "protocol0"
-    prod_init = (REPO_ROOT / "src" / "script" / "script_templates"
+    script_src = REPO_ROOT / "src" / "remote-script" / "protocol0"
+    prod_init = (REPO_ROOT / "src" / "remote-script" / "script_templates"
                  / "Protocol_0" / "__init__.prod.py")
     version_file = REPO_ROOT / "VERSION"
     stage_root = REPO_ROOT / "build" / "stage" / "Protocol_0"

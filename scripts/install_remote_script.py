@@ -2,7 +2,7 @@
 
 Cross-platform port of the old `make install_script` (Windows PowerShell). Copies
 the Protocol_0 template into Ableton, then rewrites the DEV loader's
-__P0_SOURCE_DIR__ placeholder to this checkout's src/script path, so Ableton loads
+__P0_SOURCE_DIR__ placeholder to this checkout's src/remote-script path, so Ableton loads
 protocol0/ live from the repo (edits picked up without reinstalling).
 
 stdlib-only — see _pyfind for why.
@@ -35,7 +35,7 @@ def _deploy(template, script_root, scripts_dir):
 
 
 def main():
-    script_root = REPO_ROOT / "src" / "script"
+    script_root = REPO_ROOT / "src" / "remote-script"
     template = script_root / "script_templates" / "Protocol_0"
     if not template.is_dir():
         raise SystemExit("Remote-script template not found: %s" % template)

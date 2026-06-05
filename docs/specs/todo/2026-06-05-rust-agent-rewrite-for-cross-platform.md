@@ -21,9 +21,9 @@ The codebase has a hard architectural boundary:
         Ableton Live → Protocol_0 remote script (Python)   ← THIS stays Python forever
 ```
 
-- The **remote script** (`src/script/`, ~2000 LOC) runs **inside Ableton Live's embedded
+- The **remote script** (`src/remote-script/`, ~2000 LOC) runs **inside Ableton Live's embedded
   CPython**. It imports `Live` and `_Framework`, extends `ControlSurface`, and is
-  instantiated by Live's bootstrap (`src/script/protocol0/application/Protocol0.py`,
+  instantiated by Live's bootstrap (`src/remote-script/protocol0/application/Protocol0.py`,
   `.../main.py::create_instance`). Ableton has standardized on Python control surfaces for
   15+ years; there is no non-Python control-surface API and no FFI bridge into Live's
   interpreter. **This is irreducibly Python and out of scope for any rewrite.**

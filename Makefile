@@ -28,17 +28,11 @@ install:
 #
 # `make agent` runs the REAL agent: the native Rust binary (src/agent), the one shipped
 # by the installer. It builds it (cargo) then launches the produced Protocol0.exe, so dev
-# exercises the same binary users get. `make agent-py` runs the legacy Python agent (kept for
-# reference / quick Python iteration). kill_agent.py already targets both forms (the frozen
-# Protocol0.exe and the `agent.main` source run), so the cleanup covers either.
+# exercises the same binary users get. kill_agent.py already targets both forms (the frozen
+# Protocol0.exe and a stale source run), so the cleanup covers either.
 agent: kill-agent
 	@cd src/agent && cargo build --release && "target/release/Protocol0.exe"
 .PHONY: agent
-
-# Legacy Python agent (src/agent-python), kept for reference and fast Python-side iteration.
-agent-py: kill-agent
-	@cd src/agent-python && poetry run agent
-.PHONY: agent-py
 
 # One command for the whole dev stack: agent + frontend (Vue) + website (landing), all
 # detached in the background (no second terminal), then it prints the real URLs and tails the

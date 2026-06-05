@@ -19,9 +19,8 @@ import install_remote_script
 from _pyfind import REPO_ROOT, find_python311
 
 # The remote script gets a poetry env for its dev tooling (lint/test). The agent
-# is Rust now, so its legacy Python sibling (src/agent-python) is no longer
-# bootstrapped — run `poetry install` there by hand if you need it.
-POETRY_PROJECTS = ["src/script"]
+# is Rust now (built with cargo), so it needs no poetry env of its own.
+POETRY_PROJECTS = ["src/remote-script"]
 
 
 def _require_poetry():

@@ -11,8 +11,7 @@
 #   - the "P" icon (installer/assets/protocol0.ico) is a versioned asset in the repo, embedded
 #     as a PE resource by build.rs AND loaded by the systray via include_bytes!.
 #
-# The Python agent (src/agent-python) is kept for dev/reference but is NO LONGER packaged by the
-# installer: this build produces the Rust exe only, with zero Python shipped. The build itself
+# This build produces the Rust exe only, with zero Python shipped. The build itself
 # needs NO Python at all: the icon is the committed installer/assets/protocol0.ico, not
 # regenerated here (regenerate it manually with scripts/windows/generate_icon.py only when the
 # source badge src/website/favicon.svg changes).

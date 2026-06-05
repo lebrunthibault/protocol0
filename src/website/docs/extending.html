@@ -76,7 +76,7 @@
       <p>Smart actions are written in <strong>Python</strong>. If you're not a programmer, you don't have to learn it: describe what you want to an AI coding assistant (ChatGPT, Claude, Cursor…), point it at the example file below, and it can write the action for you.</p>
     </div>
 
-    <p>Start from the example, which includes comments and a working action you can copy and adapt: <a class="link" href="https://github.com/lebrunthibault/protocol0/blob/main/src/script/protocol0/plugins/example/ExamplePlugin.py" target="_blank" rel="noopener">the example plugin on GitHub</a>. A smart action is a small plugin with a single <code>@action</code> method — the method name is the action, and its typed parameters become the inputs:</p>
+    <p>Start from the example, which includes comments and a working action you can copy and adapt: <a class="link" href="https://github.com/lebrunthibault/protocol0/blob/main/src/remote-script/protocol0/plugins/example/ExamplePlugin.py" target="_blank" rel="noopener">the example plugin on GitHub</a>. A smart action is a small plugin with a single <code>@action</code> method — the method name is the action, and its typed parameters become the inputs:</p>
     <pre><code>from protocol0.application.plugin.PluginInterface import PluginInterface
 from protocol0.application.plugin.action import action
 from protocol0.shared.logging.StatusBar import StatusBar

@@ -39,7 +39,7 @@ simple zip à déposer dans le dossier des remote scripts.
 - `.github/workflows/release.yml` build l'installeur sur tag `v*` et attache l'exe
   via `gh release create ... "$exe"`. Le stage du remote script est déjà fait à
   l'intérieur de `scripts/windows/build_installer.ps1` (étape 3/4).
-- Le loader prod (`src/script/script_templates/Protocol_0/__init__.prod.py`) est
+- Le loader prod (`src/remote-script/script_templates/Protocol_0/__init__.prod.py`) est
   autonome (pas de `__P0_SOURCE_DIR__` à remplacer, contrairement au loader dev).
 
 ## Implémentation proposée

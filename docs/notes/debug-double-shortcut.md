@@ -33,7 +33,7 @@ une frappe (1, 2 ou 3, davantage si la touche est tenue).
 - **detector** (`src/detector/`) : exe PyInstaller, lancé par une tâche planifiée Windows
   `Protocol0` au logon. Capte le clavier (pynput), résout la combo, envoie un
   `GET /device/load?name=...` au script.
-- **script** (`src/script/`) : tourne DANS Ableton, sert un serveur HTTP sur `127.0.0.1:9000`,
+- **script** (`src/remote-script/`) : tourne DANS Ableton, sert un serveur HTTP sur `127.0.0.1:9000`,
   reçoit la requête et charge le device via `DeviceService.load_device`.
 - Chaîne : frappe → pynput `on_press` → `ShortcutListener._handle_main_key` → `client.execute`
   → `GET /device/load` → script `load_device`.
@@ -42,11 +42,11 @@ une frappe (1, 2 ou 3, davantage si la touche est tenue).
 
 - `src/detector/detector/listener.py` — capture clavier + dédup (voir hypothèse 2).
 - `src/detector/detector/script_client.py` — `execute()` envoie la requête HTTP (1 par appel).
-- `src/script/protocol0/application/http/routes/device_routes.py` — `load_device` (retourne None
+- `src/remote-script/protocol0/application/http/routes/device_routes.py` — `load_device` (retourne None
   → fire-and-forget via le Router).
-- `src/script/protocol0/application/http/Router.py` — dispatch ; handler sans retour = `submit()`
+- `src/remote-script/protocol0/application/http/Router.py` — dispatch ; handler sans retour = `submit()`
   sur le thread Live, handler avec retour = attente.
-- `src/script/protocol0/application/http/HttpServer.py` — serveur + `_drain` (traite la queue).
+- `src/remote-script/protocol0/application/http/HttpServer.py` — serveur + `_drain` (traite la queue).
 
 ## Hypothèses testées
 
