@@ -87,11 +87,11 @@ pub fn build() -> Option<TrayHandles> {
     })
 }
 
-/// Loads the "P" icon embedded in the binary (installer/assets/protocol0.ico, baked via
+/// Loads the "P" icon embedded in the binary (installer/windows/assets/protocol0.ico, baked via
 /// include_bytes!). Falls back to a solid square rather than crashing the tray (hence the
 /// agent), like the Python tray.
 fn load_icon() -> Icon {
-    const ICO: &[u8] = include_bytes!("../../../installer/assets/protocol0.ico");
+    const ICO: &[u8] = include_bytes!("../../../installer/windows/assets/protocol0.ico");
     match image_from_ico(ICO) {
         Some(icon) => icon,
         None => {

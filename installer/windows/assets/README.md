@@ -7,7 +7,7 @@ desktop shortcuts show it) and loaded at runtime by the systray (`src/agent/src/
 `include_bytes!`). It is the "P" badge from the site, rendered at multiple resolutions
 (16/32/48/64/128/256).
 
-**Generated**, not hand-drawn: `python scripts/windows/generate_icon.py` (Pillow required —
+**Generated**, not hand-drawn: `python installer/windows/generate_icon.py` (Pillow required —
 a dependency of that generator script only, not of the agent). The visual source is
 `src/website/favicon.svg`; the generator reproduces its badge (rounded dark-gradient square,
 blue "P" `#4d9fff`).

@@ -51,7 +51,7 @@ tray qui déclenche).
 
 ### Systray (porté par l'agent)
 
-- Icône = le « P » badge (`installer/assets/protocol0.ico`), embarqué dans l'exe.
+- Icône = le « P » badge (`installer/windows/assets/protocol0.ico`), embarqué dans l'exe.
 - **Clic-gauche** (action par défaut) : ouvre `http://127.0.0.1:9010/shortcuts` dans le navigateur
   (la page que l'agent sert déjà).
 - **Clic-droit (menu)** :

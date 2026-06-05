@@ -1,19 +1,19 @@
-"""Generates the Protocol0 Windows icon (installer/assets/protocol0.ico).
+"""Generates the Protocol0 Windows icon (installer/windows/assets/protocol0.ico).
 
 Faithful to the site's badge (src/website/favicon.svg): rounded dark-gradient square,
 thin border, bold blue "P" centered. We draw the badge with Pillow rather than rasterize
 the SVG, to avoid any system binary dependency (cairosvg/inkscape) on the CI side: Pillow
 installs everywhere as a pure wheel.
 
-Output: a multi-resolution .ico (16/32/48/64/128/256) committed at installer/assets/
+Output: a multi-resolution .ico (16/32/48/64/128/256) committed at installer/windows/assets/
 protocol0.ico and embedded by the Rust agent's build.rs (PE resource of the exe + shortcuts)
 and loaded by the systray (src/agent/src/tray.rs via include_bytes!).
 
 This is a MANUAL maintenance tool, NOT a build step: the committed .ico is the source of truth
 for the build (build_agent_exe.ps1 does not run this). Re-run it only when the source badge
-src/website/favicon.svg changes, then commit the regenerated installer/assets/protocol0.ico.
+src/website/favicon.svg changes, then commit the regenerated installer/windows/assets/protocol0.ico.
 
-Usage: python scripts/windows/generate_icon.py   (Pillow required: pip install Pillow)
+Usage: python installer/windows/generate_icon.py   (Pillow required: pip install Pillow)
 """
 from __future__ import annotations
 
@@ -106,7 +106,7 @@ def _render_badge(size: int) -> Image.Image:
 
 def main() -> int:
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-    out_dir = os.path.join(repo_root, "installer", "assets")
+    out_dir = os.path.join(repo_root, "installer", "windows", "assets")
     os.makedirs(out_dir, exist_ok=True)
     out_ico = os.path.join(out_dir, "protocol0.ico")
 

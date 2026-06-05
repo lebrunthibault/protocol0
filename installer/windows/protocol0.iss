@@ -1,5 +1,5 @@
 ; Protocol0 Windows installer (install + autostart).
-; Inspired by SyncthingWindowsSetup. Build: ISCC.exe installer\protocol0.iss
+; Inspired by SyncthingWindowsSetup. Build: ISCC.exe installer\windows\protocol0.iss
 ;
 ; Lays down:
 ;   - Protocol0.exe           -> {app} (Program Files\Protocol0): resident agent (keyboard
@@ -13,14 +13,14 @@
 ; %APPDATA%\Protocol0\shortcuts.json.
 ;
 ; Build prerequisites: src\agent\target\release\Protocol0.exe (the native Rust agent,
-; which embeds src\frontend\dist AND installer\assets\protocol0.ico) and build\stage\Protocol_0\
-; must exist (see scripts\windows\build_installer.ps1). The agent is a Rust binary now; no Python
+; which embeds src\frontend\dist AND installer\windows\assets\protocol0.ico) and build\stage\Protocol_0\
+; must exist (see installer\windows\build_installer.ps1). The agent is a Rust binary now; no Python
 ; is shipped.
 
 #define MyAppName "Protocol 0"
 ; Version read from the root VERSION file (single source of truth, bumped by /commit)
 ; at ISCC compile time. Avoids a hardcoded version that would drift.
-#define VersionFile = FileOpen(SourcePath + "..\VERSION")
+#define VersionFile = FileOpen(SourcePath + "..\..\VERSION")
 #if VersionFile
   #define MyAppVersion = Trim(FileRead(VersionFile))
   #expr FileClose(VersionFile)
@@ -54,7 +54,7 @@ PrivilegesRequired=admin
 ; agent as the original user (runasoriginaluser) while the install itself is elevated. This is
 ; deliberate for a single-user desktop tool, so silence Inno's generic per-user-area warning.
 UsedUserAreasWarning=no
-OutputDir=..\dist-installer
+OutputDir=..\..\dist-installer
 OutputBaseFilename=Protocol0-Setup-{#MyAppVersion}
 Compression=lzma
 SolidCompression=yes
@@ -97,11 +97,11 @@ Name: "{code:GetRemoteScriptsDir}\Protocol_0"; Permissions: users-modify
 
 [Files]
 ; The resident agent (native Rust exe), with its embedded "P" icon. The [Icons] point to it
-; (with --open). Built by scripts\windows\build_agent_exe.ps1 (cargo build --release).
-Source: "..\src\agent\target\release\Protocol0.exe"; DestDir: "{app}"; Flags: ignoreversion
+; (with --open). Built by installer\windows\build_agent_exe.ps1 (cargo build --release).
+Source: "..\..\src\agent\target\release\Protocol0.exe"; DestDir: "{app}"; Flags: ignoreversion
 ; users-modify: each laid-down file inherits the Modify right for Users (see [Dirs]),
 ; so `make install` in dev can replace them without elevation.
-Source: "..\build\stage\Protocol_0\*"; DestDir: "{code:GetRemoteScriptsDir}\Protocol_0"; Permissions: users-modify; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\..\build\stage\Protocol_0\*"; DestDir: "{code:GetRemoteScriptsDir}\Protocol_0"; Permissions: users-modify; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Run]
 ; Start the agent now (resident: keyboard hook + web UI + systray) and open the config page.

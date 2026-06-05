@@ -57,7 +57,7 @@ windows = { version = "0.58", features = [
 ] }
 
 [build-dependencies]
-# Embed the "P" icon (installer/assets/protocol0.ico) as a PE resource so the exe carries
+# Embed the "P" icon (installer/windows/assets/protocol0.ico) as a PE resource so the exe carries
 # its badge in Explorer / Add-Remove Programs — same role the .spec datas played for PyInstaller.
 winres = "0.1"
 

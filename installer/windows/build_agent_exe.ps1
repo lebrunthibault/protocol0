@@ -8,12 +8,12 @@
 #   - no bundled CPython -> ~2-3 MB instead of ~14-15 MB, instant start, and the PyInstaller
 #     shared-bootloader AV false-positive class disappears;
 #   - the Vue SPA (src/frontend/dist) is baked in via rust-embed at compile time;
-#   - the "P" icon (installer/assets/protocol0.ico) is a versioned asset in the repo, embedded
+#   - the "P" icon (installer/windows/assets/protocol0.ico) is a versioned asset in the repo, embedded
 #     as a PE resource by build.rs AND loaded by the systray via include_bytes!.
 #
 # This build produces the Rust exe only, with zero Python shipped. The build itself
-# needs NO Python at all: the icon is the committed installer/assets/protocol0.ico, not
-# regenerated here (regenerate it manually with scripts/windows/generate_icon.py only when the
+# needs NO Python at all: the icon is the committed installer/windows/assets/protocol0.ico, not
+# regenerated here (regenerate it manually with installer/windows/generate_icon.py only when the
 # source badge src/website/favicon.svg changes).
 #
 # There is no separate launcher exe: the Start-Menu/desktop shortcut launches
@@ -29,7 +29,7 @@
 # keep "Continue" and judge success on $LASTEXITCODE (the real native exit code).
 $ErrorActionPreference = "Continue"
 
-# This script lives in scripts/windows/, so the repo root is two levels up.
+# This script lives in installer/windows/, so the repo root is two levels up.
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..").Path
 $crateDir = Join-Path $repoRoot "src\agent"
 
@@ -46,13 +46,13 @@ if (-not (Get-Command cargo -ErrorAction SilentlyContinue)) {
     throw "cargo not found. Install Rust via rustup (https://rustup.rs) and the VS C++ Build Tools."
 }
 
-# Icon: a versioned asset in the repo (installer\assets\protocol0.ico), embedded by build.rs
-# (PE resource) and tray.rs (include_bytes!). NOT regenerated here — the committed .ico is the
-# source of truth for the build, so no Python/Pillow is needed. Regenerate it manually with
-# scripts\windows\generate_icon.py only when the source badge changes.
-$ico = Join-Path $repoRoot "installer\assets\protocol0.ico"
+# Icon: a versioned asset in the repo (installer\windows\assets\protocol0.ico), embedded by
+# build.rs (PE resource) and tray.rs (include_bytes!). NOT regenerated here - the committed .ico
+# is the source of truth for the build, so no Python/Pillow is needed. Regenerate it manually with
+# installer\windows\generate_icon.py only when the source badge changes.
+$ico = Join-Path $repoRoot "installer\windows\assets\protocol0.ico"
 if (-not (Test-Path $ico)) {
-    throw "Icon not found at $ico. It is a committed asset; restore it or regenerate it with scripts\windows\generate_icon.py."
+    throw "Icon not found at $ico. It is a committed asset; restore it or regenerate it with installer\windows\generate_icon.py."
 }
 
 Push-Location $crateDir

@@ -1,101 +1,62 @@
-# Thin cross-platform dispatcher. All per-OS logic lives in the stdlib-only
-# scripts/*.py (no PowerShell, no pyenv). Override PY on a fresh machine where
-# `python` isn't a 3.x, e.g. `make PY=python3 bootstrap`.
+# Protocol0 development commands
+
 PY ?= python
 
-# Local dev overrides, gitignored. `-include` (leading dash) = no error if absent.
-# `export` pushes these into the environment of the recipes' child processes, so the
-# stdlib-only scripts just read os.environ -- no shell `source`, no .env parsing in Python,
-# works the same on Windows (cmd.exe) and Unix. Currently only FRONTEND_PORT (see .env.example).
 -include .env
 export FRONTEND_PORT
 
-# One-command local setup for a fresh checkout: the remote script's poetry env
-# (lint/test tooling) + deploy the remote script into Ableton. The agent is Rust
-# (`make agent` builds it with cargo). After this, `make agent` is all you need.
+
+# fresh checkout: remote-script poetry env + deploy into Ableton
 bootstrap:
 	@$(PY) scripts/bootstrap.py
 .PHONY: bootstrap
 
-# Redeploy just the remote script into Ableton (after editing it).
+# Redeploy just the remote script into Ableton (after editing it)
 install:
 	@$(PY) scripts/install_remote_script.py
 .PHONY: install
 
-# kill-agent first: a leftover agent (frozen exe from the Startup-folder autostart, or a
-# stale source run) coexisting with this one means a single shortcut fires twice
-# (cf. docs/debug-double-shortcut.md). Cleaning up before launch guarantees one agent.
-#
-# `make agent` runs the REAL agent: the native Rust binary (src/agent), the one shipped
-# by the installer. It builds it (cargo) then launches the produced Protocol0.exe, so dev
-# exercises the same binary users get. kill_agent.py already targets both forms (the frozen
-# Protocol0.exe and a stale source run), so the cleanup covers either.
+# Build the Rust agent (src/agent) and run the produced Protocol0.exe (kills stale agents first)
 agent: kill-agent
 	@cd src/agent && cargo build --release && "target/release/Protocol0.exe"
 .PHONY: agent
 
-# One command for the whole dev stack: agent + frontend (Vue) + website (landing), all
-# detached in the background (no second terminal), then it prints the real URLs and tails the
-# combined Ableton+agent logs (i.e. `make logs`). Ctrl-C stops the tail; the services keep
-# running -> `make down` stops them. Ports aren't pinned (another project may hold 5173/8000)
-# so vite/live-server pick the first free port; the printed URLs reflect the actual ports.
-# PIDs go to %APPDATA%\Protocol0\dev-up.json; outputs to logs/{agent,frontend,website}.log.
-# Force the website port with `make up PORT=3000`.
+# Run the whole dev stack (agent + frontend + website) detached
 up:
 	@$(PY) scripts/up.py
 .PHONY: up
 
-# Stop the background stack started by `make up` (kills each process tree) and clean up
-# any leftover agent as a safety net.
+# Stop the background stack started by `make up`
 down:
 	@$(PY) scripts/down.py
 .PHONY: down
 
-# Run the Vue 3 front (src/frontend) with Vite live-reload. Proxies /api and
-# /status to the running agent on :9010. Run `make agent` in another terminal.
+# Run the Vue frontend (src/frontend) with Vite live-reload, proxying to the agent on :9010
 frontend:
 	@cd src/frontend && npm run dev
 .PHONY: frontend
 
-# Rebuild the production SPA bundle (src/frontend/dist) that the agent serves on
-# :9010. Run this then refresh the browser to see your changes in the real agent
-# UI (no reinstall needed in dev — static_files reads dist/ from disk).
-frontend-build:
-	@cd src/frontend && npm run build
-.PHONY: frontend-build
-
-# Tail combine les logs Ableton (remote script, via Log.txt) et ceux de l'agent
-# (%APPDATA%\Protocol0\logs\agent.log) dans un seul terminal. Stdlib pur, Windows-only.
+# Tail combined Ableton (remote script) and agent logs in one terminal
 logs:
 	@$(PY) scripts/logs.py
 .PHONY: logs
 
-# Affiche les process agent en cours (exe gele + mode source) et les tue.
-# Deux agents en parallele = un raccourci declenche plusieurs fois (cf.
-# docs/debug-double-shortcut.md) : a lancer si un lancement source traine.
+# Show running agent processes (frozen exe + source mode) and kill them
 kill-agent:
 	@$(PY) scripts/kill_agent.py
 .PHONY: kill-agent
 
-# Build and run the spike Ableton Extensions SDK extension (src/js-extension)
-# in Live's Extension Host. Requires Node >= 24.14.1, Live 12.4.x Beta with
-# Developer Mode ON, and an open Set. It serves an HTTP API (port 9005) and
-# publishes its URL to runtime.json, like the Python script does.
+# Build and run the test Ableton Extensions SDK extension (src/js-extension) in Live's Extension Host
 extension:
 	@cd src/js-extension && npm start
 .PHONY: extension
 
-# Serve src/website with live-reload for editing the landing page.
-# Uses npx live-server (Node is already present in the repo); the first run
-# downloads it, then it's cached. Override the port with `make website PORT=3000`.
+# Serve src/website with live-reload for editing the landing page (PORT overrides the port)
 website:
 	npx --yes live-server src/website --port=$(or $(PORT),8000)
 .PHONY: website
 
-# Build the full Windows installer locally (same script CI runs on a tag):
-# front Vue 3 -> agent exe (Cargo/Rust) -> stage remote script -> ISCC.
-# Output: dist-installer/Protocol0-Setup-<version>.exe. Windows-only; needs Node,
-# Rust (cargo), Python 3, and Inno Setup 6 (ISCC.exe). See scripts/windows/build_installer.ps1.
+# Build the full Windows installer locally (same script CI runs on a tag) -> dist-installer/Protocol0-Setup-<version>.exe
 installer:
-	@powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/build_installer.ps1
+	@powershell -NoProfile -ExecutionPolicy Bypass -File installer/windows/build_installer.ps1
 .PHONY: installer

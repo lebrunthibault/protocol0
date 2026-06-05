@@ -1,13 +1,13 @@
-# Publie une GitHub Release quand un tag `v*` est poussé (modèle Syncthing :
-# build en CI sur tag, notes tirées du message du tag annoté).
+# Publishes a GitHub Release when a `v*` tag is pushed (Syncthing model: build in CI
+# on tag, notes taken from the annotated tag message).
 #
-# Le tag est créé par la skill `/release` (jamais par `/commit`, qui se contente
-# de bumper VERSION). Ce workflow ne bumpe ni ne committe rien : il consomme le
-# tag déjà poussé, build l'installeur via le même script que le build local
-# (scripts/windows/build_installer.ps1), et attache l'exe à la release.
+# The tag is created by the `/release` skill (never by `/commit`, which only bumps
+# VERSION). This workflow neither bumps nor commits anything: it consumes the
+# already-pushed tag, builds the installer with the same script as the local build
+# (installer/windows/build_installer.ps1), and attaches the exe to the release.
 #
-# Sources : pas besoin d'uploader un .zip — GitHub attache automatiquement
-# « Source code (zip/tar.gz) » à chaque release.
+# Sources: no need to upload a .zip — GitHub automatically attaches
+# "Source code (zip/tar.gz)" to every release.
 
 name: release
 
@@ -24,8 +24,8 @@ permissions:
 jobs:
   build-and-release:
     runs-on: windows-latest
-    # Hissé au niveau job pour que l'étape VirusTotal puisse se gater dessus dans son
-    # `if` (un secret n'est pas lisible directement dans une expression `if`).
+    # Hoisted to job level so the VirusTotal step can gate on it in its `if`
+    # (a secret cannot be read directly inside an `if` expression).
     env:
       VT_API_KEY: ${{ secrets.VT_API_KEY }}
     steps:
@@ -37,8 +37,8 @@ jobs:
         with:
           python-version: '3.11'
 
-      # Node pour builder la SPA Vue 3 (src/frontend) — étape 1/4 de build_installer.ps1,
-      # embarquée dans l'exe agent via rust-embed.
+      # Node to build the Vue 3 SPA (src/frontend) — step 1/4 of build_installer.ps1,
+      # embedded into the agent exe via rust-embed.
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -46,53 +46,53 @@ jobs:
           cache: 'npm'
           cache-dependency-path: src/frontend/package-lock.json
 
-      # Rust (cargo) est préinstallé sur l'image windows-latest : il build l'exe agent natif
-      # (src/agent). Python (stdlib) ci-dessus suffit au staging du remote script — plus
-      # besoin de Poetry depuis le passage de l'agent en Rust.
+      # Rust (cargo) is preinstalled on the windows-latest image: it builds the native agent
+      # exe (src/agent). Python (stdlib) above is enough to stage the remote script — no more
+      # Poetry needed since the agent moved to Rust.
 
       - name: Install Inno Setup 6
         run: choco install innosetup -y --no-progress
 
-      # Enchaîne front Vue 3 (Vite) -> agent exe (Cargo/Rust) -> stage remote script -> ISCC.
-      # Sort dist-installer/Protocol0-Setup-<version>.exe.
+      # Chains Vue 3 front (Vite) -> agent exe (Cargo/Rust) -> stage remote script -> ISCC.
+      # Outputs dist-installer/Protocol0-Setup-<version>.exe.
       - name: Build installer
-        run: pwsh scripts/windows/build_installer.ps1
+        run: pwsh installer/windows/build_installer.ps1
 
-      # Filet de sécurité : échouer explicitement si l'exe n'a pas été produit,
-      # plutôt que de créer une release vide.
+      # Safety net: fail explicitly if the exe was not produced, rather than
+      # creating an empty release.
       - name: Verify installer artifact
         shell: pwsh
         run: |
           $exe = Get-ChildItem dist-installer -Filter 'Protocol0-Setup-*.exe' -ErrorAction SilentlyContinue
-          if (-not $exe) { throw "Aucun installeur produit dans dist-installer/." }
+          if (-not $exe) { throw "No installer produced in dist-installer/." }
           Write-Host "OK -> $($exe.FullName) ($([math]::Round($exe.Length/1MB,1)) MB)"
 
-      # Checksum publié à côté de l'installeur : l'utilisateur vérifie le download
-      # avec Get-FileHash et le compare à ce fichier (cf. section README anti-keylogger).
-      # Nom de fichier sans version -> un asset stable "SHA256SUMS" par release.
+      # Checksum published next to the installer: the user verifies the download
+      # with Get-FileHash and compares it to this file (cf. README anti-keylogger section).
+      # Version-less filename -> a stable "SHA256SUMS" asset per release.
       - name: Generate SHA256SUMS
         shell: pwsh
         run: |
           $exe = Get-ChildItem dist-installer -Filter 'Protocol0-Setup-*.exe' | Select-Object -First 1
           $hash = (Get-FileHash $exe.FullName -Algorithm SHA256).Hash.ToLower()
-          # Format compatible `sha256sum -c` : "<hash>  <filename>".
+          # `sha256sum -c`-compatible format: "<hash>  <filename>".
           "$hash  $($exe.Name)" | Out-File -FilePath dist-installer/SHA256SUMS -Encoding ascii -NoNewline
           Write-Host "SHA256  $($exe.Name) = $hash"
 
-      # Provenance de build (Sigstore, gratuit) : preuve vérifiable que cet exe a été
-      # buildé par ce workflow depuis ce commit. Substitut sans-certificat au code
-      # signing. Vérif côté user : gh attestation verify <exe> -R lebrunthibault/protocol0.
+      # Build provenance (Sigstore, free): verifiable proof that this exe was built
+      # by this workflow from this commit. A certificate-free substitute for code
+      # signing. User-side check: gh attestation verify <exe> -R lebrunthibault/protocol0.
       - name: Attest build provenance
         uses: actions/attest-build-provenance@v4
         with:
           subject-path: 'dist-installer/Protocol0-Setup-*.exe'
 
-      # Notes = message d'annotation du tag (le changelog que /release y a mis).
-      # On l'extrait explicitement plutôt que via --notes-from-tag : ce dernier
-      # retombe sur le message du COMMIT pointé quand le tag annoté est poussé
-      # séparément, ce qui publierait le mauvais texte. %(contents) donne le corps
-      # du tag annoté de façon déterministe. dist-installer/ est vierge en CI ->
-      # le glob de l'exe est sans ambiguïté.
+      # Notes = the tag's annotation message (the changelog /release put there).
+      # We extract it explicitly rather than via --notes-from-tag: the latter falls
+      # back to the pointed COMMIT's message when the annotated tag is pushed
+      # separately, which would publish the wrong text. %(contents) gives the body
+      # of the annotated tag deterministically. dist-installer/ is pristine in CI ->
+      # the exe glob is unambiguous.
       - name: Create GitHub Release
         id: create_release
         shell: pwsh
@@ -111,12 +111,12 @@ jobs:
           $id = gh release view "$env:GITHUB_REF_NAME" --json databaseId --jq '.databaseId'
           "release_id=$id" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
 
-      # Scan VirusTotal de l'installeur, lien ajouté aux notes de release. Permet à
-      # l'utilisateur de constater qu'un éventuel flag est un faux positif (cf. README).
-      # Nécessite le secret VT_API_KEY (clé gratuite : virustotal.com/gui/my-apikey).
-      # No-op silencieux si le secret est absent, pour ne pas casser la release.
-      # release_id explicite : ce workflow se déclenche sur push:tags (pas sur l'event
-      # `release`), donc l'action n'a pas github.event.release.id pour patcher les notes.
+      # VirusTotal scan of the installer, link added to the release notes. Lets the
+      # user see that any flag is a false positive (cf. README).
+      # Requires the VT_API_KEY secret (free key: virustotal.com/gui/my-apikey).
+      # Silent no-op if the secret is absent, so it never breaks the release.
+      # Explicit release_id: this workflow triggers on push:tags (not the `release`
+      # event), so the action has no github.event.release.id to patch the notes.
       - name: VirusTotal scan
         if: ${{ env.VT_API_KEY != '' }}
         uses: cssnr/virustotal-action@v2

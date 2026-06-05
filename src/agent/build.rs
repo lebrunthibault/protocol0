@@ -1,13 +1,13 @@
 //! Build script: embed the "P" icon as a PE resource on Windows.
 //!
-//! The PyInstaller spec added installer/assets/protocol0.ico as a "data" so the exe carried
+//! The PyInstaller spec added installer/windows/assets/protocol0.ico as a "data" so the exe carried
 //! the badge (Explorer, Add-Remove Programs) and the systray could load it. Here we bake it
 //! straight into the executable's resources via winres — no _MEIPASS unpacking. The systray
 //! loads the same .ico at runtime via include_bytes! (see tray.rs), so the icon ships once in
 //! the binary and shows everywhere.
 //!
-//! The icon lives at repo-root: installer/assets/protocol0.ico. This crate is at
-//! src/agent/, so the path back to it is ../../installer/assets/protocol0.ico.
+//! The icon lives at repo-root: installer/windows/assets/protocol0.ico. This crate is at
+//! src/agent/, so the path back to it is ../../installer/windows/assets/protocol0.ico.
 
 fn main() {
     // Inject the repo-root VERSION as a compile-time env var (P0_VERSION) that version.rs reads
@@ -22,7 +22,7 @@ fn main() {
 
     #[cfg(windows)]
     {
-        let ico = "../../installer/assets/protocol0.ico";
+        let ico = "../../installer/windows/assets/protocol0.ico";
         // Rebuild if the icon changes (generate_icon.py regenerates it each build).
         println!("cargo:rerun-if-changed={ico}");
 

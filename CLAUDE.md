@@ -21,7 +21,7 @@ Bumping and releasing are two separate acts:
   functional change, commits and pushes. It **never** tags.
 - **Release** — `/release` (repo skill, `.claude/skills/release/`) tags the current version
   (`v<version>`) and pushes the tag. That push triggers `.github/workflows/release.yml`, which
-  builds the installer on a Windows runner (via `scripts/windows/build_installer.ps1`) and publishes a
+  builds the installer on a Windows runner (via `installer/windows/build_installer.ps1`) and publishes a
   GitHub Release containing `Protocol0-Setup-<version>.exe` (notes taken from the annotated tag
   message).
 
