@@ -73,17 +73,29 @@ Premier release (aucun tag précédent) : utiliser tout l'historique, ou un simp
 Commencer directement par les sections (`### Features`, …) — sinon la version apparaît en double
 dans les notes publiées.
 
-### Étape 4 — Faire valider (« auto + édition »)
+### Étape 4 — Faire valider (« édition dans l'éditeur »)
 
-Montrer le changelog généré à l'utilisateur et lui demander de **valider ou éditer** avant de
-tagger. Ne pas créer le tag tant qu'il n'a pas confirmé. C'est un acte public et difficilement
-réversible (tag + release).
-
-Écrire le changelog validé dans un fichier temporaire (il servira de message d'annotation du tag) :
+Écrire le changelog généré dans le fichier temporaire `.git/RELEASE_CHANGELOG.txt` (hors arbre de
+travail — il servira de message d'annotation du tag), puis **l'ouvrir dans l'éditeur de texte de
+l'utilisateur** pour qu'il puisse l'éditer avant de valider :
 
 ```bash
-# écrire le changelog final dans .git/RELEASE_CHANGELOG.txt (hors arbre de travail)
+# écrire le changelog généré dans .git/RELEASE_CHANGELOG.txt (hors arbre de travail)
+# puis l'ouvrir dans l'éditeur configuré, en bloquant jusqu'à fermeture du fichier :
+"${GIT_EDITOR:-${VISUAL:-${EDITOR:-notepad}}}" .git/RELEASE_CHANGELOG.txt
 ```
+
+Sous Windows / PowerShell, ouvrir en attendant la fermeture du fichier :
+
+```powershell
+# résoudre l'éditeur (fallback notepad), ouvrir et bloquer jusqu'à fermeture
+$editor = if ($env:GIT_EDITOR) { $env:GIT_EDITOR } elseif ($env:VISUAL) { $env:VISUAL } elseif ($env:EDITOR) { $env:EDITOR } else { 'notepad' }
+Start-Process -FilePath $editor -ArgumentList '.git\RELEASE_CHANGELOG.txt' -Wait
+```
+
+Une fois le fichier refermé, **relire** `.git/RELEASE_CHANGELOG.txt` et montrer le contenu final à
+l'utilisateur pour une **confirmation explicite** avant de tagger. Ne pas créer le tag tant qu'il
+n'a pas confirmé : c'est un acte public et difficilement réversible (tag + release).
 
 ### Étape 5 — Tag annoté + push (le déclencheur)
 
