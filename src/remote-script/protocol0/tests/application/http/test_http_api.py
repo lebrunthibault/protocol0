@@ -2,7 +2,7 @@
 
 L'import de ``protocol0.tests`` (paquet parent) câble les stubs _Framework via
 ``monkey_patch_static`` — nécessaire car importer le paquet ``routes`` tire des
-modules dépendants de l'API Live (device_routes, clip_routes)."""
+modules dépendants de l'API Live (set_routes)."""
 import json
 
 import protocol0.tests  # noqa: F401  (déclenche monkey_patch_static au collect)
@@ -42,18 +42,14 @@ def test_route_keeps_exact_path() -> None:
     assert ("GET", "/zzz_exact") in get_routes()
 
 
-def test_action_routes_live_under_api_and_use_post() -> None:
+def test_action_routes_live_under_api() -> None:
     _import_routes()
     routes = get_routes()
-    # Mutations -> POST sous /api.
-    assert ("POST", "/api/track/select") in routes
-    assert ("POST", "/api/song/toggle_follow") in routes
-    assert ("POST", "/api/clip/key_detected") in routes
-    # Lecture pure -> GET.
+    # Core routes sous /api (lectures pures -> GET).
     assert ("GET", "/api/set/get_state") in routes
     assert ("GET", "/api/health") in routes
     # Plus aucune action en GET à la racine (l'ancienne forme a disparu).
-    assert ("GET", "/track/select") not in routes
+    assert ("GET", "/set/get_state") not in routes
 
 
 def test_technical_routes_registered() -> None:
@@ -116,17 +112,22 @@ def test_openapi_lists_actions_without_double_prefix() -> None:
     spec = openapi.build_spec()
     paths = spec["paths"]
     # Le préfixe /api est porté par servers[].url -> il est retiré des paths.
-    assert "/track/select" in paths
-    assert "/api/track/select" not in paths
-    assert "post" in paths["/track/select"]
+    assert "/set/get_state" in paths
+    assert "/api/set/get_state" not in paths
+    assert "get" in paths["/set/get_state"]
 
 
 def test_openapi_post_uses_request_body_get_uses_params() -> None:
     _import_routes()
+
+    @api_route("POST", "/zzz_select/thing")
+    def _thing(name: str) -> None:
+        pass
+
     paths = openapi.build_spec()["paths"]
-    # track/select (POST, param name) -> requestBody JSON requis.
-    select = paths["/track/select"]["post"]
-    schema = select["requestBody"]["content"]["application/json"]["schema"]
+    # POST avec un param -> requestBody JSON requis.
+    thing = paths["/zzz_select/thing"]["post"]
+    schema = thing["requestBody"]["content"]["application/json"]["schema"]
     assert schema["properties"]["name"]["type"] == "string"
     assert "name" in schema["required"]
     # set/get_state (GET, sans param) -> pas de parameters.

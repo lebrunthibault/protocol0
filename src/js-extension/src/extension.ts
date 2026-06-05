@@ -139,7 +139,7 @@ export function activate(activation: ActivationContext) {
       return;
     }
 
-    if (url.pathname === "/api/track/select" && req.method === "POST") {
+    if (url.pathname === "/api/action/track/select" && req.method === "POST") {
       // Pas d'API de sélection dans le SDK 1.0.0-beta.0 -> stub (conforme audit).
       console.warn("select_track not implemented — no SDK selection API");
       return json(501, { ok: false, error: "not implemented — no SDK selection API" });

@@ -7,7 +7,7 @@ To create a plugin, just drop a `.py` file in `src/remote-script/protocol0/plugi
 
 ```
 src/remote-script/protocol0/plugins/
-├── LoadDevicePlugin.py   ← single-file plugin
+├── DevicePlugin.py       ← single-file plugin
 ├── example/              ← copy this to start your own
 │   └── ExamplePlugin.py
 └── live_set/             ← multi-file plugin (package)
@@ -39,7 +39,7 @@ The loader generates the route `POST /api/action/<plugin>/<method>` (here
 route — see
 [`Router.py`](../src/remote-script/protocol0/application/http/Router.py) for how it's
 dispatched. Real example:
-[`LoadDevicePlugin.py`](../src/remote-script/protocol0/plugins/LoadDevicePlugin.py).
+[`DevicePlugin.py`](../src/remote-script/protocol0/plugins/DevicePlugin.py).
 
 ## Reacting to events
 

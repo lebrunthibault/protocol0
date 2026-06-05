@@ -108,7 +108,7 @@ fn to_action_def(path: &str, method: &str, operation: &Value) -> ActionDef {
 /// Parses an /openapi.json document into the action catalog. Pure (no I/O) so it's unit-
 /// testable against a fixture, like the Python version's fetch() body.
 ///
-/// Only reads /action/* routes (the plugin actions); technical routes (/track/select…) are
+/// Only reads /action/* routes (the plugin actions); technical routes (/set/get_state…) are
 /// not assignable actions for the keymapper.
 pub fn parse_catalog(spec: &Value) -> Vec<ActionDef> {
     let Some(paths) = spec.get("paths").and_then(|v| v.as_object()) else {
@@ -157,7 +157,7 @@ mod tests {
     fn openapi() -> Value {
         json!({
             "paths": {
-                "/action/load_device/load_device": {
+                "/action/device/load_device": {
                     "post": {
                         "summary": "Load a device onto the selected track by name.",
                         "requestBody": {
@@ -174,7 +174,7 @@ mod tests {
                     }
                 },
                 // A core route (non /action/*): ignored by the keymapper catalog.
-                "/track/select": { "post": { "summary": "Select a track" } }
+                "/set/get_state": { "get": { "summary": "Get the set state" } }
             }
         })
     }
@@ -182,12 +182,12 @@ mod tests {
     #[test]
     fn transforms_action_routes() {
         let catalog = parse_catalog(&openapi());
-        assert_eq!(catalog.len(), 1); // /track/select ignored
+        assert_eq!(catalog.len(), 1); // /set/get_state ignored
         let a = &catalog[0];
         assert_eq!(a.name, "load_device");
         assert_eq!(a.label, "Load Device"); // method -> Title Case
         assert_eq!(a.description, "Load a device onto the selected track by name.");
-        assert_eq!(a.path, "/action/load_device/load_device");
+        assert_eq!(a.path, "/action/device/load_device");
         assert_eq!(a.method, "POST");
         assert_eq!(a.params.len(), 1);
         assert_eq!(a.params[0].name, "name");

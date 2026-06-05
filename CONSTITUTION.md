@@ -46,7 +46,7 @@ Live's native key mapping is too limited on two axes:
 - **Binding resolution** — look up, in a **global configuration** (machine/user
   level, not set level), which action is bound to the captured combination.
 - **Action** — a named, parameterizable unit (e.g. `load_device(name=…)`,
-  `select_track(name=…)`). The catalog of available actions is **discoverable**
+  `select(name=…)`). The catalog of available actions is **discoverable**
   from the configuration frontend.
 - **Live API** — the action runs through the Ableton API, on the Live thread.
 
@@ -114,8 +114,9 @@ plumbing.
 
 The remote script runs **inside Ableton** and exposes a REST HTTP API under
 `/api` — a `/api/health` check, a self-describing `/openapi.json`, a Swagger UI at
-`/docs`, and the **action routes** — core routes like `/api/track/select` plus
-plugin actions under `/api/action/<plugin>/<method>` — that drive Live through the
+`/docs`, and the **action routes** — core routes like `/api/set/get_state` plus
+plugin actions under `/api/action/<plugin>/<method>` (e.g.
+`/api/action/track/select`) — that drive Live through the
 LOM. Reads are `GET`, mutations are `POST`. Its port is
 **dynamic** (advertised via `runtime.json`), and it lives and dies with Ableton.
 The agent is its main caller: on a matched keypress, the agent looks up the
