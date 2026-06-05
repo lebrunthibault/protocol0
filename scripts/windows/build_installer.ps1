@@ -5,8 +5,9 @@
 # Sortie : dist-installer/Protocol0-Setup-<version>.exe
 #
 # Prérequis (machine de build seulement) :
-#   - Node 20+ (npm)          (build de la SPA src/frontend)
-#   - Poetry + Python 3.11+   (exe agent + rien pour le script, stdlib-only)
+#   - Node 20+ (npm)              (build de la SPA src/frontend)
+#   - Rust (rustup, MSVC) + VS C++ Build Tools  (exe agent natif, src/agent-rust)
+#   - Python 3                    (icône de l'agent + staging du remote script, stdlib-only)
 #   - Inno Setup 6 (ISCC.exe) sur le PATH, ou à un emplacement standard.
 
 $ErrorActionPreference = "Stop"
@@ -17,7 +18,7 @@ $iss        = Join-Path $repoRoot "installer\protocol0.iss"
 $frontendDir = Join-Path $repoRoot "src\frontend"
 
 Write-Host "== 1/4 Build frontend (Vite) =="
-# La SPA doit être buildée avant l'exe : PyInstaller embarque src/frontend/dist via datas.
+# La SPA doit être buildée avant l'exe : l'agent Rust embarque src/frontend/dist via rust-embed.
 # npm écrit sur stderr -> juger le succès sur $LASTEXITCODE, pas sur le stderr.
 Push-Location $frontendDir
 try {

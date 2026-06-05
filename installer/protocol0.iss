@@ -12,9 +12,10 @@
 ; automatically. On uninstall: kills the agent, deletes the files, BUT preserves
 ; %APPDATA%\Protocol0\shortcuts.json.
 ;
-; Build prerequisites: src\agent\dist\protocol0-agent.exe (which embeds src\frontend\dist
-; AND installer\assets\protocol0.ico) and build\stage\Protocol_0\ must exist
-; (see scripts\windows\build_installer.ps1).
+; Build prerequisites: src\agent-rust\target\release\Protocol0.exe (the native Rust agent,
+; which embeds src\frontend\dist AND installer\assets\protocol0.ico) and build\stage\Protocol_0\
+; must exist (see scripts\windows\build_installer.ps1). The agent is a Rust binary now; no Python
+; is shipped.
 
 #define MyAppName "Protocol 0"
 ; Version read from the root VERSION file (single source of truth, bumped by /commit)
@@ -95,8 +96,9 @@ Type: files; Name: "{autodesktop}\Protocol 0.url"
 Name: "{code:GetRemoteScriptsDir}\Protocol_0"; Permissions: users-modify
 
 [Files]
-; The resident agent, with its embedded "P" icon. The [Icons] point to it (with --open).
-Source: "..\src\agent\dist\Protocol0.exe"; DestDir: "{app}"; Flags: ignoreversion
+; The resident agent (native Rust exe), with its embedded "P" icon. The [Icons] point to it
+; (with --open). Built by scripts\windows\build_agent_exe.ps1 (cargo build --release).
+Source: "..\src\agent-rust\target\release\Protocol0.exe"; DestDir: "{app}"; Flags: ignoreversion
 ; users-modify: each laid-down file inherits the Modify right for Users (see [Dirs]),
 ; so `make install` in dev can replace them without elevation.
 Source: "..\build\stage\Protocol_0\*"; DestDir: "{code:GetRemoteScriptsDir}\Protocol_0"; Permissions: users-modify; Flags: ignoreversion recursesubdirs createallsubdirs

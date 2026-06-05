@@ -1,0 +1,74 @@
+[package]
+name = "protocol0-agent"
+version = "0.0.0"  # placeholder; the real version is read from the repo-root VERSION at compile time (see src/version.rs)
+edition = "2021"
+description = "Protocol 0 resident agent: global keyboard hook + local web UI + systray"
+publish = false
+
+# The installer and every shortcut reference "Protocol0.exe", so the produced binary MUST
+# be named Protocol0.exe (not protocol0-agent.exe). The crate name stays snake-case for Rust,
+# the [[bin]] pins the artifact name.
+[[bin]]
+name = "Protocol0"
+path = "src/main.rs"
+
+[dependencies]
+# HTTP server (SPA + /api + /status on 127.0.0.1:9010) and its async runtime.
+axum = "0.7"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "net", "sync", "time"] }
+# Bake src/frontend/dist (the Vue SPA, ~149 KB) into the binary.
+rust-embed = "8"
+# HTTP client to the remote script. Blocking API (mirrors the Python requests usage),
+# rustls so we don't drag in OpenSSL. The script is plain HTTP on localhost, but rustls is
+# cheap and avoids a native TLS dependency if a target ever needs it.
+reqwest = { version = "0.12", default-features = false, features = ["blocking", "json"] }
+# JSON (shortcuts.json, runtime.json, /openapi.json parsing, API payloads).
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# Systray icon + menu.
+tray-icon = "0.19"
+# tray-icon needs an event loop to pump native messages on Windows.
+winit = "0.30"
+# Open URLs in the system browser (replaces Python's webbrowser.open).
+open = "5"
+# Structured logging to a rotating file + console (replaces logging + RotatingFileHandler).
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-appender = "0.2"
+# %APPDATA% etc. resolution, cross-platform (we only use Roaming here).
+dirs = "5"
+# MIME guessing for the static file server.
+mime_guess = "2"
+# Decode the embedded .ico into RGBA for the systray icon (ico feature only -> tiny).
+image = { version = "0.25", default-features = false, features = ["ico"] }
+
+# Direct Win32 FFI for the parts with no portable equivalent: WH_KEYBOARD_LL hook,
+# SendInput injection, foreground-window detection, process enumeration, named mutex.
+# We deliberately do NOT use `rdev`: its key-suppressing `grab` mode is feature-gated
+# `unstable` and under-documented on Windows. The `windows` crate is the official, stable
+# binding and keeps listener.rs a near-mechanical port of listener.py.
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.58", features = [
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_UI_Input_KeyboardAndMouse",
+    "Win32_System_Threading",
+    "Win32_System_LibraryLoader",
+    "Win32_System_Diagnostics_ToolHelp",
+] }
+
+[build-dependencies]
+# Embed the "P" icon (installer/assets/protocol0.ico) as a PE resource so the exe carries
+# its badge in Explorer / Add-Remove Programs — same role the .spec datas played for PyInstaller.
+winres = "0.1"
+
+# Release profile tuned for a small binary: optimize for size, fat LTO, strip symbols,
+# abort on panic (no unwinding tables), single codegen unit. Target ~3 MB vs the ~14-15 MB
+# PyInstaller bundle.
+[profile.release]
+opt-level = "z"
+lto = true
+strip = true
+panic = "abort"
+codegen-units = 1
