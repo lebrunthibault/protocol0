@@ -41,6 +41,7 @@ use settings::{Settings, WEB_PORT};
 
 fn main() {
     configure_logging();
+    install_panic_hook();
     tracing::info!("agent version: {}", version::version());
 
     if !cfg!(windows) {
@@ -97,6 +98,27 @@ fn main() {
     listener.stop();
 }
 
+/// Routes any panic (on any thread) to the tracing log before the default behaviour. Without
+/// this, a panic under the no-console `windows` subsystem dies silently with no diagnostic —
+/// which is exactly how an early tray-build panic made the agent "do nothing" on double-click.
+fn install_panic_hook() {
+    let default = std::panic::take_hook();
+    std::panic::set_hook(Box::new(move |info| {
+        let loc = info
+            .location()
+            .map(|l| format!("{}:{}", l.file(), l.line()))
+            .unwrap_or_else(|| "<unknown>".into());
+        let msg = info
+            .payload()
+            .downcast_ref::<&str>()
+            .map(|s| s.to_string())
+            .or_else(|| info.payload().downcast_ref::<String>().cloned())
+            .unwrap_or_else(|| "<non-string panic>".into());
+        tracing::error!("PANIC at {loc}: {msg}");
+        default(info);
+    }));
+}
+
 /// Logs to a rotating file (%APPDATA%\Protocol0\logs\agent.log) AND the console.
 ///
 /// The file is the only diagnostic when the agent runs at logon (Startup shortcut) with no
@@ -127,69 +149,60 @@ fn configure_logging() {
         .init();
 }
 
-/// Builds the winit event loop, the tray, and pumps until Quit. The tray menu events are
-/// polled each iteration; Open config / Open releases open the browser, Quit exits.
+/// Builds the systray and runs a Win32 message loop on the main thread until Quit.
+///
+/// tray-icon needs native messages pumped on the thread that created it (the message loop on
+/// Windows). We pump it directly with GetMessage/Translate/Dispatch — no winit (which proved
+/// fragile for a windowless tray-only process: its event loop exited/panicked silently under
+/// the no-console `windows` subsystem, killing the agent a few seconds after start). A 100 ms
+/// timer (WM_TIMER) wakes the loop so we drain the tray menu-event channel even when idle, and
+/// Quit posts WM_QUIT to end the loop cleanly.
 #[cfg(windows)]
 fn run_event_loop() {
     use tray_icon::menu::MenuEvent;
-    use winit::application::ApplicationHandler;
-    use winit::event_loop::{ActiveEventLoop, ControlFlow, EventLoop};
+    use windows::Win32::UI::WindowsAndMessaging::{
+        DispatchMessageW, GetMessageW, PostQuitMessage, SetTimer, TranslateMessage, MSG,
+    };
 
-    struct App {
-        tray: Option<tray::TrayHandles>,
-    }
-
-    impl ApplicationHandler for App {
-        fn resumed(&mut self, _event_loop: &ActiveEventLoop) {}
-
-        fn window_event(
-            &mut self,
-            _event_loop: &ActiveEventLoop,
-            _id: winit::window::WindowId,
-            _event: winit::event::WindowEvent,
-        ) {
+    // The tray MUST be created on this thread, before the pump, so its window/message target
+    // lives here. Wrapped in catch_unwind so a panic inside tray-icon / icon decoding degrades
+    // to a headless pump (keyboard + web still work) instead of aborting the agent.
+    let tray = match std::panic::catch_unwind(tray::build) {
+        Ok(Some(t)) => Some(t),
+        Ok(None) => {
+            tracing::warn!("systray unavailable; running without a tray icon");
+            None
         }
+        Err(_) => {
+            tracing::error!("systray build panicked; running without a tray icon");
+            None
+        }
+    };
 
-        fn new_events(
-            &mut self,
-            event_loop: &ActiveEventLoop,
-            cause: winit::event::StartCause,
-        ) {
-            // Build the tray once, on the first poll, when the loop is live (so the native
-            // message target exists).
-            if self.tray.is_none() && matches!(cause, winit::event::StartCause::Init) {
-                self.tray = tray::build();
-            }
+    // SAFETY: a standard Win32 message pump on the calling thread. SetTimer(NULL,…) posts
+    // WM_TIMER to this thread's queue every 100 ms so GetMessageW returns and we can drain the
+    // menu channel even with no other messages. GetMessageW returns 0 on WM_QUIT.
+    unsafe {
+        let _timer = SetTimer(None, 1, 100, None);
+        let mut msg = MSG::default();
+        while GetMessageW(&mut msg, None, 0, 0).0 != 0 {
+            let _ = TranslateMessage(&msg);
+            DispatchMessageW(&msg);
 
             // Drain tray menu events.
             while let Ok(event) = MenuEvent::receiver().try_recv() {
-                if let Some(tray) = &self.tray {
+                if let Some(tray) = &tray {
                     if event.id == tray.open_config_id {
                         tray::open_url(&tray::config_url());
                     } else if event.id == tray.open_releases_id {
                         tray::open_url(tray::RELEASES_URL);
                     } else if event.id == tray.quit_id {
                         tracing::info!("quit requested from tray");
-                        event_loop.exit();
+                        PostQuitMessage(0); // ends the GetMessageW loop -> teardown in main
                     }
                 }
             }
         }
-    }
-
-    let event_loop = match EventLoop::new() {
-        Ok(el) => el,
-        Err(e) => {
-            tracing::error!("event loop init failed: {e}");
-            return;
-        }
-    };
-    // Poll so we keep draining MenuEvent::receiver() even with no window events.
-    event_loop.set_control_flow(ControlFlow::Wait);
-
-    let mut app = App { tray: None };
-    if let Err(e) = event_loop.run_app(&mut app) {
-        tracing::error!("event loop error: {e}");
     }
 }
 

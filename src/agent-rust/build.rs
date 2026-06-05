@@ -25,17 +25,33 @@ fn main() {
         let ico = "../../installer/assets/protocol0.ico";
         // Rebuild if the icon changes (generate_icon.py regenerates it each build).
         println!("cargo:rerun-if-changed={ico}");
+
+        let mut res = winres::WindowsResource::new();
+
+        // PE metadata: this is the friendly name Task Manager, Explorer's Details tab, and the
+        // installer's Add-Remove entry show. Without these, winres derives them from the crate
+        // name ("protocol0-agent") and stamps version 0.0.0. We pin the user-facing name to
+        // "Protocol 0" and the real version, so the process reads "Protocol 0", not the crate id.
+        res.set("FileDescription", "Protocol 0");
+        res.set("ProductName", "Protocol 0");
+        res.set("OriginalFilename", "Protocol0.exe");
+        res.set("InternalName", "Protocol0");
+        res.set("CompanyName", "Thibault Lebrun");
+        res.set("LegalCopyright", "Thibault Lebrun");
+        res.set("FileVersion", &version);
+        res.set("ProductVersion", &version);
+
         if std::path::Path::new(ico).exists() {
-            let mut res = winres::WindowsResource::new();
             res.set_icon(ico);
-            if let Err(e) = res.compile() {
-                // Don't fail the build over a missing icon resource; warn and continue
-                // (the exe still works, just without the embedded badge as a PE resource —
-                // the systray still loads the .ico via include_bytes!).
-                println!("cargo:warning=failed to embed icon resource: {e}");
-            }
         } else {
             println!("cargo:warning=icon not found at {ico}; building without embedded badge");
+        }
+
+        if let Err(e) = res.compile() {
+            // Don't fail the build over a resource issue; warn and continue (the exe still works,
+            // just without the embedded badge/metadata as PE resources — the systray still loads
+            // the .ico via include_bytes!).
+            println!("cargo:warning=failed to embed PE resources: {e}");
         }
     }
 }

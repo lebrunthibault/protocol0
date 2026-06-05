@@ -5,14 +5,17 @@
 #                                                     server + systray)
 #
 # The agent is now a native Rust binary (crate src/agent-rust), NOT a PyInstaller bundle:
-#   - no bundled CPython -> ~2 MB instead of ~14-15 MB, instant start, and the PyInstaller
+#   - no bundled CPython -> ~2-3 MB instead of ~14-15 MB, instant start, and the PyInstaller
 #     shared-bootloader AV false-positive class disappears;
 #   - the Vue SPA (src/frontend/dist) is baked in via rust-embed at compile time;
-#   - the "P" icon (installer/assets/protocol0.ico) is embedded as a PE resource by build.rs
-#     AND loaded by the systray via include_bytes! -> generate it FIRST (below).
+#   - the "P" icon (installer/assets/protocol0.ico) is a versioned asset in the repo, embedded
+#     as a PE resource by build.rs AND loaded by the systray via include_bytes!.
 #
 # The Python agent (src/agent) is kept for dev/reference but is NO LONGER packaged by the
-# installer: this build produces the Rust exe only, with zero Python shipped.
+# installer: this build produces the Rust exe only, with zero Python shipped. The build itself
+# needs NO Python at all: the icon is the committed installer/assets/protocol0.ico, not
+# regenerated here (regenerate it manually with scripts/windows/generate_icon.py only when the
+# source badge src/website/favicon.svg changes).
 #
 # There is no separate launcher exe: the Start-Menu/desktop shortcut launches
 # `Protocol0.exe --open` (start-on-click, AutoHotkey style), which opens the config page and
@@ -20,8 +23,6 @@
 #
 # Prerequisites (build machine only):
 #   - Rust toolchain (rustup, stable-x86_64-pc-windows-msvc) + VS C++ Build Tools (linker).
-#   - Python 3 on PATH ONLY to regenerate the icon (generate_icon.py). The exe itself needs
-#     no Python.
 #   - The SPA must be built first (npm run build): rust-embed bakes src/frontend/dist in.
 
 # PS 5.1 note: cargo writes its progress to stderr. With $ErrorActionPreference="Stop",
@@ -46,20 +47,13 @@ if (-not (Get-Command cargo -ErrorAction SilentlyContinue)) {
     throw "cargo not found. Install Rust via rustup (https://rustup.rs) and the VS C++ Build Tools."
 }
 
-# Icon: regenerated on every build to stay in sync with the source badge
-# (src/website/favicon.svg). Must come BEFORE the cargo build, which embeds it (build.rs as a
-# PE resource, tray.rs via include_bytes!). Regeneration needs Pillow; if it's missing on a
-# bare build machine we fall back to the committed installer\assets\protocol0.ico (best-effort,
-# so a Python-less Rust build still works). We only HARD-fail if the icon is absent entirely.
+# Icon: a versioned asset in the repo (installer\assets\protocol0.ico), embedded by build.rs
+# (PE resource) and tray.rs (include_bytes!). NOT regenerated here — the committed .ico is the
+# source of truth for the build, so no Python/Pillow is needed. Regenerate it manually with
+# scripts\windows\generate_icon.py only when the source badge changes.
 $ico = Join-Path $repoRoot "installer\assets\protocol0.ico"
-Write-Host "Generating icon (protocol0.ico)..."
-& python (Join-Path $repoRoot "scripts\windows\generate_icon.py")
-if ($LASTEXITCODE -ne 0) {
-    if (Test-Path $ico) {
-        Write-Warning "generate_icon.py failed (exit $LASTEXITCODE); using the committed installer\assets\protocol0.ico."
-    } else {
-        throw "generate_icon.py failed (exit $LASTEXITCODE) and no committed icon at $ico."
-    }
+if (-not (Test-Path $ico)) {
+    throw "Icon not found at $ico. It is a committed asset; restore it or regenerate it with scripts\windows\generate_icon.py."
 }
 
 Push-Location $crateDir

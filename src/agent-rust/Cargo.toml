@@ -25,10 +25,8 @@ reqwest = { version = "0.12", default-features = false, features = ["blocking", 
 # JSON (shortcuts.json, runtime.json, /openapi.json parsing, API payloads).
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-# Systray icon + menu.
+# Systray icon + menu. Pumped by a plain Win32 message loop in main.rs (no winit).
 tray-icon = "0.19"
-# tray-icon needs an event loop to pump native messages on Windows.
-winit = "0.30"
 # Open URLs in the system browser (replaces Python's webbrowser.open).
 open = "5"
 # Structured logging to a rotating file + console (replaces logging + RotatingFileHandler).
@@ -70,5 +68,9 @@ winres = "0.1"
 opt-level = "z"
 lto = true
 strip = true
-panic = "abort"
+# panic = "unwind" (the default): a panic in the tray build (or any worker) must NOT abort the
+# whole agent. main() installs a panic hook that logs, and the tray build is wrapped in
+# catch_unwind so a tray failure degrades to headless instead of killing the process. (We
+# deliberately do NOT use panic="abort" here: it saved a few KB but turned any stray panic into
+# a silent process death under the no-console windows subsystem.)
 codegen-units = 1

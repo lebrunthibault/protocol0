@@ -47,9 +47,9 @@ fn router() -> Router {
         .route("/api/shortcuts", get(api::get_shortcuts))
         .route("/api/shortcuts/add", post(api::post_shortcuts_add))
         .route("/api/shortcuts/delete", post(api::post_shortcuts_delete))
-        // Any other /api/* path -> 404 JSON (don't fall back to the SPA for API routes).
-        .route("/api/{*rest}", get(api::api_not_found).post(api::api_not_found))
-        // Everything else: serve the SPA (catch-all -> index.html).
+        // Everything else: serve the SPA (catch-all -> index.html). Unknown /api/* paths are
+        // handled inside serve_spa (404 JSON) rather than via a separate catch-all route, which
+        // axum 0.7 rejects when more specific /api/* routes exist alongside it.
         .fallback(serve_spa)
 }
 
@@ -57,6 +57,11 @@ fn router() -> Router {
 /// explicit message if the SPA wasn't built (never an empty 404), like the Python server.
 async fn serve_spa(req: Request<Body>) -> Response {
     let path = req.uri().path().to_string();
+    // Unknown /api/* path -> 404 JSON (never fall back to the SPA for an API route), matching
+    // the Python server's contract.
+    if path.starts_with("/api/") {
+        return api::api_not_found().await.into_response();
+    }
     match static_files::resolve(&path) {
         Some((body, ctype)) => ([(axum::http::header::CONTENT_TYPE, ctype)], body).into_response(),
         None => (
