@@ -1,7 +1,9 @@
 """One-command local dev setup, cross-platform (Windows + macOS).
 
-Sets up both poetry envs (remote script + agent) and deploys the remote script
-into Ableton. After this, `make agent` is all you need.
+Sets up the remote script's poetry env (lint/test tooling — flake8, vulture,
+pytest; the script itself is stdlib-only) and deploys the remote script into
+Ableton. The agent is Rust (`make agent` builds it with cargo) and needs no
+poetry. After this, `make agent` is all you need.
 
 Prerequisites the dev installs once (this script checks, it does not install them):
   - make, poetry, and a Python >= 3.11.
@@ -16,8 +18,10 @@ from pathlib import Path
 import install_remote_script
 from _pyfind import REPO_ROOT, find_python311
 
-# Projects that each get their own poetry env.
-POETRY_PROJECTS = ["src/script", "src/agent-python"]
+# The remote script gets a poetry env for its dev tooling (lint/test). The agent
+# is Rust now, so its legacy Python sibling (src/agent-python) is no longer
+# bootstrapped — run `poetry install` there by hand if you need it.
+POETRY_PROJECTS = ["src/script"]
 
 
 def _require_poetry():

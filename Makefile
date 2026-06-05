@@ -10,8 +10,9 @@ PY ?= python
 -include .env
 export FRONTEND_PORT
 
-# One-command local setup for a fresh checkout: both poetry envs + deploy the
-# remote script into Ableton. After this, `make agent` is all you need.
+# One-command local setup for a fresh checkout: the remote script's poetry env
+# (lint/test tooling) + deploy the remote script into Ableton. The agent is Rust
+# (`make agent` builds it with cargo). After this, `make agent` is all you need.
 bootstrap:
 	@$(PY) scripts/bootstrap.py
 .PHONY: bootstrap

@@ -138,6 +138,7 @@ header.scrolled{border-bottom-color:var(--line);background:rgba(0,0,0,0.8)}
   font-family:var(--font-mono);font-size:12px;font-weight:var(--fw-semibold);color:var(--accent);
   box-shadow:var(--shadow-dot);
 }
+.brand .accent{color:var(--accent)}
 .nav-links{display:flex;align-items:center;gap:var(--space-6)}
 .nav-links a{font-size:var(--fs-base);color:var(--muted);transition:color var(--t);display:flex;align-items:center;gap:6px}
 .nav-links a svg{width:15px;height:15px;flex:0 0 auto}

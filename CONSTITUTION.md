@@ -218,10 +218,10 @@ Two ways to install and run Protocol0.
   make agent
   ```
 
-- First-time setup (both poetry envs + install the remote script into Ableton):
+- First-time setup (remote script's poetry tooling + install the remote script into Ableton):
 
   ```sh
-  make bootstrap   # finds Python >=3.11, sets up envs, deploys Protocol_0 (Win + macOS)
+  make bootstrap   # finds Python >=3.11, sets up the script env, deploys Protocol_0 (Win + macOS)
   make install     # redeploy just the remote script after editing it
   ```
 

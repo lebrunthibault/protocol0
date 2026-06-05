@@ -2,61 +2,46 @@
   <img src="docs/assets/banner.svg" alt="Protocol 0 — the forgotten Ableton key mapper" width="100%">
 </p>
 
-Protocol 0 is a companion software for Ableton Live.
-It provides a global keyboard shortcut manager that works across all sets, letting you keymap usual parameters as well as custom actions.
-Configure it all from a small web UI.
-Protocol 0 is free, open-source, and extensible : 
-- you can add new actions by writing a small plugin — see [creating a plugin](docs/plugins.md) (a plugin can also react to events in Live)
-- the remote script exposes an HTTP API inside Live, so you can call its actions from your own tools (e.g. a Stream Deck plugin, or a custom frontend).
+Protocol 0 is a third party keyboard shortcut manager for Ableton Live.
+It handles classic Ableton [keyboard shortcuts](https://www.ableton.com/en/manual/live-keyboard-shortcuts/) as well as custom actions (called smart actions).
+
+Check out the [docs](https://www.protocol0.live/docs) for more details.
+
+It's built with:
+- A Rust agent
+- A Javascript web UI
+- A Python MIDI Remote Script 
+
+It's extensible
+- You can add your own smart actions by writing a plugin (see [creating a plugin](docs/plugins.md))
+- The remote script exposes an HTTP API inside Live, so you can use only the remote script and handle the shortcuts from your own tools (AHK, a Stream Deck..).
 
 The project is in early development. Feedback and contributions are very welcome.
 
-> **Platform: Windows.** Protocol0 is developed and run on Windows. The installer,
-> the autostart mechanism (a Startup-folder shortcut), and the packaging tooling under
-> [`scripts/windows/`](scripts/windows/) are PowerShell and Windows-specific. Dev
-> setup (`make bootstrap`) is cross-platform, but the agent itself is
-> Windows-only for now; macOS support is on the backlog (see `docs/specs/backlog/`).
+> **Platform: Windows.** Protocol0 Windows-only for now; macOS support is on the roadmap.
 
 See [`CONSTITUTION.md`](CONSTITUTION.md) for the vision and the design decisions
 behind it.
 
 ## Documentation & installation
 
-Visit the website: <https://www.protocol0.live/>.
 
 ## Installation
 
-### End users (installer)
-
-1. Download `Protocol0-Setup-<version>.exe` from the
-   [GitHub Releases](https://github.com/lebrunthibault/protocol0/releases).
-2. Run it. The installer deploys the **agent**, copies the **remote script**
-   into Ableton's MIDI Remote Scripts folder, and (if you keep "Start at login"
-   ticked) adds a Startup-folder shortcut so the agent autostarts at logon. Once
-   running, the agent shows a **"P" systray icon** — click it to open the config,
-   right-click for status and **Quit**.
-   - Windows SmartScreen warns on first run (the installer is currently unsigned):
-     *More info → Run anyway*. Worried about security, or did your antivirus flag
-     it? See [SECURITY.md](SECURITY.md) for why a shortcut tool needs a keyboard
-     hook, what it does (and doesn't) do with your keystrokes, and how to verify the
-     download.
-3. With Ableton open and the remote script active, configure shortcuts at
-   <http://127.0.0.1:9010/shortcuts>.
+Download the latest release from the [Releases](https://github.com/lebrunthibault/protocol0/releases)
+and check out the [docs](http://localhost:8080/docs/installation.html) for more details
 
 ### From source (developers)
 
-Prerequisites (install once): `make`, [`poetry`](https://python-poetry.org/docs/#installation),
-and a Python `>=3.11`.
+Requires [Rust](https://rustup.rs/), [Node](https://nodejs.org/en), and [Python 3.11+](https://www.python.org/).
 
 ```sh
-# First time: set up everything (both Python envs + deploy the remote script)
-make bootstrap
+git clone https://github.com/lebrunthibault/protocol0
+cd protocol0
 
-# Then run the agent (live logs, Ctrl+C to stop)
-make agent
-
-# or to run agent, frontend (live reload) and website
-make up
+make bootstrap  # set up the remote script's tooling + deploy it into Ableton
+make agent      # build (cargo) and run the agent, with live logs
+make up         # or: run the agent + frontend (live reload) + website
 ```
 
 Config UI: <http://127.0.0.1:9010/shortcuts>.
