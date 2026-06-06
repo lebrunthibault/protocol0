@@ -24,7 +24,7 @@
   --text:#f3f4f6;
   --text-soft:#c2c4ca;       /* prose body; softer than --text */
   --muted:#85878d;
-  --muted-2:#5e6066;
+  --muted-2:#7e8088;         /* tertiary text; AA contrast (5.3:1) on #000 */
   /* Colors — accent */
   --accent:#4d9fff;
   --accent-soft:#9cc8ff;

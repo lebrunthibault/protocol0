@@ -43,7 +43,7 @@ All tokens are CSS custom properties on `:root` in `design-system.css`.
 | `--text` | `#f3f4f6` | Primary text |
 | `--text-soft` | `#c2c4ca` | Prose body text |
 | `--muted` | `#85878d` | Secondary text, labels |
-| `--muted-2` | `#5e6066` | Tertiary text, captions |
+| `--muted-2` | `#7e8088` | Tertiary text, captions |
 | `--accent` | `#4d9fff` | Brand blue — links, focus, highlights |
 | `--accent-soft` | `#9cc8ff` | Softer accent (code text, icons) |
 | `--accent-bg` | `rgba(77,159,255,.08)` | Tinted fill behind code / icons / notes |
