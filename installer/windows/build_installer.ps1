@@ -9,40 +9,65 @@
 #   - Rust (rustup, MSVC) + VS C++ Build Tools  (native agent exe, src/agent)
 #   - Python 3                    (agent icon + remote-script staging, stdlib-only)
 #   - Inno Setup 6 (ISCC.exe) on PATH, or at a standard location.
+#
+# -Stage controls which phases run, so CI can sign the agent exe BETWEEN building it and
+# packaging it into the installer (the agent must be signed before ISCC embeds it, then the
+# installer is signed afterwards — see .github/workflows/release.yml):
+#   all       (default) frontend + agent + stage + ISCC  -- the local one-shot build, unsigned
+#   agent     frontend + agent only -> src/agent/target/release/Protocol0.exe  (CI signs it next)
+#   installer stage + ISCC only, reusing the already-built (and CI-signed) agent exe
+# Local dev keeps calling this with no argument and gets the full unsigned installer as before.
+
+param(
+    [ValidateSet("all", "agent", "installer")]
+    [string]$Stage = "all"
+)
 
 $ErrorActionPreference = "Stop"
+
+$doAgent     = $Stage -in @("all", "agent")
+$doInstaller = $Stage -in @("all", "installer")
 
 # This script lives in installer/windows/, so the repo root is two levels up.
 $repoRoot   = (Resolve-Path "$PSScriptRoot\..\..").Path
 $iss        = Join-Path $repoRoot "installer\windows\protocol0.iss"
 $frontendDir = Join-Path $repoRoot "src\frontend"
 
-Write-Host "== 1/4 Build frontend (Vite) =="
-# The SPA must be built before the exe: the Rust agent embeds src/frontend/dist via rust-embed.
-# npm writes to stderr -> judge success on $LASTEXITCODE, not on stderr.
-Push-Location $frontendDir
-try {
-    $prevEAP = $ErrorActionPreference
-    $ErrorActionPreference = "Continue"
-    & npm ci
-    if ($LASTEXITCODE -ne 0) { throw "npm ci failed (exit $LASTEXITCODE)." }
-    & npm run build
-    if ($LASTEXITCODE -ne 0) { throw "npm run build failed (exit $LASTEXITCODE)." }
-    $ErrorActionPreference = $prevEAP
-} finally {
-    Pop-Location
+if ($doAgent) {
+    Write-Host "== Build frontend (Vite) =="
+    # The SPA must be built before the exe: the Rust agent embeds src/frontend/dist via rust-embed.
+    # npm writes to stderr -> judge success on $LASTEXITCODE, not on stderr.
+    Push-Location $frontendDir
+    try {
+        $prevEAP = $ErrorActionPreference
+        $ErrorActionPreference = "Continue"
+        & npm ci
+        if ($LASTEXITCODE -ne 0) { throw "npm ci failed (exit $LASTEXITCODE)." }
+        & npm run build
+        if ($LASTEXITCODE -ne 0) { throw "npm run build failed (exit $LASTEXITCODE)." }
+        $ErrorActionPreference = $prevEAP
+    } finally {
+        Pop-Location
+    }
+
+    Write-Host "== Build agent exe =="  # also generates the icon (embedded for the systray)
+    & (Join-Path $PSScriptRoot "build_agent_exe.ps1")
 }
 
-Write-Host "== 2/4 Build agent exe =="  # also generates the icon (embedded for the systray)
-& (Join-Path $PSScriptRoot "build_agent_exe.ps1")
+if (-not $doInstaller) {
+    # -Stage agent : stop here so CI can sign Protocol0.exe before it is embedded by ISCC.
+    Write-Host ""
+    Write-Host "OK -> agent exe at src/agent/target/release/Protocol0.exe (installer stage skipped)"
+    return
+}
 
-Write-Host "== 3/4 Stage remote script =="
+Write-Host "== Stage remote script =="
 # Portable stdlib-only staging script. CI provides python on PATH (Setup Python step);
 # judge success on $LASTEXITCODE.
 & python (Join-Path $repoRoot "scripts\stage_remote_script.py")
 if ($LASTEXITCODE -ne 0) { throw "stage_remote_script.py failed (exit $LASTEXITCODE)." }
 
-Write-Host "== 4/4 Compile installer (Inno Setup) =="
+Write-Host "== Compile installer (Inno Setup) =="
 $iscc = (Get-Command "ISCC.exe" -ErrorAction SilentlyContinue).Source
 if (-not $iscc) {
     foreach ($p in @(

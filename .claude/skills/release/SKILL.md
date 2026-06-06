@@ -123,21 +123,48 @@ automatiques de GitHub.
 
 L'agent est un hook clavier global, binaire natif (Rust) **non signé** : profil de faux positif
 antivirus assumé (cf. `SECURITY.md`). Tant qu'on n'a pas de signature de code
-(`docs/specs/backlog/2026-06-02-installer-code-signing.md`) qui bâtit une réputation, **chaque
+(`docs/specs/in-progress/2026-06-02-installer-code-signing.md`) qui bâtit une réputation, **chaque
 release a un nouveau hash** et peut être re-flaggée — donc c'est une étape **manuelle, par
 release**, pas automatisable.
+
+**Symptôme typique** : Chrome bloque le téléchargement (« Virus detected ») et/ou Defender flashe
+une menace `Trojan:Win32/Wacatac.H!ml` qui disparaît après quelques minutes. Le suffixe `!ml` = un
+verdict du **modèle ML cloud** de Defender (pas une signature), déclenché par la feature *block at
+first sight* sur un binaire **neuf + rare + non signé**. C'est non-déterministe (fonction du hash et
+de l'état du modèle cloud au moment du download) : une release passe, la suivante non. Diagnostic à
+confirmer côté machine flaggée :
+
+```powershell
+Get-MpThreat | Select-Object ThreatName, SeverityID          # nom exact de la détection
+Get-MpThreatDetection | Select-Object InitialDetectionTime, Resources  # quel fichier, quand
+```
 
 Si Windows Defender (ou un autre éditeur) flagge l'installeur de cette release, soumettre le
 fichier comme faux positif :
 
-- **Microsoft / Defender** : <https://www.microsoft.com/wdsi/filesubmission> — choisir « Software
-  developer », joindre le `Protocol0-Setup-<VERSION>.exe` (ou son hash, déjà publié comme asset
-  `SHA256SUMS`), motif « incorrectly detected ».
+- **Microsoft / Defender** : <https://www.microsoft.com/en-us/wdsi/filesubmission> — choisir
+  « **Software developer** » → « **Incorrectly detected as malware** », joindre le
+  `Protocol0-Setup-<VERSION>.exe` (ou son hash, déjà publié comme asset `SHA256SUMS`), cocher
+  « I believe this file is incorrectly detected ». Justification type (à coller, adapter la version) :
+
+  > Open-source Inno Setup installer for Protocol0 (https://github.com/lebrunthibault/protocol0),
+  > MIT-licensed. The bundled agent is a native Rust binary (no PyInstaller/packer). The build is
+  > fully public: GitHub Actions release workflow from a tagged commit, with a SHA256SUMS asset and
+  > a Sigstore build-provenance attestation. VirusTotal shows 0–1/69 (no signature match, at most
+  > one ML-only engine). This is an `!ml` heuristic false positive on a new, low-prevalence unsigned
+  > build. Source and CI are auditable.
+
+  Le verdict cloud se lève typiquement en **24–72 h**, pour **tous** les utilisateurs (pas que la
+  machine qui a soumis).
 - **Autres AV** : la plupart ont un portail équivalent de soumission de faux positif (rechercher
   « <vendor> false positive submission »).
 
 Le lien VirusTotal des notes de release aide à constater l'ampleur (quelques flags heuristiques
 parmi des dizaines de verdicts propres = faux positif).
+
+> Une fois le **code-signing** en place (réputation d'une identité Authenticode stable), cette étape
+> devient rare : Defender cesse de traiter chaque release comme « jamais vu ». Voir
+> `docs/specs/in-progress/2026-06-02-installer-code-signing.md`.
 
 ## Garde-fous (non négociables)
 

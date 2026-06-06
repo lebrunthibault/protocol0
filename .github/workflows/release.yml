@@ -28,6 +28,18 @@ jobs:
     # (a secret cannot be read directly inside an `if` expression).
     env:
       VT_API_KEY: ${{ secrets.VT_API_KEY }}
+      # === SIGNING (provider: SignPath Foundation) — swap here for Azure ===========
+      # Authenticode code-signing config. Non-secret coordinates live here; only the API
+      # token is a secret. To migrate to Azure Trusted Signing later, the two "Sign ..."
+      # steps below are the single place to edit (replace the signpath action with
+      # azure/trusted-signing-action + azure/login) — nothing else in this file changes.
+      # SIGNING_ENABLED gates both signing steps so the release still builds (unsigned)
+      # before the SignPath project/token are provisioned.
+      SIGNING_ENABLED: ${{ secrets.SIGNPATH_API_TOKEN != '' && 'true' || 'false' }}
+      SIGNPATH_ORGANIZATION_ID: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+      SIGNPATH_PROJECT_SLUG: protocol0
+      SIGNPATH_POLICY_SLUG: release-signing
+      # ============================================================================
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -53,10 +65,44 @@ jobs:
       - name: Install Inno Setup 6
         run: choco install innosetup -y --no-progress
 
-      # Chains Vue 3 front (Vite) -> agent exe (Cargo/Rust) -> stage remote script -> ISCC.
-      # Outputs dist-installer/Protocol0-Setup-<version>.exe.
+      # Two-stage signing (best practice, cf. OptiKey): the resident agent exe must be signed
+      # BEFORE Inno Setup embeds it, then the installer is signed afterwards. The agent runs a
+      # global keyboard hook and is re-scanned by Defender on every launch, so it needs its own
+      # signature independently of the installer. SignPath signs via a GitHub *artifact* (upload
+      # -> sign -> download the signed file back), so each stage uploads, signs, and restores
+      # the signed binary in place before the next stage runs.
+
+      # Stage 1a: build the agent exe only (frontend + cargo), stop before ISCC.
+      - name: Build agent exe
+        run: pwsh installer/windows/build_installer.ps1 -Stage agent
+
+      - name: Upload agent exe for signing
+        if: ${{ env.SIGNING_ENABLED == 'true' }}
+        id: upload_agent
+        uses: actions/upload-artifact@v4
+        with:
+          name: unsigned-agent
+          path: src/agent/target/release/Protocol0.exe
+          if-no-files-found: error
+
+      # === SIGNING (provider: SignPath) — swap here for Azure ======================
+      - name: Sign agent exe
+        if: ${{ env.SIGNING_ENABLED == 'true' }}
+        uses: signpath/github-action-submit-signing-request@v2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ env.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ env.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ env.SIGNPATH_POLICY_SLUG }}
+          artifact-configuration-slug: agent-exe
+          github-artifact-id: ${{ steps.upload_agent.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: src/agent/target/release
+      # ============================================================================
+
+      # Stage 1b: package the installer, embedding the (now signed) agent exe.
       - name: Build installer
-        run: pwsh installer/windows/build_installer.ps1
+        run: pwsh installer/windows/build_installer.ps1 -Stage installer
 
       # Safety net: fail explicitly if the exe was not produced, rather than
       # creating an empty release.
@@ -66,6 +112,32 @@ jobs:
           $exe = Get-ChildItem dist-installer -Filter 'Protocol0-Setup-*.exe' -ErrorAction SilentlyContinue
           if (-not $exe) { throw "No installer produced in dist-installer/." }
           Write-Host "OK -> $($exe.FullName) ($([math]::Round($exe.Length/1MB,1)) MB)"
+
+      # Stage 2: sign the final installer. Must complete BEFORE SHA256SUMS + attestation
+      # below, so the published hash and the Sigstore attestation cover the SIGNED binary.
+      - name: Upload installer for signing
+        if: ${{ env.SIGNING_ENABLED == 'true' }}
+        id: upload_installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: unsigned-installer
+          path: dist-installer/Protocol0-Setup-*.exe
+          if-no-files-found: error
+
+      # === SIGNING (provider: SignPath) — swap here for Azure ======================
+      - name: Sign installer
+        if: ${{ env.SIGNING_ENABLED == 'true' }}
+        uses: signpath/github-action-submit-signing-request@v2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ env.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ env.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ env.SIGNPATH_POLICY_SLUG }}
+          artifact-configuration-slug: installer
+          github-artifact-id: ${{ steps.upload_installer.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: dist-installer
+      # ============================================================================
 
       # Checksum published next to the installer: the user verifies the download
       # with Get-FileHash and compares it to this file (cf. README anti-keylogger section).
@@ -80,8 +152,10 @@ jobs:
           Write-Host "SHA256  $($exe.Name) = $hash"
 
       # Build provenance (Sigstore, free): verifiable proof that this exe was built
-      # by this workflow from this commit. A certificate-free substitute for code
-      # signing. User-side check: gh attestation verify <exe> -R lebrunthibault/protocol0.
+      # by this workflow from this commit. Complements the Authenticode signature above
+      # (provenance proves WHERE it was built; the signature proves WHO published it).
+      # Runs after signing so it attests the signed binary. User-side check:
+      # gh attestation verify <exe> -R lebrunthibault/protocol0.
       - name: Attest build provenance
         uses: actions/attest-build-provenance@v4
         with:

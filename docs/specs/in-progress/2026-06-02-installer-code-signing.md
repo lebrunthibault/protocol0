@@ -1,13 +1,33 @@
 # Installer code signing (Authenticode)
 
+> **Status: in-progress.** Pipeline wired for **SignPath Foundation** (two-stage signing —
+> `Protocol0.exe` then the installer) in `.github/workflows/release.yml`, gated on the
+> `SIGNPATH_API_TOKEN` secret so the release still builds **unsigned** until the SignPath project
+> is provisioned. Remaining (out-of-repo): apply to SignPath Foundation, set the `SIGNPATH_API_TOKEN`
+> secret + `SIGNPATH_ORGANIZATION_ID` repo variable, configure the two artifact configurations
+> (`agent-exe`, `installer`) + the `release-signing` policy, then validate with a test-tag release.
+
 ## Problem
 
-`Protocol0-Setup-<version>.exe` (and the `protocol0-agent.exe` it carries) is signed by no
-Authenticode certificate. At runtime the UAC box shows
-**"Publisher: Unknown"** in yellow, and Windows SmartScreen warns on first launch
-("Windows protected your PC"). Combined with the fact that the agent is a global
-**keyboard hook** built with **PyInstaller** — the textbook keylogger/dropper profile —
-this reads as untrustworthy, especially when distributed beyond the personal circle.
+`Protocol0-Setup-<version>.exe` (and the resident `Protocol0.exe` agent it carries) is signed by
+no Authenticode certificate. At runtime the UAC box shows **"Publisher: Unknown"** in yellow, and
+Windows SmartScreen / Defender warn on a fresh download. The agent is a global **keyboard hook** —
+the textbook keylogger profile — so an unsigned binary reads as untrustworthy when distributed
+beyond the personal circle.
+
+Concretely observed (0.18.2): Chrome blocked the download as "Virus detected". This was **Defender
+local** (`Trojan:Win32/Wacatac.H!ml`, a `!ml` ML-cloud verdict on a new/rare/unsigned binary,
+surfaced via *block at first sight*), **not** Google Safe Browsing. It is non-deterministic per
+hash — v0.1.1 passed, 0.18.2 didn't — so a stable signing identity is the durable fix: it stops
+Defender treating every release as "never seen", letting reputation accrue instead of resetting
+each hash. (The immediate per-hash mitigation is a WDSI false-positive submission — see the
+`/release` skill, step 7.)
+
+> **Correction — the agent is no longer PyInstaller.** It is now a **native Rust binary**
+> (`src/agent`, ~3 MB, Vue SPA embedded via rust-embed), so the "shared PyInstaller bootloader"
+> false-positive class is gone, and there is **only one exe** (`Protocol0.exe`; the separate
+> launcher was dropped, commit `a357bdf1`). Any earlier mention of `protocol0-agent.exe` /
+> `protocol0-launcher.exe` / PyInstaller in this spec is obsolete.
 
 Note: the `.iss` field `MyAppPublisher "Thibault Lebrun"` has **no** effect on the UAC
 box (which reads only the cryptographic signature); it only shows up in "Programs and
@@ -60,35 +80,57 @@ and it is proven by directly comparable repos:
 - **novelWriter** (solo-dev PyInstaller desktop app) — same action.
 - **sabnzbd** (desktop daemon) — same action.
 
-Pattern: CI builds → `actions/upload-artifact` → `signpath/github-action-submit-signing-request`
-submits the artifact and downloads the signed binary back. Sign **both** exes (agent +
-launcher) and the Setup. Timestamping (`/tr <rfc3161>` `/td SHA256`) is handled by the
-signing toolchain and is essential so binaries stay valid after the cert expires.
+Pattern (implemented): CI builds the agent exe → `actions/upload-artifact` →
+`signpath/github-action-submit-signing-request` signs it and downloads the signed binary back →
+ISCC packages the **signed** exe → the installer is uploaded, signed, and restored the same way.
+SignPath signs only via a **GitHub artifact id** (not a disk path), hence the upload/sign/restore
+round-trip per stage. We sign **both** the agent exe and the installer — the resident agent runs a
+keyboard hook and is re-scanned by Defender on **every launch**, so it needs its own signature,
+not just the installer's (best practice, mirrors OptiKey's two-stage `release_all.yml`).
+Timestamping (RFC3161) is handled by the signing toolchain and is essential so binaries stay valid
+after the cert expires.
 
-## Fallback: Azure Trusted Signing (~$10/mo) — with an eligibility gotcha
+## Alternative: Azure Trusted Signing (~$10/mo) — now EU-eligible (plan B)
 
-Azure "Trusted Signing" (now "Artifact Signing") is the modern cheap alternative (no
-hardware token, CI-friendly, defaults its timestamp to `http://timestamp.acs.microsoft.com`).
-**But the individual-developer validation path is USA/Canada only.** Per Microsoft's
-Artifact Signing FAQ, the individual path is available only to developers in the USA and
-Canada; the EU/UK are covered only for **organizations**. As an individual EU/UK developer,
-the publisher (Thibault Lebrun) is **not eligible** for the individual path — this rules
-Trusted Signing out unless a qualifying organization is set up. **→ SignPath is therefore
-the clear choice here.** It also does not issue EV (by design), consistent with the
-correction above.
+Azure "Trusted Signing" (now "Artifact Signing") is the cheap modern option (no hardware token,
+CI-friendly, default timestamp `http://timestamp.acs.microsoft.com`).
 
-## Scope (if/when this is picked up)
+> **Correction (2026-06).** Earlier drafts ruled Azure out for EU developers. **No longer true.**
+> The Azure portal now states Artifact Signing is *"available to organizations in the USA, Canada,
+> **European Union & United Kingdom**"*, and the publisher's French micro-entreprise (7 yrs,
+> qualifies the ≥3-yr org rule) is mid identity-validation. Azure is therefore **eligible** via the
+> **organization** path.
 
-- **Apply to SignPath Foundation** as an OSS project (one-time; manual per-release
-  approval thereafter). No purchase.
-- **Wire signing into `release.yml`**: add the SignPath submit-signing-request step after
-  the build, signing `protocol0-agent.exe` and
-  `Protocol0-Setup-<version>.exe`. Inno Setup also supports a `SignTool` directive in
-  `installer/protocol0.iss` if signing the Setup at compile time is preferred.
-- **Keep the signing identity stable across releases** (so publisher reputation
-  compounds). Document this constraint.
-- **Document** the procedure (where the SignPath project lives, that nothing secret is
-  committed — SignPath holds the key, CI only holds an API token in a repo secret).
+It remains positioned as **plan B, mutually exclusive with SignPath** — not a co-signer. Decision:
+ship SignPath first (free, OSS-native, already wired). If Defender/SmartScreen keep flagging after
+1–2 signed releases despite a stable identity, switch to Azure and **remove** SignPath (never run
+two signing identities in parallel — reputation must compound on one). The `release.yml` signing
+steps are isolated and marked (`# === SIGNING (provider: SignPath) — swap here for Azure ===`) so
+the swap edits only those two `uses:` blocks (→ `azure/trusted-signing-action` + `azure/login`).
+Neither path issues EV (consistent with the correction above).
+
+## Scope
+
+**Done in-repo (this change):**
+- `release.yml` wired for two-stage SignPath signing (`Protocol0.exe` then the installer), placed
+  **before** `Generate SHA256SUMS` + `Attest build provenance` so the published hash and the
+  Sigstore attestation cover the **signed** binary. Steps are gated on `SIGNING_ENABLED`
+  (derived from the `SIGNPATH_API_TOKEN` secret) — the release still builds unsigned without it.
+- `installer/windows/build_installer.ps1` gained a `-Stage agent|installer|all` parameter so CI can
+  sign the exe **between** building it and ISCC embedding it. Local build (`-Stage all`, the
+  default) is unchanged and unsigned.
+- We sign **post-compile via the action**, so **no** `SignTool=` directive is added to
+  `installer/windows/protocol0.iss` (the local build stays cert-free and functional).
+
+**Remaining (out-of-repo, one-time, by maintainer):**
+- **Apply to SignPath Foundation** as an OSS project (manual per-release approval thereafter; no
+  purchase).
+- In SignPath: create project `protocol0`, signing policy `release-signing`, and two artifact
+  configurations — `agent-exe` and `installer` (the slugs referenced by the workflow).
+- Set repo **secret** `SIGNPATH_API_TOKEN` and repo **variable** `SIGNPATH_ORGANIZATION_ID`.
+  Nothing secret is committed — SignPath holds the key; CI holds only the API token.
+- **Keep the signing identity stable across releases** so publisher reputation compounds. Never
+  rotate the cert; never run SignPath and Azure in parallel.
 
 ## Out of scope
 
@@ -109,5 +151,6 @@ tax becomes painful.
 
 ## Priority
 
-Low while usage stays personal / small-circle — the yellow UAC warning is tolerable.
-The install-trust spec is the higher-leverage, do-first work.
+Picked up now: the install-trust spec (the cheap no-cert moves) has shipped, and a concrete
+Defender download-block on 0.18.2 made the per-hash WDSI tax real. Code signing is the durable
+structural fix on top — in-repo wiring is done; only the out-of-repo SignPath provisioning remains.
