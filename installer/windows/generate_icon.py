@@ -5,9 +5,13 @@ thin border, bold blue "P" centered. We draw the badge with Pillow rather than r
 the SVG, to avoid any system binary dependency (cairosvg/inkscape) on the CI side: Pillow
 installs everywhere as a pure wheel.
 
-Output: a multi-resolution .ico (16/32/48/64/128/256) committed at installer/windows/assets/
-protocol0.ico and embedded by the Rust agent's build.rs (PE resource of the exe + shortcuts)
-and loaded by the systray (src/agent/src/tray.rs via include_bytes!).
+Output:
+  - a multi-resolution .ico (16/32/48/64/128/256) committed at installer/windows/assets/
+    protocol0.ico and embedded by the Rust agent's build.rs (PE resource of the exe + shortcuts)
+    and loaded by the systray (src/agent/src/tray.rs via include_bytes!);
+  - the website favicons in src/website/ (favicon.ico + favicon-96/192/512.png +
+    apple-touch-icon.png). Google's search results need a raster icon (it ignores the SVG),
+    and /favicon.ico is the default fallback crawlers probe.
 
 This is a MANUAL maintenance tool, NOT a build step: the committed .ico is the source of truth
 for the build (build_agent_exe.ps1 does not run this). Re-run it only when the source badge
@@ -104,6 +108,19 @@ def _render_badge(size: int) -> Image.Image:
     return img
 
 
+def _write_ico(master: Image.Image, out_ico: str) -> None:
+    # Render each size from the high-res master (crisp downscale), rather than letting
+    # Pillow re-shrink from a single frame. The largest is the base image, the others are
+    # stacked via append_images: without this Pillow writes only one resolution to the .ico.
+    frames = [master.resize((n, n), Image.LANCZOS) for n in ICON_SIZES]
+    frames[-1].save(
+        out_ico,
+        format="ICO",
+        sizes=[(n, n) for n in ICON_SIZES],
+        append_images=frames[:-1],
+    )
+
+
 def main() -> int:
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
     out_dir = os.path.join(repo_root, "installer", "windows", "assets")
@@ -111,17 +128,7 @@ def main() -> int:
     out_ico = os.path.join(out_dir, "protocol0.ico")
 
     master = _render_badge(RENDER)
-    # Render each size from the high-res master (crisp downscale), rather than letting
-    # Pillow re-shrink from a single frame. The largest is the base image, the others are
-    # stacked via append_images: without this Pillow writes only one resolution to the .ico.
-    frames = [master.resize((n, n), Image.LANCZOS) for n in ICON_SIZES]
-    largest = frames[-1]
-    largest.save(
-        out_ico,
-        format="ICO",
-        sizes=[(n, n) for n in ICON_SIZES],
-        append_images=frames[:-1],
-    )
+    _write_ico(master, out_ico)
 
     # Companion 256 PNG (handy for the site / visual debugging).
     out_png = os.path.join(out_dir, "protocol0.png")
@@ -129,6 +136,19 @@ def main() -> int:
 
     print(f"OK -> {out_ico}")
     print(f"OK -> {out_png}")
+
+    # Web favicons for src/website/. Google's search results need a RASTER icon (it ignores
+    # the SVG one); /favicon.ico is also the default fallback browsers/crawlers probe. We emit
+    # a multi-resolution favicon.ico plus PNGs at the sizes search engines and mobile expect.
+    web_dir = os.path.join(repo_root, "src", "website")
+    web_ico = os.path.join(web_dir, "favicon.ico")
+    _write_ico(master, web_ico)
+    print(f"OK -> {web_ico}")
+    for n, name in [(96, "favicon-96.png"), (192, "favicon-192.png"),
+                    (512, "favicon-512.png"), (180, "apple-touch-icon.png")]:
+        out = os.path.join(web_dir, name)
+        master.resize((n, n), Image.LANCZOS).save(out, format="PNG")
+        print(f"OK -> {out}")
     return 0
 
 
