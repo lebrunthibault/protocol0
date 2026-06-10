@@ -30,6 +30,14 @@ use crate::keymap;
 /// physically held at decision time (so the worker doesn't read mutable state late).
 pub type FiredBinding = (Binding, HashSet<String>);
 
+/// A "single character" key produces typed text: letters, digits, and the punctuation glyphs —
+/// every name from `keymap` that resolves to exactly one char. Named keys (`space`, `enter`,
+/// `f5`, `up`) are multi-char and excluded; they are never text input. Used to decide which
+/// bindings to suspend while a text field has focus.
+fn is_single_char_key(name: &str) -> bool {
+    name.chars().count() == 1
+}
+
 /// Pure capture state + decision logic, with NO Win32 dependency. Unit-tested directly,
 /// exactly like the Python `_decide`.
 pub struct DecideState {
@@ -58,8 +66,11 @@ impl DecideState {
     /// suppress/pass decision. The return is (suppress, fired): `suppress` is whether to
     /// swallow the event; `fired` is the binding to run (only set on a fresh match).
     ///
-    /// Has no I/O except the config lookup (in-memory) and the foreground check (only on
-    /// matched combos) — `foreground` is injected so tests can drive it.
+    /// Has no I/O except the config lookup (in-memory), the foreground check, and the text-focus
+    /// check (both only on matched combos) — both are injected so tests can drive them.
+    /// `text_focus` returns true when a text-edit control has focus (user is typing into a field):
+    /// a BARE single-key binding is then passed through instead of suppressed, so the keystroke
+    /// reaches the field. Combos with a modifier are never gated this way.
     pub fn decide(
         &mut self,
         vk: u32,
@@ -67,6 +78,7 @@ impl DecideState {
         is_down: bool,
         injected: bool,
         foreground: impl Fn() -> bool,
+        text_focus: impl Fn() -> bool,
     ) -> (bool, Option<FiredBinding>) {
         if injected {
             // Our own synthesized keys: ignore entirely (don't re-trigger, don't track).
@@ -109,6 +121,13 @@ impl DecideState {
         };
         if !foreground() {
             tracing::debug!("combo {combo} ignored (Ableton not foreground)");
+            return (false, None);
+        }
+        // Suspend BARE single-key bindings while the user is typing into a text field (browser
+        // search, renaming): let the keystroke reach the field instead of firing/suppressing.
+        // Combos with a modifier (ctrl+a, alt+x) are never text input, so they bypass this gate.
+        if self.pressed_modifiers.is_empty() && is_single_char_key(&name) && text_focus() {
+            tracing::debug!("combo {combo} ignored (text field has focus)");
             return (false, None);
         }
         tracing::info!("combo {combo} -> {} {:?}", binding.action, binding.params);
@@ -163,24 +182,30 @@ mod tests {
         state(vec![binding("u", "load_device")])
     }
 
-    /// key-down, foreground = true unless overridden. Returns (suppress, fired?).
+    /// key-down, foreground = true, no text field, unless overridden. Returns (suppress, fired?).
     fn down(s: &mut DecideState, vk: u32) -> (bool, bool) {
-        let (sup, fired) = s.decide(vk, 0, true, false, || true);
+        let (sup, fired) = s.decide(vk, 0, true, false, || true, || false);
         (sup, fired.is_some())
     }
 
     fn down_fg(s: &mut DecideState, vk: u32, fg: bool) -> (bool, bool) {
-        let (sup, fired) = s.decide(vk, 0, true, false, || fg);
+        let (sup, fired) = s.decide(vk, 0, true, false, || fg, || false);
+        (sup, fired.is_some())
+    }
+
+    /// key-down with the text-field gate driven explicitly.
+    fn down_text(s: &mut DecideState, vk: u32, text_focus: bool) -> (bool, bool) {
+        let (sup, fired) = s.decide(vk, 0, true, false, || true, || text_focus);
         (sup, fired.is_some())
     }
 
     fn down_injected(s: &mut DecideState, vk: u32) -> (bool, bool) {
-        let (sup, fired) = s.decide(vk, 0, true, true, || true);
+        let (sup, fired) = s.decide(vk, 0, true, true, || true, || false);
         (sup, fired.is_some())
     }
 
     fn up(s: &mut DecideState, vk: u32) -> bool {
-        s.decide(vk, 0, false, false, || true).0
+        s.decide(vk, 0, false, false, || true, || false).0
     }
 
     #[test]
@@ -253,7 +278,7 @@ mod tests {
         let mut s = state(vec![binding("ctrl+e", "send_keys")]);
         assert_eq!(down(&mut s, VK_CTRL), (false, false)); // modifier never suppressed
         // tap 'e' with ctrl held -> fires the ctrl+e binding, with the held snapshot.
-        let (sup, fired) = s.decide(VK_E, 0, true, false, || true);
+        let (sup, fired) = s.decide(VK_E, 0, true, false, || true, || false);
         assert!(sup);
         let (b, mods) = fired.expect("should fire");
         assert_eq!(b.combo, "ctrl+e");
@@ -265,6 +290,41 @@ mod tests {
         let mut s = default_state();
         assert_eq!(down(&mut s, VK_CTRL), (false, false));
         assert!(!up(&mut s, VK_CTRL));
+    }
+
+    #[test]
+    fn bare_single_key_passes_when_text_field_focused() {
+        // 'u' bound to load_device. While a text field has focus, the keystroke must reach the
+        // field: not fired, not suppressed.
+        let mut s = default_state();
+        assert_eq!(down_text(&mut s, VK_U, true), (false, false));
+    }
+
+    #[test]
+    fn bare_single_key_fires_when_no_text_field() {
+        let mut s = default_state();
+        assert_eq!(down_text(&mut s, VK_U, false), (true, true));
+    }
+
+    #[test]
+    fn modifier_combo_fires_even_with_text_field_focused() {
+        // ctrl+e is never typed text -> the gate must NOT apply when a modifier is held.
+        let mut s = state(vec![binding("ctrl+e", "send_keys")]);
+        assert_eq!(down(&mut s, VK_CTRL), (false, false));
+        let (sup, fired) = s.decide(VK_E, 0, true, false, || true, || true);
+        assert!(sup);
+        assert!(fired.is_some());
+    }
+
+    #[test]
+    fn is_single_char_key_classifies_correctly() {
+        assert!(is_single_char_key("a"));
+        assert!(is_single_char_key("5"));
+        assert!(is_single_char_key(","));
+        assert!(!is_single_char_key("space"));
+        assert!(!is_single_char_key("enter"));
+        assert!(!is_single_char_key("f5"));
+        assert!(!is_single_char_key("up"));
     }
 }
 
@@ -308,7 +368,14 @@ mod hook {
                 // Keep the lock as short as possible: decide, then drop before sending.
                 let decision = {
                     if let Ok(mut guard) = state.lock() {
-                        guard.decide(kb.vkCode, kb.scanCode, is_down, injected, ableton_is_foreground)
+                        guard.decide(
+                            kb.vkCode,
+                            kb.scanCode,
+                            is_down,
+                            injected,
+                            ableton_is_foreground,
+                            crate::text_focus::text_field_has_focus,
+                        )
                     } else {
                         (false, None)
                     }

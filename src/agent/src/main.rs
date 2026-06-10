@@ -18,6 +18,7 @@
 mod ableton_shortcuts;
 mod action_catalog;
 mod config;
+mod extension_registry;
 mod foreground;
 mod key_emitter;
 mod keymap;
@@ -29,6 +30,7 @@ mod script_client;
 mod settings;
 mod shortcut_store;
 mod single_instance;
+mod text_focus;
 mod tray;
 mod version;
 mod web;
@@ -82,6 +84,10 @@ fn main() {
             client.execute(binding);
         }
     };
+
+    // Background UIA service: keeps the "user is typing in a text field" flag current so the
+    // hook can suspend bare single-key bindings without doing any COM work itself.
+    text_focus::start_text_focus_service();
 
     let mut listener = listener::ShortcutListener::start(config, dispatch);
 
