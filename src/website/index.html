@@ -159,14 +159,61 @@
   }
 
   @media (max-width:720px){
-    .beta-ribbon{width:120px;height:120px}
-    .beta-ribbon span{top:22px;right:-50px;font-size:11px;letter-spacing:.1em}
+    /* Desktop-only chrome that isn't relevant on a phone */
+    .beta-ribbon{display:none}
+    .nav-right .btn-primary{display:none}              /* Download lives on a desktop install */
     .hero{padding:90px 0 64px}
-    .compare-card{padding:4px var(--space-5)}
-    .compare-row{grid-template-columns:1fr;gap:8px;padding:18px 0}
+    h1 .sub-title{white-space:normal}                  /* let the subtitle wrap instead of overflowing */
+
+    /* Hero: drop Download, keep "View on GitHub" as a single full-width CTA */
+    .hero-actions{margin-top:30px}
+    .hero-actions .btn-primary{display:none}
+    .hero-actions .btn-ghost{width:100%;max-width:320px;justify-content:center}
+
+    /* Comparison: each row becomes a self-contained mini-card */
+    .compare-card{padding:var(--space-3) var(--space-4)}
+    .compare-row{
+      display:block;
+      padding:var(--space-4);
+      margin:var(--space-3) 0;
+      border:1px solid var(--line);
+      border-radius:var(--radius-lg);
+      background:var(--panel-2);
+    }
+    .compare-row:last-child{border-bottom:none}
     .compare-row--head{display:none}
-    .compare-row .col-ableton::before{content:"Ableton — ";color:var(--muted-2);font-weight:var(--fw-medium)}
-    .compare-row .col-p0::before{content:"Protocol 0 — ";color:var(--accent);font-weight:var(--fw-medium)}
+
+    .compare-row .feat{margin-bottom:var(--space-3)}
+    .feat-name{font-size:16px}
+
+    /* the two value blocks, stacked and labeled */
+    .compare-row .col-ableton,
+    .compare-row .col-p0{
+      display:block;
+      padding:var(--space-3);
+      border-radius:var(--radius-md);
+      border:1px solid var(--line);
+      background:var(--panel);
+    }
+    .compare-row .col-ableton{margin-bottom:var(--space-2)}
+    .compare-row .col-p0{background:var(--accent-bg);border-color:var(--accent-line)}
+
+    /* prefixes become small uppercase mono labels on their own line */
+    .compare-row .col-ableton::before,
+    .compare-row .col-p0::before{
+      display:block;margin-bottom:6px;
+      font-family:var(--font-mono);font-size:11px;font-weight:var(--fw-semibold);
+      letter-spacing:.04em;text-transform:uppercase;
+    }
+    .compare-row .col-ableton::before{content:"Ableton";color:var(--muted-2)}
+    .compare-row .col-p0::before{content:"Protocol 0";color:var(--accent)}
+
+    /* keep ✓/✕ on .yes/.no; let long values + code chips wrap instead of overflow */
+    .compare-row .yes,
+    .compare-row .no{
+      display:flex;align-items:flex-start;flex-wrap:wrap;gap:6px 9px;
+      line-height:var(--lh-snug);
+    }
   }
 </style>
 <script type="application/ld+json">
