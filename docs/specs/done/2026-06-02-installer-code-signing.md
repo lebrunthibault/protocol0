@@ -1,11 +1,15 @@
 # Installer code signing (Authenticode)
 
-> **Status: in-progress.** Pipeline wired for **Azure Trusted / Artifact Signing** (two-stage:
-> `Protocol0.exe` then the installer) in `.github/workflows/release.yml`, gated on
-> `AZURE_CLIENT_SECRET` so the release still builds **unsigned** in forks without the secrets.
-> The maintainer's Azure organization identity validation **succeeded** and the three `AZURE_*`
-> secrets (service principal) are set on the repo. Remaining: validate with a test-tag release
-> (signature chain + "Publisher: Thibault Lebrun" on the UAC box).
+> **Status: done (in-repo).** The pipeline is fully wired for **Azure Trusted / Artifact
+> Signing** (two-stage: `Protocol0.exe` then the installer) in `.github/workflows/release.yml`,
+> gated on `AZURE_CLIENT_SECRET` so the release still builds **unsigned** in forks without the
+> secrets. The maintainer's Azure organization identity validation **succeeded** and the three
+> `AZURE_*` secrets (service principal) are set on the repo.
+>
+> **Operational follow-up (not in-repo):** the next tagged release is the first to exercise the
+> signing steps — confirm on it that `signtool verify /pa` passes on both binaries and the UAC
+> box reads **"Publisher: Thibault Lebrun"**. As of moving this spec to `done/`, the latest tag
+> (`v0.22.0`) predates the signing change, so no signed installer has shipped yet.
 >
 > **Provider history:** SignPath Foundation was the original plan (free, OSS) and is fully
 > documented below as the **backlog alternative** — kept because it's a clean fallback if the

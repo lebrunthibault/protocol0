@@ -73,7 +73,7 @@
     { "@type": "Question", "name": "Does Protocol 0 sell my data?",
       "acceptedAnswer": { "@type": "Answer", "text": "No. Protocol 0 runs 100% locally. No data is transmitted outside whatsoever." } },
     { "@type": "Question", "name": "SmartScreen blocks the installer — what do I do?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Expected — the installer isn't code-signed yet. Click More info, then Run anyway. Code signing is planned." } },
+      "acceptedAnswer": { "@type": "Answer", "text": "Releases are code-signed (Azure Trusted Signing), but SmartScreen reputation still builds up over the first downloads, so it may warn for a while on a fresh release. Click More info, then Run anyway." } },
     { "@type": "Question", "name": "My shortcuts aren't firing — how do I fix it?",
       "acceptedAnswer": { "@type": "Answer", "text": "Check the control surface is loaded in Ableton (Preferences, Tempo & MIDI, Control Surface, Protocol 0), confirm the binding exists in the web UI at http://127.0.0.1:9010/shortcuts, and make sure Ableton is the foreground window — shortcuts are intentionally ignored elsewhere." } },
     { "@type": "Question", "name": "The web UI won't load — what do I check?",
@@ -143,7 +143,7 @@
       <details>
         <summary><svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>SmartScreen blocks the installer</summary>
         <div class="body">
-          <p>Expected — the installer isn't code-signed yet. Click <strong>More info → Run anyway</strong>. Code signing is planned.</p>
+          <p>Releases are code-signed (Azure Trusted Signing), so the installer shows a verified publisher. SmartScreen reputation still builds up over the first downloads, so it may warn for a while on a fresh release — click <strong>More info → Run anyway</strong>.</p>
         </div>
       </details>
 

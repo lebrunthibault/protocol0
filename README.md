@@ -27,7 +27,8 @@ The project is in early development. Feedback and contributions are very welcome
 ## Installation
 
 Download the latest release from the [Releases](https://github.com/lebrunthibault/protocol0/releases)
-and check out the [docs](http://localhost:8080/docs/installation.html) for more details
+and check out the [installation docs](https://www.protocol0.live/docs/installation.html) for more details.
+Releases are code-signed with Azure Trusted Signing.
 
 ### From source
 

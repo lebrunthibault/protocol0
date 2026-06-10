@@ -158,7 +158,12 @@ same way and bindable to a shortcut like any other.
 The project is built and run **on Windows**, and the packaging reflects that. The
 agent ships as a Windows executable, autostarts through a **Startup-folder shortcut**
 (visible and removable by the user, like AutoHotkey/Espanso), shows a systray icon,
-and is packaged by a Windows installer. Day-to-day developer setup is deliberately kept off that path:
+and is packaged by a Windows installer. Because the agent is a global keyboard hook —
+the textbook keylogger profile — distribution leans on a **single, stable code-signing
+identity** (Azure Trusted Signing): both the installer and the resident agent exe are
+Authenticode-signed in release CI so the publisher is verified, and the identity is never
+rotated so SmartScreen reputation compounds across releases rather than resetting per build.
+Day-to-day developer setup is deliberately kept off that path:
 the dev entry points (`make bootstrap`/`install`) dispatch to **stdlib-only,
 cross-platform Python**, so a fresh checkout sets up on Windows *or* macOS. The architecture itself
 (HTTP boundary, global config, agent/script split) is portable; macOS support
