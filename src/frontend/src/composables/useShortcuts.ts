@@ -38,6 +38,29 @@ function conflictFor(combo: string, exceptCombo?: string): Binding | undefined {
   return bindings.value.find((b) => b.combo === combo && b.combo !== exceptCombo);
 }
 
+// Native-combo sharing (orthogonal to conflictFor, which is about TRIGGER combos): several
+// catalog entries can emit the SAME native combo (Live reuses e.g. ctrl+i, ctrl+g per context).
+// Mapping a trigger to one of them de-facto maps them all, since it's the same injected keystroke.
+// Derived purely from the catalog, grouped by `keys`.
+const sharedByKeys = computed(() => {
+  const m = new Map<string, AbletonShortcut[]>();
+  for (const s of abletonShortcuts.value) {
+    const arr = m.get(s.keys);
+    if (arr) arr.push(s);
+    else m.set(s.keys, [s]);
+  }
+  // Keep only the genuinely-shared combos (2+ entries).
+  for (const [k, arr] of m) if (arr.length < 2) m.delete(k);
+  return m;
+});
+
+// The OTHER catalog entries sharing a native combo (excluding the one named, if given).
+function nativePeers(keys: string, exceptName?: string): AbletonShortcut[] {
+  const arr = sharedByKeys.value.get(keys);
+  if (!arr) return [];
+  return exceptName ? arr.filter((s) => s.name !== exceptName) : arr;
+}
+
 // Upsert by combo. If the edit changes the combo of an existing binding, we delete
 // the old one to avoid leaving a duplicate (the persistence key is the combo).
 async function save(binding: Binding, previousCombo?: string): Promise<void> {
@@ -65,6 +88,8 @@ export function useShortcuts() {
     actionCount: computed(() => bindings.value.length),
     load,
     conflictFor,
+    sharedByKeys,
+    nativePeers,
     save,
     remove,
   };

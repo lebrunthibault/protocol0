@@ -145,7 +145,9 @@ Premier end-to-end **sans frontend** (config éditée à la main).
 
 **Format de combo (canonique, partagé détecteur ↔ frontend ↔ config)** : chaîne
 minuscule, modificateurs dans l'ordre fixe `ctrl`,`alt`,`shift`,`win`, puis la touche,
-joints par `+`. Ex. `ctrl+alt+e`. Namespace proto : `a–z`, `0–9`, `f1–f12`.
+joints par `+`. Ex. `ctrl+alt+e`. Namespace proto : `a–z`, `0–9`, `f1–f12`. _(Étendu
+depuis : touches nommées `space tab enter esc backspace delete` + flèches + `home end pageup
+pagedown`, et la ponctuation `, [ ] = -` nommée par glyphe layout-aware — cf. `keymap::PUNCTUATION`.)_
 
 **Vérif M1** : avec `ctrl+alt+e → load_device(name="EQ Eight")` dans le JSON,
 `poetry run detector` puis presser la combo **dans Ableton** → EQ Eight chargé (idem

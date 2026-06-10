@@ -39,7 +39,9 @@ en CI), Transmission (`web/`, sert des statiques), odrive3.6_web_gui (PyInstalle
 
 1. **Canonicalisation des combos byte-identique** : listener agent (lit `vk`), capture SPA (lit
    `e.code`), chaîne stockée. Ordre `ctrl, alt, shift, win` + touche, minuscules, joints `+`.
-   Namespace `a-z`, `0-9` (haut + numpad), `f1-f12`.
+   Namespace `a-z`, `0-9` (haut + numpad), `f1-f12`, touches nommées (`space tab enter esc
+   backspace delete`, flèches, `home end pageup pagedown`), et ponctuation `, [ ] = -` (nommée
+   par glyphe layout-aware comme les lettres — cf. `keymap::PUNCTUATION`).
 2. **Schéma `shortcuts.json` inchangé** : `{ "version": 1, "bindings": [{combo, action, params}] }`.
 3. **Écriture atomique** (`tmp` + `os.replace`).
 4. **Port 9010 fixe** (raccourci `.url` câblé dessus).

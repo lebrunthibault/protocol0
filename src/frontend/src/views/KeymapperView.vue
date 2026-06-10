@@ -8,8 +8,17 @@ import EditDialog from "../components/EditDialog.vue";
 import GateOverlay from "../components/GateOverlay.vue";
 import Kbd from "../components/Kbd.vue";
 
-const { bindings, actions, abletonShortcuts, loading, error, actionCount, abletonDocUrl, load } =
-  useShortcuts();
+const {
+  bindings,
+  actions,
+  abletonShortcuts,
+  loading,
+  error,
+  actionCount,
+  abletonDocUrl,
+  nativePeers,
+  load,
+} = useShortcuts();
 
 // Editing only makes sense when Ableton is connected and the remote script is live.
 // Any other state locks the UI behind a blocking GateOverlay.
@@ -44,6 +53,7 @@ interface AbletonRow {
   combo: string; // trigger combo if mapped, else ""
   shortcut: (typeof abletonShortcuts.value)[number];
   binding: Binding | null;
+  peers: string[]; // other catalog labels sharing this native combo (empty if none)
 }
 interface SmartRow {
   kind: "smart";
@@ -117,6 +127,7 @@ const abletonGroups = computed<Group[]>(() => {
       combo: binding?.combo ?? "",
       shortcut: s,
       binding,
+      peers: nativePeers(s.keys, s.name).map((p) => p.label),
     });
   }
   return groups;
@@ -277,6 +288,14 @@ function openRow(row: Row) {
             @click="openRow(row)"
           >
             <span class="ableton-item-label">{{ row.label }}</span>
+            <!-- Shared native combo: this keystroke also drives other commands. Shown on every
+                 shared row; emphasised once mapped (mapping it moved those peers too). -->
+            <span
+              v-if="row.kind === 'ableton' && row.peers.length"
+              class="ableton-shared-badge"
+              :class="{ 'ableton-shared-badge--mapped': row.binding }"
+              :title="`Same native combo as: ${row.peers.join(', ')}${row.binding ? ' — these were mapped together' : ''}`"
+            >⚠ +{{ row.peers.length }}</span>
             <Kbd v-if="row.combo" :combo="row.combo" />
           </button>
         </div>
@@ -353,5 +372,22 @@ function openRow(row: Row) {
 .ableton-item--new .ableton-item-label {
   color: var(--accent-soft);
   font-style: italic;
+}
+/* Shared-native-combo badge: muted hint by default, emphasised once the row is mapped.
+   margin-left:auto pushes it (and the trailing Kbd) to the right of the row. */
+.ableton-shared-badge {
+  flex: none;
+  margin-left: auto;
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  white-space: nowrap;
+}
+/* When a Kbd follows the badge, they share the right side: drop the auto-margin off the Kbd
+   gap by giving the badge a small right gap instead. */
+.ableton-shared-badge + :deep(.kbd-combo) {
+  flex: none;
+}
+.ableton-shared-badge--mapped {
+  color: var(--warn);
 }
 </style>

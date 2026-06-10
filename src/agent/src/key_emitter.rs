@@ -22,6 +22,10 @@
 
 use std::collections::HashSet;
 
+use crate::keymap;
+
+const VK_SHIFT: u16 = 0x10;
+
 /// Canonical modifier token -> Win32 virtual-key code for injection.
 fn modifier_vk(token: &str) -> Option<u16> {
     Some(match token {
@@ -54,45 +58,55 @@ fn named_vk(token: &str) -> Option<u16> {
     })
 }
 
-/// Canonical main-key token -> the VK to inject, or None if unsupported.
+/// Canonical main-key token -> (VK to inject, whether Shift is required), or None if unsupported.
 ///
-/// Letters/digits go through VkKeyScanW so they land correctly regardless of layout (mirrors
-/// pynput pressing the character). f1..f12 and named keys map positionally.
-fn resolve_key_vk(token: &str) -> Option<u16> {
+/// Letters/digits/punctuation go through VkKeyScanW so they land correctly regardless of layout
+/// (mirrors pynput pressing the character). f1..f12 and named keys map positionally and never
+/// need Shift. The `needs_shift` flag matters for glyphs the layout produces only with Shift
+/// (e.g. '+' on US is Shift+'='): the canonical namespace names keys by their unshifted glyph,
+/// but a future shifted glyph would still inject correctly.
+fn resolve_key_vk(token: &str) -> Option<(u16, bool)> {
     let chars: Vec<char> = token.chars().collect();
-    if chars.len() == 1 && (chars[0].is_ascii_alphabetic() || chars[0].is_ascii_digit()) {
+    if chars.len() == 1
+        && (chars[0].is_ascii_alphabetic()
+            || chars[0].is_ascii_digit()
+            || keymap::PUNCTUATION.contains(&chars[0]))
+    {
         return char_to_vk(chars[0]);
     }
     if chars.len() >= 2 && chars[0] == 'f' {
         if let Ok(n) = token[1..].parse::<u16>() {
             if (1..=12).contains(&n) {
-                return Some(0x6F + n); // VK_F1 = 0x70 -> f1 => 0x6F + 1
+                return Some((0x6F + n, false)); // VK_F1 = 0x70 -> f1 => 0x6F + 1
             }
             return None;
         }
     }
-    named_vk(token)
+    named_vk(token).map(|vk| (vk, false))
 }
 
 #[cfg(windows)]
-fn char_to_vk(c: char) -> Option<u16> {
+fn char_to_vk(c: char) -> Option<(u16, bool)> {
     use windows::Win32::UI::Input::KeyboardAndMouse::VkKeyScanW;
-    // SAFETY: VkKeyScanW takes a UTF-16 code unit and returns the VK in the low byte (high
-    // byte = shift state, ignored here — letters/digits in the canonical namespace need no
-    // shift). -1 means no key for this char on the current layout.
+    // SAFETY: VkKeyScanW takes a UTF-16 code unit and returns the VK in the low byte and the
+    // shift state in the high byte. -1 means no key for this char on the current layout.
     let res = unsafe { VkKeyScanW(c as u16) };
     if res == -1 {
         return None;
     }
-    Some((res as u16) & 0xFF)
+    let vk = (res as u16) & 0xFF;
+    // High byte bit 0 (value 1) = Shift required to produce this glyph on the current layout.
+    let needs_shift = (res >> 8) & 0x01 != 0;
+    Some((vk, needs_shift))
 }
 
 #[cfg(not(windows))]
-fn char_to_vk(c: char) -> Option<u16> {
-    // Positional ASCII fallback for non-Windows builds (tests only).
+fn char_to_vk(c: char) -> Option<(u16, bool)> {
+    // Positional ASCII fallback for non-Windows builds (tests only). Punctuation has no stable
+    // positional VK off-Windows, so only alphanumerics resolve here; none need shift.
     let up = c.to_ascii_uppercase();
     if up.is_ascii_alphanumeric() {
-        Some(up as u16)
+        Some((up as u16, false))
     } else {
         None
     }
@@ -122,10 +136,16 @@ pub fn send(combo: &str, held_modifiers: &HashSet<String>) {
         }
     }
 
-    let Some(main) = resolve_key_vk(key_token) else {
+    let Some((main, needs_shift)) = resolve_key_vk(key_token) else {
         tracing::warn!("send_keys: unsupported key {key_token:?} in {combo:?}");
         return;
     };
+
+    // If the glyph is only reachable with Shift on this layout (e.g. '+' = Shift+'='), inject
+    // Shift as part of the target chord. Avoid double-pressing if the combo already holds shift.
+    if needs_shift && !mods.contains(&VK_SHIFT) {
+        mods.push(VK_SHIFT);
+    }
 
     // Real modifiers to temporarily lift (only ones we know how to press back).
     let held: Vec<u16> = held_modifiers

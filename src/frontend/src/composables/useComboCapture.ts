@@ -13,6 +13,11 @@ import { readonly, ref } from "vue";
 
 const MOD_ORDER = ["ctrl", "alt", "shift", "win"] as const;
 
+// Punctuation glyphs admitted into the canonical namespace, mirror of the agent's
+// keymap::PUNCTUATION. Named layout-aware by their unshifted glyph (like letters), so a combo
+// stores the character the key produces — needed by native Live shortcuts (ctrl+, , ctrl+[ …).
+const PUNCTUATION = new Set([",", "[", "]", "=", "-"]);
+
 // e.code (physical position) of named keys -> canonical token.
 // Includes the numpad variants (NumpadEnter) that share the same token.
 const NAMED_CODES: Record<string, string> = {
@@ -57,6 +62,11 @@ export function keyFromEvent(e: KeyboardEvent): string | null {
   // browsers provide it even under Ctrl/Alt for letters.
   if (e.key && e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
     return e.key.toLowerCase();
+  }
+  // Punctuation: same layout-aware path as letters — e.key is the glyph the key produces, so
+  // the comma key yields "," on any layout. Only the whitelisted glyphs are in the namespace.
+  if (e.key && e.key.length === 1 && PUNCTUATION.has(e.key)) {
+    return e.key;
   }
   // AltGr (= Ctrl+Alt) on AZERTY turns e.key into a glyph (key E -> "€"), which
   // falls outside the a-z test above. We then fall back to the physical code KeyX, in sync

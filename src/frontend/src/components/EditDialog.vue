@@ -12,7 +12,7 @@ import Kbd from "./Kbd.vue";
 const props = defineProps<{ target: EditTarget }>();
 const emit = defineEmits<{ close: []; saved: [] }>();
 
-const { actions, conflictFor, save, remove } = useShortcuts();
+const { actions, conflictFor, nativePeers, save, remove } = useShortcuts();
 const capture = useComboCapture();
 
 const open = computed(() => props.target != null);
@@ -101,6 +101,21 @@ const emittedKeys = computed<string>(() => {
     return t.binding.params.keys;
   return "";
 });
+
+// Native-combo sharing: when this target emits a combo that several catalog entries also emit
+// (Live reuses e.g. ctrl+i / ctrl+g per context), mapping it de-facto maps them too. Informational,
+// not blocking. Exclude the current target's own catalog name so it isn't listed against itself.
+const ownShortcutName = computed<string | undefined>(() => {
+  const t = props.target;
+  if (t?.kind === "ableton") return t.shortcut.name;
+  return undefined;
+});
+const sharedPeers = computed(() =>
+  emittedKeys.value ? nativePeers(emittedKeys.value, ownShortcutName.value) : [],
+);
+const sharedPeersLabel = computed(() =>
+  sharedPeers.value.map((s) => s.label).join(", "),
+);
 
 // Conflict: another binding already occupies the captured combo.
 function bindingLabel(b: Binding): string {
@@ -247,6 +262,13 @@ onBeforeUnmount(() => {
           </span>
         </div>
         <p v-if="actionDescription" class="edit-summary-desc">{{ actionDescription }}</p>
+        <!-- Native-combo sharing: Live reuses this keystroke across contexts, so mapping it also
+             drives the listed commands (same injected keys). Informational, not blocking. -->
+        <p v-if="sharedPeers.length" class="edit-summary-shared">
+          <span class="edit-summary-shared-icon" aria-hidden="true">⚠</span>
+          This native combo is also: <strong>{{ sharedPeersLabel }}</strong> — mapping it drives
+          those too (Live reuses the keystroke per context).
+        </p>
       </div>
 
       <!-- Smart action params first (e.g. load_device's name). Input type follows the
@@ -337,8 +359,8 @@ onBeforeUnmount(() => {
           </span>
         </div>
         <span v-if="capture.status.value === 'unsupported'" class="msg msg--err">
-          Unsupported key — use letters, digits, F1–F12, or keys like Space, Tab,
-          Enter, Esc, arrows.
+          Unsupported key — use letters, digits, F1–F12, punctuation like , [ ] = -,
+          or keys like Space, Tab, Enter, Esc, arrows.
         </span>
       </div>
 
@@ -421,6 +443,19 @@ onBeforeUnmount(() => {
   margin-left: auto;
   font-size: var(--fs-xs);
   color: var(--muted);
+}
+/* Native-combo sharing note (distinct from the trigger conflict warning further down). */
+.edit-summary-shared {
+  margin: var(--space-2) 0 0;
+  font-size: var(--fs-xs);
+  color: var(--warn);
+  line-height: 1.4;
+}
+.edit-summary-shared-icon {
+  margin-right: var(--space-1);
+}
+.edit-summary-shared strong {
+  font-weight: 600;
 }
 .trigger-field {
   margin-top: var(--space-5);

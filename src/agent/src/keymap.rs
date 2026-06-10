@@ -10,11 +10,18 @@
 //! Canonical form: lowercase, modifiers in the fixed order ctrl, alt, shift, win, then the
 //! main key, joined by '+'. Ex. "ctrl+n", "ctrl+shift+f5", "ctrl+alt+space".
 //!
-//! Namespace: a-z, 0-9, f1-f12, plus a set of named non-character keys (space, tab, enter,
-//! esc, backspace, delete, arrows, home/end, page up/down).
+//! Namespace: a-z, 0-9, f1-f12, a set of named non-character keys (space, tab, enter, esc,
+//! backspace, delete, arrows, home/end, page up/down), and a small set of punctuation glyphs
+//! (see PUNCTUATION) needed by native Live shortcuts like Ctrl+, (Settings) or Ctrl+[ / Ctrl+]
+//! (browser history). Punctuation is named layout-aware by its UNSHIFTED glyph, like letters.
 
 /// Fixed modifier order in the canonical combo string.
 pub const MODIFIER_ORDER: [&str; 4] = ["ctrl", "alt", "shift", "win"];
+
+/// Punctuation glyphs admitted into the canonical namespace. Kept deliberately small: only the
+/// keys some native Live shortcut needs. Named by glyph (layout-aware, like a-z), so a combo
+/// stores the character the key produces unshifted on the current layout.
+pub const PUNCTUATION: [char; 5] = [',', '[', ']', '=', '-'];
 
 /// Virtual-key code -> canonical modifier token. Generic + left/right variants all collapse
 /// to the same token (the canonical form has no left/right distinction).
@@ -56,8 +63,8 @@ fn named_token(vk: u32) -> Option<&'static str> {
 /// else (digits, numpad, function keys, named keys). Returns None if the key is outside the
 /// canonical namespace.
 pub fn key_name_from_vk(vk: u32, scan: u32) -> Option<String> {
-    if let Some(letter) = layout_letter(vk, scan) {
-        return Some(letter.to_string());
+    if let Some(glyph) = layout_glyph(vk, scan) {
+        return Some(glyph.to_string());
     }
     if (0x70..=0x7B).contains(&vk) {
         // VK_F1..VK_F12
@@ -81,13 +88,17 @@ pub fn key_name_from_vk(vk: u32, scan: u32) -> Option<String> {
     None
 }
 
-/// Layout-aware unmodified letter for a physical key via ToUnicodeEx.
+/// Layout-aware unmodified glyph for a physical key via ToUnicodeEx: a lowercase letter 'a'..'z'
+/// or one of the whitelisted PUNCTUATION glyphs, else None.
 ///
 /// Translates against a ZEROED key-state buffer so no held modifier influences the result:
-/// Ctrl+E yields 'e' (not '\x05'), and AltGr letters don't turn into punctuation. Returns a
-/// lowercase 'a'..'z' or None. Mirror of keymap.py::_layout_letter.
+/// Ctrl+E yields 'e' (not '\x05'), Ctrl+, yields ',', and AltGr letters don't turn into
+/// punctuation. The zeroed state also means we get the UNSHIFTED glyph (',' not '<', '=' not
+/// '+'), which is exactly the canonical name. Anything outside a-z + PUNCTUATION (digits,
+/// dead keys, accented results) falls through to positional mapping. Mirror of
+/// keymap.py::_layout_letter, widened to the punctuation namespace.
 #[cfg(windows)]
-fn layout_letter(vk: u32, scan: u32) -> Option<char> {
+fn layout_glyph(vk: u32, scan: u32) -> Option<char> {
     use windows::Win32::UI::Input::KeyboardAndMouse::{GetKeyboardLayout, ToUnicodeEx};
 
     // SAFETY: GetKeyboardLayout(0) gets the calling thread's layout; ToUnicodeEx writes at
@@ -100,9 +111,7 @@ fn layout_letter(vk: u32, scan: u32) -> Option<char> {
         let n = ToUnicodeEx(vk, scan, &state, &mut buf, 0, layout);
         if n == 1 {
             let ch = char::from_u32(buf[0] as u32)?.to_ascii_lowercase();
-            // Only ASCII a-z: digits, punctuation and dead-key/accented results fall through
-            // to positional mapping (the canonical letter namespace is a-z).
-            if ch.is_ascii_lowercase() {
+            if ch.is_ascii_lowercase() || PUNCTUATION.contains(&ch) {
                 return Some(ch);
             }
         }
@@ -113,7 +122,7 @@ fn layout_letter(vk: u32, scan: u32) -> Option<char> {
 /// Non-Windows stub: no layout translation (positional mapping covers A-Z). Lets the pure
 /// logic (and its tests) compile off-Windows; the real agent is Windows-only for now.
 #[cfg(not(windows))]
-fn layout_letter(_vk: u32, _scan: u32) -> Option<char> {
+fn layout_glyph(_vk: u32, _scan: u32) -> Option<char> {
     None
 }
 
@@ -124,7 +133,7 @@ mod tests {
 
     #[test]
     fn positional_names() {
-        // scan is irrelevant for non-letters; layout_letter returns no letter so we fall back.
+        // scan is irrelevant for non-letters; layout_glyph returns no glyph so we fall back.
         let cases = [
             (0x31, "1"),   // '1' top row
             (0x39, "9"),   // '9'
@@ -150,13 +159,21 @@ mod tests {
 
     #[test]
     fn letter_positional_fallback() {
-        // On a non-Windows test host layout_letter is a no-op -> positional A-Z mapping:
+        // On a non-Windows test host layout_glyph is a no-op -> positional A-Z mapping:
         // vk 0x45 -> 'e', vk 0x55 -> 'u'. (On Windows ToUnicodeEx yields the same on QWERTY.)
         #[cfg(not(windows))]
         {
             assert_eq!(key_name_from_vk(0x45, 0).as_deref(), Some("e"));
             assert_eq!(key_name_from_vk(0x55, 0).as_deref(), Some("u"));
         }
+    }
+
+    #[test]
+    fn punctuation_namespace() {
+        // The punctuation glyphs admitted into the namespace. Resolved layout-aware via
+        // ToUnicodeEx at capture time (Windows), so the positional fallback can't be exercised
+        // off-Windows — assert the whitelist itself, the contract the emitter mirrors.
+        assert_eq!(PUNCTUATION, [',', '[', ']', '=', '-']);
     }
 
     #[test]
