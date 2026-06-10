@@ -47,6 +47,9 @@ fn router() -> Router {
         .route("/api/shortcuts", get(api::get_shortcuts))
         .route("/api/shortcuts/add", post(api::post_shortcuts_add))
         .route("/api/shortcuts/delete", post(api::post_shortcuts_delete))
+        // Third-party extensions announce themselves here (outbound fetch from their sandbox).
+        .route("/api/extensions/register", post(api::post_extensions_register))
+        .route("/api/extensions/unregister", post(api::post_extensions_unregister))
         // Everything else: serve the SPA (catch-all -> index.html). Unknown /api/* paths are
         // handled inside serve_spa (404 JSON) rather than via a separate catch-all route, which
         // axum 0.7 rejects when more specific /api/* routes exist alongside it.

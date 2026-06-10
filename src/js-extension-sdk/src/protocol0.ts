@@ -1,15 +1,11 @@
 /**
- * @protocol0/sdk — PROTOTYPE / ergonomics sketch (layer 2).
+ * @protocol0/extension-sdk — the implementation (layer 2).
  *
  * Optional sugar over the HTTP contract documented in
  * docs/integrations/third-party-extensions.md. A third-party Ableton extension
  * can integrate with Protocol0 WITHOUT this lib by implementing the contract by
  * hand — this file just removes the boilerplate (server, /openapi.json,
  * register/unregister, crash-safety).
- *
- * Status: not published, not built, not wired. It exists to validate the API
- * shape before committing to a real package. See
- * docs/specs/todo/2026-06-04-third-party-extension-integration.md (M3).
  *
  * Design note — the registerCommand trap: a context-menu command receives a
  * selection Handle; a keyboard-triggered action does not. This lib therefore

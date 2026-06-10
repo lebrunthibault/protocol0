@@ -1,0 +1,50 @@
+{
+  "name": "@protocol0/extension-sdk",
+  "version": "0.1.1",
+  "description": "Ableton Live extension helper: expose your Ableton Extensions SDK extension's actions as Protocol0 keyboard shortcuts with one call.",
+  "license": "MIT",
+  "author": "Thibault Lebrun",
+  "homepage": "https://www.protocol0.live/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lebrunthibault/protocol0.git",
+    "directory": "src/js-extension-sdk"
+  },
+  "keywords": [
+    "ableton",
+    "ableton-live",
+    "ableton-extensions",
+    "ableton-extensions-sdk",
+    "extension-host",
+    "daw",
+    "music-production",
+    "protocol0",
+    "keyboard-shortcuts",
+    "hotkeys",
+    "automation"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "engines": {
+    "node": ">=24"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepare": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "typescript": "^5.9.3"
+  }
+}

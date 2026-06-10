@@ -41,6 +41,19 @@ pub struct ActionDef {
     pub params: Vec<ActionParam>,
     pub path: String,
     pub method: String,
+    // --- owner routing ---
+    // An action belongs either to the remote script or to a registered third-party extension.
+    // These fields tag who owns it so the keypress path POSTs to the right base URL (the SPA stays
+    // owner-agnostic; it just shows `owner`). They are empty/false until a caller stamps them via
+    // `tag_owner` after parsing — the parser itself is owner-agnostic.
+    /// Base URL to POST this action to (the script's base, or the extension's script_url).
+    pub owner_url: String,
+    /// "script" for the remote script, else the extension's registered name (SPA display).
+    #[serde(rename = "owner")]
+    pub owner_name: String,
+    /// Whether to prefix the POST with `/api`: the script serves actions under `/api/action/...`,
+    /// an extension serves them under `/action/...` (no `/api`). The openapi `path` is identical.
+    pub api_prefix: bool,
 }
 
 /// "load_device" -> "Load Device".
@@ -102,7 +115,27 @@ fn to_action_def(path: &str, method: &str, operation: &Value) -> ActionDef {
         path: path.to_string(),
         method: method.to_uppercase(),
         name,
+        // Owner is stamped by the caller (tag_owner) once it knows the source.
+        owner_url: String::new(),
+        owner_name: String::new(),
+        api_prefix: false,
     }
+}
+
+/// Stamps every action with its owner so the keypress path can route it. `api_prefix` is true for
+/// the script (POST under `/api/action/...`) and false for an extension (POST under `/action/...`).
+pub fn tag_owner(
+    mut actions: Vec<ActionDef>,
+    owner_url: &str,
+    owner_name: &str,
+    api_prefix: bool,
+) -> Vec<ActionDef> {
+    for a in &mut actions {
+        a.owner_url = owner_url.to_string();
+        a.owner_name = owner_name.to_string();
+        a.api_prefix = api_prefix;
+    }
+    actions
 }
 
 /// Parses an /openapi.json document into the action catalog. Pure (no I/O) so it's unit-
@@ -193,6 +226,19 @@ mod tests {
         assert_eq!(a.params[0].name, "name");
         assert_eq!(a.params[0].ty, "string");
         assert!(a.params[0].required);
+        // Owner is unset until a caller stamps it via tag_owner.
+        assert_eq!(a.owner_url, "");
+        assert_eq!(a.owner_name, "");
+        assert!(!a.api_prefix);
+    }
+
+    #[test]
+    fn tag_owner_stamps_all_actions() {
+        let tagged = tag_owner(parse_catalog(&openapi()), "http://127.0.0.1:9005", "my-ext", false);
+        assert_eq!(tagged.len(), 1);
+        assert_eq!(tagged[0].owner_url, "http://127.0.0.1:9005");
+        assert_eq!(tagged[0].owner_name, "my-ext");
+        assert!(!tagged[0].api_prefix);
     }
 
     #[test]

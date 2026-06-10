@@ -6,8 +6,8 @@
 >
 > This page is the **contract**. It is HTTP + JSON only — no Protocol0 code runs
 > inside your extension, and you can implement it in any language/runtime, not just
-> the SDK. A TypeScript helper (`@protocol0/sdk`) exists to do all of this for you,
-> but it is optional sugar over what is described here.
+> the SDK. A TypeScript helper (`@protocol0/extension-sdk`) exists to do all of this
+> for you, but it is optional sugar over what is described here.
 
 ## What you get
 
@@ -139,8 +139,8 @@ context-free actions for keyboard binding.
 - The agent endpoints: `POST /api/extensions/register`, `POST /api/extensions/unregister`.
 - The catalog parser Protocol0 uses to read your `/openapi.json`:
   `src/agent/src/action_catalog.rs`.
-- The validated proof-of-concept extension: `src/js-extension/`.
+- The reference extension that uses the helper: `src/js-extension/`.
 - Design rationale and milestones:
-  `docs/specs/todo/2026-06-04-third-party-extension-integration.md`.
+  `docs/specs/in-progress/2026-06-04-third-party-extension-integration.md`.
 - The optional TypeScript helper that implements all of the above:
-  `@protocol0/sdk` (see `src/js-extension/sdk/`).
+  `@protocol0/extension-sdk` (source in `src/js-extension-sdk/`).
