@@ -75,7 +75,15 @@
     { "@type": "Question", "name": "SmartScreen blocks the installer — what do I do?",
       "acceptedAnswer": { "@type": "Answer", "text": "Expected — the installer isn't code-signed yet. Click More info, then Run anyway. Code signing is planned." } },
     { "@type": "Question", "name": "My shortcuts aren't firing — how do I fix it?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Check the control surface is loaded in Ableton (Preferences, Tempo & MIDI, Control Surface, Protocol 0), confirm the binding exists in the web UI at http://127.0.0.1:9010/shortcuts, and make sure Ableton is the foreground window — shortcuts are intentionally ignored elsewhere." } }
+      "acceptedAnswer": { "@type": "Answer", "text": "Check the control surface is loaded in Ableton (Preferences, Tempo & MIDI, Control Surface, Protocol 0), confirm the binding exists in the web UI at http://127.0.0.1:9010/shortcuts, and make sure Ableton is the foreground window — shortcuts are intentionally ignored elsewhere." } },
+    { "@type": "Question", "name": "The web UI won't load — what do I check?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The UI is served by the background agent, not Ableton. Make sure the agent is running (look for the P icon in the system tray; launch Protocol 0 from the Start Menu if it's gone), and check %APPDATA%\\Protocol0\\logs\\agent.log for a startup error such as port 9010 already in use." } },
+    { "@type": "Question", "name": "The installer can't find Ableton — what do I do?",
+      "acceptedAnswer": { "@type": "Answer", "text": "If your Live install is in a non-standard location, the wizard lets you point at the MIDI Remote Scripts folder manually, typically C:\\ProgramData\\Ableton\\Live 12 Suite\\Resources\\MIDI Remote Scripts." } },
+    { "@type": "Question", "name": "It doesn't start automatically after login — how do I enable autostart?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Autostart is a shortcut in your Windows Startup folder, created only if you kept 'Start at login' ticked during install. Toggle it in Task Manager → Startup apps (look for Protocol 0), or reinstall with the option ticked." } },
+    { "@type": "Question", "name": "My bindings disappeared after reinstalling — where are they?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Bindings live in %APPDATA%\\Protocol0\\shortcuts.json, which install and uninstall leave alone. If the file was hand-edited into invalid JSON, the agent treats it as empty rather than crashing — open the web UI to re-add the binding, or fix the JSON." } }
   ]
 }
 </script>
@@ -110,6 +118,7 @@
       <a href="/docs">Overview</a>
       <a href="/docs/installation.html">Installation</a>
       <a href="/docs/architecture.html">Architecture</a>
+      <a href="/docs/http-api.html">HTTP API</a>
       <a href="/docs/extending.html">Extending Protocol 0</a>
       <a href="/docs/faq.html" class="active">FAQ &amp; troubleshooting</a>
     </div>
@@ -125,7 +134,7 @@
       <tr><td>Which Ableton versions?</td><td>Live 12 only (any edition).</td></tr>
       <tr><td>Which OS?</td><td>Windows today. macOS coming soon.</td></tr>
       <tr><td>Is it free?</td><td>Yes — free and open source under the MIT license.</td></tr>
-      <tr><td>Does Protocol 0 sells my data?</td><td>No. Protocol 0 is running 100% locally. No data is transmitted outside whatsoever.</td></tr>
+      <tr><td>Does Protocol 0 sell my data?</td><td>No. Protocol 0 runs 100% locally. No data is transmitted outside whatsoever.</td></tr>
     </table>
 
     <h2>Troubleshooting</h2>
@@ -138,8 +147,8 @@
         </div>
       </details>
 
-      <details>
-        <summary><svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>Shortcuts aren't firing</summary>
+      <details id="shortcuts-not-working">
+        <summary><svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>Shortcuts aren't firing (keyboard shortcuts not working)</summary>
         <div class="body">
           <ol>
             <li>Check the control surface is loaded in Ableton: <strong>Preferences → Tempo & MIDI → Control Surface → Protocol 0</strong>.</li>

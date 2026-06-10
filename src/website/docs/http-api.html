@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ableton HTTP API — control Live over local HTTP | Protocol 0</title>
+<meta name="description" content="Protocol 0 exposes an HTTP API for Ableton Live 12: POST to /api/action/<plugin>/<method> to drive Live from any tool — curl, a Stream Deck, AutoHotkey, or your own scripts. OpenAPI spec included. Free and open source.">
+<link rel="canonical" href="https://www.protocol0.live/docs/http-api.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Protocol 0">
+<meta property="og:url" content="https://www.protocol0.live/docs/http-api.html">
+<meta property="og:title" content="Ableton HTTP API — control Live over local HTTP">
+<meta property="og:description" content="Drive Ableton Live 12 from any tool over local HTTP. POST /api/action/<plugin>/<method>, an OpenAPI spec, and Swagger UI — the same calls a keyboard shortcut makes under the hood.">
+<meta property="og:image" content="https://www.protocol0.live/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Protocol 0 — the forgotten Ableton key mapper">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ableton HTTP API — control Live over local HTTP">
+<meta name="twitter:description" content="Drive Ableton Live 12 from any tool over local HTTP. POST /api/action/<plugin>/<method>, an OpenAPI spec, and Swagger UI.">
+<meta name="twitter:image" content="https://www.protocol0.live/og-image.png">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
+<link rel="stylesheet" href="/design-system.css">
+<link rel="stylesheet" href="/docs/docs.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Ableton HTTP API — control Live over local HTTP",
+  "description": "Protocol 0 exposes an HTTP API for Ableton Live 12: POST to /api/action/<plugin>/<method> to drive Live from any tool. OpenAPI spec included.",
+  "author": { "@type": "Person", "name": "Thibault Lebrun" },
+  "url": "https://www.protocol0.live/docs/http-api.html",
+  "isPartOf": { "@type": "WebSite", "name": "Protocol 0", "url": "https://www.protocol0.live/" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.protocol0.live/" },
+    { "@type": "ListItem", "position": 2, "name": "Docs", "item": "https://www.protocol0.live/docs" },
+    { "@type": "ListItem", "position": 3, "name": "HTTP API", "item": "https://www.protocol0.live/docs/http-api.html" }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header id="hdr">
+  <div class="wrap nav">
+    <a href="/" class="brand"><span class="dot">P0</span> Protocol 0</a>
+    <nav class="nav-links">
+      <a href="/">Home</a>
+      <a href="/docs" class="active">Docs</a>
+      <a href="https://github.com/lebrunthibault/protocol0" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </nav>
+    <div class="nav-right">
+      <a href="/#contact" class="contact">Contact</a>
+      <a href="https://github.com/lebrunthibault/protocol0/releases" target="_blank" rel="noopener" class="btn btn-primary">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v9m0 0L4.5 6.5M8 10l3.5-3.5M2 13.5h12"/></svg>
+        Download
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="docs-layout">
+  <aside class="docs-sidebar">
+    <div class="group">
+      <div class="group-title">Documentation</div>
+      <a href="/docs">Overview</a>
+      <a href="/docs/installation.html">Installation</a>
+      <a href="/docs/architecture.html">Architecture</a>
+      <a href="/docs/http-api.html" class="active">HTTP API</a>
+      <a href="/docs/extending.html">Extending Protocol 0</a>
+      <a href="/docs/faq.html">FAQ &amp; troubleshooting</a>
+    </div>
+  </aside>
+
+  <article class="docs-article">
+    <div class="label-accent">Reference</div>
+    <h1>Ableton HTTP API</h1>
+    <p class="lead">Protocol 0 turns Ableton Live 12 into something you can drive over local HTTP. Every action is a route — <code>POST /api/action/&lt;plugin&gt;/&lt;method&gt;</code> — so you can control Live from curl, a Stream Deck, an AutoHotkey script, or your own program. It's the exact same call a Protocol 0 keyboard shortcut makes under the hood.</p>
+
+    <h2>Why an HTTP API for Ableton?</h2>
+    <p>Ableton's own control surface scripts only react to MIDI, and Max for Live and the new Extensions SDK each have their own boundaries. None of them let an <em>external</em> program ask Live to do something. Protocol 0's remote script runs a small HTTP server inside Live, so anything that can send an HTTP request can trigger an action: select a track, load a device, read the set state. No MIDI loopback, no Max patch, no glue.</p>
+
+    <h2>Where the API lives</h2>
+    <p>There are two local servers, and they do different jobs:</p>
+    <table>
+      <tr><th>Server</th><th>Runs in</th><th>Address</th><th>Purpose</th></tr>
+      <tr><td>Script API</td><td>The remote script, inside Ableton</td><td><code>http://127.0.0.1:9000</code> *</td><td>The action API that drives Live</td></tr>
+      <tr><td>Agent</td><td>The background app (the keymapper)</td><td><code>http://127.0.0.1:9010</code></td><td>The config web UI and keyboard hook</td></tr>
+    </table>
+    <p>* The script binds <code>9000</code> by default and falls back to an OS-chosen free port if it's taken. The actual URL is published in <code>%APPDATA%\Protocol0\runtime.json</code> (the <code>script_url</code> key), so tooling reads it from there rather than hardcoding the port.</p>
+
+    <div class="note">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+      <p>The API only listens on <code>127.0.0.1</code> (localhost). It is never exposed to your network — Protocol 0 runs 100% on your machine.</p>
+    </div>
+
+    <h2>Calling an action</h2>
+    <p>Actions are <code>POST</code> routes. Parameters go in a JSON body, typed from the method signature. For example, to load a device onto the selected track:</p>
+    <pre><code>curl -X POST http://127.0.0.1:9000/api/action/device/load_device \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Wavetable"}'</code></pre>
+    <p>Or to select a track by name:</p>
+    <pre><code>curl -X POST http://127.0.0.1:9000/api/action/track/select \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Drums"}'</code></pre>
+    <p>Most actions are fire-and-forget: they return <code>200 OK</code> once Live has scheduled the work. Actions that produce a value return it as JSON.</p>
+
+    <h2>Reading the set state</h2>
+    <p>A read-only <code>GET</code> returns a serialized snapshot of the current Live set — tracks, names, colors, and more:</p>
+    <pre><code>curl http://127.0.0.1:9000/api/set/get_state</code></pre>
+    <p>And a liveness check that also reports the running version:</p>
+    <pre><code>curl http://127.0.0.1:9000/api/health
+# {"ok": true, "version": "0.16.5"}</code></pre>
+
+    <h2>Built-in actions</h2>
+    <p>Protocol 0 ships with a small, curated set of actions out of the box. They're the building blocks you bind to keyboard shortcuts — or call directly:</p>
+    <table>
+      <tr><th>Route</th><th>Body</th><th>What it does</th></tr>
+      <tr><td><code>POST /api/action/track/select</code></td><td><code>{"name": "Drums"}</code></td><td>Select a track by name (use <code>"master"</code> for the master track).</td></tr>
+      <tr><td><code>POST /api/action/device/load_device</code></td><td><code>{"name": "Wavetable"}</code></td><td>Load an instrument or audio effect onto the selected track.</td></tr>
+      <tr><td><code>GET /api/set/get_state</code></td><td>—</td><td>Return the full serialized state of the current set.</td></tr>
+      <tr><td><code>GET /api/health</code></td><td>—</td><td>Liveness check plus the running version.</td></tr>
+    </table>
+    <p>Adding your own action is a one-line <code>@action</code> decorator on a plugin method — see <a class="link" href="/docs/extending.html">Extending Protocol 0</a>.</p>
+
+    <h2>OpenAPI spec &amp; Swagger UI</h2>
+    <p>The API is self-describing. The remote script generates a live OpenAPI 3.1 document from the current route registry, and serves an offline Swagger UI to explore it:</p>
+    <table>
+      <tr><th>Path</th><th>What</th></tr>
+      <tr><td><code>GET /openapi.json</code></td><td>OpenAPI 3.1 spec, generated from the live routes and method docstrings.</td></tr>
+      <tr><td><code>GET /docs</code></td><td>Swagger UI (vendored offline) to browse and try the actions.</td></tr>
+    </table>
+    <p>Because the spec is generated, you can feed <code>/openapi.json</code> to any OpenAPI client generator and get a typed SDK for free.</p>
+
+    <h2>What can call it?</h2>
+    <ul>
+      <li>A <strong>Protocol 0 keyboard shortcut</strong> — the built-in path, no setup.</li>
+      <li>An <strong>Elgato Stream Deck</strong> button (a "Website" / multi-action HTTP request).</li>
+      <li>An <strong>AutoHotkey</strong> script that POSTs to a route instead of replaying keystrokes.</li>
+      <li>Your <strong>own program</strong>, in any language — it's just HTTP and JSON.</li>
+    </ul>
+
+    <div class="doc-nav">
+      <a href="/docs/architecture.html">
+        <div class="dir">← Previous</div>
+        <div class="ttl">Architecture</div>
+      </a>
+      <a class="next" href="/docs/extending.html">
+        <div class="dir">Next</div>
+        <div class="ttl">Extending Protocol 0 →</div>
+      </a>
+    </div>
+  </article>
+</div>
+
+<footer>
+  <div class="wrap foot">
+    <a href="/" class="brand"><span class="dot">P0</span> Protocol 0</a>
+    <div class="flinks">
+      <a href="/">Home</a>
+      <a href="/docs">Docs</a>
+      <a href="https://github.com/lebrunthibault/protocol0" target="_blank" rel="noopener">GitHub</a>
+      <a href="/#contact">Contact</a>
+    </div>
+    <div class="copy">© Thibault Lebrun 2026</div>
+  </div>
+</footer>
+
+<script>
+  const hdr=document.getElementById('hdr');
+  const onScroll=()=>hdr.classList.toggle('scrolled',window.scrollY>10);
+  onScroll();window.addEventListener('scroll',onScroll,{passive:true});
+</script>
+</body>
+</html>
