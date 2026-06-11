@@ -1,6 +1,6 @@
 {
   "name": "@protocol0/extension-sdk",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Ableton Live extension helper: expose your Ableton Extensions SDK extension's actions as Protocol0 keyboard shortcuts with one call.",
   "license": "MIT",
   "author": "Thibault Lebrun",
@@ -30,7 +30,8 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "files": ["dist", "README.md"],
   "engines": {

@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@ableton-extensions/sdk": "file:./vendor/ableton-extensions-sdk-1.0.0-beta.0.tgz",
-    "@protocol0/extension-sdk": "file:../js-extension-sdk"
+    "@protocol0/extension-sdk": "^0.1.2"
   },
   "devDependencies": {
     "@ableton-extensions/cli": "file:./vendor/ableton-extensions-cli-1.0.0-beta.0.tgz",
