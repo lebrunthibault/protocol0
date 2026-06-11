@@ -2,7 +2,13 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { useShortcuts } from "../composables/useShortcuts";
 import { useStatus } from "../composables/useStatus";
-import { SEND_KEYS_ACTION, type ActionDef, type Binding, type EditTarget } from "../api/types";
+import {
+  SCRIPT_OWNER,
+  SEND_KEYS_ACTION,
+  type ActionDef,
+  type Binding,
+  type EditTarget,
+} from "../api/types";
 import SearchBar from "../components/SearchBar.vue";
 import EditDialog from "../components/EditDialog.vue";
 import GateOverlay from "../components/GateOverlay.vue";
@@ -28,10 +34,23 @@ const locked = computed(() => state.value !== "ready");
 const searchText = ref("");
 const searchHotkey = ref("");
 
-// Filter pills: All (default) -> Ableton shortcuts -> Smart actions.
-type Filter = "all" | "ableton" | "smart";
+// Filter pills: All (default) -> Ableton shortcuts -> Smart actions -> Extensions (the last
+// only appears when at least one third-party extension has registered an action).
+type Filter = "all" | "ableton" | "smart" | "extensions";
 const filter = ref<Filter>("all");
 const mappedOnly = ref(false);
+
+// An action is "owned" by an extension when its owner is set and isn't the remote script.
+// owner omitted (older agent) -> treated as the script, so nothing silently disappears.
+function isExtensionAction(action: ActionDef): boolean {
+  return !!action.owner && action.owner !== SCRIPT_OWNER;
+}
+const hasExtensionActions = computed(() => actions.value.some(isExtensionAction));
+
+// If the last extension unregisters while its tab is active, fall back to All.
+watch(hasExtensionActions, (has) => {
+  if (!has && filter.value === "extensions") filter.value = "all";
+});
 
 // The target handed to the modal (an existing binding, or a catalog entry to map). null = closed.
 const target = ref<EditTarget>(null);
@@ -42,6 +61,11 @@ watch(locked, (isLocked) => {
 });
 
 onMounted(load);
+
+// "Loading…" only on the very first load (no catalog yet). Reloads after a save keep the
+// list mounted so its scroll position survives — otherwise the list is torn down and
+// remounted, which reads as a full page reload.
+const initialLoading = computed(() => loading.value && abletonShortcuts.value.length === 0);
 
 // One row of the unified list. An Ableton row carries its catalog entry + the binding that
 // maps it, if any. A smart row is either an existing load_device binding or the "new mapping"
@@ -65,8 +89,12 @@ interface SmartRow {
 }
 type Row = AbletonRow | SmartRow;
 interface Group {
-  category: string;
+  category: string; // header label (Ableton category, "Smart actions", or an extension name)
   rows: Row[];
+  extension?: boolean; // true => this group is a registered extension (rendered with a tag)
+  // Stable key for collapse state; defaults to category but namespaced for extensions so an
+  // extension named like an Ableton category doesn't share its expand/collapse state.
+  expandKey?: string;
 }
 
 // Index the user's bindings: send_keys keyed by the emitted Ableton combo, smart ones split out.
@@ -107,7 +135,7 @@ function bindingLabel(b: Binding): string {
 // Ableton groups: the catalog grouped by category, in catalog order, each entry annotated
 // with the binding that maps it (if any). Filtered by search + mapped-only.
 const abletonGroups = computed<Group[]>(() => {
-  if (filter.value === "smart") return [];
+  if (filter.value === "smart" || filter.value === "extensions") return [];
   const groups: Group[] = [];
   const byCat = new Map<string, Row[]>();
   for (const s of abletonShortcuts.value) {
@@ -133,13 +161,12 @@ const abletonGroups = computed<Group[]>(() => {
   return groups;
 });
 
-// Smart actions group: for every catalog action, a "<Action> — new mapping" template,
-// then one row per existing binding of that action. Generic over the whole catalog (drop
-// a plugin @action in the script and it shows up here). Filtered by search + mapped-only.
-const smartGroup = computed<Group | null>(() => {
-  if (filter.value === "ableton") return null;
+// Build the rows for a set of smart actions: for each, a "<Action> — new mapping" template,
+// then one row per existing binding of that action. Filtered by search + mapped-only. Shared
+// by the script's "Smart actions" group and the per-extension groups.
+function rowsForActions(list: ActionDef[]): Row[] {
   const rows: Row[] = [];
-  for (const action of actions.value) {
+  for (const action of list) {
     if (!mappedOnly.value && matchesSearch(humanizeAction(action.name), "", "")) {
       rows.push({
         kind: "smart",
@@ -157,13 +184,47 @@ const smartGroup = computed<Group | null>(() => {
       rows.push({ kind: "smart", key: `b:${b.combo}`, label, combo: b.combo, action, binding: b });
     }
   }
+  return rows;
+}
+
+// Smart actions group: the remote script's own actions (drop a plugin @action in the script
+// and it shows up here). Extension actions live in their own per-extension groups below.
+const smartGroup = computed<Group | null>(() => {
+  if (filter.value === "ableton" || filter.value === "extensions") return null;
+  const rows = rowsForActions(actions.value.filter((a) => !isExtensionAction(a)));
   if (!rows.length) return null;
   return { category: "Smart actions", rows };
+});
+
+// Extension groups: one group per registered extension (its name as the header), holding that
+// extension's actions. Visible on the All and Extensions filters; hidden on Ableton/Smart.
+const extensionGroups = computed<Group[]>(() => {
+  if (filter.value === "ableton" || filter.value === "smart") return [];
+  const groups: Group[] = [];
+  const byOwner = new Map<string, ActionDef[]>();
+  for (const action of actions.value) {
+    if (!isExtensionAction(action)) continue;
+    const owner = action.owner as string;
+    let list = byOwner.get(owner);
+    if (!list) {
+      list = [];
+      byOwner.set(owner, list);
+    }
+    list.push(action);
+  }
+  for (const [owner, list] of byOwner) {
+    const rows = rowsForActions(list);
+    if (rows.length) {
+      groups.push({ category: owner, rows, extension: true, expandKey: `ext:${owner}` });
+    }
+  }
+  return groups;
 });
 
 const groups = computed<Group[]>(() => {
   const g = [...abletonGroups.value];
   if (smartGroup.value) g.push(smartGroup.value);
+  g.push(...extensionGroups.value);
   return g;
 });
 
@@ -175,11 +236,13 @@ const expanded = ref<Set<string>>(new Set());
 const searchActive = computed(
   () => searchText.value.trim() !== "" || searchHotkey.value.trim() !== "" || mappedOnly.value,
 );
-const isExpanded = (category: string) => searchActive.value || expanded.value.has(category);
-function toggleCategory(category: string) {
+const groupKey = (g: Group) => g.expandKey ?? g.category;
+const isExpanded = (g: Group) => searchActive.value || expanded.value.has(groupKey(g));
+function toggleGroup(g: Group) {
+  const key = groupKey(g);
   const next = new Set(expanded.value);
-  if (next.has(category)) next.delete(category);
-  else next.add(category);
+  if (next.has(key)) next.delete(key);
+  else next.add(key);
   expanded.value = next;
 }
 
@@ -251,34 +314,51 @@ function openRow(row: Row) {
         >
           Smart actions
         </button>
+        <button
+          v-if="hasExtensionActions"
+          type="button"
+          class="mode-tab"
+          :class="{ 'mode-tab--on': filter === 'extensions' }"
+          role="tab"
+          :aria-selected="filter === 'extensions'"
+          @click="filter = 'extensions'"
+        >
+          Extensions
+        </button>
       </div>
-      <label class="mapped-toggle">
-        <input type="checkbox" v-model="mappedOnly" />
-        Show mapped only
-      </label>
-      <span class="badge keymapper-count">{{ actionCount }} mapped</span>
+      <button
+        type="button"
+        class="badge keymapper-count"
+        :class="{ 'keymapper-count--on': mappedOnly }"
+        :aria-pressed="mappedOnly"
+        :title="mappedOnly ? 'Show all' : 'Show mapped only'"
+        @click="mappedOnly = !mappedOnly"
+      >
+        {{ actionCount }} mapped
+      </button>
     </div>
 
     <div v-if="error" class="msg msg--err">{{ error }}</div>
-    <div v-else-if="loading" class="msg">Loading…</div>
+    <div v-else-if="initialLoading" class="msg">Loading…</div>
     <div v-else-if="!hasRows" class="card card--flat keymapper-empty">
       <p class="msg">
         {{ mappedOnly ? "No shortcut mapped yet." : "No shortcut matches your search." }}
       </p>
     </div>
     <div v-else class="card card--flat ableton-list keymapper-list">
-      <div v-for="g in groups" :key="g.category" class="ableton-group">
+      <div v-for="g in groups" :key="groupKey(g)" class="ableton-group">
         <button
           type="button"
           class="ableton-group-head"
-          :aria-expanded="isExpanded(g.category)"
-          @click="toggleCategory(g.category)"
+          :aria-expanded="isExpanded(g)"
+          @click="toggleGroup(g)"
         >
-          <span class="ableton-caret" :class="{ 'ableton-caret--open': isExpanded(g.category) }">▸</span>
+          <span class="ableton-caret" :class="{ 'ableton-caret--open': isExpanded(g) }">▸</span>
           <span class="ableton-group-name">{{ g.category }}</span>
+          <span v-if="g.extension" class="ext-tag" title="Third-party extension">Extension</span>
           <span class="ableton-group-count">{{ g.rows.length }}</span>
         </button>
-        <div v-if="isExpanded(g.category)" class="ableton-group-body">
+        <div v-if="isExpanded(g)" class="ableton-group-body">
           <button
             v-for="row in g.rows"
             :key="row.key"
@@ -296,6 +376,14 @@ function openRow(row: Row) {
               :class="{ 'ableton-shared-badge--mapped': row.binding }"
               :title="`Same native combo as: ${row.peers.join(', ')}${row.binding ? ' — these were mapped together' : ''}`"
             >⚠ +{{ row.peers.length }}</span>
+            <!-- TEMP: native Ableton combo this row maps to (so the original shortcut is
+                 visible alongside any assigned one). Remove when no longer needed. -->
+            <Kbd
+              v-if="row.kind === 'ableton'"
+              class="ableton-native-kbd"
+              :combo="row.shortcut.keys"
+              title="Native Ableton shortcut"
+            />
             <Kbd v-if="row.combo" :combo="row.combo" />
           </button>
         </div>
@@ -337,28 +425,28 @@ function openRow(row: Row) {
 .keymapper-controls :deep(.search) {
   flex: 1;
 }
-/* Filter pills + mapped-only toggle + count, on one line above the list. */
+/* Filter pills + mapped count toggle, on one line above the list. */
 .keymapper-bar {
   display: flex;
   align-items: center;
   gap: var(--space-4);
   margin: var(--space-4) 0;
 }
-.mapped-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--fs-sm);
-  color: var(--muted);
-  cursor: pointer;
-  user-select: none;
-}
-.mapped-toggle input {
-  cursor: pointer;
-  accent-color: var(--accent);
-}
+/* The "N mapped" badge doubles as the "show mapped only" toggle (active state when on). */
 .keymapper-count {
   margin-left: auto;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid transparent;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.keymapper-count:hover {
+  border-color: var(--accent-soft);
+}
+.keymapper-count--on {
+  background: var(--accent-bg);
+  color: var(--accent-soft);
+  border-color: var(--accent-soft);
 }
 .keymapper-list {
   max-height: calc(100vh - 320px);
@@ -368,11 +456,34 @@ function openRow(row: Row) {
   padding: var(--space-6);
   text-align: center;
 }
+/* Small pill marking an extension-owned group header, so it reads as a third-party
+   extension and not a native Ableton category. Sits between the name and the count. */
+.ext-tag {
+  flex: none;
+  margin-left: var(--space-3);
+  padding: 1px 6px;
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--accent-soft);
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-soft);
+  border-radius: 999px;
+}
 /* "New mapping" template row: lighter, italic so it reads as an action, not a binding. */
 .ableton-item--new .ableton-item-label {
   color: var(--accent-soft);
   font-style: italic;
 }
+/* TEMP: native Ableton combo shown on every Ableton row. Dimmed so it reads as the
+   original shortcut, distinct from the (brighter) assigned combo. margin-left:auto pushes
+   it (and any trailing assigned Kbd) to the right of the row. Remove with its markup. */
+.ableton-native-kbd {
+  opacity: 0.5;
+  margin-left: auto;
+}
+
 /* Shared-native-combo badge: muted hint by default, emphasised once the row is mapped.
    margin-left:auto pushes it (and the trailing Kbd) to the right of the row. */
 .ableton-shared-badge {

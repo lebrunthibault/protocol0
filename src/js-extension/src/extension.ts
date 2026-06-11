@@ -42,14 +42,18 @@ export function activate(activation: ActivationContext) {
         },
       },
       mute_all: {
-        summary: "Mute every track.", // no params → no requestBody in the openapi
+        summary: "Toggle mute on every track.", // no params → no requestBody in the openapi
         handler: () => {
+          const tracks = context.application.song.tracks;
+          // Toggle as a set: if any track is unmuted, mute all; once all are muted, the next
+          // press unmutes all. Predictable to test in a loop.
+          const mute = tracks.some((track) => !track.mute);
           context.withinTransaction(() => {
-            for (const track of context.application.song.tracks) {
-              track.mute = true;
+            for (const track of tracks) {
+              track.mute = mute;
             }
           });
-          console.log("[protocol0-example] muted all tracks");
+          console.log(`[protocol0-example] ${mute ? "muted" : "unmuted"} all tracks`);
         },
       },
     },

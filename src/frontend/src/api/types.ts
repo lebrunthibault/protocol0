@@ -22,7 +22,13 @@ export interface ActionDef {
   params: ActionParam[];
   path: string;
   method: string;
+  // Who owns the action: "script" for the remote script, else a registered third-party
+  // extension's name. Optional for back-compat (older agents omit it -> treated as "script").
+  owner?: string;
 }
+
+// The owner value the agent stamps on the remote script's own actions (vs. extensions).
+export const SCRIPT_OWNER = "script";
 
 // A native Ableton Live shortcut, offered as a remap target. `keys` is the canonical
 // combo the agent replays when the user's combo fires (action "send_keys").
