@@ -149,6 +149,38 @@ header.scrolled{border-bottom-color:var(--line);background:rgba(0,0,0,0.8)}
 .nav-right .discord:hover{color:#5865f2}
 .nav-right .discord svg{width:20px;height:20px}
 
+/* hamburger toggle + mobile dropdown menu (revealed <=720px, see bottom) */
+.nav-toggle{
+  display:none;width:40px;height:40px;flex:0 0 auto;
+  align-items:center;justify-content:center;
+  background:transparent;border:1px solid var(--line);border-radius:var(--radius-md);
+  color:var(--text);cursor:pointer;transition:border-color var(--t),background var(--t);
+}
+.nav-toggle:hover{border-color:var(--line-strong);background:rgba(255,255,255,0.04)}
+.nav-toggle svg{width:20px;height:20px}
+.nav-toggle .ic-close{display:none}
+#hdr.menu-open .nav-toggle .ic-open{display:none}
+#hdr.menu-open .nav-toggle .ic-close{display:block}
+
+.nav-menu{
+  display:none;
+  position:absolute;top:calc(100% - 8px);right:var(--space-5);
+  min-width:200px;max-width:calc(100vw - 2*var(--space-5));
+  flex-direction:column;
+  background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-lg);
+  box-shadow:0 12px 32px rgba(0,0,0,0.5);padding:var(--space-2);
+  opacity:0;transform:translateY(-6px);pointer-events:none;
+  transition:opacity var(--t),transform var(--t);
+}
+.nav-menu a{
+  display:flex;align-items:center;gap:var(--space-3);
+  min-height:44px;padding:0 var(--space-3);border-radius:var(--radius-md);
+  font-size:var(--fs-md);color:var(--text-soft);transition:background var(--t),color var(--t);
+}
+.nav-menu a svg{width:18px;height:18px;flex:0 0 auto;color:var(--muted)}
+.nav-menu a:hover{background:rgba(255,255,255,0.04);color:var(--text)}
+.nav-menu a.active{color:var(--text)}
+
 /* ---------- Buttons ---------- */
 .btn{
   display:inline-flex;align-items:center;gap:var(--space-2);
@@ -361,4 +393,9 @@ footer{border-top:1px solid var(--line);margin-top:var(--space-6);padding:var(--
 
 @media (max-width:720px){
   .nav-links{display:none}
+  .nav-right .btn-primary{display:none}   /* Download is a desktop install */
+  .nav-toggle{display:flex}
+  #hdr.menu-open .nav-menu{
+    display:flex;opacity:1;transform:translateY(0);pointer-events:auto;
+  }
 }
