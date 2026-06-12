@@ -14,3 +14,8 @@ node_modules/
 # Front Vue 3 (src/frontend) : build buildé en CI, jamais committé.
 /src/frontend/dist/
 /src/frontend/node_modules/
+
+# Website local dev (vercel link / vercel env pull)
+/src/website/.env*
+.vercel/
+.vercel

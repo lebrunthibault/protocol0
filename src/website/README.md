@@ -14,6 +14,8 @@ src/website/
 ├── design-system.css   Design tokens + all shared components (source of truth)
 ├── DESIGN.md           How to reuse the design system in another surface
 ├── vercel.json         Deployment config (headers, URL handling)
+├── api/
+│   └── subscribe.js     Newsletter signup — Vercel serverless function → Resend
 ├── docs/
 │   ├── docs.css         Docs layout (sidebar + prose)
 │   ├── index.html       Docs overview
@@ -44,6 +46,10 @@ Opening `index.html` directly via `file://` mostly works, but the root-absolute
 links (`/docs/`, `/design-system.css`) resolve against the filesystem root, so use a
 local server for an accurate preview.
 
+Static servers do **not** run the serverless function — `/api/subscribe` will 404
+and the newsletter form will show its error state. To exercise the form locally,
+use `vercel dev` (see Newsletter below).
+
 ## Deploy on Vercel
 
 This folder is self-contained and deploys as a static site with **no build
@@ -57,6 +63,42 @@ command**.
 
 `vercel.json` lives in this folder and is picked up automatically once the root
 directory is set. Every push to the repo redeploys.
+
+Even with no build command, Vercel auto-detects serverless functions under
+`api/` **inside this root directory** (`src/website/api/`) — a repo-root `api/`
+folder would be invisible.
+
+## Newsletter (Resend)
+
+The "Stay in the loop" section on the landing page posts `{email}` to
+`/api/subscribe`, which adds the contact to a [Resend](https://resend.com)
+Audience. Zero dependencies — plain `fetch` on the Node runtime.
+
+**One-time setup:**
+
+1. Resend dashboard → **Audiences** → create an audience, copy its ID.
+2. **API Keys** → create a key with full access to that audience.
+3. Vercel → Project → Settings → **Environment Variables**: add
+   `RESEND_API_KEY` and `RESEND_AUDIENCE_ID`, enabled for Production, Preview
+   and Development (so `vercel env pull` works).
+
+Domain verification is **not** needed to collect contacts — only later, to send
+broadcasts from a `@protocol0.live` address. Broadcasts are written and sent
+manually from the Resend dashboard.
+
+**Behavior:** invalid emails get a 400; a hidden honeypot field (`company`)
+silently drops bots; an already-subscribed email (Resend 409) is treated as
+success. There is no rate limiting — if spam ever becomes a problem, add a
+KV-backed limiter (e.g. Upstash) in front of the Resend call.
+
+**Local dev:**
+
+```sh
+cd src/website
+npx vercel link            # one-time: link this folder to the Vercel project
+npx vercel env pull .env   # pull the Development env vars
+npx vercel dev             # static files + /api/subscribe on localhost:3000
+```
 
 ## Editing notes
 
