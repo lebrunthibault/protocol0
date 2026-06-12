@@ -104,11 +104,17 @@ fn layout_glyph(vk: u32, scan: u32) -> Option<char> {
     // SAFETY: GetKeyboardLayout(0) gets the calling thread's layout; ToUnicodeEx writes at
     // most `buf.len()` UTF-16 units into our stack buffer. The key-state array is fully
     // initialized to zero (no modifier active), as the Python code does.
+    //
+    // wFlags bit 2 (0x4, Win10 1607+) = "do not change keyboard state". CRITICAL: without it,
+    // this call — made by the hook for every keypress, BEFORE the foreground app translates
+    // it — mutates the kernel's shared dead-key state. Pressing a dead key (e.g. '^' on
+    // AZERTY) would leave a pending dead-key from our translation, and the app's own
+    // translation of the same keystroke then sees pending '^' + new '^' -> doubled '^^'.
     unsafe {
         let layout = GetKeyboardLayout(0);
         let state = [0u8; 256];
         let mut buf = [0u16; 8];
-        let n = ToUnicodeEx(vk, scan, &state, &mut buf, 0, layout);
+        let n = ToUnicodeEx(vk, scan, &state, &mut buf, 0x4, layout);
         if n == 1 {
             let ch = char::from_u32(buf[0] as u32)?.to_ascii_lowercase();
             if ch.is_ascii_lowercase() || PUNCTUATION.contains(&ch) {

@@ -122,8 +122,11 @@ fn char_to_vk(c: char) -> Option<(u16, bool)> {
 /// parsed into known tokens.
 ///
 /// `held_modifiers` are the canonical modifiers the user currently holds physically (from the
-/// listener). They are released before the injection and re-pressed after, so the target chord
-/// lands clean regardless of what triggered it.
+/// listener). The injection is a MINIMAL DIFF against them: held modifiers the target chord
+/// also needs are left alone (the user's own keys serve the chord, like a human tapping the
+/// main key while still holding ctrl+alt); only extra held modifiers are lifted, and only
+/// missing target modifiers are pressed. This avoids releasing/re-pressing a modifier within
+/// microseconds, which some apps coalesce or ignore.
 pub fn send(combo: &str, held_modifiers: &HashSet<String>) {
     let parts: Vec<&str> = combo.split('+').filter(|p| !p.is_empty()).collect();
     let Some((key_token, mod_tokens)) = parts.split_last() else {
@@ -153,57 +156,94 @@ pub fn send(combo: &str, held_modifiers: &HashSet<String>) {
         mods.push(VK_SHIFT);
     }
 
-    // Real modifiers to temporarily lift (only ones we know how to press back).
+    // Real modifiers physically held (only ones we know how to press back).
     let held: Vec<u16> = held_modifiers
         .iter()
         .filter_map(|m| modifier_vk(m))
         .collect();
 
-    inject_chord(&mods, main, &held);
+    let (to_lift, to_press) = chord_plan(&mods, &held);
+    tracing::info!(
+        "send_keys: injecting {combo:?} (main vk {main:#04x}, press {to_press:02x?}, lift {to_lift:02x?})"
+    );
+    inject_chord(&to_press, main, &to_lift);
 }
 
-/// 1) lift the user's held modifiers; 2) inject the clean target chord; 3) restore the held
-/// modifiers. Centralizes the SendInput calls.
+/// Minimal diff between the physically held modifiers and the target chord's modifiers:
+/// (to_lift, to_press). Held ∩ target stays down untouched — the user's own modifiers serve
+/// the chord. Pure, so the parity-critical set logic is unit-testable.
+fn chord_plan(target_mods: &[u16], held: &[u16]) -> (Vec<u16>, Vec<u16>) {
+    let to_lift = held
+        .iter()
+        .copied()
+        .filter(|m| !target_mods.contains(m))
+        .collect();
+    let to_press = target_mods
+        .iter()
+        .copied()
+        .filter(|m| !held.contains(m))
+        .collect();
+    (to_lift, to_press)
+}
+
+/// 1) lift the held modifiers the chord must not see; 2) press the missing target modifiers,
+/// tap the main key, release them in reverse; 3) restore what was lifted. Modifiers both held
+/// and needed never appear here — they stay physically down throughout (see chord_plan).
 #[cfg(windows)]
-fn inject_chord(mods: &[u16], main: u16, held: &[u16]) {
-    // 1) lift the user's held modifiers so they don't pollute the target chord.
-    for &m in held {
+fn inject_chord(to_press: &[u16], main: u16, to_lift: &[u16]) {
+    // 1) lift the held modifiers that would pollute the target chord.
+    for &m in to_lift {
         key_event(m, true);
     }
-    // 2) inject the clean target chord: press mods, tap main, release mods in reverse.
-    for &m in mods {
+    // 2) inject the missing part of the chord: press mods, tap main, release mods in reverse.
+    for &m in to_press {
         key_event(m, false);
     }
     key_event(main, false);
     key_event(main, true);
-    for &m in mods.iter().rev() {
+    for &m in to_press.iter().rev() {
         key_event(m, true);
     }
     // 3) restore the modifiers the user is still holding.
-    for &m in held {
+    for &m in to_lift {
         key_event(m, false);
     }
 }
 
-/// Sends one key down/up event via SendInput.
+/// Keys on the extended scan-code page (0xE0 prefix): the navigation cluster + arrows.
+/// Without KEYEVENTF_EXTENDEDKEY their MapVirtualKeyW scan code is the numpad-shared one,
+/// so apps reading scan codes would see numpad keys instead.
+#[cfg(windows)]
+fn is_extended(vk: u16) -> bool {
+    // pageup, pagedown, end, home, left, up, right, down, delete
+    matches!(vk, 0x21..=0x28 | 0x2E)
+}
+
+/// Sends one key down/up event via SendInput, carrying the real scan code alongside the VK
+/// (a physical keystroke has both; apps that read the scan code ignore wVk-only events).
 #[cfg(windows)]
 fn key_event(vk: u16, up: bool) {
     use windows::Win32::UI::Input::KeyboardAndMouse::{
-        SendInput, INPUT, INPUT_0, INPUT_KEYBOARD, KEYBDINPUT, KEYBD_EVENT_FLAGS, KEYEVENTF_KEYUP,
-        VIRTUAL_KEY,
+        MapVirtualKeyW, SendInput, INPUT, INPUT_0, INPUT_KEYBOARD, KEYBDINPUT, KEYBD_EVENT_FLAGS,
+        KEYEVENTF_EXTENDEDKEY, KEYEVENTF_KEYUP, MAPVK_VK_TO_VSC, VIRTUAL_KEY,
     };
 
-    let flags = if up {
+    // SAFETY: pure table lookup in the current layout.
+    let scan = unsafe { MapVirtualKeyW(vk as u32, MAPVK_VK_TO_VSC) } as u16;
+    let mut flags = if up {
         KEYEVENTF_KEYUP
     } else {
         KEYBD_EVENT_FLAGS(0)
     };
+    if is_extended(vk) {
+        flags |= KEYEVENTF_EXTENDEDKEY;
+    }
     let input = INPUT {
         r#type: INPUT_KEYBOARD,
         Anonymous: INPUT_0 {
             ki: KEYBDINPUT {
                 wVk: VIRTUAL_KEY(vk),
-                wScan: 0,
+                wScan: scan,
                 dwFlags: flags,
                 time: 0,
                 dwExtraInfo: 0,
@@ -237,5 +277,33 @@ mod tests {
         assert_eq!(resolve_key_vk("space"), Some((0x20, false)));
         assert_eq!(resolve_key_vk("f1"), Some((0x70, false)));
         assert_eq!(resolve_key_vk("f12"), Some((0x7B, false)));
+    }
+
+    const CTRL: u16 = 0x11;
+    const ALT: u16 = 0x12;
+    const SHIFT: u16 = 0x10;
+
+    #[test]
+    fn chord_plan_held_equals_target_touches_nothing() {
+        // ctrl+alt+q triggering ctrl+alt+3: the user's own ctrl+alt serve the chord — just
+        // tap the main key, no modifier flapping.
+        assert_eq!(chord_plan(&[CTRL, ALT], &[CTRL, ALT]), (vec![], vec![]));
+    }
+
+    #[test]
+    fn chord_plan_disjoint_lifts_and_presses() {
+        // shift held, target needs ctrl: lift shift, press ctrl.
+        assert_eq!(chord_plan(&[CTRL], &[SHIFT]), (vec![SHIFT], vec![CTRL]));
+    }
+
+    #[test]
+    fn chord_plan_partial_overlap() {
+        // ctrl+shift held, target ctrl+alt: ctrl stays down, shift lifted, alt pressed.
+        assert_eq!(chord_plan(&[CTRL, ALT], &[CTRL, SHIFT]), (vec![SHIFT], vec![ALT]));
+    }
+
+    #[test]
+    fn chord_plan_nothing_held_presses_all() {
+        assert_eq!(chord_plan(&[CTRL, ALT], &[]), (vec![], vec![CTRL, ALT]));
     }
 }
