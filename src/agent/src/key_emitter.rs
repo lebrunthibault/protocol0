@@ -60,17 +60,23 @@ fn named_vk(token: &str) -> Option<u16> {
 
 /// Canonical main-key token -> (VK to inject, whether Shift is required), or None if unsupported.
 ///
-/// Letters/digits/punctuation go through VkKeyScanW so they land correctly regardless of layout
-/// (mirrors pynput pressing the character). f1..f12 and named keys map positionally and never
-/// need Shift. The `needs_shift` flag matters for glyphs the layout produces only with Shift
-/// (e.g. '+' on US is Shift+'='): the canonical namespace names keys by their unshifted glyph,
-/// but a future shifted glyph would still inject correctly.
+/// Digits are positional (ASCII '0'..'9' == VK 0x30..0x39), mirroring capture in keymap.rs —
+/// they must NOT go through VkKeyScanW. Letters/punctuation DO go through VkKeyScanW so they land
+/// correctly regardless of layout (mirrors capture naming them layout-aware via ToUnicodeEx).
+/// f1..f12 and named keys map positionally and never need Shift. The `needs_shift` flag matters
+/// for glyphs the layout produces only with Shift (e.g. '+' on US is Shift+'='): the canonical
+/// namespace names keys by their unshifted glyph, but a future shifted glyph would still inject
+/// correctly.
 fn resolve_key_vk(token: &str) -> Option<(u16, bool)> {
     let chars: Vec<char> = token.chars().collect();
+    // Digits are positional (mirror capture in keymap.rs): ASCII '0'..'9' == VK 0x30..0x39.
+    // Must NOT go through VkKeyScanW — on AZERTY the top-row digit needs Shift, which would
+    // inject the wrong native shortcut (Ctrl+Alt+Shift+3 instead of Ctrl+Alt+3).
+    if chars.len() == 1 && chars[0].is_ascii_digit() {
+        return Some((chars[0] as u16, false));
+    }
     if chars.len() == 1
-        && (chars[0].is_ascii_alphabetic()
-            || chars[0].is_ascii_digit()
-            || keymap::PUNCTUATION.contains(&chars[0]))
+        && (chars[0].is_ascii_alphabetic() || keymap::PUNCTUATION.contains(&chars[0]))
     {
         return char_to_vk(chars[0]);
     }
@@ -212,3 +218,24 @@ fn key_event(vk: u16, up: bool) {
 
 #[cfg(not(windows))]
 fn inject_chord(_mods: &[u16], _main: u16, _held: &[u16]) {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn digits_are_positional_never_shifted() {
+        // Mirror of capture (keymap.rs): top-row digit token -> VK 0x30..0x39, no Shift.
+        // Guards the AZERTY regression where VkKeyScanW('3') sets needs_shift=true.
+        assert_eq!(resolve_key_vk("0"), Some((0x30, false)));
+        assert_eq!(resolve_key_vk("3"), Some((0x33, false)));
+        assert_eq!(resolve_key_vk("9"), Some((0x39, false)));
+    }
+
+    #[test]
+    fn named_and_function_keys_unaffected() {
+        assert_eq!(resolve_key_vk("space"), Some((0x20, false)));
+        assert_eq!(resolve_key_vk("f1"), Some((0x70, false)));
+        assert_eq!(resolve_key_vk("f12"), Some((0x7B, false)));
+    }
+}

@@ -106,7 +106,6 @@ pub fn get_all() -> Vec<Shortcut> {
         s("quantize_one_bar", "1-Bar Quantization", "Quantization", "ctrl+9"),
         s("quantize_off", "Quantization Off", "Quantization", "ctrl+0"),
         // --- Session View ---
-        s("launch_clip_slot", "Launch Selected Clip/Slot", "Session", "enter"),
         s("select_all_clips", "Select All Clips/Slots", "Session", "ctrl+a"),
         s("insert_scene", "Insert Scene", "Session", "ctrl+i"),
         s("insert_captured_scene", "Insert Captured Scene", "Session", "ctrl+shift+i"),
@@ -137,7 +136,6 @@ pub fn get_all() -> Vec<Shortcut> {
         s("track_height_increase", "Adjust Height of Selected Tracks/Clips (Increase)", "Arrangement", "alt+="),
         s("track_height_decrease", "Adjust Height of Selected Tracks/Clips (Decrease)", "Arrangement", "alt+-"),
         // --- Browser ---
-        s("load_selected_browser_item", "Load Selected Item from Browser", "Browser", "enter"),
         s("preview_selected_file", "Preview Selected File", "Browser", "shift+enter"),
         s("search_in_browser", "Search in Browser", "Browser", "ctrl+f"),
         s("similar_files_search", "Show Similar Files Using Similarity Search", "Browser", "ctrl+shift+f"),
