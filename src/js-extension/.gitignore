@@ -2,6 +2,9 @@
 node_modules/
 dist/
 
+# Extracted @ableton-extensions/sdk tarball, kept for inspection
+package/
+
 *.log
 *.ablx
 *.tsbuildinfo
