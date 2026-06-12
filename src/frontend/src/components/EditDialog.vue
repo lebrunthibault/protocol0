@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useComboCapture } from "../composables/useComboCapture";
 import { useShortcuts } from "../composables/useShortcuts";
 import { SEND_KEYS_ACTION, type Binding, type EditTarget } from "../api/types";
@@ -141,6 +141,8 @@ watch(
       previousCombo.value = undefined;
       smartParams.value = {};
     }
+    // Autofocus the capture zone so the combo can be typed immediately (after it renders).
+    nextTick(() => captureEl.value?.focus());
   },
   { immediate: true },
 );
@@ -150,6 +152,9 @@ const displayedCombo = computed(
 );
 
 // --- Trigger combo capture ---
+// The capture zone, focused on open so the user can type a combo straight away (focusing it
+// fires @focus -> startRecording).
+const captureEl = ref<HTMLElement | null>(null);
 function onCaptureKeydown(e: KeyboardEvent) {
   capture.onKeydown(e);
 }
@@ -303,6 +308,7 @@ onBeforeUnmount(() => {
         <span class="field-label trigger-label">Trigger combo</span>
         <div class="trigger-row">
           <span
+            ref="captureEl"
             class="capture dialog-capture"
             tabindex="0"
             @keydown="onCaptureKeydown"
