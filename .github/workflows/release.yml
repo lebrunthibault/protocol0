@@ -41,17 +41,17 @@ jobs:
       # ============================================================================
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
       # Node to build the Vue 3 SPA (src/frontend) — step 1/4 of build_installer.ps1,
       # embedded into the agent exe via rust-embed.
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
           cache: 'npm'
@@ -79,7 +79,7 @@ jobs:
       # === SIGNING (provider: Azure) ==============================================
       - name: Sign agent exe
         if: ${{ env.SIGNING_ENABLED == 'true' }}
-        uses: azure/trusted-signing-action@v0.5.0
+        uses: azure/trusted-signing-action@v2.0.0
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -112,7 +112,7 @@ jobs:
       # === SIGNING (provider: Azure) ==============================================
       - name: Sign installer
         if: ${{ env.SIGNING_ENABLED == 'true' }}
-        uses: azure/trusted-signing-action@v0.5.0
+        uses: azure/trusted-signing-action@v2.0.0
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
