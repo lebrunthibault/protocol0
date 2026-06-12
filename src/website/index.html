@@ -43,7 +43,7 @@
     z-index:0;pointer-events:none;
     -webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 42%,#000 0%,transparent 78%);
             mask-image:radial-gradient(ellipse 70% 60% at 50% 42%,#000 0%,transparent 78%);
-    opacity:.5;
+    opacity:.28;
   }
   .waves span{
     width:2px;border-radius:2px;
@@ -54,7 +54,18 @@
   @media (prefers-reduced-motion:reduce){.waves span{animation:none}}
 
   .hero-inner{position:relative;z-index:1}
-  .hero .eyebrow{margin-bottom:var(--space-6)}
+
+  /* Roomier rhythm between the home cards (overrides the shared .section-pad) */
+  main > .section-pad{padding:120px 0}
+  @media (max-width:720px){main > .section-pad{padding:var(--space-9) 0}}
+
+  /* ---------- Scroll reveal (fade + rise, blog-style) ---------- */
+  .scroll-reveal{transition:opacity 1.2s cubic-bezier(.215,.61,.355,1),transform 1.2s cubic-bezier(.215,.61,.355,1)}
+  .scroll-reveal.reveal-hidden{opacity:.35;transform:translateY(50px)}
+  /* reduced motion: keep the fade, drop the vertical movement */
+  @media (prefers-reduced-motion:reduce){
+    .scroll-reveal.reveal-hidden{transform:none}
+  }
   h1{
     font-size:var(--fs-h1);
     font-weight:var(--fw-semibold);line-height:1.04;letter-spacing:var(--ls-tight);
@@ -62,13 +73,6 @@
   }
   h1 .accent{color:var(--accent)}
   h1 .sub-title{font-size:.62em;font-weight:var(--fw-medium);color:var(--text-soft);letter-spacing:-0.02em;display:inline-block;margin-top:.18em;white-space:nowrap}
-  .hero p.lead{
-    margin:var(--space-5) auto 0;max-width:42ch;
-    font-size:clamp(16px,2vw,19px);color:var(--muted);line-height:1.55;
-  }
-  .hero-actions{display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-top:38px;flex-wrap:wrap}
-  .hero-actions .btn{padding:12px 22px;font-size:var(--fs-md)}
-
   /* ---------- Section-card local tweaks ---------- */
   .info-card{padding:var(--space-7) var(--space-7)}
   .contact-card{padding:42px var(--space-7)}
@@ -104,9 +108,6 @@
   #newsletter .msg{margin-top:var(--space-4)}
 
   /* ---------- Comparison (card + grid rows) ---------- */
-  .compare-intro{color:var(--muted);max-width:60ch;margin:18px auto 0;font-size:16px;line-height:var(--lh-relaxed);text-align:center}
-  .compare-intro strong{color:var(--text)}
-
   .compare-card{padding:6px var(--space-7);text-align:left}
   .compare-row{
     display:grid;grid-template-columns:200px 1fr 1.25fr;align-items:center;gap:var(--space-4);
@@ -170,11 +171,6 @@
     .beta-ribbon{display:none}
     .hero{padding:90px 0 64px}
     h1 .sub-title{white-space:normal}                  /* let the subtitle wrap instead of overflowing */
-
-    /* Hero: drop Download, keep "View on GitHub" as a single full-width CTA */
-    .hero-actions{margin-top:30px}
-    .hero-actions .btn-primary{display:none}
-    .hero-actions .btn-ghost{width:100%;max-width:320px;justify-content:center}
 
     /* Newsletter: stack the input and button */
     .newsletter-form{flex-direction:column}
@@ -256,35 +252,15 @@
 <section class="hero">
   <div class="waves" id="waves" aria-hidden="true"></div>
   <div class="wrap hero-inner">
-    <span class="eyebrow"><span class="badge">Ableton Live 12</span> · Windows &amp; macOS</span>
     <h1>Protocol&nbsp;&nbsp;<span class="accent">0</span><br><span class="sub-title">the forgotten Ableton <span class="accent">key mapper</span></span></h1>
-    <p class="lead">A better keymapper for Ableton Live 12.</p>
-    <div class="hero-actions">
-      <a href="https://github.com/lebrunthibault/protocol0/releases" target="_blank" rel="noopener" class="btn btn-primary">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v9m0 0L4.5 6.5M8 10l3.5-3.5M2 13.5h12"/></svg>
-        Download
-      </a>
-      <a href="https://github.com/lebrunthibault/protocol0" target="_blank" rel="noopener" class="btn btn-ghost">
-        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-        View on GitHub
-      </a>
-      <a href="#newsletter" class="btn btn-ghost">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="3" width="13" height="10" rx="1.5"/><path d="M1.5 4.5 8 9l6.5-4.5"/></svg>
-        Get update alerts
-      </a>
-    </div>
   </div>
 </section>
 
 <!-- COMPARISON -->
-<section class="section-pad" id="comparison">
+<section class="section-pad scroll-reveal" id="comparison">
   <div class="wrap" style="text-align:center">
     <div class="kicker">Ableton vs Protocol&#8202;0</div>
     <h2>A super flex keymapper&hellip; and more</h2>
-    <p class="compare-intro">
-      Ableton's keymapper is <strong>per-set</strong> and maps a single key to one parameter.<br>
-      Protocol&#8202;0 is <strong>global, smart and extensible</strong>.
-    </p>
     <div class="card compare-card" style="margin-top:42px">
       <div class="compare-row compare-row--head">
         <div class="feat"></div>
@@ -341,7 +317,7 @@
 </section>
 
 <!-- INSTALLATION -->
-<section class="section-pad" id="installation">
+<section class="section-pad scroll-reveal" id="installation">
   <div class="wrap col">
     <div class="card card--center info-card">
       <div class="kicker">Installation</div>
@@ -356,7 +332,7 @@
 </section>
 
 <!-- HOW IT WORKS -->
-<section class="section-pad" id="how-it-works">
+<section class="section-pad scroll-reveal" id="how-it-works">
   <div class="wrap col">
     <div class="card card--center info-card">
       <div class="kicker">How does it work?</div>
@@ -367,7 +343,7 @@
 </section>
 
 <!-- NEWSLETTER -->
-<section class="section-pad" id="newsletter">
+<section class="section-pad scroll-reveal" id="newsletter">
   <div class="wrap col">
     <div class="card card--center info-card">
       <div class="kicker">Newsletter</div>
@@ -385,7 +361,7 @@
 </section>
 
 <!-- CONTACT -->
-<section class="section-pad" id="contact">
+<section class="section-pad scroll-reveal" id="contact">
   <div class="wrap col">
     <div class="card card--flat card--center contact-card">
       <div class="kicker">Contact</div>
@@ -400,7 +376,7 @@
 </section>
 
 <!-- BACKGROUND STORY -->
-<section class="section-pad" id="story">
+<section class="section-pad scroll-reveal" id="story">
   <div class="wrap col">
     <div class="card story-card">
       <div class="kicker">Background story</div>
@@ -434,6 +410,22 @@
 </footer>
 
 <script src="/site.js" defer></script>
+<script>
+  // scroll reveal: fade + rise the home cards as they enter the viewport
+  (function () {
+    const els = document.querySelectorAll('.scroll-reveal');
+    if (!('IntersectionObserver' in window)) return;
+    els.forEach((el) => el.classList.add('reveal-hidden'));
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.remove('reveal-hidden');
+        io.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -18% 0px' });
+    els.forEach((el) => io.observe(el));
+  })();
+</script>
 <script>
   // generate waveform bars
   const waves=document.getElementById('waves');

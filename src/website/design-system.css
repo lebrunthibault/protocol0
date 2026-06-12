@@ -128,7 +128,7 @@ header{
   transition:border-color var(--t-slow),background var(--t-slow);
 }
 header.scrolled{border-bottom-color:var(--line);background:rgba(0,0,0,0.8)}
-.nav{height:64px;display:flex;align-items:center;justify-content:space-between}
+.nav{position:relative;height:64px;display:flex;align-items:center;justify-content:space-between}
 .brand{display:flex;align-items:center;gap:9px;font-weight:var(--fw-semibold);font-size:16px;letter-spacing:var(--ls-snug)}
 .brand .dot{
   width:22px;height:22px;border-radius:6px;
@@ -139,15 +139,19 @@ header.scrolled{border-bottom-color:var(--line);background:rgba(0,0,0,0.8)}
   box-shadow:var(--shadow-dot);
 }
 .brand .accent{color:var(--accent)}
-.nav-links{display:flex;align-items:center;gap:var(--space-6)}
+.nav-links{
+  position:absolute;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:var(--space-7);
+}
 .nav-links a{font-size:var(--fs-base);color:var(--muted);transition:color var(--t);display:flex;align-items:center;gap:6px}
 .nav-links a svg{width:15px;height:15px;flex:0 0 auto}
 .nav-links a:hover{color:var(--text)}
 .nav-links a.active{color:var(--text)}
 .nav-right{display:flex;align-items:center;gap:var(--space-4)}
-.nav-right .discord{display:flex;align-items:center;justify-content:center;color:var(--muted);transition:color var(--t)}
-.nav-right .discord:hover{color:#5865f2}
-.nav-right .discord svg{width:20px;height:20px}
+.nav-right .nav-icon{display:flex;align-items:center;justify-content:center;color:var(--muted);transition:color var(--t)}
+.nav-right .nav-icon:hover{color:var(--text)}
+.nav-right .nav-icon.discord:hover{color:#5865f2}
+.nav-right .nav-icon svg{width:20px;height:20px}
 
 /* hamburger toggle + mobile dropdown menu (revealed <=720px, see bottom) */
 .nav-toggle{
@@ -393,7 +397,6 @@ footer{border-top:1px solid var(--line);margin-top:var(--space-6);padding:var(--
 
 @media (max-width:720px){
   .nav-links{display:none}
-  .nav-right .btn-primary{display:none}   /* Download is a desktop install */
   .nav-toggle{display:flex}
   #hdr.menu-open .nav-menu{
     display:flex;opacity:1;transform:translateY(0);pointer-events:auto;
