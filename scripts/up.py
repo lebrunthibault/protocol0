@@ -162,8 +162,11 @@ def main() -> int:
     # Website : un autre projet peut occuper 8080. live-server prend le premier port libre ; on lit
     # l'URL effective dans son log pour l'afficher (cf. _effective_url). `make up PORT=3000` force
     # quand meme le website sur un port precis.
+    # Chemin ABSOLU obligatoire : _kill_stale_web identifie nos serveurs au chemin du repo dans
+    # leur cmdline. Avec un chemin relatif, le live-server precedent n'est jamais reape, squatte
+    # 8080, et chaque nouveau run derive sur un port aleatoire.
     port = os.environ.get("PORT")
-    website_cmd = ["npx", "--yes", "live-server", "src/website", "--no-browser"]
+    website_cmd = ["npx", "--yes", "live-server", str(_REPO / "src" / "website"), "--no-browser"]
     if port:
         website_cmd.append("--port=%s" % port)
     # NB: le sink stdout du service agent est "agent-stdout" (pas "agent.log") pour ne PAS
@@ -189,9 +192,10 @@ def main() -> int:
 
     # Le port frontend est deja connu (lu dans .env, defaut 5173 ; force a vite en --strictPort),
     # donc rien a attendre cote vite. Seul le website peut deriver (live-server choisit son port) :
-    # on poll son log un court instant pour l'URL effective. Non bloquant -- au-dela, "(starting)".
+    # on poll son log pour l'URL effective. npx met ~5s a lancer live-server, d'ou la marge ; le
+    # poll s'arrete des que l'URL est ecrite. Non bloquant -- au-dela, "(starting)".
     site_re = r"Serving .* at https?://[^:]+:(\d+)"
-    site_url = _poll_site_url(site_re, timeout_s=3.0)
+    site_url = _poll_site_url(site_re, timeout_s=15.0)
 
     # front_url est exact (port choisi par nous, vite force dessus en --strictPort) -> on l'affiche
     # tel quel, jamais "(starting...)". Le frontend (live-reload) est ce que l'utilisateur ouvre

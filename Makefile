@@ -52,8 +52,9 @@ extension:
 .PHONY: extension
 
 # Serve src/website with live-reload for editing the landing page (PORT overrides the port)
+# Absolute path: scripts/up.py reaps stale servers by spotting the repo path in their cmdline
 website:
-	npx --yes live-server src/website --port=$(or $(PORT),8000)
+	npx --yes live-server $(CURDIR)/src/website --port=$(or $(PORT),8000)
 .PHONY: website
 
 # Build the full Windows installer locally (same script CI runs on a tag) -> dist-installer/Protocol0-Setup-<version>.exe
