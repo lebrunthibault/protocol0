@@ -69,6 +69,8 @@ jobs:
       # global keyboard hook and is re-scanned by Defender on every launch, so it needs its own
       # signature independently of the installer. Azure signs files in place on the runner disk,
       # so no artifact upload/download round-trip is needed.
+      # NOTE: azure/trusted-signing-action requires ABSOLUTE paths (it does not resolve relative
+      # to the workspace) — both signing steps root their target at ${{ github.workspace }}.
 
       # Stage 1a: build the agent exe only (frontend + cargo), stop before ISCC.
       - name: Build agent exe
@@ -85,7 +87,7 @@ jobs:
           endpoint: ${{ env.SIGNING_ENDPOINT }}
           trusted-signing-account-name: ${{ env.SIGNING_ACCOUNT_NAME }}
           certificate-profile-name: ${{ env.SIGNING_CERT_PROFILE }}
-          files: src/agent/target/release/Protocol0.exe
+          files: ${{ github.workspace }}\src\agent\target\release\Protocol0.exe
           file-digest: SHA256
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
@@ -118,7 +120,7 @@ jobs:
           endpoint: ${{ env.SIGNING_ENDPOINT }}
           trusted-signing-account-name: ${{ env.SIGNING_ACCOUNT_NAME }}
           certificate-profile-name: ${{ env.SIGNING_CERT_PROFILE }}
-          files-folder: dist-installer
+          files-folder: ${{ github.workspace }}\dist-installer
           files-folder-filter: exe
           file-digest: SHA256
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
