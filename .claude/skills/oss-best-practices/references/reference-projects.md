@@ -12,6 +12,11 @@ notes **why it's a match** against Protocol0's traits:
 
 The closer to `D + W + X + A + P`, the better the reference.
 
+For LLM *pattern* topics (code generation, agents vs workflows, sandboxed execution,
+LLM-as-judge, evals, prompting, structured output), also see
+[authoritative-sources.md](authoritative-sources.md) — vendor guidance (Anthropic, OpenAI,
+Pydantic AI, LangChain, Mistral) and recognized practitioners often outweigh user repos there.
+
 ## Tier 1 — closest architectural twins (daemon + local web UI + desktop)
 
 - **Syncthing** — `https://github.com/syncthing/syncthing` — **D W P**.

@@ -1,6 +1,6 @@
 ---
 name: oss-best-practices
-description: Research how to do something well in an open-source project by combining your own knowledge with evidence from real, comparable OSS repositories on GitHub. Use when the user asks to "find OSS best practices on X", "trouve les best practices open source sur ce sujet", "comment font les autres projets open source pour Y", or wants a topic studied against reference repos (Syncthing, Transmission, Grafana, audio/DAW tooling, etc.) before making a decision.
+description: Research how to do something well in an open-source project by combining your own knowledge with evidence from real, comparable OSS repositories on GitHub. Use when the user asks to "find OSS best practices on X", "trouve les best practices open source sur ce sujet", "comment font les autres projets open source pour Y", or wants a topic studied against reference repos (Syncthing, Transmission, Grafana, audio/DAW tooling, etc.) or authoritative LLM-engineering sources (Anthropic, OpenAI, Pydantic AI, LangChain, Mistral) before making a decision.
 ---
 
 # OSS best practices research
@@ -34,11 +34,18 @@ graphics), ideally in the **music/audio** domain, and ideally **cross-platform d
    already know: the common approaches, their trade-offs, and a tentative recommendation.
    This is the baseline the repo evidence will confirm or correct.
 
-3. **Pick reference repos.** Choose 3-6 repositories that genuinely match Protocol0 on the
-   traits above — not just any popular OSS. Start from
-   [references/reference-projects.md](references/reference-projects.md), then add topic-specific
-   ones via `WebSearch`. Prefer repos that have *actually solved the exact problem* over
-   merely famous ones. State why each was chosen (which traits it shares).
+3. **Pick references.** Choose 3-6 sources that genuinely match Protocol0 on the
+   traits above — not just any popular OSS. Two reference files:
+   - [references/reference-projects.md](references/reference-projects.md) — OSS repos
+     (show *how it's coded*).
+   - [references/authoritative-sources.md](references/authoritative-sources.md) — vendor
+     engineering blogs, official docs, recognized practitioners (show *what the right
+     pattern is*). For **LLM pattern/architecture topics** (code generation, agents vs
+     workflows, sandboxed execution, LLM-as-judge, evals, structured output, prompting,
+     cost), consult this FIRST — the big players' guidance outweighs user repos there.
+
+   Then add topic-specific ones via `WebSearch`. Prefer sources that *actually solved the
+   exact problem* over merely famous ones. State why each was chosen (which traits it shares).
 
 4. **Go look — don't guess.** For each reference, get real evidence:
    - `WebSearch` for "<project> <topic>" to find the relevant code/docs/discussions,
@@ -77,6 +84,9 @@ graphics), ideally in the **music/audio** domain, and ideally **cross-platform d
 
 - **Match Protocol0, not popularity.** A 40k-star Linux-only server daemon is a weaker
   reference than a 2k-star cross-platform desktop tray app that serves a local web UI.
+  Exception: the vendor guides in `authoritative-sources.md` (Anthropic, OpenAI, Pydantic
+  AI, LangChain, Mistral) are admissible even outside the desktop/audio domain — they
+  distill thousands of production deployments. Cite them for the *LLM pattern*, not the domain.
 - **Windows+macOS only.** Discount Linux-/server-specific patterns (systemd units, Docker
   Compose deploys, reverse-proxy assumptions) unless they translate to desktop.
 - **Don't invent repo behavior.** If you can't find/verify how a project does something, say
