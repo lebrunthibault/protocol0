@@ -44,7 +44,7 @@ class LoggerService(LoggerServiceInterface):
                     frame_info.method_name,
                 )
 
-        logging.info(f"Protocol 0 - {message}")
-
-        # for line in message.splitlines():
-        #     logging.info(f"P0 - {line}")
+        # Prefix every line so multi-line messages (e.g. tracebacks) all pass the
+        # "Protocol 0 - " filter used by `make logs` (scripts/logs.py).
+        for line in str(message).splitlines() or [""]:
+            logging.info(f"Protocol 0 - {line}")

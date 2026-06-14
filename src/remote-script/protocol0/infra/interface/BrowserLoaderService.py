@@ -74,6 +74,11 @@ INSTRUMENTS = (
     "Wavetable",
 )
 
+# Lower-cased sets for case-insensitive category routing in load_device.
+_MIDI_FX_LOWER = {n.lower() for n in MIDI_FX}
+_INSTRUMENTS_LOWER = {n.lower() for n in INSTRUMENTS}
+_AUDIO_FX_LOWER = {n.lower() for n in AUDIO_FX}
+
 
 class BrowserLoaderService(object):
     def __init__(self, browser: Live.Browser.Browser) -> None:
@@ -81,12 +86,13 @@ class BrowserLoaderService(object):
         self._cached_browser_items: Dict[str, Dict[str, Live.Browser.BrowserItem]] = {}
 
     def load_device(self, device_name: str) -> None:
-        """Loads a built-in Live device."""
-        if device_name in MIDI_FX:
+        """Loads a built-in Live device. Matching is case-insensitive."""
+        name_lower = device_name.lower()
+        if name_lower in _MIDI_FX_LOWER:
             self._do_load_item(self._get_item_for_category("midi_effects", device_name))
-        elif device_name in INSTRUMENTS:
+        elif name_lower in _INSTRUMENTS_LOWER:
             self._do_load_item(self._get_item_for_category("instruments", device_name))
-        elif device_name in AUDIO_FX:
+        elif name_lower in _AUDIO_FX_LOWER:
             self._do_load_item(self._get_item_for_category("audio_effects", device_name))
         else:
             item = self._get_item_for_category("plugins", device_name)
@@ -118,9 +124,15 @@ class BrowserLoaderService(object):
             raise Protocol0Error("Couldn't load %s item" % header)
 
     def _get_item_for_category(self, category: str, name: str) -> Live.Browser.BrowserItem:
-        """Returns the cached item for the category."""
+        """Returns the cached item for the category. Matching is case-insensitive."""
         self._cache_category(category)
-        item = self._cached_browser_items[category].get(name, None)
+        items = self._cached_browser_items[category]
+        item = items.get(name, None)
+        if item is None:
+            name_lower = name.lower()
+            item = next(
+                (i for key, i in items.items() if key.lower() == name_lower), None
+            )
         if item is None:
             raise BrowserItemNotFoundError(name)
 

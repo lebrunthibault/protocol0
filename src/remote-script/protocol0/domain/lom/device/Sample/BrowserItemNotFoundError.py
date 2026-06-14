@@ -1,9 +1,9 @@
-from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
+from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 
 
-class BrowserItemNotFoundError(Protocol0Error):
+class BrowserItemNotFoundError(Protocol0Warning):
     def __init__(self, name: str) -> None:
         super(BrowserItemNotFoundError, self).__init__(
-            "Cannot find browser item in the live library: %s\n" % name
+            "Device not found in the Live library: %s" % name
         )
         self.name = name
