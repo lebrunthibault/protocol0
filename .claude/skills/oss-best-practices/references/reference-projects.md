@@ -35,6 +35,11 @@ Pydantic AI, LangChain, Mistral) and recognized practitioners often outweigh use
   Windows+macOS desktop installers and autostart. Strong reference for desktop service packaging,
   tray UX, and local-daemon ↔ UI IPC on Windows/macOS specifically.
 
+- **Jackett** — `https://github.com/Jackett/Jackett` — **D W P**.
+  Same shape as Syncthing: a background service that serves its own web UI on a localhost port and
+  ships a tray icon, cross-platform desktop. Good reference for: tray-app ↔ local-daemon UX, serving
+  a config/admin web UI from a long-running process, and per-OS autostart for a tray-based service.
+
 ## Tier 2 — strong on one axis (self-hosted web UI / solid service architecture)
 
 - **Grafana** — `https://github.com/grafana/grafana` — **D W**.
