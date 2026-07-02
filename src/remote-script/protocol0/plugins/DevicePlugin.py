@@ -17,4 +17,4 @@ class DevicePlugin(PluginInterface):
     @action
     def load_device(self, name: str) -> None:
         """Load a device (instrument or audio effect) onto the selected track by name."""
-        get_container().get(DeviceService).load_device(name, True)
+        get_container().get(DeviceService).load_device(name)

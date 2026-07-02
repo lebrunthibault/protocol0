@@ -1,83 +1,15 @@
 import Live
 from typing import Dict
 
+from protocol0.domain.lom.device.DeviceCategories import (
+    _AUDIO_FX_LOWER,
+    _INSTRUMENTS_LOWER,
+    _MIDI_FX_LOWER,
+)
 from protocol0.domain.lom.device.Sample.BrowserItemNotFoundError import BrowserItemNotFoundError
 from protocol0.domain.shared.errors.Protocol0Error import Protocol0Error
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.shared.logging.Logger import Logger
-
-AUDIO_FX = (
-    "Amp",
-    "Audio Effect Rack",
-    "Auto Filter",
-    "Auto Pan",
-    "Beat Repeat",
-    "Cabinet",
-    "Chorus",
-    "Compressor",
-    "Corpus",
-    "Dynamic Tube",
-    "EQ Eight",
-    "EQ Three",
-    "Erosion",
-    "External Audio Effect",
-    "Filter Delay",
-    "Flanger",
-    "Frequency Shifter",
-    "Gate",
-    "Glue Compressor",
-    "Grain Delay",
-    "Limiter",
-    "Looper",
-    "Multiband Dynamics",
-    "Overdrive",
-    "Phaser",
-    "Ping Pong Delay",
-    "Redux",
-    "Resonators",
-    "Reverb",
-    "Saturator",
-    "Simple Delay",
-    "Spectrum",
-    "Tuner",
-    "Utility",
-    "Vinyl Distortion",
-    "Vocoder",
-    "Drum Buss",
-    "Echo",
-    "Pedal",
-    "Channel EQ",
-    "Delay",
-)
-MIDI_FX = (
-    "Arpeggiator",
-    "Chord",
-    "MIDI Effect Rack",
-    "Note Length",
-    "Pitch",
-    "Random",
-    "Scale",
-    "Velocity",
-)
-INSTRUMENTS = (
-    "Analog",
-    "Collision",
-    "Drum Rack",
-    "Electric",
-    "External Instrument",
-    "Impulse",
-    "Instrument Rack",
-    "Operator",
-    "Sampler",
-    "Simpler",
-    "Tension",
-    "Wavetable",
-)
-
-# Lower-cased sets for case-insensitive category routing in load_device.
-_MIDI_FX_LOWER = {n.lower() for n in MIDI_FX}
-_INSTRUMENTS_LOWER = {n.lower() for n in INSTRUMENTS}
-_AUDIO_FX_LOWER = {n.lower() for n in AUDIO_FX}
 
 
 class BrowserLoaderService(object):

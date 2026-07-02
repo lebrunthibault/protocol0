@@ -78,22 +78,22 @@ def _emit(prefix: str, color: str, text: str) -> None:
         print("%s%s [%s]%s %s" % (c, stamp, prefix, _RESET, text), flush=True)
 
 
-# Versions beta de Live : suffixe "b<chiffre>" (ex. "Live 12.4.5b3"). On les exclut de la
-# selection du Log.txt -> on tail la version stable installee, pas un build beta parallele.
-_BETA_RE = re.compile(r"b\d+$")
-
-
 def _ableton_log_path():
-    """Le Log.txt P0 le plus recent sous %APPDATA%\\Ableton\\Live * (hors beta). None si introuvable."""
+    """Le Log.txt P0 le plus recent sous %APPDATA%\\Ableton\\Live *. None si introuvable.
+
+    On prend le Log.txt modifie le plus recemment, point. C'est le Live actuellement lance
+    (celui qui ecrit en ce moment), qu'il soit stable ou beta : l'utilisateur peut tourner sur
+    un build beta (ex. "Live 12.4.5b3") plus recent que toute version stable installee. Filtrer
+    les beta nous faisait retomber sur une vieille stable qui n'ecrit plus rien.
+    """
     root = Path(os.environ.get("APPDATA", "")) / "Ableton"
     candidates = [
         p / "Preferences" / "Log.txt"
-        for p in sorted(root.glob("Live *"))
-        if (p / "Preferences" / "Log.txt").exists() and not _BETA_RE.search(p.name)
+        for p in root.glob("Live *")
+        if (p / "Preferences" / "Log.txt").exists()
     ]
     if not candidates:
         return None
-    # Plusieurs versions de Live installees -> on prend le Log.txt modifie le plus recemment.
     return max(candidates, key=lambda p: p.stat().st_mtime)
 
 

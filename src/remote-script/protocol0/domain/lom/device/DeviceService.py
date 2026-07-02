@@ -4,6 +4,7 @@ from typing import Callable
 import Live
 
 from protocol0.domain.lom.device.Device import Device
+from protocol0.domain.lom.device.DeviceCategories import needs_midi_track
 from protocol0.domain.lom.device.DeviceChain import DeviceChain
 from protocol0.domain.lom.song.components.DeviceComponent import DeviceComponent
 from protocol0.domain.lom.song.components.TrackCrudComponent import TrackCrudComponent
@@ -27,12 +28,12 @@ class DeviceService(object):
         self._browser_service = browser_service
         self._move_device = move_device
 
-    def load_device(self, name: str, create_track: bool = False) -> Sequence:
+    def load_device(self, name: str) -> Sequence:
         Undo.begin_undo_step()
 
         track = Song.selected_track()
 
-        if create_track and not isinstance(track, SimpleMidiTrack):
+        if needs_midi_track(name) and not isinstance(track, SimpleMidiTrack):
             seq = Sequence()
             seq.add(self._track_crud_component.create_midi_track)
             seq.defer()
