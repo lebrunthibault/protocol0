@@ -62,4 +62,7 @@ export type AgentState = "no_ableton" | "script_inactive" | "ready";
 export interface StatusResponse {
   state: AgentState;
   script_url?: string;
+  // Version of the script Ableton is actually running (from runtime.json) —
+  // shown in the help menu to make a stale deployment visible at a glance.
+  script_version?: string;
 }

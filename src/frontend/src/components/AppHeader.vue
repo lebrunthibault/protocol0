@@ -1,8 +1,18 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 import { DOCS_URL } from "../config";
+import { useStatus } from "../composables/useStatus";
 import StatusPill from "./StatusPill.vue";
+
+// Script version (from /status via runtime.json): shown in the help menu so a
+// stale deployment inside Ableton is visible at a glance. The row is always
+// rendered — a fallback label beats a silently missing entry when the script
+// is not reachable (Ableton closed / script inactive).
+const { scriptVersion } = useStatus();
+const scriptLabel = computed(() =>
+  scriptVersion.value ? `Script v${scriptVersion.value}` : "Script not running",
+);
 
 // "Docs" lives behind a help (?) menu on the right of the header so the nav stays
 // focused on the one thing you act on (the keymapper). The script's REST API is the
@@ -63,6 +73,10 @@ onBeforeUnmount(() => {
             <div v-if="open" class="help-menu" role="menu">
               <a class="help-item" :href="DOCS_URL" target="_blank" rel="noopener"
                 role="menuitem" @click="close">Docs</a>
+              <span class="help-version"
+                title="Version of the remote script running inside Ableton">
+                {{ scriptLabel }}
+              </span>
             </div>
           </div>
         </div>
@@ -125,5 +139,13 @@ onBeforeUnmount(() => {
 .help-item:hover {
   color: var(--text);
   background: rgba(255, 255, 255, 0.05);
+}
+.help-version {
+  padding: 7px var(--space-3);
+  border-top: 1px solid var(--line);
+  margin-top: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  cursor: default;
 }
 </style>

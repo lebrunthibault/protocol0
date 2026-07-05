@@ -14,7 +14,11 @@ use crate::paths::runtime_path;
 #[derive(Debug, Clone, Deserialize)]
 pub struct RuntimeState {
     pub script_url: String,
-    // pid / version are present in the file but unused by the agent; we ignore extra fields.
+    /// Script version as published in runtime.json (surfaced in /status so the
+    /// SPA can show which script build Ableton is actually running).
+    #[serde(default)]
+    pub version: Option<String>,
+    // pid is present in the file but unused by the agent; we ignore extra fields.
 }
 
 /// Returns the runtime state (script_url) or None if the file is absent/corrupt/invalid

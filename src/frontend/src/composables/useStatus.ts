@@ -6,6 +6,7 @@ import type { AgentState } from "../api/types";
 
 const state = ref<AgentState | "unknown">("unknown");
 const scriptUrl = ref<string | undefined>(undefined);
+const scriptVersion = ref<string | undefined>(undefined);
 
 let timer: number | undefined;
 let subscribers = 0;
@@ -15,6 +16,7 @@ async function poll(): Promise<void> {
     const s = await api.getStatus();
     state.value = s.state;
     scriptUrl.value = s.script_url;
+    scriptVersion.value = s.script_version;
   } catch {
     // Agent momentarily unavailable: we'll retry on the next tick.
   }
@@ -35,5 +37,9 @@ export function useStatus() {
       timer = undefined;
     }
   });
-  return { state: readonly(state), scriptUrl: readonly(scriptUrl) };
+  return {
+    state: readonly(state),
+    scriptUrl: readonly(scriptUrl),
+    scriptVersion: readonly(scriptVersion),
+  };
 }

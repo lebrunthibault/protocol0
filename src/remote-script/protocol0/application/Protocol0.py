@@ -1,7 +1,9 @@
+import os
 from typing import Any
 
 from _Framework.ControlSurface import ControlSurface
 
+import protocol0
 import protocol0.plugins as plugins_package
 from protocol0.application.Container import Container
 from protocol0.application.ScriptDisconnectedEvent import ScriptDisconnectedEvent
@@ -18,6 +20,7 @@ from protocol0.domain.shared.scheduler.Scheduler import Scheduler
 from protocol0.shared.Song import Song
 from protocol0.shared.logging.Logger import Logger
 from protocol0.shared.sequence.Sequence import Sequence
+from protocol0.version import __version__
 
 
 class Protocol0(ControlSurface):
@@ -48,7 +51,12 @@ class Protocol0(ControlSurface):
 
         HttpServer.start(container)
 
-        Logger.info("Protocol 0 script loaded")
+        # Version + source path make a stale deployment obvious in `make logs`
+        # (dev checkout vs frozen installer copy under MIDI Remote Scripts).
+        Logger.info(
+            "Protocol 0 script loaded (v%s from %s)"
+            % (__version__, os.path.dirname(os.path.abspath(protocol0.__file__)))
+        )
 
     def disconnect(self, reset: bool = False) -> None:
         # Tear down our own resources FIRST, then let the base class release its

@@ -38,7 +38,9 @@ _COLORS = {
 # Lignes du remote script dans Log.txt : "Protocol 0 - <message>" (ex. "Protocol 0 - HTTP GET /").
 _SCRIPT_PREFIX_RE = re.compile(r"^.*?Protocol 0 - ")
 # Toute ligne Log.txt mentionnant P0/Protocol0 nous interesse (le reste est du bruit Live).
-_SCRIPT_KEEP_RE = re.compile(r"Protocol ?0|P0 -")
+# Insensible a la casse : les lignes stdlib `logging.getLogger(__name__)` du script portent
+# le nom du logger en minuscules ("INFO:protocol0.domain...") et doivent passer aussi.
+_SCRIPT_KEEP_RE = re.compile(r"Protocol ?0|P0 -", re.IGNORECASE)
 # Prefixe a retirer en tete de ligne agent. Deux formats supportes :
 #   - Rust (tracing, agent actuel) : "2026-06-05T10:02:02.411246Z  INFO Protocol0::web: msg"
 #     (ISO-8601 avec T/Z, microsecondes, 2 espaces, niveau, "Protocol0::<module>: ").

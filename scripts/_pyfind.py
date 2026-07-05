@@ -119,16 +119,32 @@ def ableton_remote_scripts_dirs():
 
     Returns one entry per install found (any edition, stable and/or Beta), so
     the DEV deploy can wire up *all* the user's Live installs at once. Stable
-    is listed before Beta. Empty when nothing is detected.
+    is listed before Beta, hidden staged trees last. Empty when nothing is
+    detected.
+
+    Hidden '.Live <ver>*' trees are the Beta auto-updater's staging/backup
+    installs (e.g. '.Live 12 Beta_updated'): at update time Live swaps trees
+    and migrates third-party remote scripts between them, which can silently
+    replace a dev-wired Protocol_0 with a stale frozen copy. Deploying into
+    the staged tree too makes the dev loader survive the swap.
     """
     roots_glob, suffix = _platform_roots_and_suffix()
-    stable, beta = [], []
+    stable, beta, staged = [], [], []
+    root_dir = None
     for root in roots_glob:
+        root_dir = root.parent
         candidate = root / suffix
         if not candidate.is_dir():
             continue
         (beta if "beta" in root.name.lower() else stable).append(candidate)
-    return stable + beta
+    if root_dir is None and sys.platform == "win32":
+        root_dir = Path(r"C:\ProgramData\Ableton")
+    if root_dir is not None:
+        for root in root_dir.glob(".Live %s*" % SUPPORTED_LIVE_VERSION):
+            candidate = root / suffix
+            if candidate.is_dir():
+                staged.append(candidate)
+    return stable + beta + staged
 
 
 def ableton_remote_scripts_dir():

@@ -20,7 +20,11 @@ pub fn compute() -> Value {
     }
     if let Some(rt) = runtime_state::read() {
         if ping(&rt.script_url) {
-            return json!({ "state": "ready", "script_url": rt.script_url });
+            return json!({
+                "state": "ready",
+                "script_url": rt.script_url,
+                "script_version": rt.version,
+            });
         }
     }
     json!({ "state": "script_inactive" })
