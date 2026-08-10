@@ -1,6 +1,6 @@
 """A minimal, generic plugin you can copy to start your own.
 
-It shows the two things a plugin does declaratively:
+It shows the three things a plugin does declaratively:
 
 - **react to an event** — ``register_listeners`` maps a domain event to a
   handler; the loader subscribes it at start and unsubscribes it on stop.
@@ -8,6 +8,8 @@ It shows the two things a plugin does declaratively:
   endpoint under ``/api/action/<plugin>/<method>`` (shown in the Swagger UI at
   ``/docs`` and in ``/openapi.json``) and callable by the agent. The method name
   is the action name; its typed parameters become the action's inputs.
+- **bind an encoder** — ``register_encoders`` wires physical control-surface
+  encoders (EC4-style) to callbacks; the loader disconnects them on stop.
 
 Drop this file in as-is, or copy it to start your own. A plugin can be a single
 file (``plugins/MyPlugin.py``) or a package (``plugins/my_plugin/``) — both are
@@ -17,6 +19,7 @@ Full guide: ``docs/plugins.md``.
 """
 from typing import Callable, Dict, Type
 
+from protocol0.application.control_surface.Encoders import Encoders
 from protocol0.application.plugin.PluginInterface import PluginInterface
 from protocol0.application.plugin.action import action
 from protocol0.domain.lom.song.SongStartedEvent import SongStartedEvent
@@ -35,6 +38,15 @@ class ExamplePlugin(PluginInterface):
     def register_listeners(self) -> Dict[Type, Callable]:
         return {SongStartedEvent: self._on_song_started}
 
+    def register_encoders(self, encoders: Encoders) -> None:
+        encoders.add_encoder(
+            channel=1,
+            identifier=15,
+            name="example knob",
+            on_scroll=self._on_knob_scroll,
+            scroll_only=True,
+        )
+
     @action
     def say_hello(self, name: str) -> None:
         """Show a greeting in Live's status bar (example plugin action)."""
@@ -42,3 +54,8 @@ class ExamplePlugin(PluginInterface):
 
     def _on_song_started(self, _: SongStartedEvent) -> None:
         Logger.info("example plugin: playback started")
+
+    def _on_knob_scroll(self, go_next: bool) -> None:
+        StatusBar.show_message(
+            "example knob scrolled %s" % ("up" if go_next else "down")
+        )

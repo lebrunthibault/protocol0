@@ -1,16 +1,21 @@
-from typing import Callable, ClassVar, Dict, Type
+from typing import TYPE_CHECKING, Callable, ClassVar, Dict, Type
+
+if TYPE_CHECKING:
+    from protocol0.application.control_surface.Encoders import Encoders
 
 
 class PluginInterface(object):
     """Base class for remote-script plugins.
 
     A plugin extends the script declaratively: it can react to domain events
-    (``register_listeners``) and expose new actions by decorating methods with
-    ``@action`` (see ``protocol0.application.plugin.action``). The
-    ``PluginLoader`` wires both up at startup — subscribing listeners and
-    generating one ``POST /api/action/<plugin>/<method>`` route per ``@action``
-    method — and tears the listeners down on disconnect. A plugin never calls
-    ``DomainEventBus.subscribe``/``un_subscribe`` nor ``@api_route`` itself.
+    (``register_listeners``), expose new actions by decorating methods with
+    ``@action`` (see ``protocol0.application.plugin.action``), and bind
+    control-surface encoders (``register_encoders``). The ``PluginLoader``
+    wires everything up at startup — subscribing listeners, binding encoders
+    and generating one ``POST /api/action/<plugin>/<method>`` route per
+    ``@action`` method — and tears it all down on disconnect. A plugin never
+    calls ``DomainEventBus.subscribe``/``un_subscribe`` nor ``@api_route``
+    itself.
 
     See ``docs/plugins.md`` for the full guide.
     """
@@ -41,3 +46,19 @@ class PluginInterface(object):
                 return {SongStartedEvent: self._on_song_started}
         """
         return {}
+
+    def register_encoders(self, encoders: "Encoders") -> None:
+        """Bind control-surface encoders (EC4-style knobs).
+
+        Called right after ``start()`` with a fresh ``Encoders`` binder; every
+        encoder added on it is disconnected automatically on stop. The channel
+        is 1-indexed, scrolls are relative (the handler receives
+        ``go_next: bool``) — see ``Encoders.add_encoder`` for the gestures::
+
+            def register_encoders(self, encoders):
+                encoders.add_encoder(
+                    channel=3, identifier=0, name="my knob",
+                    on_scroll=self._on_scroll, scroll_only=True,
+                )
+        """
+        pass

@@ -25,11 +25,28 @@ class MultiEncoder(SlotManager):
         component_guard: Callable,
         use_cc: bool,
         use_note_off: bool,
+        scroll_only: bool = False,
     ) -> None:
         """
-        Actions are triggered at the start of the press except when a long_press is declared.
+        Wire a physical encoder to its MIDI messages and listen for press / scroll input.
+
+        channel: 0-based MIDI channel the encoder listens on.
+        identifier: CC number of the encoder (its note number is identifier - 1).
+        name: human-readable name, used in logs and error messages.
+        component_guard: Live's guard context manager, required to create control elements.
+        use_cc: the press arrives as a CC message instead of a note, and there is
+            no scroll. Otherwise (EC4 default) the push sends a note and the
+            rotation a CC, each wired to its own listener.
+        use_note_off: trigger the press action on note off (release) instead of
+            note on (press).
+        scroll_only: listen only to the rotation CC, no press element. Required
+            for CC 0, whose press note would be identifier - 1 = -1.
+
+        Actions fire at the start of the press, except with use_note_off or when
+        a long press action is declared (see _press_listener).
         """
         super(MultiEncoder, self).__init__()
+        assert not (use_cc and scroll_only), "use_cc and scroll_only are exclusive: %s" % name
         self._actions: List[EncoderAction] = []
         self.identifier = identifier
         self.name = name.title()
@@ -37,7 +54,11 @@ class MultiEncoder(SlotManager):
         self._use_note_off = use_note_off
 
         with component_guard():
-            if use_cc:
+            if scroll_only:
+                self._scroll_listener.subject = ButtonElement(
+                    True, MIDI_CC_TYPE, channel, identifier
+                )
+            elif use_cc:
                 self._press_listener.subject = ButtonElement(
                     True, MIDI_CC_TYPE, channel, identifier
                 )

@@ -1,7 +1,7 @@
 # Creating a plugin
 
 A **plugin** extends the remote script: it can register new **actions** (bindable to a
-shortcut) and/or **reacts to events** in Live.
+shortcut), **react to events** in Live, and/or **bind control-surface encoders**.
 
 To create a plugin, just drop a `.py` file in `src/remote-script/protocol0/plugins/`, subclass `PluginInterface`, done.
 
@@ -65,6 +65,35 @@ Events are the `*Event.py` classes under `protocol0/domain/` — subscribe to th
 type, not a name. See
 [`PluginInterface.register_listeners`](../src/remote-script/protocol0/application/plugin/PluginInterface.py)
 for the contract.
+
+## Binding control-surface encoders
+
+Override `register_encoders()`; the loader calls it right after `start()` with an
+[`Encoders`](../src/remote-script/protocol0/application/control_surface/Encoders.py)
+binder and disconnects everything automatically on stop. Each `add_encoder` wires
+one physical encoder (channel is 1-indexed) to `on_press` / `on_long_press` /
+`on_scroll` callbacks; pass `scroll_only=True` for rotation-only knobs (required
+for CC 0). Scrolls are relative: the handler receives `go_next: bool`, not an
+absolute value.
+
+```python
+class MyPlugin(PluginInterface):
+    name = "my_plugin"
+
+    def register_encoders(self, encoders: Encoders) -> None:
+        encoders.add_encoder(
+            channel=3, identifier=0, name="my knob",
+            on_scroll=self._on_scroll, scroll_only=True,
+        )
+
+    def _on_scroll(self, go_next: bool) -> None:
+        ...
+```
+
+Real example:
+[`live_set/LiveSetPlugin.py`](../src/remote-script/protocol0/plugins/live_set/LiveSetPlugin.py)
+maps the 8 EC4 encoders of channel 3 to the macros of the currently selected
+device.
 
 ## Lifecycle
 

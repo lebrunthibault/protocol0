@@ -2,6 +2,7 @@ import types
 from typing import Callable, Dict, List, Tuple, Type, TypeVar
 
 from protocol0.application.ScriptDisconnectedEvent import ScriptDisconnectedEvent
+from protocol0.application.control_surface.Encoders import Encoders
 from protocol0.application.http.Router import API_PREFIX, get_routes
 from protocol0.application.plugin.PluginInterface import PluginInterface
 from protocol0.application.plugin.action import iter_actions
@@ -18,9 +19,11 @@ class PluginLoader(object):
     # Listeners the loader subscribed on behalf of plugins, so it can undo them
     # on stop without the plugin tracking anything.
     _listeners: List[Tuple[Type, Callable]] = []
+    # Encoder binders created on behalf of plugins, disconnected on stop.
+    _encoders: List[Encoders] = []
 
     @classmethod
-    def load_and_start(cls, plugins_package: types.ModuleType) -> None:
+    def load_and_start(cls, plugins_package: types.ModuleType, component_guard: Callable) -> None:
         import_package(plugins_package)
 
         for plugin_class in PluginInterface.__subclasses__():
@@ -31,6 +34,7 @@ class PluginLoader(object):
                     continue
                 plugin.start()
                 cls._subscribe_listeners(plugin)
+                cls._register_encoders(plugin, component_guard)
                 cls._register_actions(plugin)
                 cls._started.append(plugin)
                 cls._by_class[plugin_class] = plugin
@@ -45,6 +49,14 @@ class PluginLoader(object):
         for event_type, handler in plugin.register_listeners().items():
             DomainEventBus.subscribe(event_type, handler)
             cls._listeners.append((event_type, handler))
+
+    @classmethod
+    def _register_encoders(cls, plugin: PluginInterface, component_guard: Callable) -> None:
+        encoders = Encoders(component_guard)
+        plugin.register_encoders(encoders)
+        if len(encoders):
+            cls._encoders.append(encoders)
+            Logger.info("Plugin %s bound %s encoders" % (plugin.name, len(encoders)))
 
     @classmethod
     def _register_actions(cls, plugin: PluginInterface) -> None:
@@ -75,6 +87,10 @@ class PluginLoader(object):
         for event_type, handler in cls._listeners:
             DomainEventBus.un_subscribe(event_type, handler)
         cls._listeners = []
+
+        for encoders in cls._encoders:
+            encoders.disconnect()
+        cls._encoders = []
 
         for plugin in cls._started:
             try:

@@ -1,11 +1,18 @@
-from typing import Callable, Dict, List, Type
+from contextlib import contextmanager
+from typing import Callable, Dict, Iterator, List, Type
 
+from protocol0.application.control_surface.Encoders import Encoders
 from protocol0.application.http.Router import get_routes
 from protocol0.application.plugin.PluginInterface import PluginInterface
 from protocol0.application.plugin.PluginLoader import PluginLoader
 from protocol0.application.plugin.action import action
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 from protocol0.tests.application.plugin import stub_plugins
+
+
+@contextmanager
+def _guard() -> Iterator[None]:
+    yield
 
 
 class _StubEvent(object):
@@ -69,10 +76,27 @@ class _StubActionPlugin(PluginInterface):
         _StubActionPlugin.calls.append((name, count))
 
 
+class _StubEncoderPlugin(PluginInterface):
+    name = "stub_encoder"
+
+    def register_encoders(self, encoders: Encoders) -> None:
+        encoders.add_encoder(
+            channel=3,
+            identifier=0,
+            name="stub knob",
+            on_scroll=self._on_scroll,
+            scroll_only=True,
+        )
+
+    def _on_scroll(self, go_next: bool) -> None:
+        pass
+
+
 def _reset_loader() -> None:
     PluginLoader._started = []
     PluginLoader._by_class = {}
     PluginLoader._listeners = []
+    PluginLoader._encoders = []
     DomainEventBus.reset()
 
 
@@ -81,7 +105,7 @@ def test_plugin_start_and_stop() -> None:
     _StubStartStopPlugin.started = False
     _StubStartStopPlugin.stopped = False
 
-    PluginLoader.load_and_start(stub_plugins)
+    PluginLoader.load_and_start(stub_plugins, _guard)
 
     assert _StubStartStopPlugin.started is True
     assert PluginLoader.get(_StubStartStopPlugin).name == "stub_start_stop"
@@ -94,7 +118,7 @@ def test_should_start_false_skips_start() -> None:
     _reset_loader()
     _StubGatedPlugin.started = False
 
-    PluginLoader.load_and_start(stub_plugins)
+    PluginLoader.load_and_start(stub_plugins, _guard)
 
     assert _StubGatedPlugin.started is False
     assert _StubGatedPlugin not in PluginLoader._by_class
@@ -103,7 +127,7 @@ def test_should_start_false_skips_start() -> None:
 def test_start_exception_is_swallowed() -> None:
     _reset_loader()
 
-    PluginLoader.load_and_start(stub_plugins)
+    PluginLoader.load_and_start(stub_plugins, _guard)
 
     assert _StubFailingStartPlugin not in PluginLoader._by_class
     assert _StubStartStopPlugin in PluginLoader._by_class
@@ -113,7 +137,7 @@ def test_listeners_are_subscribed_and_cleaned_up() -> None:
     _reset_loader()
     _StubListenerPlugin.received = []
 
-    PluginLoader.load_and_start(stub_plugins)
+    PluginLoader.load_and_start(stub_plugins, _guard)
 
     # The loader subscribed the declared listener: emitting reaches the handler.
     DomainEventBus.emit(_StubEvent())
@@ -125,13 +149,31 @@ def test_listeners_are_subscribed_and_cleaned_up() -> None:
     assert len(_StubListenerPlugin.received) == 1
 
 
+def test_encoders_are_bound_and_torn_down() -> None:
+    _reset_loader()
+
+    PluginLoader.load_and_start(stub_plugins, _guard)
+
+    # The loader gave each started plugin an Encoders binder and kept the
+    # non-empty ones for teardown (_StubEncoderPlugin binds one encoder;
+    # other PluginInterface subclasses imported by the test session may
+    # legitimately bind more).
+    assert any(len(encoders) >= 1 for encoders in PluginLoader._encoders)
+
+    # Stopping disconnects and forgets every binder.
+    bound = list(PluginLoader._encoders)
+    PluginLoader._stop_all()
+    assert PluginLoader._encoders == []
+    assert all(len(encoders) == 0 for encoders in bound)
+
+
 def test_action_method_registers_a_post_route() -> None:
     _reset_loader()
     _StubActionPlugin.calls = []
     key = ("POST", "/api/action/stub_action/do_thing")
     get_routes().pop(key, None)
 
-    PluginLoader.load_and_start(stub_plugins)
+    PluginLoader.load_and_start(stub_plugins, _guard)
 
     # The loader generated a POST route bound to the started instance.
     routes = get_routes()

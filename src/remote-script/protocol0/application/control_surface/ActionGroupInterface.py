@@ -1,8 +1,8 @@
-from typing import List, Optional, Callable
+from typing import Optional, Callable
 
 from protocol0.application.ContainerInterface import ContainerInterface
 from protocol0.application.ScriptDisconnectedEvent import ScriptDisconnectedEvent
-from protocol0.application.control_surface.EncoderAction import EncoderAction
+from protocol0.application.control_surface.Encoders import Encoders
 from protocol0.application.control_surface.MultiEncoder import MultiEncoder
 from protocol0.domain.shared.event.DomainEventBus import DomainEventBus
 
@@ -20,23 +20,9 @@ class ActionGroupInterface(object):
         super(ActionGroupInterface, self).__init__()
         self._container = container
         self._component_guard = component_guard
-        self._multi_encoders: List[MultiEncoder] = []
+        self._encoders = Encoders(component_guard)
 
         DomainEventBus.subscribe(ScriptDisconnectedEvent, lambda _: self._disconnect())
-
-    def _add_multi_encoder(self, multi_encoder: MultiEncoder) -> MultiEncoder:
-        assert (
-            len(
-                [
-                    encoder
-                    for encoder in self._multi_encoders
-                    if encoder.identifier == multi_encoder.identifier
-                ]
-            )
-            == 0
-        ), f"duplicate multi encoder id : {multi_encoder}"
-        self._multi_encoders.append(multi_encoder)
-        return multi_encoder
 
     def add_encoder(
         self,
@@ -48,24 +34,31 @@ class ActionGroupInterface(object):
         use_cc: bool = False,
         use_note_off: bool = False,
     ) -> MultiEncoder:
+        """
+        Declare an encoder of the group on the group's MIDI channel (CHANNEL is
+        1-based, Encoders converts it to the 0-based MIDI channel).
+
+        identifier: CC number of the encoder, unique within the group.
+        name: human-readable name, used in logs and error messages.
+        on_press / on_long_press / on_scroll: optional callbacks, each becoming
+            an EncoderAction bound to the matching gesture.
+        use_cc: the press arrives as a CC message instead of a note (no scroll).
+        use_note_off: trigger the press action on release instead of press.
+        """
         assert self.CHANNEL, "channel not configured for %s" % self
-        encoder = MultiEncoder(
-            channel=self.CHANNEL - 1,
+        return self._encoders.add_encoder(
+            channel=self.CHANNEL,
             identifier=identifier,
             name=name,
-            component_guard=self._component_guard,
+            on_press=on_press,
+            on_long_press=on_long_press,
+            on_scroll=on_scroll,
             use_cc=use_cc,
             use_note_off=use_note_off,
         )
-        for action in EncoderAction.make_actions(
-            name=name, on_press=on_press, on_long_press=on_long_press, on_scroll=on_scroll
-        ):
-            encoder.add_action(action)
-        return self._add_multi_encoder(encoder)
 
     def configure(self) -> None:
         raise NotImplementedError
 
     def _disconnect(self) -> None:
-        for encoder in self._multi_encoders:
-            encoder.disconnect()
+        self._encoders.disconnect()
