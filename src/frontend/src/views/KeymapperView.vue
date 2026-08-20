@@ -35,10 +35,12 @@ const locked = computed(() => state.value !== "ready");
 const searchText = ref("");
 const searchHotkey = ref("");
 
-// Filter pills: All (default) -> Ableton shortcuts -> Smart actions -> Extensions (the last
-// only appears when at least one third-party extension has registered an action).
+// Filter pills: All -> Ableton shortcuts -> Smart actions (default) -> Extensions (the last
+// only appears when at least one third-party extension has registered an action). Smart
+// actions open first: they are what the page is for, and the Ableton catalog is hundreds of
+// rows of noise to land on.
 type Filter = "all" | "ableton" | "smart" | "extensions";
-const filter = ref<Filter>("all");
+const filter = ref<Filter>("smart");
 const mappedOnly = ref(false);
 
 // An action is "owned" by an extension when its owner is set and isn't the remote script.
@@ -93,6 +95,9 @@ interface Group {
   category: string; // header label (Ableton category, "Smart actions", or an extension name)
   rows: Row[];
   extension?: boolean; // true => this group is a registered extension (rendered with a tag)
+  // true => render the rows bare, with no header and no collapsing. Used by the script's own
+  // smart actions: they are the point of the page, so they must never be hidden behind a fold.
+  flat?: boolean;
   // Stable key for collapse state; defaults to category but namespaced for extensions so an
   // extension named like an Ableton category doesn't share its expand/collapse state.
   expandKey?: string;
@@ -194,7 +199,7 @@ const smartGroup = computed<Group | null>(() => {
   if (filter.value === "ableton" || filter.value === "extensions") return null;
   const rows = rowsForActions(actions.value.filter((a) => !isExtensionAction(a)));
   if (!rows.length) return null;
-  return { category: "Smart actions", rows };
+  return { category: "Smart actions", rows, flat: true };
 });
 
 // Extension groups: one group per registered extension (its name as the header), holding that
@@ -238,7 +243,8 @@ const searchActive = computed(
   () => searchText.value.trim() !== "" || searchHotkey.value.trim() !== "" || mappedOnly.value,
 );
 const groupKey = (g: Group) => g.expandKey ?? g.category;
-const isExpanded = (g: Group) => searchActive.value || expanded.value.has(groupKey(g));
+const isExpanded = (g: Group) =>
+  g.flat === true || searchActive.value || expanded.value.has(groupKey(g));
 function toggleGroup(g: Group) {
   const key = groupKey(g);
   const next = new Set(expanded.value);
@@ -388,8 +394,14 @@ function openRow(row: Row) {
       </p>
     </div>
     <div v-else class="card card--flat ableton-list keymapper-list">
-      <div v-for="g in groups" :key="groupKey(g)" class="ableton-group">
+      <div
+        v-for="g in groups"
+        :key="groupKey(g)"
+        class="ableton-group"
+        :class="{ 'ableton-group--flat': g.flat }"
+      >
         <button
+          v-if="!g.flat"
           type="button"
           class="ableton-group-head"
           :aria-expanded="isExpanded(g)"
@@ -541,6 +553,16 @@ function openRow(row: Row) {
   border: 1px solid var(--accent-soft);
   border-radius: 999px;
 }
+/* Headerless group (the script's smart actions): with no header above them, the rows lose the
+   indent that marked them as nested, so they sit at the list's own left edge. The top padding
+   replaces the header's vertical breathing room. */
+.ableton-group--flat {
+  padding-top: var(--space-3);
+}
+.ableton-group--flat :deep(.ableton-item) {
+  padding-left: var(--space-4);
+}
+
 /* "New mapping" template row: lighter, italic so it reads as an action, not a binding. */
 .ableton-item--new .ableton-item-label {
   color: var(--accent-soft);
