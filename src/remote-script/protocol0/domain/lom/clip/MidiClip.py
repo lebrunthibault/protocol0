@@ -44,6 +44,29 @@ class MidiClip(Clip):
         """Return only loop section notes."""
         return list(map(Note.from_live_note, self.get_live_notes()))
 
+    def get_all_notes(self) -> List[Note]:
+        """Every note of the clip, ignoring the current note selection.
+
+        Unlike ``get_notes``, this never narrows to ``get_selected_notes_extended``.
+        The window matches the one ``replace_notes`` erases, so reading with this and
+        writing back is lossless whatever the user has selected in the MIDI editor.
+        """
+        if not self._clip:
+            return []
+
+        live_notes = self._clip.get_notes_extended(0, 128, 0, self.end_marker)
+        return list(map(Note.from_live_note, live_notes))
+
+    def remove_muted_notes(self) -> Optional[Sequence]:
+        """Delete the muted (deactivated) notes of the clip."""
+        notes = self.get_all_notes()
+        kept = [note for note in notes if not note.muted]
+
+        if len(kept) == len(notes):
+            return None  # nothing muted: don't rewrite the clip for nothing
+
+        return self.replace_notes(kept)
+
     def replace_notes(self, notes: List[Note]) -> Optional[Sequence]:
         if not self._clip:
             return None
