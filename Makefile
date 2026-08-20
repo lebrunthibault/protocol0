@@ -16,6 +16,20 @@ install:
 	@$(PY) scripts/install_remote_script.py
 .PHONY: install
 
+# Run every test suite: the remote script (pytest) and the Rust agent (cargo test)
+test: test-remote-script test-agent
+.PHONY: test
+
+# Test the remote script only (src/remote-script, pytest via poetry)
+test-remote-script:
+	@cd src/remote-script && poetry run pytest
+.PHONY: test-remote-script
+
+# Test the Rust agent only (src/agent)
+test-agent:
+	@cd src/agent && cargo test
+.PHONY: test-agent
+
 # Build the Rust agent (src/agent) and run the produced Protocol0.exe (kills stale agents first)
 agent: kill-agent
 	@cd src/agent && cargo build --release && "target/release/Protocol0.exe"
