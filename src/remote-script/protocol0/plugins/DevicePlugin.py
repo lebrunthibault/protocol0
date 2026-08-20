@@ -9,12 +9,14 @@ from protocol0.application.http.HttpServer import get_container
 from protocol0.application.plugin.PluginInterface import PluginInterface
 from protocol0.application.plugin.action import action
 from protocol0.domain.lom.device.DeviceService import DeviceService
+from protocol0.shared.sequence.Sequence import Sequence
 
 
 class DevicePlugin(PluginInterface):
     name = "device"
 
     @action
-    def load_device(self, name: str) -> None:
+    def load_device(self, name: str) -> Sequence:
         """Load a device (instrument or audio effect) onto the selected track by name."""
-        get_container().get(DeviceService).load_device(name)
+        # Returned so ``@action`` closes the undo step only once the device is loaded.
+        return get_container().get(DeviceService).load_device(name)

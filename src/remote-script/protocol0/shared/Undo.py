@@ -11,7 +11,7 @@ class Undo(object):
 
     @classmethod
     def begin_undo_step(cls) -> None:
-        cls._INSTANCE._end_undo_step()
+        cls._INSTANCE._begin_undo_step()
 
     @classmethod
     def end_undo_step(cls) -> None:

@@ -41,6 +41,25 @@ route — see
 dispatched. Real example:
 [`DevicePlugin.py`](../src/remote-script/protocol0/plugins/DevicePlugin.py).
 
+### Undo
+
+Every action runs inside a Live **undo step**: whatever it changes, a single
+Ctrl-Z in Ableton reverts it. You do not call `Undo` yourself.
+
+If your action finishes **later** than it returns — it delegates to a service
+that returns a `Sequence`, or it defers work by a tick — return that `Sequence`
+so the undo step is closed once the work actually completes:
+
+```python
+    @action
+    def do_thing(self) -> Optional[Sequence]:
+        """Docstring."""
+        return get_container().get(SomeService).do_thing()
+```
+
+Annotate the real return type; over HTTP the action stays fire-and-forget (the
+caller gets `200` immediately) whatever it returns.
+
 ## Reacting to events
 
 Return a `{EventType: handler}` map from `register_listeners()`; the loader
