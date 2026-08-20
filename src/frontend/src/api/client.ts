@@ -37,6 +37,12 @@ export const api = {
     return getJson<ActionDef[]>("/api/actions");
   },
 
+  // Runs an action now, without binding it to a keystroke. The agent resolves the owner and
+  // POSTs it for us (the SPA can't reach the script directly: CORS + dynamic port).
+  runAction(action: string, params: Record<string, string> = {}): Promise<{ ok: boolean }> {
+    return postJson<{ ok: boolean }>("/api/actions/run", { action, params });
+  },
+
   // Curated native Live shortcuts offered as remap targets (send_keys).
   getAbletonShortcuts(): Promise<AbletonShortcutCatalog> {
     return getJson<AbletonShortcutCatalog>("/api/ableton-shortcuts");

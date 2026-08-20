@@ -8,6 +8,7 @@
 //!   GET  /api/shortcuts           -> current bindings
 //!   POST /api/shortcuts/add       -> upsert {combo, action, params}
 //!   POST /api/shortcuts/delete    -> delete {combo}
+//!   POST /api/actions/run         -> run {action, params} now (no keystroke)
 //!
 //! The blocking reqwest calls (actions, status) run on a blocking thread (see mod.rs) so they
 //! never stall the async runtime.
@@ -20,7 +21,8 @@ use axum::Json;
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::settings::WEB_PORT;
+use crate::script_client::ScriptClient;
+use crate::settings::{Settings, WEB_PORT};
 use crate::{
     ableton_shortcuts, action_catalog, extension_registry, runtime_state, shortcut_store, version,
 };
@@ -114,6 +116,37 @@ pub async fn post_shortcuts_delete(Json(body): Json<DeleteBody>) -> impl IntoRes
             Json(shortcut_store::delete(&combo)).into_response()
         }
         _ => error("combo is required", StatusCode::BAD_REQUEST),
+    }
+}
+
+/// Body for /api/actions/run: run an action now, without going through a keystroke.
+#[derive(Deserialize)]
+pub struct RunBody {
+    action: Option<String>,
+    #[serde(default)]
+    params: HashMap<String, String>,
+}
+
+/// Runs an action on demand (the SPA's "run now" button). Same dispatch as a keypress: the
+/// agent resolves the owner and POSTs it, because the SPA can't reach the script itself
+/// (CORS + dynamic port). The keyboard path's ScriptClient lives in main.rs's dispatch
+/// closure and isn't reachable here, so we build one — it's just settings + an HTTP client.
+pub async fn post_actions_run(Json(body): Json<RunBody>) -> impl IntoResponse {
+    let Some(action) = body.action.filter(|a| !a.is_empty()) else {
+        return error("action is required", StatusCode::BAD_REQUEST);
+    };
+
+    // Blocking reqwest (catalog fetch + POST) off the async runtime, like get_actions/status.
+    let result = tokio::task::spawn_blocking(move || {
+        ScriptClient::new(Settings::load()).run(&action, &body.params)
+    })
+    .await
+    .unwrap_or_else(|e| Err(format!("run task failed: {e}")));
+
+    match result {
+        Ok(()) => Json(json!({ "ok": true })).into_response(),
+        // 502: the agent is fine, the owner (script/extension) isn't.
+        Err(message) => error(&message, StatusCode::BAD_GATEWAY),
     }
 }
 

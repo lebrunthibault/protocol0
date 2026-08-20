@@ -47,6 +47,8 @@ fn router() -> Router {
         .route("/api/shortcuts", get(api::get_shortcuts))
         .route("/api/shortcuts/add", post(api::post_shortcuts_add))
         .route("/api/shortcuts/delete", post(api::post_shortcuts_delete))
+        // Run an action now, from the SPA, without binding it to a keystroke first.
+        .route("/api/actions/run", post(api::post_actions_run))
         // Third-party extensions announce themselves here (outbound fetch from their sandbox).
         .route("/api/extensions/register", post(api::post_extensions_register))
         .route("/api/extensions/unregister", post(api::post_extensions_unregister))

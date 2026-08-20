@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
+import { api } from "../api/client";
 import { useShortcuts } from "../composables/useShortcuts";
 import { useStatus } from "../composables/useStatus";
 import {
@@ -246,6 +247,47 @@ function toggleGroup(g: Group) {
   expanded.value = next;
 }
 
+// --- Run now -------------------------------------------------------------------------
+// A row can be fired straight from the list when we know every param value: either it's an
+// existing binding (params already filled in), or the action declares no required param.
+// "Load Device — new mapping" has none, so it stays mapper-only: it needs a device name.
+function isRunnable(row: Row): row is SmartRow {
+  return row.kind === "smart" && (!!row.binding || !row.action.params.some((p) => p.required));
+}
+
+// Per-row transient feedback, keyed by row.key. The result mark clears itself so the list
+// doesn't accumulate stale ticks.
+type RunState = "running" | "ok" | "error";
+const runStates = ref<Record<string, RunState>>({});
+const runErrors = ref<Record<string, string>>({});
+
+function setRunState(key: string, state: RunState | null, message = "") {
+  const next = { ...runStates.value };
+  const errors = { ...runErrors.value };
+  if (state) next[key] = state;
+  else delete next[key];
+  if (message) errors[key] = message;
+  else delete errors[key];
+  runStates.value = next;
+  runErrors.value = errors;
+}
+
+async function runRow(row: Row) {
+  if (!isRunnable(row) || runStates.value[row.key] === "running") return;
+  setRunState(row.key, "running");
+  try {
+    await api.runAction(row.action.name, row.binding?.params ?? {});
+    setRunState(row.key, "ok");
+  } catch (e) {
+    setRunState(row.key, "error", e instanceof Error ? e.message : String(e));
+  }
+  // Keep the mark visible briefly, then return the row to its resting state.
+  const key = row.key;
+  setTimeout(() => {
+    if (runStates.value[key] !== "running") setRunState(key, null);
+  }, 1600);
+}
+
 // Click a row -> open the modal on the right target.
 function openRow(row: Row) {
   if (row.binding) {
@@ -359,33 +401,61 @@ function openRow(row: Row) {
           <span class="ableton-group-count">{{ g.rows.length }}</span>
         </button>
         <div v-if="isExpanded(g)" class="ableton-group-body">
-          <button
-            v-for="row in g.rows"
-            :key="row.key"
-            type="button"
-            class="ableton-item"
-            :class="{ 'ableton-item--new': !row.binding && row.kind === 'smart' }"
-            @click="openRow(row)"
-          >
-            <span class="ableton-item-label">{{ row.label }}</span>
-            <!-- Shared native combo: this keystroke also drives other commands. Shown on every
-                 shared row; emphasised once mapped (mapping it moved those peers too). -->
-            <span
-              v-if="row.kind === 'ableton' && row.peers.length"
-              class="ableton-shared-badge"
-              :class="{ 'ableton-shared-badge--mapped': row.binding }"
-              :title="`Same native combo as: ${row.peers.join(', ')}${row.binding ? ' — these were mapped together' : ''}`"
-            >⚠ +{{ row.peers.length }}</span>
-            <!-- TEMP: native Ableton combo this row maps to (so the original shortcut is
-                 visible alongside any assigned one). Remove when no longer needed. -->
-            <Kbd
-              v-if="row.kind === 'ableton'"
-              class="ableton-native-kbd"
-              :combo="row.shortcut.keys"
-              title="Native Ableton shortcut"
-            />
-            <Kbd v-if="row.combo" :combo="row.combo" />
-          </button>
+          <!-- The row is a flex wrapper, not a button: the label and the run control are
+               SIBLING buttons (a button can't legally nest inside another one). -->
+          <div v-for="row in g.rows" :key="row.key" class="item-row">
+            <button
+              type="button"
+              class="ableton-item"
+              :class="{ 'ableton-item--new': !row.binding && row.kind === 'smart' }"
+              @click="openRow(row)"
+            >
+              <span class="ableton-item-label">{{ row.label }}</span>
+              <!-- Shared native combo: this keystroke also drives other commands. Shown on every
+                   shared row; emphasised once mapped (mapping it moved those peers too). -->
+              <span
+                v-if="row.kind === 'ableton' && row.peers.length"
+                class="ableton-shared-badge"
+                :class="{ 'ableton-shared-badge--mapped': row.binding }"
+                :title="`Same native combo as: ${row.peers.join(', ')}${row.binding ? ' — these were mapped together' : ''}`"
+              >⚠ +{{ row.peers.length }}</span>
+              <!-- TEMP: native Ableton combo this row maps to (so the original shortcut is
+                   visible alongside any assigned one). Remove when no longer needed. -->
+              <Kbd
+                v-if="row.kind === 'ableton'"
+                class="ableton-native-kbd"
+                :combo="row.shortcut.keys"
+                title="Native Ableton shortcut"
+              />
+              <Kbd v-if="row.combo" :combo="row.combo" />
+            </button>
+            <!-- Run now: only where every param value is known (see isRunnable). -->
+            <button
+              v-if="isRunnable(row)"
+              type="button"
+              class="row-run"
+              :class="`row-run--${runStates[row.key] ?? 'idle'}`"
+              :disabled="runStates[row.key] === 'running'"
+              :aria-label="`Run ${row.label} now`"
+              :title="runErrors[row.key] || 'Run now'"
+              @click="runRow(row)"
+            >
+              <span v-if="runStates[row.key] === 'ok'" aria-hidden="true">✓</span>
+              <span v-else-if="runStates[row.key] === 'error'" aria-hidden="true">✗</span>
+              <svg
+                v-else
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <polygon points="6 3 20 12 6 21 6 3" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -482,6 +552,77 @@ function openRow(row: Row) {
 .ableton-native-kbd {
   opacity: 0.5;
   margin-left: auto;
+}
+
+/* Row wrapper: the label button and the run button sit side by side (nesting buttons is
+   invalid HTML). The hover highlight moves here so it covers the whole row, and the
+   shared .ableton-item keeps its own styling untouched (EditDialog uses it too). */
+.item-row {
+  display: flex;
+  align-items: center;
+  transition: background var(--t);
+}
+.item-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+.item-row:hover .ableton-item {
+  background: transparent;
+}
+.item-row .ableton-item {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Run button: always visible (a hover-only control is undiscoverable), but dimmed at rest
+   so the list stays calm; it brightens on row hover and on its own hover/focus. */
+.row-run {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-right: var(--space-3);
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity var(--t), color var(--t), border-color var(--t), background var(--t);
+}
+.row-run svg {
+  width: 13px;
+  height: 13px;
+}
+/* Emphasis comes from the button's OWN hover/focus, not from `.item-row:hover .row-run`:
+   Vue's scoped-CSS rewriter drops the ancestor part of that descendant selector (both
+   elements are scoped here), compiling it to a bare `.row-run` that would defeat the
+   dimmed resting state above. */
+.row-run:hover,
+.row-run:focus-visible {
+  opacity: 1;
+}
+.row-run--running,
+.row-run--ok,
+.row-run--error {
+  opacity: 1;
+}
+.row-run:hover {
+  color: var(--accent-soft);
+  border-color: var(--accent-soft);
+  background: var(--accent-bg);
+}
+.row-run--running {
+  color: var(--muted-2);
+  cursor: progress;
+}
+.row-run--ok {
+  color: var(--ok);
+}
+.row-run--error {
+  color: var(--warn);
 }
 
 /* Shared-native-combo badge: muted hint by default, emphasised once the row is mapped.
