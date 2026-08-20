@@ -172,12 +172,6 @@ class RecordService(object):
 
         seq = Sequence()
 
-        resampling_track = get_existing_resampling_track()
-        if resampling_track:
-            seq.add(resampling_track.select)
-        else:
-            seq.add(partial(track_creator, source_track.index + 1))
-
         def set_routing() -> None:
             track = Song.selected_track()
             track.input_routing.track = source_track
@@ -186,7 +180,12 @@ class RecordService(object):
             track.devices.mixer_device.update_from_dict(source_track.devices.mixer_device.to_dict())
             track.arm_state.arm_track()
 
-        seq.add(set_routing)
+        resampling_track = get_existing_resampling_track()
+        if resampling_track:
+            seq.add(resampling_track.select)
+        else:
+            seq.add(partial(track_creator, source_track.index + 1))
+            seq.add(set_routing)
 
         if ApplicationView.is_session_visible():
             seq.add(lambda: self.record_tracks([Song.selected_track()], record_type))
