@@ -136,6 +136,36 @@ An **action** is a named, parameterizable, self-described unit (name, label,
 expected parameters). The script exposes this catalog through its OpenAPI document
 (`/openapi.json`, rendered at `/docs`).
 
+The catalog is not a handful of bespoke commands: it aims for **broad coverage of
+the Live Object Model**, organized in action groups (transport, tracks, clips,
+scenes, devices, arrangement, views). Three durable choices keep it coherent as it
+grows — all modeled on ClyphX Pro, the reference for this problem space:
+
+- **One targeting grammar.** Every action addresses its target through a spec
+  string (`SEL`, an index, a name, `<`/`>` relative to the selection, dotted rack
+  paths for devices) instead of per-action ad-hoc parameters.
+- **One value vocabulary.** Values fall into a few tiers (on/off/toggle,
+  continuous with `%`/steps/random/reset, display units, enumerated options) so a
+  user — or an LLM — learns one system, not one per action.
+- **Actions report their real outcome.** The HTTP executor awaits the script's
+  async primitive and answers `done` / `error` / `cancelled` / `running` — a
+  caller can chain actions reliably, which is what the future conversational
+  control of Live (see `docs/specs/backlog/`) will stand on.
+
+Coverage is driven by a **machine-readable inventory of the LOM** (generated from
+a Live-version-specific reference into `docs/lom/`, regenerable when Live moves),
+joined with a curated map of what is exposed, and gated in the test suite against
+the command set of comparable tools.
+
+### The script is testable without Ableton
+
+The test suite boots the full script headless against **state-mutating fakes of
+the Live API**: creating a track really grows the fake set and fires its
+listeners, like in Live (including the one-tick deferral of notifications). Every
+action lands with a headless test that asserts the resulting state, not just the
+wiring — a rare asset (there is no off-the-shelf Ableton simulator) that the
+future code-generation work will reuse as its verification oracle.
+
 ### Plugins extend the script
 
 New behavior is added through **plugins** — small units inside the script that

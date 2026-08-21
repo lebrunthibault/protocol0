@@ -13,6 +13,9 @@ It's built with:
 - A Javascript web UI
 - A Python MIDI Remote Script that exposes an HTTP API from inside Live
 
+It ships a catalog of **50+ actions** (transport, tracks, clips, scenes, devices,
+arrangement, views) that target tracks/clips/devices by selection, index or name.
+
 It's extensible
 - Add your own actions by [writing a plugin](docs/plugins.md)
 - Trigger actions with your own tools by calling the script's HTTP API (e.g. AHK, a Stream Deck..)
@@ -41,6 +44,7 @@ cd protocol0
 make bootstrap  # set up the remote script's tooling + deploy it into Ableton
 make agent      # build (cargo) and run the agent, with live logs
 make up         # or: run the agent + frontend (live reload) + website
+make test       # run every test suite (pytest + cargo test), no Ableton needed
 ```
 
 - Config UI: <http://127.0.0.1:9010>.
