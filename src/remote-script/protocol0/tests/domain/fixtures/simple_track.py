@@ -9,6 +9,13 @@ from protocol0.tests.domain.fixtures.device import AbletonDevice
 from protocol0.tests.domain.fixtures.device_parameter import AbletonDeviceParameter
 
 
+class AbletonTrackView(Subject):
+    def __init__(self) -> None:
+        self.selected_device = None
+        self.is_collapsed = False
+        self.device_insert_mode = 0
+
+
 class AbletonMixerDevice(Subject):
     """Mutable mixer fake: volume / panning / sends are real parameters whose
     values can be written and asserted."""
@@ -64,7 +71,7 @@ class AbletonTrack(Subject):
         ]
         self.output_routing_type = self.available_output_routing_types[0]
         self.clip_slots = [AbletonClipSlot()]
-        self.view = None
+        self.view = AbletonTrackView()
         self.group_track = None
         self.color_index = 0
         self.has_audio_input = False
@@ -79,6 +86,9 @@ class AbletonTrack(Subject):
             self.has_midi_input = True
         if track_type == TrackType.AUDIO:
             self.has_audio_input = True
+
+    def delete_device(self, index: int) -> None:
+        self.devices = self.devices[:index] + self.devices[index + 1 :]
 
     def stop_all_clips(self, quantized: bool = True) -> None:
         for clip_slot in self.clip_slots:

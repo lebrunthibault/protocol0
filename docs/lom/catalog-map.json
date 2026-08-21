@@ -254,6 +254,26 @@
       "status": "exposed",
       "action": "clip/scale_velocities",
       "domain": "MidiClip.scale_velocities"
+    },
+    "Song.View.select_device": {
+      "status": "exposed",
+      "action": "device/select",
+      "domain": "DeviceComponent.select_device"
+    },
+    "DeviceParameter.value": {
+      "status": "exposed",
+      "action": "device/set_parameter",
+      "domain": "DeviceParameter.value"
+    },
+    "Track.delete_device": {
+      "status": "exposed",
+      "action": "device/delete",
+      "domain": "SimpleTrackDevices.delete"
+    },
+    "Chain.delete_device": {
+      "status": "exposed",
+      "action": "device/delete",
+      "domain": "DeviceChain.delete_device"
     }
   }
 }

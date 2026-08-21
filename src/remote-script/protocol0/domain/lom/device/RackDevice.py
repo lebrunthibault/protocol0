@@ -12,10 +12,13 @@ class RackDevice(Device, Observable):
     def __init__(self, *a: Any, **k: Any) -> None:
         super(RackDevice, self).__init__(*a, **k)
         self._device: Live.RackDevice.RackDevice = cast(Live.RackDevice.RackDevice, self._device)
-        self.chains: List[DeviceChain] = []
+        # built eagerly: rack traversal (dotted device addressing, _find_all_devices)
+        # needs the chains; the chains listener stays disabled (rebuilds happen with
+        # the track's devices listener)
+        self.chains: List[DeviceChain] = [
+            DeviceChain(chain, index) for index, chain in enumerate(self._device.chains)
+        ]
         self._view: Live.RackDevice.RackDevice.View = self._device.view
-        # self._chains_listener.subject = self._device
-        # self._chains_listener()
 
     def update(self, observable: Observable) -> None:
         if isinstance(observable, DeviceChain):

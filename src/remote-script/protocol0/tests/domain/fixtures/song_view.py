@@ -7,3 +7,8 @@ class AbletonSongView(Subject):
     def __init__(self) -> None:
         self.selected_track = None
         self.selected_scene = None
+        self.selected_parameter = None
+        self.detail_clip = None
+
+    def select_device(self, device) -> None:
+        self.selected_device = device
