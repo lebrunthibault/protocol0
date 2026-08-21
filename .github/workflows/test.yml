@@ -32,6 +32,16 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      # rust-embed compiles the SPA build into the binary: src/frontend/dist
+      # must exist before cargo builds
+      - name: Build the frontend
+        working-directory: src/frontend
+        run: |
+          npm ci
+          npm run build
       - uses: dtolnay/rust-toolchain@stable
       - name: Run cargo test
         working-directory: src/agent
