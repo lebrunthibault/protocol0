@@ -1,8 +1,6 @@
-import sys
-from os.path import dirname
 from unittest.mock import Mock
 
-sys.path.insert(0, f"{dirname(__file__)}/protocol0_stub")
+# NB: protocol0/__init__.py puts protocol0_stub on sys.path (Live + _Framework stubs)
 
 from protocol0.application.Protocol0 import Protocol0
 from protocol0.application.control_surface.ActionGroupFactory import ActionGroupFactory
