@@ -273,10 +273,32 @@ class SimpleTrack(SlotManager):
 
         DomainEventBus.emit(SimpleTrackSelectedEvent(self._track))
 
+    @property
+    def track_type(self) -> str:
+        if self.is_foldable:
+            return "group"
+        return {
+            "SimpleMidiTrack": "midi",
+            "SimpleAudioTrack": "audio",
+            "SimpleReturnTrack": "return",
+            "MasterTrack": "master",
+        }.get(type(self).__name__, "audio")
+
     def to_dict(self) -> Dict:
+        # the state payload of GET /api/set/get_state: enough for a caller (the
+        # agent, an LLM) to target tracks unambiguously (index + live_id) and
+        # know their state — not a full dump (no clips / notes / parameters)
         return {
             "name": self.name,
             "color": self.color,
+            "index": self.index,
+            "live_id": self.live_id,
+            "type": self.track_type,
+            "muted": bool(self.muted),
+            "solo": bool(self.solo),
+            "armed": bool(self.arm_state.is_armed),
+            "is_playing": bool(self.is_playing),
+            "devices": [device.name for device in self.devices.all],
         }
 
     def disconnect(self) -> None:

@@ -274,6 +274,36 @@
       "status": "exposed",
       "action": "device/delete",
       "domain": "DeviceChain.delete_device"
+    },
+    "Track.duplicate_clip_to_arrangement": {
+      "status": "exposed",
+      "action": "arrangement/duplicate_clip",
+      "domain": "SimpleTrack.duplicate_clip_to_arrangement"
+    },
+    "Track.delete_clip": {
+      "status": "exposed",
+      "action": "arrangement/clear",
+      "domain": "SimpleTrack.clear_arrangement"
+    },
+    "Song.current_song_time": {
+      "status": "exposed",
+      "action": "arrangement/set_time",
+      "domain": "Song.set_current_song_time"
+    },
+    "Song.set_or_delete_cue": {
+      "status": "exposed",
+      "action": "arrangement/add_locator",
+      "domain": "Song.set_or_delete_cue"
+    },
+    "Application.View.show_view": {
+      "status": "exposed",
+      "action": "view/show_session, view/show_arrangement, view/show_clip, view/show_device",
+      "domain": "ApplicationView"
+    },
+    "Application.View.toggle_browse": {
+      "status": "exposed",
+      "action": "view/toggle_browser",
+      "domain": "ApplicationView.toggle_browse"
     }
   }
 }

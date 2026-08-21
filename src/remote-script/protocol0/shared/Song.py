@@ -343,6 +343,8 @@ class Song(object):
 
     @classmethod
     def set_or_delete_cue(cls, time: float) -> Optional["Sequence"]:
+        from protocol0.shared.sequence.Sequence import Sequence  # TYPE_CHECKING at module level
+
         cue_points = cls._live_song().cue_points
 
         if find_if(lambda c: c.time == time, cue_points):

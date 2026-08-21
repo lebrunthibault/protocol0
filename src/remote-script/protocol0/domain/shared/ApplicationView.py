@@ -49,6 +49,10 @@ class ApplicationView(object):
         cls._INSTANCE._recording_component.back_to_arranger = False
 
     @classmethod
+    def show_session(cls) -> None:
+        cls._INSTANCE._application_view.show_view("Session")
+
+    @classmethod
     def focus_detail(cls) -> None:
         cls._focus_view("Detail")
 

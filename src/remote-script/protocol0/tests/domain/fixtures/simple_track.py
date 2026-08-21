@@ -4,6 +4,7 @@ import Live
 from _Framework.SubjectSlot import Subject
 
 from protocol0.domain.lom.track.routing.OutputRoutingTypeEnum import OutputRoutingTypeEnum
+from protocol0.tests.domain.fixtures.clip import AbletonClip
 from protocol0.tests.domain.fixtures.clip_slot import AbletonClipSlot
 from protocol0.tests.domain.fixtures.device import AbletonDevice
 from protocol0.tests.domain.fixtures.device_parameter import AbletonDeviceParameter
@@ -71,6 +72,7 @@ class AbletonTrack(Subject):
         ]
         self.output_routing_type = self.available_output_routing_types[0]
         self.clip_slots = [AbletonClipSlot()]
+        self.arrangement_clips: List[AbletonClip] = []
         self.view = AbletonTrackView()
         self.group_track = None
         self.color_index = 0
@@ -89,6 +91,13 @@ class AbletonTrack(Subject):
 
     def delete_device(self, index: int) -> None:
         self.devices = self.devices[:index] + self.devices[index + 1 :]
+
+    def duplicate_clip_to_arrangement(self, clip, time) -> None:
+        self.arrangement_clips = self.arrangement_clips + [clip]
+
+    def delete_clip(self, clip) -> None:
+        if clip in self.arrangement_clips:
+            self.arrangement_clips = [c for c in self.arrangement_clips if c is not clip]
 
     def stop_all_clips(self, quantized: bool = True) -> None:
         for clip_slot in self.clip_slots:

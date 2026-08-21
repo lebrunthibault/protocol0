@@ -9,6 +9,13 @@ from protocol0.tests.domain.fixtures.simple_track import AbletonTrack, TrackType
 from protocol0.tests.domain.fixtures.song_view import AbletonSongView
 
 
+class AbletonCuePoint(Subject):
+    def __init__(self, time: float) -> None:
+        self._live_ptr = id(self)
+        self.time = time
+        self.name = str(time)
+
+
 class AbletonSong(Subject):
     __subject_events__ = (
         "is_playing",
@@ -44,6 +51,8 @@ class AbletonSong(Subject):
         self.can_undo = True
         self.can_redo = True
         self.can_capture_midi = False
+        self.current_song_time = 0.0
+        self.cue_points: List[AbletonCuePoint] = []
         self.undone = 0  # undo/redo call counters, for assertions
         self.redone = 0
 
@@ -91,6 +100,13 @@ class AbletonSong(Subject):
 
     def jump_to_prev_cue(self) -> None:
         pass
+
+    def set_or_delete_cue(self) -> None:
+        existing = [c for c in self.cue_points if c.time == self.current_song_time]
+        if existing:
+            self.cue_points = [c for c in self.cue_points if c not in existing]
+        else:
+            self.cue_points = self.cue_points + [AbletonCuePoint(self.current_song_time)]
 
     """ track crud (mutates the fake set, firing the tracks listeners) """
 
