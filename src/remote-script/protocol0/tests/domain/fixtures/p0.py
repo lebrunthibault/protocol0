@@ -10,6 +10,7 @@ from protocol0.application.http import HttpServer
 from protocol0.domain.lom.track.routing.RoutingTrackDescriptor import RoutingTrackDescriptor
 from protocol0.domain.shared.backend.Backend import Backend
 from protocol0.domain.shared.scheduler.Scheduler import Scheduler
+from protocol0.domain.shared.scheduler.TickSchedulerInterface import TickSchedulerInterface
 from protocol0.domain.shared.utils.func import nop
 from protocol0.infra.logging.LoggerService import LoggerService
 from protocol0.infra.scheduler.BeatScheduler import BeatScheduler
@@ -19,14 +20,14 @@ from protocol0.tests.domain.fixtures.song import AbletonSong
 from protocol0.tests.infra.scheduler.TickSchedulerTest import TickSchedulerTest
 
 
-def make_protocol0() -> Protocol0:
+def make_protocol0(tick_scheduler: TickSchedulerInterface = None) -> Protocol0:
     live_song = AbletonSong()
     Protocol0.song = lambda _: live_song
     wait = Scheduler.wait
     Scheduler.wait = classmethod(nop)
     monkey_patch_static()
     p0 = Protocol0(Mock())
-    Scheduler(TickSchedulerTest(), BeatScheduler(live_song))
+    Scheduler(tick_scheduler or TickSchedulerTest(), BeatScheduler(live_song))
     Scheduler.wait = wait
     return p0
 
@@ -48,7 +49,14 @@ def monkey_patch_static():
     # ...and it also binds a real socket and publishes %APPDATA%/Protocol0/runtime.json.
     # Tests drive the router directly, so the server is pure side effect: it races a
     # running Protocol0.exe for that file (PermissionError) and leaks a thread per test.
-    HttpServer.start = nop
+    # We still register the routes and the container so HttpServer.get_container()
+    # (the DI entry point of plugin actions) works headless.
+    def start_headless(container):
+        import protocol0.application.http.routes  # noqa: F401
+
+        HttpServer._container = container
+
+    HttpServer.start = start_headless
     HttpServer.stop = nop
     Undo(nop, nop)
     # noinspection PyTypeChecker
