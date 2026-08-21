@@ -13,6 +13,11 @@ sys.dont_write_bytecode = True
 # protocol0.tests.__init__.
 monkey_patch_static()
 
+# Register the core routes (/, /docs, /openapi.json, /api/set/get_state) once,
+# BEFORE any fixture snapshots the route table: the decorators only run at first
+# import, so a snapshot/restore taken earlier would erase them for good.
+import protocol0.application.http.routes  # noqa: F401, E402
+
 
 @pytest.fixture
 def tick_scheduler() -> TickSchedulerSync:

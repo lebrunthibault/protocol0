@@ -3,7 +3,6 @@ from unittest.mock import Mock
 # NB: protocol0/__init__.py puts protocol0_stub on sys.path (Live + _Framework stubs)
 
 from protocol0.application.Protocol0 import Protocol0
-from protocol0.application.control_surface.ActionGroupFactory import ActionGroupFactory
 from protocol0.application.http import HttpServer
 from protocol0.domain.lom.track.routing.RoutingTrackDescriptor import RoutingTrackDescriptor
 from protocol0.domain.shared.backend.Backend import Backend
@@ -68,9 +67,6 @@ def monkey_patch_static():
     Undo(nop, nop)
     # noinspection PyTypeChecker
     Scheduler(TickSchedulerTest(), None)  # ignore beat scheduling in tests
-
-    # remove this until fixtures are thorough
-    ActionGroupFactory.create_action_groups = classmethod(nop)
 
     RoutingTrackDescriptor.__set__ = nop
 

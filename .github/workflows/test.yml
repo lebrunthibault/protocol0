@@ -1,0 +1,38 @@
+# Runs the full test suite on every push to main (same suites as `make test`):
+# the remote script (pytest, headless against the LOM fakes) and the Rust agent
+# (cargo test). Also guards the committed LOM inventory against drift-free
+# regeneration where possible (the wiki source is local-only, so only the
+# repo-side checks run here).
+
+name: test
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  remote-script:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install poetry
+        run: pipx install poetry
+      - name: Install dependencies
+        working-directory: src/remote-script
+        run: poetry install --no-interaction
+      - name: Run pytest
+        working-directory: src/remote-script
+        run: poetry run pytest
+
+  agent:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Run cargo test
+        working-directory: src/agent
+        run: cargo test

@@ -121,6 +121,38 @@ fusionné de l'agent Rust.
 - Le catalogue se régénère depuis `live<N>/` sans réécriture manuelle (preuve : régénérer
   produit le même set).
 
+## État d'avancement (2026-08-21)
+
+Implémenté (v0.36.0) : **56 actions sur 8 plugins** (transport 15, track 17,
+clip 15, scene 7, device 5, arrangement 4, view 5, record 1 — chiffres après
+regroupement), toutes sur la grammaire d'adressage
+(`domain/lom/addressing/`) et testées headless (187 tests). Checklist
+ableton-mcp : **30/30** exposés ou waivés (`docs/lom/coverage.md`). Le
+pipeline (`scripts/lom_catalog/`) régénère l'inventaire depuis le wiki
+(`make lom-catalog`, idempotence prouvée par `make lom-check`). Les fakes LOM
+mutent l'état (le neutering `ActionGroupFactory` de `p0.py` a été supprimé —
+le script complet boote en test). L'exécuteur HTTP attend les `Sequence` et
+répond avec l'enveloppe `done/error/cancelled/running` (cap 10 s).
+
+## Smoke test dans le vrai Ableton (à dérouler avant move-to-done)
+
+~15 min, après `make install` + redémarrage complet de Live :
+
+1. `GET :9000/api/set/get_state` → tracks avec `index`/`live_id`/`type`/`devices`.
+2. `POST /api/action/transport/tempo {"value": "124"}` → 200 `done`, tempo bouge.
+3. `POST /api/action/track/mute {"track": "\"<nom réel>\"", "value": "ON"}` → track mutée.
+4. `POST /api/action/track/create_midi {}` → 200 `done` (pas avant que la track existe).
+5. `POST /api/action/track/volume {"value": "-6"}` → fader à -6 dB.
+6. `POST /api/action/clip/add_note {"pitch": 60, "start": 0, "duration": 1}` sur un
+   clip MIDI sélectionné → note ajoutée.
+7. `POST /api/action/device/set_parameter {"parameter": "2", "value": "50%"}` sur un
+   device sélectionné → paramètre à mi-course.
+8. `POST /api/action/device/load_device {"name": "Reverb"}` → device chargé, 200 `done`.
+9. `POST /api/action/scene/fire {}` → scène lancée.
+10. Une erreur d'adressage (`track: "nope"`) → 500 `{"status": "error"}` propre.
+11. Cross-check des effets via AbletonMCP `get_session_snapshot`.
+12. Un Ctrl-Z après une action multi-étapes (create_midi) revert d'un coup (undo step).
+
 ## Sources
 
 - [ClyphX Pro User Manual](https://isotonikstudios.com/wp-content/uploads/ClyphX-Pro-User-Manual-1.pdf)

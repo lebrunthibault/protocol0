@@ -57,8 +57,51 @@ so the undo step is closed once the work actually completes:
         return get_container().get(SomeService).do_thing()
 ```
 
-Annotate the real return type; over HTTP the action stays fire-and-forget (the
-caller gets `200` immediately) whatever it returns.
+Annotate the real return type. Over HTTP the action executor **awaits** the
+returned `Sequence` and answers from the real outcome (see below) — nothing is
+fire-and-forget anymore.
+
+### Response envelope
+
+Every `POST /api/action/...` answers with a uniform JSON envelope:
+
+| Status | Body | Meaning |
+|---|---|---|
+| `200` | `{"status": "done", "res": ...}` | completed (sync return, or the returned `Sequence` terminated) |
+| `500` | `{"status": "error", "error": "..."}` | exception raised, or the `Sequence` errored (the failing step's message) |
+| `500` | `{"status": "cancelled"}` | the `Sequence` was cancelled |
+| `202` | `{"status": "running"}` | still running after 10 s — the action keeps going in Live |
+| `400` | plain text | missing required parameter |
+
+### Targeting grammar
+
+Catalog actions take their targets as **spec strings** resolved by
+[`domain/lom/addressing/`](../src/remote-script/protocol0/domain/lom/addressing/__init__.py):
+
+- **track**: `SEL` (selected, the default) · `MST`/`master` · 1-based index
+  (`"2"`) · `"name"` (quoted → exact) · bare name (exact, then substring) ·
+  `<` / `>` (relative to the selection, clamped)
+- **scene**: `SEL` · `LAST` · index · name · `<` / `>`
+- **clip**: track spec + clip spec (`SEL` = the track's clip in the selected
+  scene, or a scene index, or a name)
+- **device**: `SEL` (selected device) · top-level index · dotted rack path
+  `2.1.1` (1st device of the 1st chain of the 2nd device — pairs may nest) ·
+  name (searched through rack chains)
+- **parameter**: 1-based index or name
+
+### Value tiers
+
+Values share one vocabulary (`domain/lom/addressing/values.py`):
+
+- **bool** (`mute`, `solo`, `metronome`…): `ON` / `OFF` / `TGL` (default)
+- **continuous** (device parameters, pan, sends): absolute `x` · `x%` of the
+  range · `<`/`>` steps (range/64) · `<x`/`>x` · `RND` · `RNDx-y` · `RESET`
+- **quasi-continuous** (display units — BPM, dB): absolute · `<`/`>` · `<x`/`>x`
+- **adjustable** (enumerated — monitoring, quantizations): option name or
+  `<`/`>` cycling
+
+A failed resolution raises `Protocol0Warning` with the candidates, surfaced as
+a clean `500 {"status": "error"}`.
 
 ## Reacting to events
 
