@@ -30,6 +30,17 @@ test-agent:
 	@cd src/agent && cargo test
 .PHONY: test-agent
 
+# Regenerate the LOM inventory (from the wiki Live 12 reference) and the coverage report
+lom-catalog:
+	@$(PY) scripts/lom_catalog/extract.py
+	@$(PY) scripts/lom_catalog/coverage.py
+.PHONY: lom-catalog
+
+# Fail if the committed LOM inventory drifted from the wiki source (idempotence proof)
+lom-check:
+	@$(PY) scripts/lom_catalog/extract.py --check
+.PHONY: lom-check
+
 # Build the Rust agent (src/agent) and run the produced Protocol0.exe (kills stale agents first)
 agent: kill-agent
 	@cd src/agent && cargo build --release && "target/release/Protocol0.exe"

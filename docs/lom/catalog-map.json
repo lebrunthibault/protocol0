@@ -1,0 +1,69 @@
+{
+  "_comment": "Hand-maintained join table between the LOM inventory (lom-inventory.json, generated) and the @action catalog. Keys are inventory op ids (<ClassKey>.<member>). status: exposed (an @action covers it) | domain-only (wrapped in the domain layer, not exposed yet) | skipped (deliberately not exposed, give a reason). Run scripts/lom_catalog/coverage.py after editing.",
+  "ops": {
+    "Song.View.selected_track": {
+      "status": "exposed",
+      "action": "track/select",
+      "domain": "SimpleTrack.select"
+    },
+    "Browser.load_item": {
+      "status": "exposed",
+      "action": "device/load_device",
+      "domain": "DeviceService.load_device"
+    },
+    "Clip.get_notes_extended": {
+      "status": "exposed",
+      "action": "clip/remove_muted_notes",
+      "domain": "MidiClip.get_notes"
+    },
+    "Clip.remove_notes_extended": {
+      "status": "exposed",
+      "action": "clip/remove_muted_notes",
+      "domain": "MidiClip.replace_notes"
+    },
+    "Song.create_midi_track": {
+      "status": "domain-only",
+      "domain": "TrackCrudComponent.create_midi_track"
+    },
+    "Song.create_audio_track": {
+      "status": "domain-only",
+      "domain": "TrackCrudComponent.create_audio_track"
+    },
+    "Song.duplicate_track": {
+      "status": "domain-only",
+      "domain": "TrackCrudComponent.duplicate_track"
+    },
+    "Song.delete_track": {
+      "status": "domain-only",
+      "domain": "TrackCrudComponent.delete_track"
+    },
+    "Song.create_scene": {
+      "status": "domain-only",
+      "domain": "SceneCrudComponent.create_scene"
+    },
+    "Song.duplicate_scene": {
+      "status": "domain-only",
+      "domain": "SceneCrudComponent.duplicate_scene"
+    },
+    "Song.delete_scene": {
+      "status": "domain-only",
+      "domain": "SceneCrudComponent.delete_scene"
+    },
+    "Song.start_playing": {
+      "status": "domain-only",
+      "domain": "PlaybackComponent.start_playing"
+    },
+    "Song.stop_playing": {
+      "status": "domain-only",
+      "domain": "PlaybackComponent.stop"
+    },
+    "Song.stop_all_clips": {
+      "status": "domain-only",
+      "domain": "PlaybackComponent.stop_all_clips"
+    },
+    "Song.tempo": {
+      "status": "domain-only",
+      "domain": "TempoComponent.tempo"
+    }
+  }
+}
