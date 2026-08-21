@@ -118,6 +118,7 @@ class Container(ContainerInterface):
         self._register(track_component)
         self._register(track_crud_component)
         self._register(tempo_component)
+        self._register(quantization_component)
 
         self._register(track_mapper_service)
 

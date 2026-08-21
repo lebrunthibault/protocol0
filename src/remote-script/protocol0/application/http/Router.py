@@ -239,6 +239,8 @@ class HttpRequestHandler(BaseHTTPRequestHandler):
                 slot["result"] = seq.res
             elif seq.state.cancelled:
                 slot["cancelled"] = True
+            elif seq.error is not None:
+                slot["error"] = str(seq.error)
             else:
                 slot["error"] = "sequence errored: %s" % seq.name
 

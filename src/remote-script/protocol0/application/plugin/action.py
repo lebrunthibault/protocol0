@@ -36,19 +36,14 @@ class ActionMeta(object):
 def _http_signature(fn):
     """The signature the router and the OpenAPI generator must see on the wrapper.
 
-    Two things have to hold at once, and neither comes for free:
+    The **parameters** stay those of ``fn`` (``Router._build_kwargs`` and the
+    OpenAPI schema read them). ``@wraps`` alone would not do: it sets
+    ``__wrapped__``, but if we drop that, ``inspect.signature`` falls back to the
+    wrapper's own ``(*a, **k)``. The return annotation is normalized to ``None``:
+    what the wrapper actually returns (its undo-step ``Sequence``) is an executor
+    concern (``Router._dispatch_action`` awaits it), not part of the API schema.
 
-    - the **parameters** stay those of ``fn`` (``Router._build_kwargs`` and the
-      OpenAPI schema read them). ``@wraps`` alone would not do: it sets
-      ``__wrapped__``, but if we drop that, ``inspect.signature`` falls back to
-      the wrapper's own ``(*a, **k)``;
-    - the **return annotation** is forced to ``None``. ``Router._returns_value``
-      reads it to decide whether to wait for a result. An action may legitimately
-      declare ``-> Optional[Sequence]`` (it does return one, and we chain it
-      below), but over HTTP the contract stays fire-and-forget: waiting would
-      block the HTTP thread and then fail to JSON-serialize the Sequence.
-
-    Setting ``__signature__`` covers both — ``inspect.signature`` honours it over
+    Setting ``__signature__`` covers this — ``inspect.signature`` honours it over
     ``__wrapped__``.
     """
     return inspect.signature(fn).replace(return_annotation=None)
@@ -61,6 +56,8 @@ def action(fn):
     The step is closed through a ``Sequence``: when the action returns one
     (i.e. it finishes later), ``SequenceStep`` chains it and the step is only
     closed once that Sequence completes — same mechanism as ``EncoderAction``.
+    The wrapper returns that Sequence so the http action executor can await its
+    outcome and surface errors (envelope 200/500/202).
     """
     from protocol0.shared.Undo import Undo
     from protocol0.shared.sequence.Sequence import Sequence
@@ -71,7 +68,7 @@ def action(fn):
         seq = Sequence()
         seq.add(partial(fn, *a, **k))
         seq.add(Undo.end_undo_step)
-        seq.done()
+        return seq.done()
 
     with_undo_step.__signature__ = _http_signature(fn)
     setattr(with_undo_step, _ACTION_ATTR, ActionMeta(fn.__name__))

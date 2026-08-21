@@ -19,6 +19,7 @@ class SequenceStep(Observable):
         self.state = SequenceState()
         self._notify_terminated = notify_terminated
         self.res: Optional[Any] = None
+        self.error: Optional[Exception] = None
 
     def __repr__(self, **k: Any) -> str:
         return self._name
@@ -36,6 +37,7 @@ class SequenceStep(Observable):
         try:
             self._execute()
         except Exception as e:
+            self.error = e
             self._error()
             Logger.warning("Error on %s" % get_callable_repr(self._callable))
             Logger.warning(traceback.format_exc())

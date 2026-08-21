@@ -31,6 +31,12 @@ class AbletonClip(Subject):
         self.is_audio_clip = False
         self.is_playing = False
 
+    def fire(self):
+        self.is_playing = True
+
+    def stop(self):
+        self.is_playing = False
+
     # noinspection PyUnusedLocal
     def get_notes_extended(self, *a, **k):
         return ()

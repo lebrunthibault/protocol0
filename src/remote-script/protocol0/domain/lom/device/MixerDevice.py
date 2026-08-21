@@ -34,6 +34,10 @@ class MixerDevice(SlotManager):
     def volume(self) -> DeviceParameter:
         return self._volume
 
+    @property
+    def pan(self) -> DeviceParameter:
+        return self._pan
+
     def reset(self) -> None:
         for param in self.parameters:
             param.value = 0

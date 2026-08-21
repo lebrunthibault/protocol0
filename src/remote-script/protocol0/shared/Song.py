@@ -361,6 +361,16 @@ class Song(object):
         cls._live_song().jump_to_prev_cue()
 
     @classmethod
+    def undo(cls) -> None:
+        if cls._live_song().can_undo:
+            cls._live_song().undo()
+
+    @classmethod
+    def redo(cls) -> None:
+        if cls._live_song().can_redo:
+            cls._live_song().redo()
+
+    @classmethod
     def can_capture_midi(cls) -> bool:
         return cls._live_song().can_capture_midi
 

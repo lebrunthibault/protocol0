@@ -38,6 +38,7 @@ class Sequence(Observable):
         self._current_step: Optional[SequenceStep] = None
         self.state = SequenceState()
         self.res: Optional[Any] = None
+        self.error: Optional[Exception] = None
         frame_info = get_frame_info(2)
         if name:
             self.name = name
@@ -113,6 +114,9 @@ class Sequence(Observable):
 
     def _error(self) -> None:
         self.state.change_to(SequenceStateEnum.ERRORED)
+        if self._current_step is not None:
+            # propagate the failing step's exception (surfaced by the http envelope)
+            self.error = self._current_step.error
         # like _terminate: observers (e.g. the http action executor) must know
         # the sequence left the started state, whatever the outcome
         self.notify_observers()

@@ -19,7 +19,7 @@ def resolve_track(spec: str = "SEL") -> "SimpleTrack":
 
     if keyword in ("SEL", ""):
         return Song.selected_track()
-    if keyword == "MST":
+    if keyword in ("MST", "MASTER"):
         return Song.master_track()
 
     tracks: List["SimpleTrack"] = list(Song.simple_tracks())

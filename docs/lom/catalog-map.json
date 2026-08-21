@@ -21,21 +21,159 @@
       "action": "clip/remove_muted_notes",
       "domain": "MidiClip.replace_notes"
     },
+    "Clip.fire": {
+      "status": "exposed",
+      "action": "track/fire",
+      "domain": "SimpleTrack.fire"
+    },
+    "Song.start_playing": {
+      "status": "exposed",
+      "action": "transport/start_playback",
+      "domain": "PlaybackComponent.start_playing"
+    },
+    "Song.stop_playing": {
+      "status": "exposed",
+      "action": "transport/stop_playback",
+      "domain": "PlaybackComponent.stop"
+    },
+    "Song.stop_all_clips": {
+      "status": "exposed",
+      "action": "transport/stop_all_clips",
+      "domain": "PlaybackComponent.stop_all_clips"
+    },
+    "Song.continue_playing": {
+      "status": "skipped",
+      "reason": "start_playback covers the common case; continue-from-position deferred"
+    },
+    "Song.tempo": {
+      "status": "exposed",
+      "action": "transport/tempo",
+      "domain": "TempoComponent.tempo"
+    },
+    "Song.metronome": {
+      "status": "exposed",
+      "action": "transport/metronome",
+      "domain": "PlaybackComponent.metronome"
+    },
+    "Song.session_record": {
+      "status": "exposed",
+      "action": "transport/session_record",
+      "domain": "RecordingComponent.session_record"
+    },
+    "Song.back_to_arranger": {
+      "status": "exposed",
+      "action": "transport/back_to_arranger",
+      "domain": "RecordingComponent.back_to_arranger"
+    },
+    "Song.clip_trigger_quantization": {
+      "status": "exposed",
+      "action": "transport/clip_trigger_quantization",
+      "domain": "QuantizationComponent.clip_trigger_quantization"
+    },
+    "Song.midi_recording_quantization": {
+      "status": "exposed",
+      "action": "transport/midi_recording_quantization",
+      "domain": "QuantizationComponent.midi_recording_quantization"
+    },
+    "Song.jump_to_next_cue": {
+      "status": "exposed",
+      "action": "transport/jump_to_cue",
+      "domain": "Song.jump_to_next_cue"
+    },
+    "Song.jump_to_prev_cue": {
+      "status": "exposed",
+      "action": "transport/jump_to_cue",
+      "domain": "Song.jump_to_prev_cue"
+    },
+    "Song.capture_midi": {
+      "status": "exposed",
+      "action": "transport/capture_midi",
+      "domain": "Song.capture_midi"
+    },
+    "Song.undo": {
+      "status": "exposed",
+      "action": "transport/undo",
+      "domain": "Song.undo"
+    },
+    "Song.redo": {
+      "status": "exposed",
+      "action": "transport/redo",
+      "domain": "Song.redo"
+    },
     "Song.create_midi_track": {
-      "status": "domain-only",
+      "status": "exposed",
+      "action": "track/create_midi",
       "domain": "TrackCrudComponent.create_midi_track"
     },
     "Song.create_audio_track": {
-      "status": "domain-only",
+      "status": "exposed",
+      "action": "track/create_audio",
       "domain": "TrackCrudComponent.create_audio_track"
     },
     "Song.duplicate_track": {
-      "status": "domain-only",
+      "status": "exposed",
+      "action": "track/duplicate",
       "domain": "TrackCrudComponent.duplicate_track"
     },
     "Song.delete_track": {
-      "status": "domain-only",
+      "status": "exposed",
+      "action": "track/delete",
       "domain": "TrackCrudComponent.delete_track"
+    },
+    "Track.arm": {
+      "status": "exposed",
+      "action": "track/arm",
+      "domain": "SimpleTrackArmState.is_armed"
+    },
+    "Track.mute": {
+      "status": "exposed",
+      "action": "track/mute",
+      "domain": "SimpleTrack.muted"
+    },
+    "Track.solo": {
+      "status": "exposed",
+      "action": "track/solo",
+      "domain": "SimpleTrack.solo"
+    },
+    "Track.fold_state": {
+      "status": "exposed",
+      "action": "track/fold",
+      "domain": "SimpleTrack.is_folded"
+    },
+    "Track.current_monitoring_state": {
+      "status": "exposed",
+      "action": "track/monitor",
+      "domain": "SimpleTrack.current_monitoring_state"
+    },
+    "Track.name": {
+      "status": "exposed",
+      "action": "track/rename",
+      "domain": "SimpleTrackAppearance.name"
+    },
+    "Track.color_index": {
+      "status": "exposed",
+      "action": "track/color",
+      "domain": "SimpleTrack.color"
+    },
+    "Track.stop_all_clips": {
+      "status": "exposed",
+      "action": "track/stop",
+      "domain": "SimpleTrack.stop"
+    },
+    "MixerDevice.volume": {
+      "status": "exposed",
+      "action": "track/volume",
+      "domain": "SimpleTrack.volume"
+    },
+    "MixerDevice.panning": {
+      "status": "exposed",
+      "action": "track/pan",
+      "domain": "SimpleTrack.pan"
+    },
+    "MixerDevice.sends": {
+      "status": "exposed",
+      "action": "track/send",
+      "domain": "MixerDevice.sends"
     },
     "Song.create_scene": {
       "status": "domain-only",
@@ -48,22 +186,6 @@
     "Song.delete_scene": {
       "status": "domain-only",
       "domain": "SceneCrudComponent.delete_scene"
-    },
-    "Song.start_playing": {
-      "status": "domain-only",
-      "domain": "PlaybackComponent.start_playing"
-    },
-    "Song.stop_playing": {
-      "status": "domain-only",
-      "domain": "PlaybackComponent.stop"
-    },
-    "Song.stop_all_clips": {
-      "status": "domain-only",
-      "domain": "PlaybackComponent.stop_all_clips"
-    },
-    "Song.tempo": {
-      "status": "domain-only",
-      "domain": "TempoComponent.tempo"
     }
   }
 }

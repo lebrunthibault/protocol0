@@ -35,6 +35,17 @@ class AbletonSong(Subject):
         self.master_track.name = "Master"
         self.scenes = [AbletonScene()]
         self.clip_trigger_quantization = 0
+        self.midi_recording_quantization = 0
+        self.metronome = False
+        self.session_record = False
+        self.session_automation_record = False
+        self.back_to_arranger = False
+        self.record_mode = False
+        self.can_undo = True
+        self.can_redo = True
+        self.can_capture_midi = False
+        self.undone = 0  # undo/redo call counters, for assertions
+        self.redone = 0
 
         self.view.selected_track = self.tracks[0]
         self.view.selected_scene = self.scenes[0]
@@ -64,6 +75,21 @@ class AbletonSong(Subject):
         pass
 
     def end_undo_step(self) -> None:
+        pass
+
+    def undo(self) -> None:
+        self.undone += 1
+
+    def redo(self) -> None:
+        self.redone += 1
+
+    def re_enable_automation(self) -> None:
+        pass
+
+    def jump_to_next_cue(self) -> None:
+        pass
+
+    def jump_to_prev_cue(self) -> None:
         pass
 
     """ track crud (mutates the fake set, firing the tracks listeners) """

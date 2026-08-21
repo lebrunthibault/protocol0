@@ -190,6 +190,16 @@ class SimpleTrack(SlotManager):
             DeviceParameter.set_live_device_parameter(self._track.mixer_device.volume, volume)
 
     @property
+    def pan(self) -> float:
+        """Raw Live panning (-1..1)."""
+        return self.devices.mixer_device.pan.value if self._track else 0
+
+    @pan.setter
+    def pan(self, pan: float) -> None:
+        if self._track:
+            DeviceParameter.set_live_device_parameter(self._track.mixer_device.panning, pan)
+
+    @property
     def color(self) -> int:
         return self.appearance.color
 
@@ -214,6 +224,9 @@ class SimpleTrack(SlotManager):
         clip = self.clip_slots[scene_index].clip
         if clip is not None:
             clip.fire()
+
+    def stop(self) -> None:
+        self._track.stop_all_clips()
 
     def delete(self) -> Optional[Sequence]:
         if self.group_track and self.group_track.sub_tracks == [self]:

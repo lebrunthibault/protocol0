@@ -53,6 +53,8 @@ class AbletonTrack(Subject):
         self.can_be_armed = True
         self.arm = False
         self.solo = False
+        self.mute = False
+        self.current_monitoring_state = 1  # AUTO
         self.fold_state = False
         self.has_midi_input = self.is_foldable = self.fold_state = False
         self.available_input_routing_types = []
@@ -77,6 +79,11 @@ class AbletonTrack(Subject):
             self.has_midi_input = True
         if track_type == TrackType.AUDIO:
             self.has_audio_input = True
+
+    def stop_all_clips(self, quantized: bool = True) -> None:
+        for clip_slot in self.clip_slots:
+            if clip_slot.clip is not None:
+                clip_slot.clip.is_playing = False
 
     def __repr__(self) -> str:
         return "%s - %s" % (self.track_type, self.name)
