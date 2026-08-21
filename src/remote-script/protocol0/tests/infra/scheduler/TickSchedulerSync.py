@@ -1,3 +1,5 @@
+import threading
+
 from typing import Callable, List
 
 from protocol0.domain.shared.scheduler.TickSchedulerEventInterface import (
@@ -28,21 +30,26 @@ class TickSchedulerSync(TickSchedulerInterface):
     def __init__(self) -> None:
         self._current_tick = 0
         self._pending: List[TickSchedulerEventSync] = []
+        # the http dispatch helper pumps ticks from a background thread while
+        # the test thread schedules -- guard the pending list
+        self._lock = threading.Lock()
 
     def schedule(
         self, tick_count: int, callback: Callable, unique: bool = False
     ) -> TickSchedulerEventSync:
         event = TickSchedulerEventSync(callback, self._current_tick + max(tick_count, 1))
-        self._pending.append(event)
+        with self._lock:
+            self._pending.append(event)
         return event
 
     def advance(self, ticks: int = 1) -> None:
         """Advance the clock, executing due callbacks. Callbacks scheduled while
         advancing land on later ticks (like the real 17ms tick loop)."""
         for _ in range(ticks):
-            self._current_tick += 1
-            due = [e for e in self._pending if e.due_tick <= self._current_tick]
-            self._pending = [e for e in self._pending if e.due_tick > self._current_tick]
+            with self._lock:
+                self._current_tick += 1
+                due = [e for e in self._pending if e.due_tick <= self._current_tick]
+                self._pending = [e for e in self._pending if e.due_tick > self._current_tick]
             for event in due:
                 if not event.cancelled:
                     event.callback()

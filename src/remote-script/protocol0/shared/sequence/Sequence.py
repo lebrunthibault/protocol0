@@ -113,6 +113,9 @@ class Sequence(Observable):
 
     def _error(self) -> None:
         self.state.change_to(SequenceStateEnum.ERRORED)
+        # like _terminate: observers (e.g. the http action executor) must know
+        # the sequence left the started state, whatever the outcome
+        self.notify_observers()
         self.disconnect()
         if self._DEBUG:
             Logger.warning("Sequence errored : %s" % self)
@@ -123,6 +126,7 @@ class Sequence(Observable):
             Logger.warning("%s has been cancelled" % self)
             if self._current_step:
                 self._current_step.cancel()
+            self.notify_observers()
             self.disconnect()
 
     def _terminate(self) -> None:

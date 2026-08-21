@@ -36,6 +36,12 @@ _ROUTES: Dict[Tuple[str, str], Callable] = {}
 # largement la marge même sous burst.
 _HANDLER_TIMEOUT_S = 2.0
 
+# Borne d'attente des actions (/api/action/...). Contrairement aux routes core,
+# une action peut légitimement s'étaler sur plusieurs ticks (elle retourne une
+# Sequence : création de track, chargement browser...). Au-delà, l'action
+# continue dans Live et l'appelant reçoit un 202 {"status": "running"}.
+_ACTION_TIMEOUT_S = 10.0
+
 
 def route(method: str, path: str) -> Callable:
     """Enregistre une route au chemin EXACT (pas de préfixe). Pour les routes
@@ -83,6 +89,18 @@ def _build_kwargs(fn: Callable, source: Dict[str, object]) -> dict:
         value = source[name]
         kwargs[name] = _coerce(value, param.annotation) if isinstance(value, str) else value
     return kwargs
+
+
+def _safe_json(value):
+    """Le retour d'une action n'est pas toujours JSON-able (objet domaine) : on
+    dégrade en str() plutôt que de produire une réponse malformée."""
+    if value is None:
+        return None
+    try:
+        json.dumps(value)
+        return value
+    except TypeError:
+        return str(value)
 
 
 def _returns_value(fn: Callable) -> bool:
@@ -156,6 +174,13 @@ class HttpRequestHandler(BaseHTTPRequestHandler):
 
         Logger.info("HTTP %s %s" % (method, self.path))
 
+        # Les actions ont leur exécuteur dédié : enveloppe JSON uniforme, erreurs
+        # visibles, et attente des Sequence retournées (l'annotation -> None des
+        # plugins ne signifie pas fire-and-forget ici).
+        if parsed.path.startswith(API_PREFIX + "/action/"):
+            self._dispatch_action(fn, kwargs)
+            return
+
         if not _returns_value(fn):
             # Pont vers le thread Live : on ne touche surtout pas à l'API Ableton ici
             # (on est sur un thread daemon du serveur HTTP).
@@ -191,6 +216,78 @@ class HttpRequestHandler(BaseHTTPRequestHandler):
             return
 
         self._write_result(slot["result"])
+
+    def _dispatch_action(self, fn: Callable, kwargs: dict) -> None:
+        """Exécute une action sur le thread Live et répond avec l'enveloppe uniforme :
+
+          200 {"status": "done", "res": ...}   -- terminé (retour sync ou Sequence terminée)
+          500 {"status": "error", "error": ...} -- exception ou Sequence en erreur
+          500 {"status": "cancelled"}           -- Sequence annulée
+          202 {"status": "running"}             -- toujours en cours après _ACTION_TIMEOUT_S
+                                                   (l'action continue dans Live)
+
+        Une Sequence retournée est attendue via son Observable — c'est le pont
+        entre le monde HTTP synchrone et l'async du script."""
+        from protocol0.application.http import HttpServer
+        from protocol0.shared.sequence.Sequence import Sequence
+
+        done = threading.Event()
+        slot: dict = {}
+
+        def sequence_outcome(seq: Sequence) -> None:
+            if seq.state.terminated:
+                slot["result"] = seq.res
+            elif seq.state.cancelled:
+                slot["cancelled"] = True
+            else:
+                slot["error"] = "sequence errored: %s" % seq.name
+
+        class SequenceObserver:
+            """Remplit le slot quand la Sequence quitte l'état started."""
+
+            def update(self, observable) -> None:
+                if observable.state.started:
+                    return
+                sequence_outcome(observable)
+                observable.remove_observer(self)
+                done.set()
+
+        def run() -> None:
+            # Sur le thread Live (via HttpServer.submit)
+            try:
+                result = fn(**kwargs)
+            except Exception as e:
+                slot["error"] = str(e)
+                done.set()
+                return
+
+            if isinstance(result, Sequence):
+                if result.state.started:
+                    result.register_observer(SequenceObserver())
+                    return
+                sequence_outcome(result)
+            else:
+                slot["result"] = result
+            done.set()
+
+        HttpServer.submit(run)
+
+        if not done.wait(_ACTION_TIMEOUT_S):
+            self._write_envelope(202, {"status": "running"})
+        elif "error" in slot:
+            self._write_envelope(500, {"status": "error", "error": slot["error"]})
+        elif "cancelled" in slot:
+            self._write_envelope(500, {"status": "cancelled"})
+        else:
+            self._write_envelope(200, {"status": "done", "res": _safe_json(slot.get("result"))})
+
+    def _write_envelope(self, code: int, envelope: dict) -> None:
+        body = json.dumps(envelope).encode()
+        self.send_response(code)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
 
     def _write_result(self, result) -> None:
         """Sérialise le retour d'un handler. Un Response (code/body/content-type

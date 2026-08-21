@@ -35,14 +35,63 @@ def _param_schema(param: inspect.Parameter) -> Dict[str, Any]:
     return {"type": type_name}
 
 
-def _operation(method: str, fn: Callable) -> Dict[str, Any]:
+# Réponses de l'enveloppe uniforme des actions (cf. Router._dispatch_action).
+_ACTION_RESPONSES = {
+    "200": {
+        "description": "Action completed",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "status": {"type": "string", "const": "done"},
+                        "res": {"description": "Result of the action (may be null)"},
+                    },
+                }
+            }
+        },
+    },
+    "202": {
+        "description": "Action still running in Live after the wait cap",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": {"status": {"type": "string", "const": "running"}},
+                }
+            }
+        },
+    },
+    "500": {
+        "description": "Action errored or was cancelled",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "status": {"type": "string", "enum": ["error", "cancelled"]},
+                        "error": {"type": "string"},
+                    },
+                }
+            }
+        },
+    },
+}
+
+
+def _operation(method: str, fn: Callable, path: str = "") -> Dict[str, Any]:
     """Construit l'Operation Object OpenAPI d'une route. GET -> parameters (query) ;
     POST/PUT/PATCH -> requestBody JSON (les mutations passent leurs args en body)."""
     sig = inspect.signature(fn)
     doc = inspect.getdoc(fn) or ""
     summary = doc.splitlines()[0] if doc else fn.__name__
 
-    op: Dict[str, Any] = {"summary": summary, "responses": {"200": {"description": "OK"}}}
+    if path.startswith(API_PREFIX + "/action/"):
+        responses: Dict[str, Any] = _ACTION_RESPONSES
+    else:
+        responses = {"200": {"description": "OK"}}
+
+    op: Dict[str, Any] = {"summary": summary, "responses": responses}
     if doc:
         op["description"] = doc
 
@@ -81,7 +130,7 @@ def build_spec() -> Dict[str, Any]:
     for (method, path), fn in sorted(get_routes().items()):
         if path in _HIDDEN_PATHS:
             continue
-        paths.setdefault(path, {})[method.lower()] = _operation(method, fn)
+        paths.setdefault(path, {})[method.lower()] = _operation(method, fn, path)
 
     return {
         "openapi": "3.1.0",
