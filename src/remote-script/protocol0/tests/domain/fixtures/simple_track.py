@@ -1,4 +1,3 @@
-from collections import namedtuple
 from typing import List
 
 import Live
@@ -8,6 +7,17 @@ from protocol0.domain.lom.track.routing.OutputRoutingTypeEnum import OutputRouti
 from protocol0.tests.domain.fixtures.clip_slot import AbletonClipSlot
 from protocol0.tests.domain.fixtures.device import AbletonDevice
 from protocol0.tests.domain.fixtures.device_parameter import AbletonDeviceParameter
+
+
+class AbletonMixerDevice(Subject):
+    """Mutable mixer fake: volume / panning / sends are real parameters whose
+    values can be written and asserted."""
+
+    def __init__(self) -> None:
+        self._live_ptr = id(self)
+        self.volume = AbletonDeviceParameter("Track Volume", default_value=0.85)
+        self.panning = AbletonDeviceParameter("Track Panning", default_value=0.0, min=-1.0)
+        self.sends: List[AbletonDeviceParameter] = []
 
 
 class TrackType(object):
@@ -39,10 +49,7 @@ class AbletonTrack(Subject):
         self._live_ptr = id(self)
         self.name = track_type
         self.devices: List[AbletonDevice] = []
-        mixer_device = namedtuple("mixer_device", ["sends", "volume", "panning"])
-        self.mixer_device = mixer_device(
-            [], AbletonDeviceParameter("volume"), AbletonDeviceParameter("panning")
-        )
+        self.mixer_device = AbletonMixerDevice()
         self.can_be_armed = True
         self.arm = False
         self.solo = False
