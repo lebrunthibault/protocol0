@@ -5,6 +5,7 @@ from protocol0.plugins.TrackPlugin import TrackPlugin
 from protocol0.shared.Song import Song
 from protocol0.tests.domain.fixtures.device_parameter import AbletonDeviceParameter
 from protocol0.tests.domain.fixtures.http import dispatch_action
+from protocol0.tests.domain.fixtures.p0 import drain
 from protocol0.tests.domain.fixtures.simple_track import AbletonTrack
 
 
@@ -17,6 +18,7 @@ def _add_track(p0, name: str) -> AbletonTrack:
     song.create_midi_track(None)
     fake = song.view.selected_track
     fake.name = name
+    drain()  # flush the deferred remap so the wrappers exist
     return fake
 
 
@@ -77,6 +79,7 @@ def test_send_by_index(p0):
     fake.mixer_device.sends.append(AbletonDeviceParameter("Send A"))
     song.tracks = song.tracks + [fake]  # fires the tracks listeners (remap)
     song._sync_clip_slot_matrix()
+    drain()
 
     _plugin(p0).send(send="1", value="50%", track='"Sendy"')
     assert fake.mixer_device.sends[0].value == pytest.approx(0.5)
@@ -85,6 +88,7 @@ def test_send_by_index(p0):
 def test_fire_clip_in_scene(p0):
     fake = _add_track(p0, "Kick")
     fake.clip_slots[0].add_clip()
+    drain()  # the ClipSlot wrapper maps its clip on the deferred has_clip listener
     _plugin(p0).fire(track='"Kick"', scene="1")
     assert fake.clip_slots[0].clip.is_playing is True
 

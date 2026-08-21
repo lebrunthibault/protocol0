@@ -3,6 +3,7 @@ import pytest
 from protocol0.domain.lom.addressing.track import resolve_track
 from protocol0.domain.shared.errors.Protocol0Warning import Protocol0Warning
 from protocol0.shared.Song import Song
+from protocol0.tests.domain.fixtures.p0 import drain
 
 
 def _add_named_tracks(p0, *names):
@@ -10,6 +11,7 @@ def _add_named_tracks(p0, *names):
     for name in names:
         song.create_midi_track(None)  # appends and selects the new track
         song.view.selected_track.name = name
+    drain()  # flush the deferred remap so the wrappers exist
 
 
 def test_sel_is_the_selected_track(p0):

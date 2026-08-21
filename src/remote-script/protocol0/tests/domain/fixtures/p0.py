@@ -30,6 +30,15 @@ def make_protocol0(tick_scheduler: TickSchedulerInterface = None) -> Protocol0:
     return p0
 
 
+def drain() -> None:
+    """Advance the synchronous tick scheduler until idle — flushes the deferred
+    fake-listener notifications (track/scene remaps...). No-op on the timer
+    scheduler."""
+    tick_scheduler = Scheduler._INSTANCE._tick_scheduler
+    if hasattr(tick_scheduler, "drain"):
+        tick_scheduler.drain()
+
+
 def monkey_patch_static():
     # hide logs
     Logger(LoggerService())

@@ -176,16 +176,84 @@
       "domain": "MixerDevice.sends"
     },
     "Song.create_scene": {
-      "status": "domain-only",
+      "status": "exposed",
+      "action": "scene/create",
       "domain": "SceneCrudComponent.create_scene"
     },
     "Song.duplicate_scene": {
-      "status": "domain-only",
+      "status": "exposed",
+      "action": "scene/duplicate",
       "domain": "SceneCrudComponent.duplicate_scene"
     },
     "Song.delete_scene": {
-      "status": "domain-only",
+      "status": "exposed",
+      "action": "scene/delete",
       "domain": "SceneCrudComponent.delete_scene"
+    },
+    "Song.View.selected_scene": {
+      "status": "exposed",
+      "action": "scene/select",
+      "domain": "SceneComponent.select_scene"
+    },
+    "Scene.fire": {
+      "status": "exposed",
+      "action": "scene/fire",
+      "domain": "Scene.fire"
+    },
+    "Scene.name": {
+      "status": "exposed",
+      "action": "scene/rename",
+      "domain": "SceneAppearance.name"
+    },
+    "Clip.stop": {
+      "status": "exposed",
+      "action": "clip/stop",
+      "domain": "Clip.stop"
+    },
+    "ClipSlot.create_clip": {
+      "status": "exposed",
+      "action": "clip/create",
+      "domain": "ClipSlot.create_clip"
+    },
+    "ClipSlot.delete_clip": {
+      "status": "exposed",
+      "action": "clip/delete",
+      "domain": "Clip.delete / ClipSlot.delete_clip"
+    },
+    "Clip.name": {
+      "status": "exposed",
+      "action": "clip/rename",
+      "domain": "ClipName.name"
+    },
+    "Clip.looping": {
+      "status": "exposed",
+      "action": "clip/loop",
+      "domain": "ClipLoop.looping"
+    },
+    "Clip.loop_start": {
+      "status": "exposed",
+      "action": "clip/loop_start",
+      "domain": "ClipLoop.start"
+    },
+    "Clip.loop_end": {
+      "status": "exposed",
+      "action": "clip/loop_end",
+      "domain": "ClipLoop.end"
+    },
+    "Clip.muted": {
+      "status": "exposed",
+      "action": "clip/mute",
+      "domain": "Clip.muted"
+    },
+    "Clip.add_new_notes": {
+      "status": "exposed",
+      "action": "clip/add_note",
+      "domain": "MidiClip.add_note"
+    },
+    "Clip.apply_note_modifications": {
+      "status": "exposed",
+      "action": "clip/scale_velocities",
+      "domain": "MidiClip.scale_velocities"
     }
   }
 }

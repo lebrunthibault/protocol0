@@ -19,7 +19,9 @@ class SceneCrudComponent(object):
     def create_scene(self, scene_index: Optional[int] = None) -> Sequence:
         seq = Sequence()
         scenes_count = len(Song.scenes())
-        seq.add(partial(self._create_scene, scene_index or scenes_count))
+        if scene_index is None:
+            scene_index = scenes_count  # `or` would also swallow index 0
+        seq.add(partial(self._create_scene, scene_index))
         seq.defer()
         seq.wait_for_event(ScenesMappedEvent)
         return seq.done()

@@ -67,6 +67,20 @@ class MidiClip(Clip):
 
         return self.replace_notes(kept)
 
+    def add_note(self, note: Note) -> Optional[Sequence]:
+        return self.replace_notes(self.get_all_notes() + [note])
+
+    def clear_notes(self) -> Optional[Sequence]:
+        return self.replace_notes([])
+
+    def transpose(self, semitones: int) -> Optional[Sequence]:
+        notes = self.get_all_notes()
+        if not notes:
+            return None
+        for note in notes:
+            note.pitch = int(clamp(note.pitch + semitones, 0, 127))
+        return self.replace_notes(notes)
+
     def replace_notes(self, notes: List[Note]) -> Optional[Sequence]:
         if not self._clip:
             return None

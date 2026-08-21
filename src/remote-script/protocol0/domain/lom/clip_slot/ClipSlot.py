@@ -94,7 +94,9 @@ class ClipSlot(SlotManager, Observable):
         seq = Sequence()
         if self._clip_slot and self.has_clip and self.clip:
             seq.add(self._clip_slot.delete_clip)
-            seq.wait_for_event(ClipDeletedEvent, self._clip_slot)
+            # the event's target() is the ClipSlot wrapper (has_clip listener
+            # emits ClipDeletedEvent(self)), so the expected emitter must be too
+            seq.wait_for_event(ClipDeletedEvent, self)
         return seq.done()
 
     def prepare_for_record(self, clear: bool = True) -> Sequence:
@@ -120,7 +122,8 @@ class ClipSlot(SlotManager, Observable):
 
         seq = Sequence()
         seq.add(partial(self._clip_slot.create_clip, Song.signature_numerator()))
-        seq.wait_for_event(ClipCreatedEvent, self._clip_slot)
+        # target() is the wrapper, like in delete_clip above
+        seq.wait_for_event(ClipCreatedEvent, self)
         seq.defer()
         seq.add(lambda: self.clip.clip_name._name_listener())
         return seq.done()

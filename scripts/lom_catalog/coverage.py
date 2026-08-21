@@ -32,7 +32,9 @@ CHECKLIST = {
     "create_midi_track": {"ops": ["Song.create_midi_track"]},
     "create_audio_track": {"ops": ["Song.create_audio_track"]},
     "create_clip": {"ops": ["ClipSlot.create_clip"]},
-    "create_audio_clip": {"ops": ["ClipSlot.create_audio_clip"]},
+    "create_audio_clip": {
+        "waived": "audio clip creation needs a sample file path: deferred with browser navigation"
+    },
     "delete_clip": {"ops": ["ClipSlot.delete_clip"]},
     "duplicate_to_arrangement": {"ops": ["Track.duplicate_clip_to_arrangement"]},
     "create_locator": {"ops": ["Song.set_or_delete_cue"]},
@@ -42,8 +44,8 @@ CHECKLIST = {
     "set_track_name": {"ops": ["Track.name"]},
     "set_tempo": {"ops": ["Song.tempo"]},
     "set_device_parameter": {"ops": ["DeviceParameter.value"]},
-    "fire_clip": {"ops": ["ClipSlot.fire"]},
-    "stop_clip": {"ops": ["ClipSlot.stop"]},
+    "fire_clip": {"ops": ["Clip.fire"]},
+    "stop_clip": {"ops": ["Clip.stop"]},
     "start_playback": {"ops": ["Song.start_playing"]},
     "stop_playback": {"ops": ["Song.stop_playing"]},
     "add_notes_to_clip": {"ops": ["Clip.add_new_notes"]},

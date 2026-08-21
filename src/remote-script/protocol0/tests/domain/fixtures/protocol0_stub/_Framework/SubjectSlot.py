@@ -39,7 +39,12 @@ class Subject:
     def __setattr__(self, name, value):
         object.__setattr__(self, name, value)
         if self.__dict__.get("_p0_listeners", {}).get(name):
-            self._notify_listeners(name)
+            # Live never re-enters your own modifying code: listeners fire on the
+            # next tick, not synchronously (create_clip-style flows subscribe to
+            # the resulting event right after mutating and rely on this)
+            from protocol0.domain.shared.scheduler.Scheduler import Scheduler
+
+            Scheduler.defer(partial(self._notify_listeners, name))
 
     def __call__(self, *a, **k):
         return self
