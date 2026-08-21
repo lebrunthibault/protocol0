@@ -80,7 +80,9 @@ impl ScriptClient {
             .client
             .post(&url)
             .json(&body)
-            .timeout(std::time::Duration::from_secs(5))
+            // Above the script's 10s action cap: a slow action answers 202 at 10s,
+            // which must reach us before this client-side timeout trips.
+            .timeout(std::time::Duration::from_secs(12))
             .send()
             .and_then(|r| r.error_for_status());
         match result {
